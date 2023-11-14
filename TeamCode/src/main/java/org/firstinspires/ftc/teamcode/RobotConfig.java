@@ -44,7 +44,7 @@ public final class RobotConfig {
 
     public static final class IntakeConfigs {
         public static final String intakeMotor1Name = "intake1", intakeMotor2Name = "intake2";
-        public static final double intakeMotor1Power = -1, intakeMotor2Power = 1;
+        public static final double intakeMotor1Power = -0.75, intakeMotor2Power = 0.75;
     }
 
     public static final class ChassisConfigs {
@@ -173,6 +173,8 @@ public final class RobotConfig {
         public static final XboxControllerKey toggleSpeedControlButton = XboxControllerKey.A;
         public static final XboxControllerKey toggleChassisDriveModeButton = XboxControllerKey.DPAD_UP;
         public static final XboxControllerKey processVisualApproachButton = XboxControllerKey.LEFT_BUMPER;
+
+        public static final XboxControllerKey processAutoIntakePixelButton = XboxControllerKey.RIGHT_BUMPER;
     }
 
     public enum XboxControllerKey {

@@ -426,6 +426,14 @@ public class TestMain extends LinearOpMode {
                 gamepad1,
                 telemetry
         );
+
+        TripleIndependentEncoderAndIMUPositionEstimator.TripleIndependentEncoderAndIMUSystemParams tripleIndependentEncoderAndIMUSystemParams = new TripleIndependentEncoderAndIMUPositionEstimator.TripleIndependentEncoderAndIMUSystemParams(
+                true,
+                false,
+                true,
+                0,
+                0
+        );
     }
 
     public void huskyTest() {

@@ -335,10 +335,12 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
             backRightMotor.setPower(motorPower);
 
             if (System.currentTimeMillis() - previousTimeMillis > 2000) {
-                telemetry.addLine("press X to see results");
                 int horizontalEncoderValue = horizontalEncoder.getCurrentPosition() - horizontalEncoderPreviousReading,
                         verticalEncoder1Value = verticalEncoder1.getCurrentPosition() - verticalEncoder1PreviousReading,
                         verticalEncoder2Value = verticalEncoder2.getCurrentPosition() - verticalEncoder2PreviousReading;
+                telemetry.addData("hor enc val", horizontalEncoderValue);
+                telemetry.addData("ver enc (1) val", verticalEncoder1Value);
+                telemetry.addData("ver enc (2) val", verticalEncoder2Value);
 
                 if (Math.abs(verticalEncoder2Value) > 100 && Math.abs(verticalEncoder1Value) > 100 && Math.abs(horizontalEncoderValue) > 100){
                     double verticalDifferenceSpeed = verticalEncoder1Value * (encoderReversed[1] ? -1:1) - verticalEncoder2Value * (encoderReversed[2] ? -1:1);
@@ -353,6 +355,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
                     verticalEncoder2PreviousReading += verticalEncoder2Value;
                     previousTimeMillis = System.currentTimeMillis();
                 }
+                telemetry.addLine("press X to see results");
                 telemetry.update();
             }
             if (testGamePad.x)

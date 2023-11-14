@@ -12,7 +12,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.EncoderMotorWheel;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
+import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
+import org.firstinspires.ftc.teamcode.Services.IntakeService;
 import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
@@ -35,17 +37,14 @@ public class Robot {
     private final ProgramRunningStatusChecker programRunningStatusChecker;
 
     private final boolean visualNavigationSupported, independentEncodersAvailable, useMultiThread;
-    private boolean robotStopped = false;
 
-    private final Timer timer = new Timer();
-    public final List<TimerTask> tasks = new ArrayList<>(1);
     private EncoderMotorWheel frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
     private DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
-    private List<RobotModule> robotModules = new ArrayList<>(1);
-    private List<RobotService> robotServices = new ArrayList<>(1);
+    private final List<RobotModule> robotModules = new ArrayList<>(1);
+    private final List<RobotService> robotServices = new ArrayList<>(1);
     private TelemetrySender telemetrySender;
     private DriverGamePad driverGamePad;
-    private Gamepad armOperatorPad;
+    private Gamepad copilotGamePad;
     private IMU imu, alternativeIMU;
 
     public enum Side {
@@ -69,7 +68,7 @@ public class Robot {
         this.useMultiThread = !debugModeEnabled;
 
         /* game pad */
-        this.armOperatorPad = gamepad2;
+        this.copilotGamePad = gamepad2;
         driverGamePad = new DriverGamePad(gamepad1);
     }
 
@@ -77,7 +76,7 @@ public class Robot {
      * initializes the robot
      */
     public void initializeRobot() {
-        /* hardware */
+        /* <-- chassis --> */
         this.frontLeftMotor = hardwareMap.get(DcMotorEx.class, "frontLeft");
         this.frontRightMotor = hardwareMap.get(DcMotorEx.class, "frontRight");
         this.backLeftMotor = hardwareMap.get(DcMotorEx.class, "backLeft");
@@ -150,14 +149,23 @@ public class Robot {
             robotModules.add(aprilTagCamera);
         } else aprilTagCamera = null;
 
-
-
         Chassis chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, aprilTagCamera, FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL);
         robotModules.add(chassis);
 
         PilotChassisService chassisService = new PilotChassisService(chassis, driverGamePad, hardwareMap.get(DistanceSensor.class, "distance"), independentEncodersAvailable, visualNavigationSupported);
         robotServices.add(chassisService);
 
+
+        /* <-- intake --> */
+        final DcMotor intakeMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor1Name),
+                intakeMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor2Name);
+        final Intake intake = new Intake(intakeMotor1, intakeMotor2);
+        final IntakeService intakeService = new IntakeService(intake, driverGamePad, copilotGamePad);
+        robotModules.add(intake);
+        robotServices.add(intakeService);
+
+
+        /* <-- start of program --> */
         initModulesAndService();
 
         if (useMultiThread)
@@ -200,7 +208,6 @@ public class Robot {
     public void stopRobot() {
         for (RobotModule robotModule:robotModules)
             robotModule.terminate();
-        robotStopped = true;
     }
 
     private void initModulesAndService() {
