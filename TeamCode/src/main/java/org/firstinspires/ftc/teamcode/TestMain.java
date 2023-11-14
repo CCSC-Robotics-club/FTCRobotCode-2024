@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.EncoderMotorWheel;
@@ -36,7 +38,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        encoderToYawMeasuring();
+       encoderParamsMeasuring();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -381,7 +383,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void singleEncoderTest() {
-        DcMotor testEncoder = hardwareMap.get(DcMotor.class, "frontRight");
+        DcMotor testEncoder = hardwareMap.get(DcMotor.class, "backRight");
 
         waitForStart();
 
@@ -396,10 +398,29 @@ public class TestMain extends LinearOpMode {
         }
     }
 
+    private void imuTest() {
+        IMU imu = hardwareMap.get(IMU.class, "alternativeIMU");
+        imu.initialize(
+                new IMU.Parameters(
+                        new RevHubOrientationOnRobot( // expansion hub
+                                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                                RevHubOrientationOnRobot.UsbFacingDirection.UP
+                        )
+                ));
+
+        waitForStart();
+        imu.resetYaw();
+
+        while (!isStopRequested() && opModeIsActive()) {
+            telemetry.addData("imu yaw", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            telemetry.update();
+        }
+    }
+
     /**
      * measurement for EncoderBiasPerRadian
      */
-    private void encoderToYawMeasuring() {
+    private void encoderParamsMeasuring() {
         DcMotorEx verticalEncoder1 = hardwareMap.get(DcMotorEx.class, "backRight"); // vertical 1, not reversed
         DcMotorEx verticalEncoder2 = hardwareMap.get(DcMotorEx.class, "frontLeft"); // vertical 2, reversed
         DcMotorEx horizontalEncoder = hardwareMap.get(DcMotorEx.class, "frontRight"); // horizontal, reversed
@@ -431,8 +452,8 @@ public class TestMain extends LinearOpMode {
                 true,
                 false,
                 true,
-                0,
-                0
+                135.812,
+                0.2049
         );
     }
 

@@ -94,15 +94,16 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     private void updateRotation() {
         long t1 = System.currentTimeMillis();
         this.imuReading = (isPrimaryIMUTrustable || alternativeIMU == null) ? primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) : alternativeIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        this.imuVelocity = primaryIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
+        this.imuVelocity = (isPrimaryIMUTrustable || alternativeIMU == null) ? primaryIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate: alternativeIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
         debugMessages.put("time used", System.currentTimeMillis() - t1);
 
         if (Math.abs(AngleUtils.getActualDifference(primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), previousIMUReading)) > 0.0001) {
             previousIMUReading = imuReading;
             previousIMUReadingChangeMillis = System.currentTimeMillis();
-            if (System.currentTimeMillis() - previousIMUReadingChangeMillis > 1000)
-                this.isPrimaryIMUTrustable = false;
         }
+
+        if (System.currentTimeMillis() - previousIMUReadingChangeMillis > 1000)
+            this.isPrimaryIMUTrustable = false;
         debugMessages.put("primary IMU trusted", isPrimaryIMUTrustable);
     }
 
@@ -117,6 +118,8 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
 
         double horizontalEncoderDifference = horizontalEncoderReading - horizontalEncoderPreviousReading;
 
+        debugMessages.put("horizontal enc val", horizontalEncoderDifference);
+        debugMessages.put("vertical enc cor", verticalEncodersDifferentiated * verticalDifferenceToHorizontalBias);
         horizontalEncoderDifference -= verticalEncodersDifferentiated * verticalDifferenceToHorizontalBias;
 
         Vector2D translationalDifference = new Vector2D(new double[] {
@@ -154,6 +157,8 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
         this.previousIMUReadingChangeMillis = System.currentTimeMillis();
         this.isPrimaryIMUTrustable = true;
 
+        primaryIMU.resetYaw();
+        if (alternativeIMU != null) alternativeIMU.resetYaw();
         calibratePosition();
         calibrateRotation();
 
@@ -209,6 +214,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     public void setRotation(double givenRotation) {
         this.primaryIMU.resetYaw();
         if (this.alternativeIMU != null) this.alternativeIMU.resetYaw();
+        debugMessages.put("imu reading when reset", alternativeIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
         this.imuRotationBias = givenRotation;
     }
 
@@ -338,6 +344,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
                 int horizontalEncoderValue = horizontalEncoder.getCurrentPosition() - horizontalEncoderPreviousReading,
                         verticalEncoder1Value = verticalEncoder1.getCurrentPosition() - verticalEncoder1PreviousReading,
                         verticalEncoder2Value = verticalEncoder2.getCurrentPosition() - verticalEncoder2PreviousReading;
+                telemetry.addData("enc 1 raw", verticalEncoder1.getCurrentPosition());
                 telemetry.addData("hor enc val", horizontalEncoderValue);
                 telemetry.addData("ver enc (1) val", verticalEncoder1Value);
                 telemetry.addData("ver enc (2) val", verticalEncoder2Value);
