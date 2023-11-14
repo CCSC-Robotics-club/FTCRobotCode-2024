@@ -38,7 +38,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-       encoderParamsMeasuring();
+       imuTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -412,6 +412,8 @@ public class TestMain extends LinearOpMode {
         imu.resetYaw();
 
         while (!isStopRequested() && opModeIsActive()) {
+            if (gamepad1.a)
+                imu.resetYaw();
             telemetry.addData("imu yaw", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
             telemetry.update();
         }

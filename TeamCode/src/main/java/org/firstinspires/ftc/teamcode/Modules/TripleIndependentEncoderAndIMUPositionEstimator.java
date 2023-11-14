@@ -25,7 +25,6 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     private final IMU primaryIMU;
     private final IMU alternativeIMU;
     private boolean isPrimaryIMUTrustable;
-    private final double speedUpdateDelayMillis = 1.0f / RobotConfig.ChassisConfigs.positionEstimator_speedEstimationFrequency;
     private final double horizontalEncoderFactor, verticalEncoder1Factor, verticalEncoder2Factor, verticalDifferenceToHorizontalBias;
     private Vector2D previousPosition;
     private double horizontalEncoderPreviousReading, verticalEncoder1PreviousReading, verticalEncoder2PreviousReading, imuReading, imuVelocity;
@@ -54,7 +53,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
             IMU alternativeIMU,
             TripleIndependentEncoderAndIMUSystemParams params
             ) {
-        super("position estimator");
+        super("position estimator", RobotConfig.ChassisConfigs.positionEstimator_speedEstimationFrequency);
         this.horizontalEncoder = horizontalEncoder;
         this.verticalEncoder1 = verticalEncoder1;
         this.verticalEncoder2 = verticalEncoder2;
@@ -100,10 +99,13 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
         if (Math.abs(AngleUtils.getActualDifference(primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), previousIMUReading)) > 0.0001) {
             previousIMUReading = imuReading;
             previousIMUReadingChangeMillis = System.currentTimeMillis();
+            this.isPrimaryIMUTrustable = true;
         }
 
-        if (System.currentTimeMillis() - previousIMUReadingChangeMillis > 1000)
+        if (System.currentTimeMillis() - previousIMUReadingChangeMillis > 1000) {
             this.isPrimaryIMUTrustable = false;
+            calibrateRotation();
+        }
         debugMessages.put("primary IMU trusted", isPrimaryIMUTrustable);
     }
 
@@ -212,9 +214,8 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
      * */
     @Override
     public void setRotation(double givenRotation) {
-        this.primaryIMU.resetYaw();
+        // this.primaryIMU.resetYaw();
         if (this.alternativeIMU != null) this.alternativeIMU.resetYaw();
-        debugMessages.put("imu reading when reset", alternativeIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
         this.imuRotationBias = givenRotation;
     }
 

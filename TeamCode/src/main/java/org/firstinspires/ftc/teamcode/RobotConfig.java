@@ -22,18 +22,19 @@ public final class RobotConfig {
                             RevHubOrientationOnRobot.UsbFacingDirection.UP
                     )
             ),
-            new IMU.Parameters(
-                    new RevHubOrientationOnRobot( // expansion hub
-                            RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-                            RevHubOrientationOnRobot.UsbFacingDirection.UP
-                    )
-            ),
+//            new IMU.Parameters(
+//                    new RevHubOrientationOnRobot( // expansion hub
+//                            RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+//                            RevHubOrientationOnRobot.UsbFacingDirection.UP
+//                    )
+//            ),
+            null,
             new TripleIndependentEncoderAndIMUPositionEstimator.TripleIndependentEncoderAndIMUSystemParams(
                     true,
                     false,
                     true,
                     135.812,
-                    0.2049
+                    0.19
             ),
             new String[] {"frontRight", "backRight", "frontLeft"},
             true,
@@ -44,6 +45,31 @@ public final class RobotConfig {
             false,
             false,
             false
+    );
+
+    public static final HardwareConfigs hardwareConfigs_newer_chassis = new HardwareConfigs( // config for newer chassis
+            new IMU.Parameters(
+                    new RevHubOrientationOnRobot(
+                            RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                            RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
+                    )),
+            null,
+            new TripleIndependentEncoderAndIMUPositionEstimator.TripleIndependentEncoderAndIMUSystemParams(
+                    false,
+                    false,
+                    true,
+                    135.812,
+                    0.08
+            ),
+            new String[] {"backRight", "frontRight", "backLeft"},
+            true,
+            false,
+            true,
+            false,
+            false,
+            true,
+            false,
+            true
     );
 
     public static final HardwareConfigs testConfig = hardwareConfigs_2024Competition;

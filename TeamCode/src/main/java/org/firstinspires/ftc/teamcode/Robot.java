@@ -83,11 +83,14 @@ public class Robot {
         this.backRightMotor = hardwareMap.get(DcMotorEx.class, "backRight");
 
         this.imu = hardwareMap.get(IMU.class, "imu");
-        if (hardwareConfigs.alternativeIMUParameter != null)
+        imu.initialize(this.hardwareConfigs.imuParameter);
+        if (hardwareConfigs.alternativeIMUParameter != null) {
             this.alternativeIMU = hardwareMap.get(IMU.class, "alternativeIMU");
+            alternativeIMU.initialize(hardwareConfigs.alternativeIMUParameter);
+        }
         else
             this.alternativeIMU = null;
-        imu.initialize(this.hardwareConfigs.imuParameter);
+
 
         SimpleFeedForwardSpeedController.SpeedControllerProfile wheelSpeedControllerProfile =
                 new SimpleFeedForwardSpeedController.SpeedControllerProfile(
@@ -157,12 +160,12 @@ public class Robot {
 
 
         /* <-- intake --> */
-        final DcMotor intakeMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor1Name),
-                intakeMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor2Name);
-        final Intake intake = new Intake(intakeMotor1, intakeMotor2);
-        final IntakeService intakeService = new IntakeService(intake, driverGamePad, copilotGamePad);
-        robotModules.add(intake);
-        robotServices.add(intakeService);
+//        final DcMotor intakeMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor1Name),
+//                intakeMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor2Name);
+//        final Intake intake = new Intake(intakeMotor1, intakeMotor2);
+//        final IntakeService intakeService = new IntakeService(intake, driverGamePad, copilotGamePad);
+//        robotModules.add(intake);
+//        robotServices.add(intakeService);
 
 
         /* <-- start of program --> */
