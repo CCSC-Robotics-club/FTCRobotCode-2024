@@ -16,7 +16,7 @@ import static org.firstinspires.ftc.teamcode.RobotConfig.ChassisConfigs;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChassisModule extends RobotModule {
+public class Chassis extends RobotModule {
     private final EncoderMotorWheel frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
     private final PositionEstimator positionEstimator;
     private final FixedAngleArilTagCamera aprilTagCamera;
@@ -41,7 +41,7 @@ public class ChassisModule extends RobotModule {
 
     private boolean lowSpeedModeEnabled = false;
 
-    public ChassisModule(EncoderMotorWheel frontLeftWheel, EncoderMotorWheel frontRightWheel, EncoderMotorWheel backLeftWheel, EncoderMotorWheel backRightWheel, PositionEstimator positionEstimator, FixedAngleArilTagCamera aprilTagCamera, FixedAngleArilTagCamera.WallTarget.Name allianceWall) {
+    public Chassis(EncoderMotorWheel frontLeftWheel, EncoderMotorWheel frontRightWheel, EncoderMotorWheel backLeftWheel, EncoderMotorWheel backRightWheel, PositionEstimator positionEstimator, FixedAngleArilTagCamera aprilTagCamera, FixedAngleArilTagCamera.WallTarget.Name allianceWall) {
         super("chassis module", 100);
 
         this.frontLeftWheel = frontLeftWheel;

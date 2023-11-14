@@ -164,7 +164,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     int count = 0;
     @Override
     public Map<String, Object> getDebugMessages() {
-        debugMessages.put("vel (robot)", getCurrentVelocity(ChassisModule.OrientationMode.ROBOT_ORIENTATED));
+        debugMessages.put("vel (robot)", getCurrentVelocity(Chassis.OrientationMode.ROBOT_ORIENTATED));
         // debugMessages.put("vel (field)", getCurrentVelocity(ChassisModule.OrientationMode.FIELD_ORIENTATED));
         debugMessages.put("position", getCurrentPosition());
         debugMessages.put("robot yaw", getRotation());
@@ -178,12 +178,12 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     }
 
     @Override
-    public Vector2D getCurrentVelocity(ChassisModule.OrientationMode orientationMode) {
+    public Vector2D getCurrentVelocity(Chassis.OrientationMode orientationMode) {
         switch (orientationMode) {
             case FIELD_ORIENTATED:
                 return currentVelocity2D;
             case ROBOT_ORIENTATED:
-                return getCurrentVelocity(ChassisModule.OrientationMode.FIELD_ORIENTATED).multiplyBy(
+                return getCurrentVelocity(Chassis.OrientationMode.FIELD_ORIENTATED).multiplyBy(
                         new Rotation2D(getRotation()).getReversal()
                 );
             default:

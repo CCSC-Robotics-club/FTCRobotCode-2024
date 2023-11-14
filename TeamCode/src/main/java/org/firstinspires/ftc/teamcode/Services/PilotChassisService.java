@@ -8,7 +8,7 @@ import static java.lang.Thread.sleep;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Modules.ChassisModule;
+import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PilotChassisService extends RobotService {
-    private final ChassisModule chassis;
+    private final Chassis chassis;
     private final DriverGamePad driverController;
     public final DistanceSensor distanceSensor;
     private final boolean independentEncodersAvailable, visualNavigationSupported;
@@ -36,7 +36,7 @@ public class PilotChassisService extends RobotService {
     private ControlMode controlMode;
 
     private Map<String, Object> debugMessages = new HashMap<>(1);
-    public PilotChassisService(ChassisModule chassis, DriverGamePad driverController, DistanceSensor distanceSensor, boolean independentEncodersAvailable, boolean visualNavigationSupported) {
+    public PilotChassisService(Chassis chassis, DriverGamePad driverController, DistanceSensor distanceSensor, boolean independentEncodersAvailable, boolean visualNavigationSupported) {
         this.chassis = chassis;
         this.driverController = driverController;
         this.distanceSensor = distanceSensor;
@@ -55,8 +55,8 @@ public class PilotChassisService extends RobotService {
         /* <--translation--> */
         final double zeroJudge = 0.001;
         Vector2D pilotTranslationalCommand = driverController.getTranslationStickVector();
-        ChassisModule.ChassisTranslationalTask translationalTaskByPilotStickControl = new ChassisModule.ChassisTranslationalTask(
-                ChassisModule.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY,
+        Chassis.ChassisTranslationalTask translationalTaskByPilotStickControl = new Chassis.ChassisTranslationalTask(
+                Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY,
                 pilotTranslationalCommand
         );
 
@@ -81,16 +81,16 @@ public class PilotChassisService extends RobotService {
         debugMessages.put("control mode", controlMode);
         switch (controlMode) {
             case MANUAL_FIELD_ORIENTATED: {
-                chassis.setOrientationMode(ChassisModule.OrientationMode.FIELD_ORIENTATED, this);
+                chassis.setOrientationMode(Chassis.OrientationMode.FIELD_ORIENTATED, this);
                 break;
             }
             case MANUAL: {
-                chassis.setOrientationMode(ChassisModule.OrientationMode.ROBOT_ORIENTATED, this);
+                chassis.setOrientationMode(Chassis.OrientationMode.ROBOT_ORIENTATED, this);
                 break;
             }
             case ENCODER_ASSISTED_FIELD_ORIENTATED: {
-                translationalTaskByPilotStickControl = new ChassisModule.ChassisTranslationalTask(
-                        ChassisModule.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+                translationalTaskByPilotStickControl = new Chassis.ChassisTranslationalTask(
+                        Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         currentDesiredPosition.addBy(pilotTranslationalCommand.multiplyBy(targetDistanceAtMaxDesiredSpeed))
                 );
             }
@@ -114,8 +114,8 @@ public class PilotChassisService extends RobotService {
 
         /* <--rotation--> */
         double pilotRotationalCommand = driverController.getRotationStickValue();
-        ChassisModule.ChassisRotationalTask rotationalTaskByPilotStick = new ChassisModule.ChassisRotationalTask(
-                ChassisModule.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED,
+        Chassis.ChassisRotationalTask rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
+                Chassis.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED,
                 pilotRotationalCommand
         );
 
@@ -128,8 +128,8 @@ public class PilotChassisService extends RobotService {
 //        else
 //            previousRotation = chassis.getIMUReading();
         if (driverController.keyOnHold(RobotConfig.XboxControllerKey.DPAD_DOWN))
-            rotationalTaskByPilotStick = new ChassisModule.ChassisRotationalTask(
-                    ChassisModule.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
+            rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
+                    Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                     0
             );
         if (this.visualTaskStatus == VisualTaskStatus.FINISHED || this.visualTaskStatus == VisualTaskStatus.UNUSED)
@@ -199,8 +199,8 @@ public class PilotChassisService extends RobotService {
                 else if (chassis.isCurrentTranslationalTaskComplete()) // if the difference lies with tolerance, and that the chassis reports that current task is finished
                     this.visualTaskStatus = VisualTaskStatus.MAINTAIN_AND_AIM; // end of this stage
 
-                chassis.setTranslationalTask(new ChassisModule.ChassisTranslationalTask(
-                        ChassisModule.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+                chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
+                        Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach)
                 ), null);
                 debugMessages.put("TOF-based encoder target", previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach));
@@ -221,15 +221,15 @@ public class PilotChassisService extends RobotService {
             return;
         }
 
-        chassis.setTranslationalTask(new ChassisModule.ChassisTranslationalTask(
-                ChassisModule.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+        chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
+                Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                 chassis.getChassisEncoderPosition().addBy(
                         RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach.addBy(
                                 chassis.getRelativeFieldPositionToWall().multiplyBy(-1)
                 ))), this);
 
-        chassis.setRotationalTask(new ChassisModule.ChassisRotationalTask(
-                ChassisModule.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
+        chassis.setRotationalTask(new Chassis.ChassisRotationalTask(
+                Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                 0
         ), this);
         this.visualTaskStatus = VisualTaskStatus.VISUAL_ROUGH_APPROACH;
@@ -294,14 +294,14 @@ public class PilotChassisService extends RobotService {
         this.timeNeededToArrive = differenceToTargetVector.getMagnitude() / RobotConfig.VisualNavigationConfigs.visualApproachSpeed;
         this.time = 0;
 
-        chassis.setTranslationalTask(new ChassisModule.ChassisTranslationalTask(
-                ChassisModule.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_VISUAL,
+        chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
+                Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_VISUAL,
                 startingFieldPositionRelativeToWall
         ), this);
         this.visualTaskStatus = VisualTaskStatus.VISUAL_ROUGH_APPROACH;
 
         if (RobotConfig.VisualNavigationConfigs.faceToTargetWhenApproaching)
-            chassis.setRotationalTask(new ChassisModule.ChassisRotationalTask(ChassisModule.ChassisRotationalTask.ChassisRotationalTaskType.FACE_NAVIGATION_REFERENCES, 0), this);
+            chassis.setRotationalTask(new Chassis.ChassisRotationalTask(Chassis.ChassisRotationalTask.ChassisRotationalTaskType.FACE_NAVIGATION_REFERENCES, 0), this);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -39,95 +40,12 @@ public final class RobotConfig {
             false
     );
 
-    public static final HardwareConfigs hardwareConfigs_2022 = new HardwareConfigs( // config for our robot in 2022
-            new IMU.Parameters(
-                    new RevHubOrientationOnRobot(
-                            new Orientation(
-                                    AxesReference.INTRINSIC,
-                                    AxesOrder.ZYX,
-                                    AngleUnit.DEGREES,
-                                    90,
-                                    145.64f,
-                                    0,
-                                    0
-                            ))
-            ),
-            null,
-            null,
-            null,
-            false,
-            true,
-            false,
-            true,
-            false,
-            false,
-            false,
-            false
-    );
-    public static final HardwareConfigs hardwareConfigs_older_chassis = new HardwareConfigs( // config for the dirty and early chassis
-            new IMU.Parameters(
-                    new RevHubOrientationOnRobot(
-                            RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                            RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
-                    )),
-            null,
-            null,
-            null,
-            false,
-            true,
-            false,
-            true,
-            false,
-            false,
-            false,
-            false
-    );
+    public static final HardwareConfigs testConfig = hardwareConfigs_2024Competition;
 
-    public static final HardwareConfigs hardwareConfigs_newer_chassis = new HardwareConfigs( // config for newer chassis
-            new IMU.Parameters(
-                    new RevHubOrientationOnRobot(
-                            RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                            RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
-                    )),
-            null,
-            new TripleIndependentEncoderAndIMUPositionEstimator.TripleIndependentEncoderAndIMUSystemParams(
-                    false,
-                    false,
-                    true,
-                    135.812,
-                    0.08
-            ),
-            new String[] {"backRight", "frontRight", "backLeft"},
-            true,
-            false,
-            true,
-            false,
-            false,
-            true,
-            false,
-            true
-    );
-
-    public static final HardwareConfigs hardwareConfigs_shenWai = new HardwareConfigs( // config for ShenWai robot
-            new IMU.Parameters(
-                    new RevHubOrientationOnRobot(
-                            RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
-                            RevHubOrientationOnRobot.UsbFacingDirection.UP
-                    )),
-            null,
-            null,
-            null,
-            true,
-            false,
-            true,
-            false,
-            true,
-            false,
-            true,
-            false
-    );
-
-    public static final HardwareConfigs testConfig = hardwareConfigs_newer_chassis;
+    public static final class IntakeConfigs {
+        public static final String intakeMotor1Name = "intake1", intakeMotor2Name = "intake2";
+        public static final double intakeMotor1Power = -1, intakeMotor2Power = 1;
+    }
 
     public static final class ChassisConfigs {
         /*

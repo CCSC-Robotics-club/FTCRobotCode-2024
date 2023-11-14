@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Services;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Modules.ChassisModule;
+import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
@@ -16,15 +16,15 @@ public class AutoProgramRunner extends RobotService {
     private static final int autoStageRunnerUpdateRate = 20;
     private final List<SequentialCommandSegment> commandSegments;
     private int currentSegment;
-    private final ChassisModule robotChassis;
+    private final Chassis robotChassis;
     private final Telemetry telemetry;
     private double currentSegmentTime;
     private double currentSegmentChassisPathTimeScale; // slow the time down when smaller than 1 (=1/ETA)
     private boolean segmentEndingComplete;
 
-    public AutoProgramRunner(List<SequentialCommandSegment> commandSegments, ChassisModule chassisModule, Telemetry telemetry) {
+    public AutoProgramRunner(List<SequentialCommandSegment> commandSegments, Chassis chassis, Telemetry telemetry) {
         this.commandSegments = commandSegments;
-        this.robotChassis = chassisModule;
+        this.robotChassis = chassis;
         this.telemetry = telemetry;
     }
 
@@ -42,8 +42,8 @@ public class AutoProgramRunner extends RobotService {
         final SequentialCommandSegment currentCommandSegment = commandSegments.get(currentSegment);
         final double t = currentSegmentTime * currentSegmentChassisPathTimeScale;
         if (commandSegments.get(currentSegment).chassisMovementPath != null)
-            robotChassis.setTranslationalTask(new ChassisModule.ChassisTranslationalTask(
-                            ChassisModule.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+            robotChassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
+                            Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                             currentCommandSegment.chassisMovementPath.getPositionWithLERP(t)),
                     this);
         telemetry.addData("time(scaled)", t);
@@ -51,8 +51,8 @@ public class AutoProgramRunner extends RobotService {
         telemetry.addData("dt(s)", dt);
         telemetry.addData("ETA",1.0f/currentSegmentChassisPathTimeScale);
         telemetry.addData("chassis desired position", currentCommandSegment.chassisMovementPath.getPositionWithLERP(t));
-        robotChassis.setRotationalTask(new ChassisModule.ChassisRotationalTask(
-                        ChassisModule.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
+        robotChassis.setRotationalTask(new Chassis.ChassisRotationalTask(
+                        Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                         currentCommandSegment.getCurrentRotationWithLERP(t)),
                 this);
         currentCommandSegment.periodic.run();
@@ -76,11 +76,11 @@ public class AutoProgramRunner extends RobotService {
     private void nextSegment() {
         this.commandSegments.get(currentSegment).ending.run();
         this.segmentEndingComplete = true;
-        robotChassis.setTranslationalTask(new ChassisModule.ChassisTranslationalTask(
-                ChassisModule.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY,
+        robotChassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
+                Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY,
                 new Vector2D()), this);
-        robotChassis.setRotationalTask(new ChassisModule.ChassisRotationalTask(
-                ChassisModule.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED,
+        robotChassis.setRotationalTask(new Chassis.ChassisRotationalTask(
+                Chassis.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED,
                 0), this);
 
         if (commandSegments.size() - currentSegment == 1)

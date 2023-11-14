@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Modules.ChassisModule;
+import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.EncoderMotorWheel;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
@@ -41,7 +41,7 @@ public class TestMain extends LinearOpMode {
 
     List<RobotModule> robotModules = new ArrayList<>(1);
     TelemetrySender telemetrySender;
-    private ChassisModule getChassisModuleWithDefaultConfig() {
+    private Chassis getChassisModuleWithDefaultConfig() {
         FixedAngleArilTagCamera camera = getHuskyWithDefaultConfig();
 
 
@@ -108,7 +108,7 @@ public class TestMain extends LinearOpMode {
         positionEstimator.init();
         robotModules.add(positionEstimator);
 
-        ChassisModule chassis = new ChassisModule(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, camera, FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL);
+        Chassis chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, camera, FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL);
 
         EnhancedPIDController.StaticPIDProfile visualPIDControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
@@ -483,40 +483,40 @@ public class TestMain extends LinearOpMode {
     }
 
     private void driveToAprilTagTest() {
-        ChassisModule chassisModule = getChassisModuleWithDefaultConfig();
+        Chassis chassis = getChassisModuleWithDefaultConfig();
 
         waitForStart();
 
-        chassisModule.setWheelSpeedControlEnabled(false, null);
+        chassis.setWheelSpeedControlEnabled(false, null);
         while (!isStopRequested() && opModeIsActive()) {
             updateRobotModules();
 
             if (gamepad1.left_bumper)
-                chassisModule.setTranslationalTask(new ChassisModule.ChassisTranslationalTask(
-                        ChassisModule.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_VISUAL,
+                chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
+                        Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_VISUAL,
                         new Vector2D(new double[]{0, -35})
                 ), null);
             else
-                chassisModule.setTranslationalTask(new ChassisModule.ChassisTranslationalTask(
-                        ChassisModule.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY,
+                chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
+                        Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY,
                         new Vector2D()
                 ), null);
 
             if (gamepad1.right_bumper)
-                chassisModule.setRotationalTask(new ChassisModule.ChassisRotationalTask(
-                        ChassisModule.ChassisRotationalTask.ChassisRotationalTaskType.FACE_NAVIGATION_REFERENCES,
+                chassis.setRotationalTask(new Chassis.ChassisRotationalTask(
+                        Chassis.ChassisRotationalTask.ChassisRotationalTaskType.FACE_NAVIGATION_REFERENCES,
                         0 // default rotational value
                 ), null);
             else
-                chassisModule.setRotationalTask(new ChassisModule.ChassisRotationalTask(
-                        ChassisModule.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED,
+                chassis.setRotationalTask(new Chassis.ChassisRotationalTask(
+                        Chassis.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED,
                         0
                 ), null);
         }
     }
 
     private void conceptDriveToAprilTagBezierCurve() {
-        ChassisModule chassis = getChassisModuleWithDefaultConfig();
+        Chassis chassis = getChassisModuleWithDefaultConfig();
 
         waitForStart();
 
@@ -532,11 +532,11 @@ public class TestMain extends LinearOpMode {
         long timeCurrentPathStarted = 0;
         while (!isStopRequested() && opModeIsActive()) {
             chassis.gainOwnerShip(null);
-            chassis.setRotationalTask(new ChassisModule.ChassisRotationalTask(ChassisModule.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED, 0), null);
+            chassis.setRotationalTask(new Chassis.ChassisRotationalTask(Chassis.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED, 0), null);
             updateRobotModules();
             switch (statusCode) {
                 case 0: {
-                    chassis.setTranslationalTask(new ChassisModule.ChassisTranslationalTask(ChassisModule.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()),null);
+                    chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()),null);
                     if (gamepad1.left_bumper) {
                         if (!chassis.isVisualNavigationAvailable()) break;
                         Vector2D currentPositionToWall = chassis.getRelativeFieldPositionToWall();
@@ -556,7 +556,7 @@ public class TestMain extends LinearOpMode {
                         telemetry.addData("pt4", targetedPosition);
                         telemetry.update();
 
-                        chassis.setTranslationalTask(new ChassisModule.ChassisTranslationalTask(ChassisModule.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_VISUAL, currentPositionToWall), null);
+                        chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_VISUAL, currentPositionToWall), null);
                         timeCurrentPathStarted = System.currentTimeMillis();
                         statusCode = 1;
                     }
@@ -614,32 +614,32 @@ public class TestMain extends LinearOpMode {
     }
 
     private void encoderDriveToPositionTest() {
-        ChassisModule chassisModule = getChassisModuleWithDefaultConfig();
+        Chassis chassis = getChassisModuleWithDefaultConfig();
 
         waitForStart();
 
-        chassisModule.setWheelSpeedControlEnabled(false, null);
+        chassis.setWheelSpeedControlEnabled(false, null);
         while (!isStopRequested() && opModeIsActive()) {
-            ChassisModule.ChassisTranslationalTask translationalTask;
+            Chassis.ChassisTranslationalTask translationalTask;
             if (gamepad1.y)
-                translationalTask = new ChassisModule.ChassisTranslationalTask(
-                        ChassisModule.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+                translationalTask = new Chassis.ChassisTranslationalTask(
+                        Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         new Vector2D(new double[]{20, 30})
                 );
             else if (gamepad1.a)
-                translationalTask = new ChassisModule.ChassisTranslationalTask(
-                        ChassisModule.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+                translationalTask = new Chassis.ChassisTranslationalTask(
+                        Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         new Vector2D(new double[]{-20, -30})
                 );
             else
-                translationalTask = new ChassisModule.ChassisTranslationalTask(
-                        ChassisModule.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY,
+                translationalTask = new Chassis.ChassisTranslationalTask(
+                        Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY,
                         new Vector2D()
                 );
-            chassisModule.setTranslationalTask(translationalTask, null);
-            chassisModule.setRotationalTask(
-                    new ChassisModule.ChassisRotationalTask(
-                        ChassisModule.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED,
+            chassis.setTranslationalTask(translationalTask, null);
+            chassis.setRotationalTask(
+                    new Chassis.ChassisRotationalTask(
+                        Chassis.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED,
                             (Math.abs(gamepad1.left_stick_x) > 0.05) ? -gamepad1.left_stick_x : 0
                     ),
                     null
@@ -650,7 +650,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void conceptAutoStageTest() {
-        ChassisModule chassisModule = getChassisModuleWithDefaultConfig();
+        Chassis chassis = getChassisModuleWithDefaultConfig();
         List<SequentialCommandSegment> commandSegments = new ArrayList<>();
         long t0 = System.currentTimeMillis();
         BezierCurve path = new BezierCurve(
@@ -676,7 +676,7 @@ public class TestMain extends LinearOpMode {
                 () -> true,
                 0, Math.PI / 2
         ));
-        AutoProgramRunner autoProgramRunner = new AutoProgramRunner(commandSegments, chassisModule, telemetry);
+        AutoProgramRunner autoProgramRunner = new AutoProgramRunner(commandSegments, chassis, telemetry);
 
         waitForStart();
         t0 = System.currentTimeMillis();

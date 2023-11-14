@@ -85,7 +85,7 @@ public class IndependentEncoderAndIMUPositionEstimator extends RobotModule imple
         Vector2D instantDisplacement = getInstanceDisplacement();
         this.currentVelocityToSelf = instantDisplacement.multiplyBy(1/dt);
         this.currentPosition = currentPosition.addBy(
-                getCurrentVelocity(ChassisModule.OrientationMode.FIELD_ORIENTATED).multiplyBy(dt)
+                getCurrentVelocity(Chassis.OrientationMode.FIELD_ORIENTATED).multiplyBy(dt)
         );
 
         horizontalEncoderPreviousReading = quadratureDecodingEncoderHorizontal.getCurrentPosition();
@@ -116,10 +116,10 @@ public class IndependentEncoderAndIMUPositionEstimator extends RobotModule imple
     }
 
     @Override
-    public Vector2D getCurrentVelocity(ChassisModule.OrientationMode orientationMode) {
+    public Vector2D getCurrentVelocity(Chassis.OrientationMode orientationMode) {
         switch (orientationMode) {
             case FIELD_ORIENTATED:
-                return getCurrentVelocity(ChassisModule.OrientationMode.ROBOT_ORIENTATED).multiplyBy(
+                return getCurrentVelocity(Chassis.OrientationMode.ROBOT_ORIENTATED).multiplyBy(
                         new Rotation2D(getRotation())
                 );
             case ROBOT_ORIENTATED:
@@ -171,7 +171,7 @@ public class IndependentEncoderAndIMUPositionEstimator extends RobotModule imple
 
        messages.put("dt(ms)", (int)(1000*previousDT));
        messages.put("pos", getCurrentPosition());
-       messages.put("vel", getCurrentVelocity(ChassisModule.OrientationMode.ROBOT_ORIENTATED));
+       messages.put("vel", getCurrentVelocity(Chassis.OrientationMode.ROBOT_ORIENTATED));
        return messages;
     }
 

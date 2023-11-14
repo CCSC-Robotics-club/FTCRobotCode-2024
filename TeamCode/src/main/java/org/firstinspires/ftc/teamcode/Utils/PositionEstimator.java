@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
-import org.firstinspires.ftc.teamcode.Modules.ChassisModule;
+import org.firstinspires.ftc.teamcode.Modules.Chassis;
 
 /**  */
 public interface PositionEstimator {
@@ -19,7 +19,7 @@ public interface PositionEstimator {
      * @param orientationMode the mode of orientation
      * @return the velocity of the robot, orientated to the selected mode, and in meters/second
      * */
-    Vector2D getCurrentVelocity(ChassisModule.OrientationMode orientationMode);
+    Vector2D getCurrentVelocity(Chassis.OrientationMode orientationMode);
 
     /**
      * get the current rotation of the robot
