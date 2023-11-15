@@ -93,10 +93,10 @@ public final class RobotConfig {
 
 
         // TODO: tune these values
-        public static final double chassisRotation_maximumCorrectionPower = 0.6;
-        public static final double chassisRotation_minimumCorrectionPower = 0.06;
-        public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(35);
-        public static final double chassisRotation_errorTolerance = Math.toRadians(1.5);
+        public static final double chassisRotation_maximumCorrectionPower = 0.75;
+        public static final double chassisRotation_minimumCorrectionPower = 0.08;
+        public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(45);
+        public static final double chassisRotation_errorTolerance = Math.toRadians(1);
         public static final double chassisRotation_feedForwardDelay = 0.1; // in seconds
         public static final EnhancedPIDController.StaticPIDProfile chassisRotationControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Math.PI * 2,
@@ -109,16 +109,16 @@ public final class RobotConfig {
         );
 
         /* position estimator */
-        public static final int positionEstimator_speedEstimationFrequency = 20;
+        public static final int positionEstimator_speedEstimationFrequency = 40;
 
         /* encoder drive-to-position PID */
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 0.95,
-                0.06,
-                50,
+                0.08,
+                45,
                 1,
-                0.18,
+                0.14,
                 0, 0
         );
 
@@ -131,9 +131,9 @@ public final class RobotConfig {
         public static final double xPowerRate = 1.05,
                 yPowerRate = 1;
         /** the distance to set the position target, when pilot sends a command of full speed  */
-        public static final double targetDistanceAtMaxDesiredSpeed = 170;
+        public static final double targetDistanceAtMaxDesiredSpeed = 150;
         /** the smooth-out time, or the time after the pilot let the chassis stop till it start maintaining its current position */
-        public static final double timeToStartDecelerate = 0.35;
+        public static final double timeToStartDecelerate = 0.32;
 
         /** within how many times the error tolerance of PID should the translational task be counted as complete */
         public static final double errorToleranceAsProgramFinished = 3;

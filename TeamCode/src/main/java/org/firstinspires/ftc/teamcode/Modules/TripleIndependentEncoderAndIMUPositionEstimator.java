@@ -95,8 +95,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
         long t1 = System.currentTimeMillis();
         this.imuReading = (isPrimaryIMUTrustable || alternativeIMU == null) ? primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) : alternativeIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
         this.imuVelocity = (isPrimaryIMUTrustable || alternativeIMU == null) ? primaryIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate: alternativeIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
-        // debugMessages.put("time used", System.currentTimeMillis() - t1);
-        // debugMessages.put("imu raw", imuReading);
+         debugMessages.put("time used", System.currentTimeMillis() - t1);
 
         if (Math.abs(AngleUtils.getActualDifference(primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), previousIMUReading)) > 10e-6) {
             previousIMUReading = imuReading;
@@ -104,11 +103,8 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
             this.isPrimaryIMUTrustable = true;
         }
 
-        if (System.currentTimeMillis() - previousIMUReadingChangeMillis > 1000) {
+        if (System.currentTimeMillis() - previousIMUReadingChangeMillis > 1000)
             this.isPrimaryIMUTrustable = false;
-            calibrateRotation();
-        }
-        // debugMessages.put("primary IMU trusted", isPrimaryIMUTrustable);
     }
 
     private void estimatePositions() {
@@ -175,8 +171,8 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
         debugMessages.put("vel (robot)", getCurrentVelocity(Chassis.OrientationMode.ROBOT_ORIENTATED));
         // debugMessages.put("vel (field)", getCurrentVelocity(ChassisModule.OrientationMode.FIELD_ORIENTATED));
         debugMessages.put("position", getCurrentPosition());
-//        debugMessages.put("robot yaw", getRotation());
-//        debugMessages.put("update rate", getUpdateCountPerSecond());
+        debugMessages.put("robot yaw", getRotation());
+        debugMessages.put("update rate", getUpdateCountPerSecond());
         return debugMessages;
     }
 
