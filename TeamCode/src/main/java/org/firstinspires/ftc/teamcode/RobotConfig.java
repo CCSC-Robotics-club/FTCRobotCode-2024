@@ -205,7 +205,7 @@ public final class RobotConfig {
         public static final XboxControllerKey toggleChassisDriveModeButton = XboxControllerKey.DPAD_UP;
         public static final XboxControllerKey processVisualApproachButton = XboxControllerKey.LEFT_BUMPER;
 
-        public static final XboxControllerKey processAutoIntakePixelButton = XboxControllerKey.RIGHT_BUMPER;
+        public static final XboxControllerKey processAutoIntakePixelButton = XboxControllerKey.RIGHT_TRIGGER;
     }
 
     public enum XboxControllerKey {
