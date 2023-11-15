@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.RobotConfig.KeyBindings;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Modules.Intake;
+import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 
@@ -24,12 +25,16 @@ public class IntakeService extends RobotService {
 
     @Override
     public void periodic(double dt) {
-        intake.setActivated(driverGamePad.keyOnHold(KeyBindings.processAutoIntakePixelButton) || copilotGamepad.x);
+        if (driverGamePad.keyOnHold(KeyBindings.processAutoIntakePixelButton) || copilotGamepad.x)
+            intake.setMotion(Intake.Motion.ACTIVATED, this);
+        else if (driverGamePad.keyOnPressed(RobotConfig.XboxControllerKey.RIGHT_TRIGGER) || copilotGamepad.y)
+            intake.setMotion(Intake.Motion.REVERSE, this);
+        intake.setMotion(Intake.Motion.STOP, this);
     }
 
     @Override
     public void onDestroy() {
-        intake.setActivated(false);
+        intake.setMotion(Intake.Motion.STOP, this);
         intake.setEnabled(false);
     }
 
