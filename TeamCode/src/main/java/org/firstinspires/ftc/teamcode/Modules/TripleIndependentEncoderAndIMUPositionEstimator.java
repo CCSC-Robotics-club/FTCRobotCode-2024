@@ -24,7 +24,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     private final DcMotor horizontalEncoder, verticalEncoder1, verticalEncoder2;
     private final IMU primaryIMU;
     private final IMU alternativeIMU;
-    private boolean isPrimaryIMUTrustable;
+    private boolean isPrimaryIMUTrustable, imuNeedsReset;
     private final double horizontalEncoderFactor, verticalEncoder1Factor, verticalEncoder2Factor, verticalDifferenceToHorizontalBias;
     private Vector2D previousPosition;
     private double horizontalEncoderPreviousReading, verticalEncoder1PreviousReading, verticalEncoder2PreviousReading, imuReading, imuVelocity;
@@ -91,12 +91,14 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     }
 
     private void updateRotation() {
+        if (imuNeedsReset) resetIMU();
         long t1 = System.currentTimeMillis();
         this.imuReading = (isPrimaryIMUTrustable || alternativeIMU == null) ? primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) : alternativeIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
         this.imuVelocity = (isPrimaryIMUTrustable || alternativeIMU == null) ? primaryIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate: alternativeIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
         debugMessages.put("time used", System.currentTimeMillis() - t1);
+        debugMessages.put("imu raw", imuReading);
 
-        if (Math.abs(AngleUtils.getActualDifference(primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), previousIMUReading)) > 0.0001) {
+        if (Math.abs(AngleUtils.getActualDifference(primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), previousIMUReading)) > 10e-6) {
             previousIMUReading = imuReading;
             previousIMUReadingChangeMillis = System.currentTimeMillis();
             this.isPrimaryIMUTrustable = true;
@@ -159,8 +161,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
         this.previousIMUReadingChangeMillis = System.currentTimeMillis();
         this.isPrimaryIMUTrustable = true;
 
-        primaryIMU.resetYaw();
-        if (alternativeIMU != null) alternativeIMU.resetYaw();
+        imuNeedsReset = true;
         calibratePosition();
         calibrateRotation();
 
@@ -214,9 +215,14 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
      * */
     @Override
     public void setRotation(double givenRotation) {
-        // this.primaryIMU.resetYaw();
-        if (this.alternativeIMU != null) this.alternativeIMU.resetYaw();
+        imuNeedsReset = true;
         this.imuRotationBias = givenRotation;
+    }
+
+    private void resetIMU() {
+        this.primaryIMU.resetYaw();
+        if (this.alternativeIMU != null) this.alternativeIMU.resetYaw();
+        imuNeedsReset = false;
     }
 
     @Override
