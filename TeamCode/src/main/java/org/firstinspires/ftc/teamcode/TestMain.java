@@ -38,7 +38,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-       encoderParamsMeasuring();
+        conceptServoSync();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -764,14 +764,11 @@ public class TestMain extends LinearOpMode {
         // moving two parallel and adjacent servos together
 
         final Servo servo1 = hardwareMap.get(Servo.class, "servo1"), servo2 = hardwareMap.get(Servo.class, "servo2");
-        final boolean servo1Reversed = false, servo2Reversed = false;
-        final double servo1ZeroPosition = 0, servo2ZeroPosition = 0;
+        final boolean servo1Reversed = false, servo2Reversed = true;
 
         waitForStart();
         double desiredPosition = 0;
         boolean enabled = true, wasAPressed = false;
-        servo1.setDirection(servo1Reversed ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
-        servo2.setDirection(servo2Reversed ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
         while (!isStopRequested() && opModeIsActive()) {
             if (Math.abs(gamepad1.left_stick_y) > 0.05)
                 desiredPosition += -50.0f / 1000.0f * 0.5 * gamepad1.left_stick_y;
@@ -781,8 +778,8 @@ public class TestMain extends LinearOpMode {
                 enabled = !enabled;
             wasAPressed = gamepad1.a;
 
-            servo1.setPosition(desiredPosition + servo1ZeroPosition);
-            servo2.setPosition(desiredPosition + servo2ZeroPosition);
+            servo1.setPosition(servo1Reversed ? 1-desiredPosition : desiredPosition);
+            servo2.setPosition(servo2Reversed ? 1-desiredPosition : desiredPosition);
 
             telemetry.addData("desired position", desiredPosition);
             telemetry.addData("enabled", enabled);
