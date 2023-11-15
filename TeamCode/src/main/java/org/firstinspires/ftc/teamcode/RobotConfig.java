@@ -34,7 +34,7 @@ public final class RobotConfig {
                     false,
                     true,
                     135.812,
-                    0.19
+                    0.378
             ),
             new String[] {"frontRight", "backRight", "frontLeft"},
             true,

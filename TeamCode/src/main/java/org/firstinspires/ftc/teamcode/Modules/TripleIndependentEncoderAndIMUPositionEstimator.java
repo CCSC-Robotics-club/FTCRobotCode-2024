@@ -95,8 +95,8 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
         long t1 = System.currentTimeMillis();
         this.imuReading = (isPrimaryIMUTrustable || alternativeIMU == null) ? primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) : alternativeIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
         this.imuVelocity = (isPrimaryIMUTrustable || alternativeIMU == null) ? primaryIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate: alternativeIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
-        debugMessages.put("time used", System.currentTimeMillis() - t1);
-        debugMessages.put("imu raw", imuReading);
+        // debugMessages.put("time used", System.currentTimeMillis() - t1);
+        // debugMessages.put("imu raw", imuReading);
 
         if (Math.abs(AngleUtils.getActualDifference(primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), previousIMUReading)) > 10e-6) {
             previousIMUReading = imuReading;
@@ -108,7 +108,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
             this.isPrimaryIMUTrustable = false;
             calibrateRotation();
         }
-        debugMessages.put("primary IMU trusted", isPrimaryIMUTrustable);
+        // debugMessages.put("primary IMU trusted", isPrimaryIMUTrustable);
     }
 
     private void estimatePositions() {
@@ -118,7 +118,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
                 verticalEncoder1Difference = verticalEncoder1Reading - verticalEncoder1PreviousReading,
                 verticalEncoder2Difference = verticalEncoder2Reading - verticalEncoder2PreviousReading,
                 verticalEncoderMovement = (verticalEncoder1Difference + verticalEncoder2Difference) / 2,
-                verticalEncodersDifferentiated = (verticalEncoder2Difference - verticalEncoder1Difference);
+                verticalEncodersDifferentiated = (verticalEncoder1Difference - verticalEncoder2Difference);
 
         double horizontalEncoderDifference = horizontalEncoderReading - horizontalEncoderPreviousReading;
 
@@ -175,8 +175,8 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
         debugMessages.put("vel (robot)", getCurrentVelocity(Chassis.OrientationMode.ROBOT_ORIENTATED));
         // debugMessages.put("vel (field)", getCurrentVelocity(ChassisModule.OrientationMode.FIELD_ORIENTATED));
         debugMessages.put("position", getCurrentPosition());
-        debugMessages.put("robot yaw", getRotation());
-        debugMessages.put("update rate", getUpdateCountPerSecond());
+//        debugMessages.put("robot yaw", getRotation());
+//        debugMessages.put("update rate", getUpdateCountPerSecond());
         return debugMessages;
     }
 
@@ -352,14 +352,14 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
                         verticalEncoder1Value = verticalEncoder1.getCurrentPosition() - verticalEncoder1PreviousReading,
                         verticalEncoder2Value = verticalEncoder2.getCurrentPosition() - verticalEncoder2PreviousReading;
                 telemetry.addData("enc 1 raw", verticalEncoder1.getCurrentPosition());
-                telemetry.addData("hor enc val", horizontalEncoderValue);
-                telemetry.addData("ver enc (1) val", verticalEncoder1Value);
-                telemetry.addData("ver enc (2) val", verticalEncoder2Value);
+                telemetry.addData("hor enc val", horizontalEncoderValue * (encoderReversed[0] ? -1:1));
+                telemetry.addData("ver enc (1) val", verticalEncoder1Value * (encoderReversed[1] ? -1:1));
+                telemetry.addData("ver enc (2) val", verticalEncoder2Value * (encoderReversed[2] ? -1:1));
 
                 if (Math.abs(verticalEncoder2Value) > 100 && Math.abs(verticalEncoder1Value) > 100 && Math.abs(horizontalEncoderValue) > 100){
                     double verticalDifferenceSpeed = verticalEncoder1Value * (encoderReversed[1] ? -1:1) - verticalEncoder2Value * (encoderReversed[2] ? -1:1);
                     telemetry.addData("vertical speed", verticalDifferenceSpeed);
-                    double horizontalSpeed = horizontalEncoder.getVelocity() * (encoderReversed[0] ? -1:1);
+                    double horizontalSpeed = horizontalEncoderValue * (encoderReversed[0] ? -1:1);
                     horizontalBias.add(horizontalSpeed);
                     verticalEncoderDifferences.add(verticalDifferenceSpeed);
                     telemetry.addData("horizontal speed", horizontalSpeed);
