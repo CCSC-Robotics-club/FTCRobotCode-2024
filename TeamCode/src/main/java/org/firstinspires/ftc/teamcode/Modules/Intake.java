@@ -11,6 +11,7 @@ import java.util.Map;
 
 
 public class Intake extends RobotModule {
+    // TODO add go-back function, to spew the pixel out of the intake
     private final DcMotor intakeMotor1, intakeMotor2;
     private boolean activated;
     public Intake(DcMotor intakeMotor1, DcMotor intakeMotor2) {

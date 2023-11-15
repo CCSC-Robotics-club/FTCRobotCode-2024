@@ -23,7 +23,7 @@ public class PilotChassisService extends RobotService {
     private final DriverGamePad driverController;
     public final DistanceSensor distanceSensor;
     private final boolean independentEncodersAvailable, visualNavigationSupported;
-    private double previousRotation = 0;
+    private double rotationWhenStickPressed;
     private Vector2D currentDesiredPosition;
     /** time since last translational command sent by pilot */
     private double pilotLastTranslationalActionTime;
@@ -127,6 +127,15 @@ public class PilotChassisService extends RobotService {
 //            );
 //        else
 //            previousRotation = chassis.getIMUReading();
+
+        // TODO make the two buttons in robot config
+        if (driverController.keyOnPressed(RobotConfig.XboxControllerKey.LEFT_STICK_BUTTON))
+            rotationWhenStickPressed = chassis.getYaw();
+        if (driverController.keyOnHold(RobotConfig.XboxControllerKey.LEFT_STICK_BUTTON))
+            rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
+                    Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
+                    rotationWhenStickPressed
+            );
         if (driverController.keyOnHold(RobotConfig.XboxControllerKey.DPAD_DOWN))
             rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
                     Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
@@ -313,7 +322,7 @@ public class PilotChassisService extends RobotService {
     public void reset() {
         this.chassis.gainOwnerShip(this);
         this.currentDesiredPosition = new Vector2D();
-        this.previousRotation = 0;
+        this.rotationWhenStickPressed = 0;
         this.pilotLastTranslationalActionTime = 0;
         this.currentDesiredPosition = chassis.getChassisEncoderPosition();
         this.controlMode = RobotConfig.ControlConfigs.defaultControlMode;

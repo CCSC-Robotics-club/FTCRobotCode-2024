@@ -91,7 +91,7 @@ public final class RobotConfig {
         public static final double wheel_feedForwardDelay = 0;
         public static final double wheel_maxVelocity = 2500;
 
-        
+
         public static final double chassisRotation_maximumCorrectionPower = 0.6;
         public static final double chassisRotation_minimumCorrectionPower = 0.06;
         public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(50);
