@@ -16,18 +16,18 @@ import org.firstinspires.ftc.teamcode.Utils.Vector2D;
 
 public final class RobotConfig {
     public static final HardwareConfigs hardwareConfigs_2024Competition = new HardwareConfigs( // new robot for competition
-            new IMU.Parameters(
-                    new RevHubOrientationOnRobot(
-                            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                            RevHubOrientationOnRobot.UsbFacingDirection.UP
-                    )
-            ),
 //            new IMU.Parameters(
-//                    new RevHubOrientationOnRobot( // expansion hub
-//                            RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+//                    new RevHubOrientationOnRobot(
+//                            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
 //                            RevHubOrientationOnRobot.UsbFacingDirection.UP
 //                    )
 //            ),
+            new IMU.Parameters(
+                    new RevHubOrientationOnRobot( // expansion hub
+                            RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                            RevHubOrientationOnRobot.UsbFacingDirection.UP
+                    )
+            ),
             null,
             new TripleIndependentEncoderAndIMUPositionEstimator.TripleIndependentEncoderAndIMUSystemParams(
                     true,
