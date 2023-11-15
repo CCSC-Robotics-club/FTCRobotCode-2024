@@ -91,13 +91,12 @@ public final class RobotConfig {
         public static final double wheel_feedForwardDelay = 0;
         public static final double wheel_maxVelocity = 2500;
 
-
-        // TODO: tune these values
-        public static final double chassisRotation_maximumCorrectionPower = 0.75;
-        public static final double chassisRotation_minimumCorrectionPower = 0.08;
-        public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(45);
-        public static final double chassisRotation_errorTolerance = Math.toRadians(1);
-        public static final double chassisRotation_feedForwardDelay = 0.1; // in seconds
+        
+        public static final double chassisRotation_maximumCorrectionPower = 0.6;
+        public static final double chassisRotation_minimumCorrectionPower = 0.06;
+        public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(50);
+        public static final double chassisRotation_errorTolerance = Math.toRadians(1.5);
+        public static final double chassisRotation_feedForwardDelay = 0.15; // in seconds
         public static final EnhancedPIDController.StaticPIDProfile chassisRotationControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Math.PI * 2,
                 chassisRotation_maximumCorrectionPower,
