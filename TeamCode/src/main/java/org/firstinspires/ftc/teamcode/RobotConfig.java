@@ -141,9 +141,9 @@ public final class RobotConfig {
     public static final class VisualNavigationConfigs {
         public static final FixedAngleCameraProfile visualCameraProfile = new FixedAngleCameraProfile(
                 14,
-                1.1117067,
+                1.16298,
                 -0.003366,
-                -0.0029397,
+                -0.0022232,
                 new double[] {0, 0},
                 new double[] {0,0});
         public static final double visualModuleUpdateRate = 5;

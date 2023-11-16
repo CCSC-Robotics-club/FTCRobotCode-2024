@@ -616,8 +616,8 @@ public class TestMain extends LinearOpMode {
                 telemetry,
                 gamepad1,
                 14,
-                60,
-                20,
+                70,
+                30,
                 4
         );
 
