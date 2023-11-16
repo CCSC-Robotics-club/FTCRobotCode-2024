@@ -17,7 +17,7 @@ public class TeleOpMain extends LinearOpMode {
                 RobotConfig.hardwareConfigs_newer_chassis,
                 gamepad1,
                 gamepad2,
-                false,
+                true,
                 this.side,
                 true
         );

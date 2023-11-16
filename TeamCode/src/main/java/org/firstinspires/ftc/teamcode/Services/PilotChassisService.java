@@ -97,12 +97,11 @@ public class PilotChassisService extends RobotService {
         }
 
         /* visual navigation */
-
         chassis.setLowSpeedModeEnabled(driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton));
         final boolean processVisualApproach = driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported,
                 initiateVisualApproach = driverController.keyOnPressed(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported;
         if (initiateVisualApproach)
-            this.initiateWallApproach();
+            this.initiateWallApproach(); // TODO: not initiated
         if (processVisualApproach)
             this.processVisualNavigationTask();
         else
@@ -119,15 +118,6 @@ public class PilotChassisService extends RobotService {
                 pilotRotationalCommand
         );
 
-//        /* rotation maintenance */
-//        if (Math.abs(pilotRotationalCommand) < RobotConfig.ControlConfigs.pilotController_deadBand)
-//            rotationalTask = new ChassisModule.ChassisRotationalTask(
-//                    ChassisModule.ChassisRotationalTaskType.GO_TO_ROTATION,
-//                    previousRotation
-//            );
-//        else
-//            previousRotation = chassis.getIMUReading();
-
         // TODO make the two buttons in robot config
         if (driverController.keyOnPressed(RobotConfig.XboxControllerKey.LEFT_STICK_BUTTON))
             rotationWhenStickPressed = chassis.getYaw();
@@ -141,6 +131,7 @@ public class PilotChassisService extends RobotService {
                     Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                     0
             );
+
         if (this.visualTaskStatus == VisualTaskStatus.FINISHED || this.visualTaskStatus == VisualTaskStatus.UNUSED)
             chassis.setRotationalTask(rotationalTaskByPilotStick, this);
 

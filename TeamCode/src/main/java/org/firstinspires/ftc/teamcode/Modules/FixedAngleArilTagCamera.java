@@ -236,8 +236,7 @@ public class FixedAngleArilTagCamera extends RobotModule {
                         new Rotation2D(robotRotation)),
                         wallPositionAccordingToCurrentReference = tagRelativeFieldPositionToRobot.addBy(
                                 visibleReferenceTarget.relativePositionToWall.multiplyBy(-1));
-                // debugMessages.put("wall position told by " + visibleReferenceTarget.id, wallPositionAccordingToCurrentReference);
-                debugMessages.put("position of tag " + visibleReferenceTarget.id, tagRelativeFieldPositionToRobot);
+                // debugMessages.put("position of tag " + visibleReferenceTarget.id, tagRelativeFieldPositionToRobot);
                 relativePositionToRobot = relativePositionToRobot.addBy(wallPositionAccordingToCurrentReference);  // take average to positions determined by difference reference target
             }
             return relativePositionToRobot.multiplyBy(1.0f/visibleTargets.size());
@@ -283,7 +282,7 @@ public class FixedAngleArilTagCamera extends RobotModule {
         @Override
         public String toString() {
             if (!isVisible()) return name.name() + " currently not seen";
-            return "wall target " + name.name();
+            return "wall target " + name.name() + ", with relative (robot) position" + getRelativePositionToRobot(0);
         }
     }
 
