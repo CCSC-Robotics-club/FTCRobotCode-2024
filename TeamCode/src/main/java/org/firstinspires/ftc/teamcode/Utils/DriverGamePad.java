@@ -10,12 +10,13 @@ import java.util.Map;
 public class DriverGamePad {
     public final Gamepad rawGamePad;
 
-    public final Map<RobotConfig.XboxControllerKey, Boolean> xBoxControllerKeyOnHoldMap, xBoxControllerKeyOnHoldMapPrevious, xBoxControllerKeyOnPressedMap;
+    public final Map<RobotConfig.XboxControllerKey, Boolean> xBoxControllerKeyOnHoldMap, xBoxControllerKeyOnHoldMapPrevious, xBoxControllerKeyOnPressedMap, xBoxControllerKeyOnReleaseMap;
     public DriverGamePad(Gamepad rawGamePad) {
         this.rawGamePad = rawGamePad;
         this.xBoxControllerKeyOnHoldMap = new HashMap<>(1);
         this.xBoxControllerKeyOnHoldMapPrevious = new HashMap<>(1);
         this.xBoxControllerKeyOnPressedMap = new HashMap<>(1);
+        this.xBoxControllerKeyOnReleaseMap = new HashMap<>(1);
     }
 
     private void updateKeyHoldStatus() { // TODO add on release
@@ -95,6 +96,9 @@ public class DriverGamePad {
             if (xBoxControllerKeyOnHoldMapPrevious.containsKey(key))
                 this.xBoxControllerKeyOnPressedMap.put(key, keyOnHold(key) &&
                         Boolean.FALSE.equals(xBoxControllerKeyOnHoldMapPrevious.get(key))); // a key is on pressed if it is pressed now and not pressed before
+            if (xBoxControllerKeyOnHoldMapPrevious.containsKey(key))
+                this.xBoxControllerKeyOnPressedMap.put(key, !keyOnHold(key) &&
+                        Boolean.TRUE.equals(xBoxControllerKeyOnHoldMapPrevious.get(key))); // a key is on pressed if it is pressed now and not pressed before
 
             xBoxControllerKeyOnHoldMapPrevious.put(key, xBoxControllerKeyOnHoldMap.get(key)); // update previous one
         }
@@ -114,6 +118,12 @@ public class DriverGamePad {
     public boolean keyOnPressed(RobotConfig.XboxControllerKey key) {
         return Boolean.TRUE.equals(
                 this.xBoxControllerKeyOnPressedMap.get(key));
+    }
+
+    public boolean keyOnReleased(RobotConfig.XboxControllerKey key) {
+        return Boolean.TRUE.equals(
+                this.xBoxControllerKeyOnReleaseMap.get(key)
+        );
     }
 
     public double getRotationStickValue() {

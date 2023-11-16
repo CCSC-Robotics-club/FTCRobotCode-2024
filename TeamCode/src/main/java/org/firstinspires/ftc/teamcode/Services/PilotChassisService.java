@@ -99,7 +99,10 @@ public class PilotChassisService extends RobotService {
         /* visual navigation */
         chassis.setLowSpeedModeEnabled(driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton));
         final boolean processVisualApproach = driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported,
-                initiateVisualApproach = driverController.keyOnPressed(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported;
+                initiateVisualApproach = driverController.keyOnPressed(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported,
+                endVisualApproach = driverController.keyOnReleased(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported;
+        if (endVisualApproach && lastAimSucceeded)
+            aimSuccess();
         if (initiateVisualApproach)
             this.initiateWallApproach();
         if (processVisualApproach)
@@ -180,9 +183,11 @@ public class PilotChassisService extends RobotService {
             }
             case TOF_PRECISE_APPROACH: {
                 targetSeen |= chassis.isVisualNavigationAvailable();
-                if (!targetSeen && System.currentTimeMillis() - timeTOFStageInitiated > RobotConfig.VisualNavigationConfigs.maxTimeToWaitForVisualNavigationMS) { // if still no sign of the wall after 500ms
-                    this.lastAimSucceeded = false;
-                    this.visualTaskStatus = VisualTaskStatus.FINISHED; // failed
+                final double distanceSensorReading = distanceSensor.getDistance(DistanceUnit.CM);
+                final boolean noSignOfWall = !targetSeen && System.currentTimeMillis() - timeTOFStageInitiated > RobotConfig.VisualNavigationConfigs.maxTimeToWaitForVisualNavigationMS, // if still no sign of the wall after 500ms
+                        distanceSensorFails = distanceSensorReading > 40 || distanceSensorReading < 4; // TODO make the two values in robot config
+                if (noSignOfWall || distanceSensorFails) {
+                    aimFail();
                     return;
                 }
 
@@ -192,7 +197,7 @@ public class PilotChassisService extends RobotService {
                 final Vector2D newWallPosition = new Vector2D(
                         new double[]{
                                 newWallPositionX,
-                                chassis.getChassisEncoderPosition().getY() + distanceSensor.getDistance(DistanceUnit.CM)
+                                chassis.getChassisEncoderPosition().getY() + distanceSensorReading
                         });
                 if (Vector2D.displacementToTarget(previousWallPosition, newWallPosition).getMagnitude() > RobotConfig.VisualNavigationConfigs.errorTolerance / 2)
                     previousWallPosition = newWallPosition; // only update if outside tolerance
@@ -203,14 +208,11 @@ public class PilotChassisService extends RobotService {
                         Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach)
                 ), null);
-                debugMessages.put("TOF-based encoder target", previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach));
+                debugMessages.put("TOF-based wall pos", previousWallPosition);
                 return;
             }
             case MAINTAIN_AND_AIM: {
-                this.visualTaskStatus = VisualTaskStatus.FINISHED;
-                currentDesiredPosition = chassis.getChassisEncoderPosition();
-                this.lastAimSucceeded = true;
-                return;
+
             }
         }
     }
@@ -234,6 +236,18 @@ public class PilotChassisService extends RobotService {
                 0
         ), this);
         this.visualTaskStatus = VisualTaskStatus.VISUAL_ROUGH_APPROACH;
+        this.lastAimSucceeded = true;
+    }
+
+    private void aimSuccess() {
+        this.visualTaskStatus = VisualTaskStatus.FINISHED;
+        currentDesiredPosition = chassis.getChassisEncoderPosition();
+    }
+
+    private void aimFail() {
+        this.lastAimSucceeded = false;
+        this.visualTaskStatus = VisualTaskStatus.FINISHED;
+        currentDesiredPosition = chassis.getChassisEncoderPosition();
     }
 
     /**

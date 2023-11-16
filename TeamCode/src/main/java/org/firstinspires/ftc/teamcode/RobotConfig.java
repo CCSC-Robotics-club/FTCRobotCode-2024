@@ -111,6 +111,15 @@ public final class RobotConfig {
         public static final int positionEstimator_speedEstimationFrequency = 40;
 
         /* encoder drive-to-position PID */
+//        public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfile = new EnhancedPIDController.StaticPIDProfile(
+//                Double.POSITIVE_INFINITY,
+//                0.95,
+//                0.06,
+//                65,
+//                1,
+//                0.12,
+//                0, 0
+//        );
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 0.95,
@@ -162,7 +171,7 @@ public final class RobotConfig {
          * */
         public static final double errorTolerance = 3;
 
-        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -25});
+        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -28});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -5}); // TODO measure this value
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 100;

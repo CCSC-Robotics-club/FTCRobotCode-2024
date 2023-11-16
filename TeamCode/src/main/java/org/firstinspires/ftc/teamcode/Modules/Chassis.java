@@ -385,7 +385,7 @@ public class Chassis extends RobotModule {
 
     static final double zeroJudge = 0.01;
     public boolean isCurrentTranslationalTaskRoughlyComplete() {
-        return isCurrentTranslationalTaskComplete(ChassisConfigs.errorToleranceAsProgramFinished * 2.5);
+        return isCurrentTranslationalTaskComplete(ChassisConfigs.errorToleranceAsProgramFinished * 3);
     }
     public boolean isCurrentTranslationalTaskComplete() {
         return isCurrentTranslationalTaskComplete(ChassisConfigs.errorToleranceAsProgramFinished);
