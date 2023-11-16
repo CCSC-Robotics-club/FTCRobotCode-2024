@@ -38,7 +38,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        tensorCameraTest();
+        encoderParamsMeasuring();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -423,9 +423,9 @@ public class TestMain extends LinearOpMode {
      * measurement for EncoderBiasPerRadian
      */
     private void encoderParamsMeasuring() {
-        DcMotorEx verticalEncoder1 = hardwareMap.get(DcMotorEx.class, "backRight"); // vertical 1, not reversed
-        DcMotorEx verticalEncoder2 = hardwareMap.get(DcMotorEx.class, "frontLeft"); // vertical 2, reversed
-        DcMotorEx horizontalEncoder = hardwareMap.get(DcMotorEx.class, "frontRight"); // horizontal, reversed
+        DcMotorEx verticalEncoder1 = hardwareMap.get(DcMotorEx.class, "frontRight"); // vertical 1, not reversed
+        DcMotorEx verticalEncoder2 = hardwareMap.get(DcMotorEx.class, "backLeft"); // vertical 2, reversed
+        DcMotorEx horizontalEncoder = hardwareMap.get(DcMotorEx.class, "backRight"); // horizontal, reversed
 
         DcMotor frontLeftMotor = hardwareMap.get(DcMotor.class, "frontLeft"),
                 frontRightMotor = hardwareMap.get(DcMotor.class, "frontRight"),
@@ -441,7 +441,7 @@ public class TestMain extends LinearOpMode {
                 horizontalEncoder,
                 verticalEncoder1,
                 verticalEncoder2,
-                new boolean[] {true, false, true},
+                new boolean[] {false, false, true},
                 frontLeftMotor,
                 frontRightMotor,
                 backLeftMotor,
