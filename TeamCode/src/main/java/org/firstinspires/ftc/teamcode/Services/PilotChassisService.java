@@ -101,7 +101,7 @@ public class PilotChassisService extends RobotService {
         final boolean processVisualApproach = driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported,
                 initiateVisualApproach = driverController.keyOnPressed(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported;
         if (initiateVisualApproach)
-            this.initiateWallApproach(); // TODO: not initiated
+            this.initiateWallApproach();
         if (processVisualApproach)
             this.processVisualNavigationTask();
         else
@@ -208,6 +208,7 @@ public class PilotChassisService extends RobotService {
             }
             case MAINTAIN_AND_AIM: {
                 this.visualTaskStatus = VisualTaskStatus.FINISHED;
+                currentDesiredPosition = chassis.getChassisEncoderPosition();
                 this.lastAimSucceeded = true;
                 return;
             }

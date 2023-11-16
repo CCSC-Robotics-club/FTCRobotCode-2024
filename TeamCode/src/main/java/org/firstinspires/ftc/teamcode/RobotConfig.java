@@ -163,7 +163,7 @@ public final class RobotConfig {
         public static final double errorTolerance = 3;
 
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -25});
-        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -10}); // TODO measure this value
+        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -5}); // TODO measure this value
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 100;
         public static final boolean faceToTargetWhenApproaching = true;
