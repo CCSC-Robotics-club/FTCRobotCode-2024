@@ -38,7 +38,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        conceptServoSync();
+        tensorCameraTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -798,7 +798,7 @@ public class TestMain extends LinearOpMode {
             telemetry.addData("FPS", testCamera.getCameraRefreshRate());
             int id = 0;
             for (RawPixelDetectionCamera.PixelTargetRaw pixelTarget:testCamera.getPixelTargets())
-                telemetry.addData("pixel target" + (++id), pixelTarget);
+                telemetry.addData("pixel target" + (++id), pixelTarget); // nice and working
 
             telemetry.update();
         }
