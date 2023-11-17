@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPosi
 import org.firstinspires.ftc.teamcode.Services.AutoProgramRunner;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
+import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.EnhancedPIDController;
 import org.firstinspires.ftc.teamcode.Utils.HuskyAprilTagCamera;
@@ -38,7 +39,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        tofDistanceSensorTest();
+        gamePadTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -804,5 +805,24 @@ public class TestMain extends LinearOpMode {
         }
 
         testCamera.stopRecognizing();
+    }
+
+    private void gamePadTest() {
+        DriverGamePad gamePad = new DriverGamePad(gamepad1);
+
+        waitForStart();
+
+        int onPressedCount = 0, onReleasedCount = 0;
+        while (!isStopRequested() && opModeIsActive()) {
+            gamePad.update();
+            if (gamePad.keyOnPressed(RobotConfig.XboxControllerKey.A))
+                onPressedCount++;
+            else if (gamePad.keyOnReleased(RobotConfig.XboxControllerKey.A))
+                onReleasedCount++;
+            telemetry.addData("on pressed count", onPressedCount);
+            telemetry.addData("on released count", onReleasedCount);
+
+            telemetry.update();
+        }
     }
 }

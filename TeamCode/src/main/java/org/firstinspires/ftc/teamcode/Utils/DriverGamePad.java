@@ -19,7 +19,7 @@ public class DriverGamePad {
         this.xBoxControllerKeyOnReleaseMap = new HashMap<>(1);
     }
 
-    private void updateKeyHoldStatus() { // TODO add on release
+    private void updateKeyHoldStatus() {
         if (rawGamePad.a)
             xBoxControllerKeyOnHoldMap.put(RobotConfig.XboxControllerKey.A, true);
         else
@@ -94,10 +94,11 @@ public class DriverGamePad {
     private void updateKeyOnPressed() {
         for (RobotConfig.XboxControllerKey key: RobotConfig.XboxControllerKey.values()) {
             if (xBoxControllerKeyOnHoldMapPrevious.containsKey(key))
-                this.xBoxControllerKeyOnPressedMap.put(key, keyOnHold(key) &&
+                this.xBoxControllerKeyOnPressedMap.put(key,
+                        keyOnHold(key) &&
                         Boolean.FALSE.equals(xBoxControllerKeyOnHoldMapPrevious.get(key))); // a key is on pressed if it is pressed now and not pressed before
             if (xBoxControllerKeyOnHoldMapPrevious.containsKey(key))
-                this.xBoxControllerKeyOnPressedMap.put(key, !keyOnHold(key) &&
+                this.xBoxControllerKeyOnReleaseMap.put(key, !keyOnHold(key) &&
                         Boolean.TRUE.equals(xBoxControllerKeyOnHoldMapPrevious.get(key))); // a key is on pressed if it is pressed now and not pressed before
 
             xBoxControllerKeyOnHoldMapPrevious.put(key, xBoxControllerKeyOnHoldMap.get(key)); // update previous one

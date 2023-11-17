@@ -99,10 +99,9 @@ public class PilotChassisService extends RobotService {
         /* visual navigation */
         chassis.setLowSpeedModeEnabled(driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton));
         final boolean processVisualApproach = driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported,
-                initiateVisualApproach = driverController.keyOnPressed(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported,
-                endVisualApproach = driverController.keyOnReleased(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported;
-        if (endVisualApproach && lastAimSucceeded)
-            aimSuccess();
+                initiateVisualApproach = driverController.keyOnPressed(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported;
+        if (driverController.keyOnReleased(RobotConfig.KeyBindings.processVisualApproachButton))
+            this.visualTaskStatus = VisualTaskStatus.FINISHED;
         if (initiateVisualApproach)
             this.initiateWallApproach();
         if (processVisualApproach)
@@ -208,6 +207,8 @@ public class PilotChassisService extends RobotService {
                         Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach)
                 ), null);
+                this.currentDesiredPosition = chassis.getChassisEncoderPosition(); // so the robot does not jump back to the starting point
+
                 debugMessages.put("TOF-based wall pos", previousWallPosition);
                 return;
             }
@@ -237,11 +238,6 @@ public class PilotChassisService extends RobotService {
         ), this);
         this.visualTaskStatus = VisualTaskStatus.VISUAL_ROUGH_APPROACH;
         this.lastAimSucceeded = true;
-    }
-
-    private void aimSuccess() {
-        this.visualTaskStatus = VisualTaskStatus.FINISHED;
-        currentDesiredPosition = chassis.getChassisEncoderPosition();
     }
 
     private void aimFail() {
