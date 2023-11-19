@@ -19,7 +19,7 @@ public class TeleOpMain extends LinearOpMode {
                 gamepad2,
                 true,
                 this.side,
-                true
+                false
         );
 
         robot.initializeRobot();

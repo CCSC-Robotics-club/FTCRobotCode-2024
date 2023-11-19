@@ -49,8 +49,6 @@ public class PilotChassisService extends RobotService {
         this.reset();
     }
 
-    /** whether to use pid chassis speed control */
-    private static final boolean usePIDSpeedControl = true;
     @Override
     public void periodic(double dt) {
         /* <--translation--> */
@@ -184,37 +182,37 @@ public class PilotChassisService extends RobotService {
             case TOF_PRECISE_APPROACH: {
                 targetSeen |= chassis.isVisualNavigationAvailable();
                 final boolean noSignOfWall = !targetSeen && System.currentTimeMillis() - timeTOFStageInitiated > RobotConfig.VisualNavigationConfigs.maxTimeToWaitForVisualNavigationMS; // if still no sign of the wall after 500ms
-                if (noSignOfWall) {
+                if (noSignOfWall ||
+                        (!processTOFPreciseGoToPosition(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach, RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance))) {
                     aimFail();
                     return;
                 }
-                processTOFPreciseGoToPosition(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach, RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance);
                 if (chassis.isCurrentTranslationalTaskComplete()) // if the difference lies with tolerance, and that the chassis reports that current task is finished
                 {
                     this.visualTaskStatus = VisualTaskStatus.MAINTAIN_AND_AIM; // end of this stage
-                    this.desiredPositionToWallXCM = 0;
+                    desiredPositionToWallXCM = 0;
                 }
-                debugMessages.put("TOF-based wall pos", previousWallPosition);
+                // debugMessages.put("TOF-based wall pos", previousWallPosition);
                 return;
             }
             case MAINTAIN_AND_AIM: {
-                this.desiredPositionToWallXCM +=
-                        driverController.getTranslationStickVector().getX() * dt
-                                * RobotConfig.ControlConfigs.visualNavigationAimingSensitivityCMPS; // use translational stick to control the x value
-                /* clamp it so it does not get too big or small */
-                if (desiredPositionToWallXCM > RobotConfig.VisualNavigationConfigs.maximumXBias)
-                    desiredPositionToWallXCM = RobotConfig.VisualNavigationConfigs.maximumXBias;
-                else if (desiredPositionToWallXCM < -RobotConfig.VisualNavigationConfigs.maximumXBias)
-                    desiredPositionToWallXCM = -RobotConfig.VisualNavigationConfigs.maximumXBias;
+                final double pilotXCommand = driverController.getTranslationStickVector().getX()
+                        * RobotConfig.ChassisConfigs.lowSpeedModeMaximumMotorSpeedConstrain;
+                desiredPositionToWallXCM += targetDistanceAtMaxDesiredSpeed * pilotXCommand;
                 processTOFPreciseGoToPosition(
                         RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.addBy(
                                 new Vector2D(new double[] {desiredPositionToWallXCM,0}))
                         , RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance_maintainAndAim
                 );
+                debugMessages.put("received dt", dt);
             }
         }
     }
-    private void processTOFPreciseGoToPosition(Vector2D desiredWallPosition, double distanceSensorMaxDistance) {
+
+    /**
+     * @return whether navigation is trustable
+     * */
+    private boolean processTOFPreciseGoToPosition(Vector2D desiredWallPosition, double distanceSensorMaxDistance) {
         final double distanceSensorReading = distanceSensor.getDistance(DistanceUnit.CM),
                 newWallPositionX = chassis.isVisualNavigationAvailable() ?
                 chassis.getChassisEncoderPosition().getX() - chassis.getRelativeFieldPositionToWall().getX():
@@ -224,20 +222,17 @@ public class PilotChassisService extends RobotService {
                         newWallPositionX,
                         chassis.getChassisEncoderPosition().getY() + distanceSensorReading
                 });
-        if (Vector2D.displacementToTarget(previousWallPosition, newWallPosition).getMagnitude() > RobotConfig.VisualNavigationConfigs.errorTolerance / 2)
-            previousWallPosition = newWallPosition; // only update if outside tolerance
 
         final boolean distanceSensorFails = distanceSensorReading > distanceSensorMaxDistance || distanceSensorReading < RobotConfig.VisualNavigationConfigs.distanceSensorMinDistance;
-        if (distanceSensorFails) {
-            aimFail();
-            return;
-        }
+        if (!distanceSensorFails && Vector2D.displacementToTarget(previousWallPosition, newWallPosition).getMagnitude() > RobotConfig.VisualNavigationConfigs.errorTolerance / 2)
+            previousWallPosition = newWallPosition; // only update if outside tolerance
 
         chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
                 Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                 previousWallPosition.addBy(desiredWallPosition)
         ), null);
         this.currentDesiredPosition = chassis.getChassisEncoderPosition(); // so the robot does not jump back to the starting point
+        return !distanceSensorFails;
     }
 
 

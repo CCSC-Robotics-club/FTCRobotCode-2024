@@ -123,10 +123,10 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 0.95,
-                0.08,
-                45,
+                0.06,
+                35,
                 1,
-                0.14,
+                0.1,
                 0, 0
         );
 
@@ -177,7 +177,6 @@ public final class RobotConfig {
 
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -28});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -5});
-        public static final double maximumXBias = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 100;
         public static final boolean faceToTargetWhenApproaching = true;

@@ -236,8 +236,8 @@ public class Robot {
                 while (programRunningStatusChecker.isProgramActive()) {
                     driverGamePad.update();
                     for (RobotService robotService : robotServices)
-                        robotService.periodic((System.currentTimeMillis() - previousTimeMillis) / 1000.0f);
-                    telemetrySender.periodic((System.currentTimeMillis() - previousTimeMillis) / 1000.0f);
+                        robotService.periodic();
+                    telemetrySender.periodic();
 
                     while (System.currentTimeMillis() - previousTimeMillis + 3 < 1000d / RobotConfig.ControlConfigs.pilotControllerKeyUpdatingRate) {
                         try {
