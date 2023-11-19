@@ -131,7 +131,7 @@ public final class RobotConfig {
         );
 
         /** the maximum chassis speed when using visual navigation */
-        public static final double lowSpeedModeMaximumMotorSpeedConstrain = 0.7;
+        public static final double lowSpeedModeMaximumMotorSpeedConstrain = 0.6;
 
         /** a power constrain to the motors to not push them too hard */
         public static final double ordinaryModeMaximumMotorSpeedConstrain = 1.2;

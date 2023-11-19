@@ -159,7 +159,6 @@ public class PilotChassisService extends RobotService {
     private boolean lastAimSucceeded = true;
 
     private Vector2D previousWallPosition;
-    private double desiredPositionToWallXCM;
     private long timeTOFStageInitiated = -1;
     private boolean targetSeen = false;
     private void processVisualNavigationTask(double dt) {
@@ -190,21 +189,24 @@ public class PilotChassisService extends RobotService {
                 if (chassis.isCurrentTranslationalTaskComplete()) // if the difference lies with tolerance, and that the chassis reports that current task is finished
                 {
                     this.visualTaskStatus = VisualTaskStatus.MAINTAIN_AND_AIM; // end of this stage
-                    desiredPositionToWallXCM = 0;
                 }
-                // debugMessages.put("TOF-based wall pos", previousWallPosition);
                 return;
             }
             case MAINTAIN_AND_AIM: {
+                updateWallPositionTOF(RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance_maintainAndAim);
                 final double pilotXCommand = driverController.getTranslationStickVector().getX()
                         * RobotConfig.ChassisConfigs.lowSpeedModeMaximumMotorSpeedConstrain;
-                desiredPositionToWallXCM += targetDistanceAtMaxDesiredSpeed * pilotXCommand;
-                processTOFPreciseGoToPosition(
-                        RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.addBy(
-                                new Vector2D(new double[] {desiredPositionToWallXCM,0}))
-                        , RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance_maintainAndAim
-                );
+                final Vector2D aimTargetEncoder = new Vector2D(new double[] {
+                        pilotXCommand * targetDistanceAtMaxDesiredSpeed + chassis.getChassisEncoderPosition().getX(),
+                        previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach).getY()
+                });
+                chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+                        aimTargetEncoder), this);
+                chassis.setRotationalTask(new Chassis.ChassisRotationalTask(Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
+                        0), this);
+
                 debugMessages.put("received dt", dt);
+                debugMessages.put("maintain and aim target (enc, field)", aimTargetEncoder);
             }
         }
     }
@@ -213,10 +215,20 @@ public class PilotChassisService extends RobotService {
      * @return whether navigation is trustable
      * */
     private boolean processTOFPreciseGoToPosition(Vector2D desiredWallPosition, double distanceSensorMaxDistance) {
+        boolean distanceSensorFails = updateWallPositionTOF(distanceSensorMaxDistance);
+        chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
+                Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+                previousWallPosition.addBy(desiredWallPosition)
+        ), null);
+        this.currentDesiredPosition = chassis.getChassisEncoderPosition(); // so the robot does not jump back to the starting point
+        return !distanceSensorFails;
+    }
+
+    private boolean updateWallPositionTOF(double distanceSensorMaxDistance) {
         final double distanceSensorReading = distanceSensor.getDistance(DistanceUnit.CM),
                 newWallPositionX = chassis.isVisualNavigationAvailable() ?
-                chassis.getChassisEncoderPosition().getX() - chassis.getRelativeFieldPositionToWall().getX():
-                previousWallPosition.getX();
+                        chassis.getChassisEncoderPosition().getX() - chassis.getRelativeFieldPositionToWall().getX():
+                        previousWallPosition.getX();
         final Vector2D newWallPosition = new Vector2D(
                 new double[]{
                         newWallPositionX,
@@ -226,13 +238,7 @@ public class PilotChassisService extends RobotService {
         final boolean distanceSensorFails = distanceSensorReading > distanceSensorMaxDistance || distanceSensorReading < RobotConfig.VisualNavigationConfigs.distanceSensorMinDistance;
         if (!distanceSensorFails && Vector2D.displacementToTarget(previousWallPosition, newWallPosition).getMagnitude() > RobotConfig.VisualNavigationConfigs.errorTolerance / 2)
             previousWallPosition = newWallPosition; // only update if outside tolerance
-
-        chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
-                Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
-                previousWallPosition.addBy(desiredWallPosition)
-        ), null);
-        this.currentDesiredPosition = chassis.getChassisEncoderPosition(); // so the robot does not jump back to the starting point
-        return !distanceSensorFails;
+        return distanceSensorFails;
     }
 
 
