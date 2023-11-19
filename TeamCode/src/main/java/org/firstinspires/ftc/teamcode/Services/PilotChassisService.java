@@ -194,14 +194,25 @@ public class PilotChassisService extends RobotService {
             }
             case MAINTAIN_AND_AIM: {
                 updateWallPositionTOF(RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance_maintainAndAim);
-                final double pilotXCommand = driverController.getTranslationStickVector().getX()
-                        * RobotConfig.ChassisConfigs.lowSpeedModeMaximumMotorSpeedConstrain;
+                double pilotXCommand = driverController.getTranslationStickVector().getX()
+                        * RobotConfig.ChassisConfigs.lowSpeedModeMaximumMotorSpeedConstrain / 2;
+
+                /* do not go beyond the x-bias limit */
+                final Vector2D relativeEncoderPositionToWall = previousWallPosition.addBy(chassis.getChassisEncoderPosition().multiplyBy(-1));
+                if (pilotXCommand < 0 && relativeEncoderPositionToWall.getX() > RobotConfig.VisualNavigationConfigs.maximumXBiasToWallCenterDuringAimingCM)
+                    pilotXCommand = 0;
+                else if (pilotXCommand > 0 && relativeEncoderPositionToWall.getX() < -RobotConfig.VisualNavigationConfigs.maximumXBiasToWallCenterDuringAimingCM)
+                    pilotXCommand = 0;
+
+                /* send pilot's x command, and the maintain distance y command by tof sensor, to the chassis */
                 final Vector2D aimTargetEncoder = new Vector2D(new double[] {
                         pilotXCommand * targetDistanceAtMaxDesiredSpeed + chassis.getChassisEncoderPosition().getX(),
                         previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach).getY()
                 });
                 chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         aimTargetEncoder), this);
+
+                /* keep on maintaining rotation */
                 chassis.setRotationalTask(new Chassis.ChassisRotationalTask(Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                         0), this);
 
