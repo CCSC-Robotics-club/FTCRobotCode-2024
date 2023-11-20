@@ -111,15 +111,6 @@ public final class RobotConfig {
         public static final int positionEstimator_speedEstimationFrequency = 40;
 
         /* encoder drive-to-position PID */
-//        public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfile = new EnhancedPIDController.StaticPIDProfile(
-//                Double.POSITIVE_INFINITY,
-//                0.95,
-//                0.06,
-//                65,
-//                1,
-//                0.12,
-//                0, 0
-//        );
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 0.95,

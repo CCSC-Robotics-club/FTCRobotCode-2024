@@ -160,12 +160,12 @@ public class Robot {
 
 
         /* <-- intake --> */
-//        final DcMotor intakeMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor1Name),
-//                intakeMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor2Name);
-//        final Intake intake = new Intake(intakeMotor1, intakeMotor2);
-//        final IntakeService intakeService = new IntakeService(intake, driverGamePad, copilotGamePad);
-//        robotModules.add(intake);
-//        robotServices.add(intakeService);
+        final DcMotor intakeMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor1Name),
+                intakeMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor2Name);
+        final Intake intake = new Intake(intakeMotor1, intakeMotor2);
+        final IntakeService intakeService = new IntakeService(intake, driverGamePad, copilotGamePad);
+        robotModules.add(intake);
+        robotServices.add(intakeService);
 
 
         /* <-- start of program --> */
