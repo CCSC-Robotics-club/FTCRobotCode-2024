@@ -3,7 +3,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+      <link rel="stylesheet" href="file:///c:\Users\SamLi\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.8.10\crossnote\dependencies\katex\katex.min.css">
       
       
       
@@ -50,6 +50,30 @@
 </ul>
 <h2 id="程序设计">程序设计 </h2>
 <h3 id="1-从动轮导航系统">1. 从动轮导航系统 </h3>
+<p><img src="encoder%20algorithm.jpg" alt="Alt text"> <em>从动轮导航系统(测试车）</em></p>
+<ul>
+<li>我们使用从动轮来感知机器的运动，计算机器的位置、速度、加速度等。<br>
+每个从动轮上配有编码器，可以读取从动轮转了多少圈，以此推算出从动轮的位移</li>
+<li>但是，从动轮的位移并不一定就是机器的位移，机器的旋转也会让从动轮转动，这就会造成误差。我们的解决方案是：<strong>1. 使用对称、平行排列的竖直从动轮求平均值消除误差。 2.平行从动轮做差得出旋转量，推算出横向从动轮的误差，并从原始数值中减掉</strong></li>
+<li>关键部分代码展示:<br>
+<img src="encoder%20code%20preview.png" alt="Alt text"></li>
+</ul>
+<h3 id="2-pid动态轨迹修正系统">2. PID动态轨迹修正系统 </h3>
+<ul>
+<li>
+<p>有了从动轮提供的导航信息，我们建立了一套兼顾灵活、精准、易用的控制系统。这套系统的核心是动态轨迹纠正系统</p>
+</li>
+<li>
+<p>当驾驶员输入移动命令后，系统首先根据自身IMU获取的方向对驾驶员输入进行变换，使机器的移动方向永远和驾驶员参照系的方向一致，不论机器朝向。这个功能简称“无头模式”</p>
+</li>
+<li></li>
+</ul>
+<h3 id="3-自动瞄准系统">3. 自动瞄准系统 </h3>
+<ul>
+<li></li>
+</ul>
+<h3 id="4-自动程序轨迹编辑器">4. 自动程序轨迹编辑器 </h3>
+<h3 id="5-程序优化">5. 程序优化 </h3>
 
       </div>
       
