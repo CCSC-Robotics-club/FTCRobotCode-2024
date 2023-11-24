@@ -30,32 +30,34 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Robot {
-    private final HardwareMap hardwareMap;
-    private final RobotConfig.HardwareConfigs hardwareConfigs;
-    private final Telemetry telemetry;
-    private final ProgramRunningStatusChecker programRunningStatusChecker;
+public abstract class Robot {
+    protected final HardwareMap hardwareMap;
+    protected final RobotConfig.HardwareConfigs hardwareConfigs;
+    protected final Telemetry telemetry;
+    protected final ProgramRunningStatusChecker programRunningStatusChecker;
 
-    private final boolean visualNavigationSupported, independentEncodersAvailable, useMultiThread;
+    protected final boolean visualNavigationSupported, independentEncodersAvailable, useMultiThread;
 
     private EncoderMotorWheel frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
-    private DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
-    private final List<RobotModule> robotModules = new ArrayList<>(1);
-    private final List<RobotService> robotServices = new ArrayList<>(1);
-    private TelemetrySender telemetrySender;
-    private DriverGamePad driverGamePad;
-    private Gamepad copilotGamePad;
-    private IMU imu, alternativeIMU;
+    protected Chassis chassis;
+    protected Intake intake;
+    protected PositionEstimator positionEstimator;
+    protected FixedAngleArilTagCamera aprilTagCamera;
+    protected DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
+    protected final List<RobotModule> robotModules = new ArrayList<>(1);
+    protected final List<RobotService> robotServices = new ArrayList<>(1);
+    protected TelemetrySender telemetrySender;
+    protected IMU imu, alternativeIMU;
 
     public enum Side {
         RED,
         BLUE
     }
-    private final Side side;
-    public Robot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, Gamepad gamepad1, Gamepad gamepad2, boolean visualNavigationSupported, Side side) {
-        this(hardwareMap, telemetry, checker, hardwareConfigs, gamepad1, gamepad2, visualNavigationSupported, side, false);
+    protected final Side side;
+    public Robot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, boolean visualNavigationSupported, Side side) {
+        this(hardwareMap, telemetry, checker, hardwareConfigs, visualNavigationSupported, side, false);
     }
-    public Robot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, Gamepad gamepad1, Gamepad gamepad2, boolean visualNavigationSupported, Side side, boolean debugModeEnabled) {
+    public Robot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, boolean visualNavigationSupported, Side side, boolean debugModeEnabled) {
         this.side = side;
         this.independentEncodersAvailable = hardwareConfigs.encodersParams != null && hardwareConfigs.encoderNames != null;
 
@@ -66,10 +68,6 @@ public class Robot {
         this.visualNavigationSupported = visualNavigationSupported && independentEncodersAvailable; // visual would not be available without encoders
 
         this.useMultiThread = !debugModeEnabled;
-
-        /* game pad */
-        this.copilotGamePad = gamepad2;
-        driverGamePad = new DriverGamePad(gamepad1);
     }
 
     /**
@@ -126,7 +124,7 @@ public class Robot {
         String[] encoderNames = this.hardwareConfigs.encoderNames == null ?
                 new String[] {"frontLeft", "frontRight", "backLeft"} :
                 this.hardwareConfigs.encoderNames;
-        PositionEstimator positionEstimator = new TripleIndependentEncoderAndIMUPositionEstimator(
+        this.positionEstimator = new TripleIndependentEncoderAndIMUPositionEstimator(
                 hardwareMap.get(DcMotor.class, encoderNames[0]),
                 hardwareMap.get(DcMotor.class, encoderNames[1]),
                 hardwareMap.get(DcMotor.class, encoderNames[2]),
@@ -143,7 +141,6 @@ public class Robot {
         robotModules.add(backLeftWheel);
         robotModules.add(backRightWheel);
 
-        FixedAngleArilTagCamera aprilTagCamera;
         if (visualNavigationSupported) {
             aprilTagCamera = new FixedAngleArilTagCamera(
                     new HuskyAprilTagCamera(hardwareMap.get(HuskyLens.class, "husky")),
@@ -152,17 +149,14 @@ public class Robot {
             robotModules.add(aprilTagCamera);
         } else aprilTagCamera = null;
 
-        Chassis chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, aprilTagCamera, FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL);
+        chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, aprilTagCamera, FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL);
         robotModules.add(chassis);
-
-        PilotChassisService chassisService = new PilotChassisService(chassis, driverGamePad, hardwareMap.get(DistanceSensor.class, "distance"), independentEncodersAvailable, visualNavigationSupported);
-        robotServices.add(chassisService);
 
 
         /* <-- intake --> */
         final DcMotor intakeMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor1Name),
                 intakeMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor2Name);
-        final Intake intake = new Intake(intakeMotor1, intakeMotor2);
+        intake = new Intake(intakeMotor1, intakeMotor2);
         final IntakeService intakeService = new IntakeService(intake, driverGamePad, copilotGamePad);
         robotModules.add(intake);
         robotServices.add(intakeService);
