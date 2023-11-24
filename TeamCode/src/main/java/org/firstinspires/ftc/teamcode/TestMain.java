@@ -39,7 +39,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        intakeAndArmTest();
+        singleEncoderTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
