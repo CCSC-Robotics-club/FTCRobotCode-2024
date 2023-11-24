@@ -10,7 +10,7 @@ public class TeleOpMain extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Robot robot = new Robot(
+        Robot robot = new ManualStageRobot(
                 hardwareMap,
                 telemetry,
                 () -> opModeIsActive() && !isStopRequested(),

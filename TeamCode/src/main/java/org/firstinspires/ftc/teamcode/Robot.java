@@ -35,6 +35,7 @@ public abstract class Robot {
     protected final RobotConfig.HardwareConfigs hardwareConfigs;
     protected final Telemetry telemetry;
     protected final ProgramRunningStatusChecker programRunningStatusChecker;
+    protected DriverGamePad driverGamePad = null;
 
     protected final boolean visualNavigationSupported, independentEncodersAvailable, useMultiThread;
 
@@ -157,9 +158,7 @@ public abstract class Robot {
         final DcMotor intakeMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor1Name),
                 intakeMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor2Name);
         intake = new Intake(intakeMotor1, intakeMotor2);
-        final IntakeService intakeService = new IntakeService(intake, driverGamePad, copilotGamePad);
         robotModules.add(intake);
-        robotServices.add(intakeService);
 
 
         /* <-- start of program --> */
@@ -185,7 +184,7 @@ public abstract class Robot {
         }
 
         long t0 = System.currentTimeMillis();
-        driverGamePad.update();
+        if (driverGamePad != null) driverGamePad.update();
         telemetrySender.putSystemMessage("controller update time(ms)", System.currentTimeMillis() - t0);
 
         t0 = System.currentTimeMillis();
@@ -228,7 +227,7 @@ public abstract class Robot {
             @Override
             public void run() {
                 while (programRunningStatusChecker.isProgramActive()) {
-                    driverGamePad.update();
+                    if (driverGamePad != null) driverGamePad.update();
                     for (RobotService robotService : robotServices)
                         robotService.periodic();
                     telemetrySender.periodic();
