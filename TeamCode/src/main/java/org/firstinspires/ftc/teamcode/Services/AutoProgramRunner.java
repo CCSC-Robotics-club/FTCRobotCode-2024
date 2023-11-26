@@ -6,7 +6,9 @@ import org.firstinspires.ftc.teamcode.Utils.RobotService;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * runs a sequence of command segment
@@ -17,15 +19,14 @@ public class AutoProgramRunner extends RobotService {
     private final List<SequentialCommandSegment> commandSegments;
     private int currentSegment;
     private final Chassis robotChassis;
-    private final Telemetry telemetry;
     private double currentSegmentTime;
     private double currentSegmentChassisPathTimeScale; // slow the time down when smaller than 1 (=1/ETA)
     private boolean segmentEndingComplete;
+    private Map<String, Object> debugMessages = new HashMap<>();
 
-    public AutoProgramRunner(List<SequentialCommandSegment> commandSegments, Chassis chassis, Telemetry telemetry) {
+    public AutoProgramRunner(List<SequentialCommandSegment> commandSegments, Chassis chassis) {
         this.commandSegments = commandSegments;
         this.robotChassis = chassis;
-        this.telemetry = telemetry;
     }
 
     @Override
@@ -35,8 +36,6 @@ public class AutoProgramRunner extends RobotService {
 
     @Override
     public void periodic(double dt) {
-        telemetry.addLine("periodic auto program runner");
-        telemetry.update();
         currentSegmentTime += dt;
 
         final SequentialCommandSegment currentCommandSegment = commandSegments.get(currentSegment);
@@ -46,11 +45,11 @@ public class AutoProgramRunner extends RobotService {
                             Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                             currentCommandSegment.chassisMovementPath.getPositionWithLERP(t)),
                     this);
-        telemetry.addData("time(scaled)", t);
-        telemetry.addData("time(raw)", currentSegmentTime);
-        telemetry.addData("dt(s)", dt);
-        telemetry.addData("ETA",1.0f/currentSegmentChassisPathTimeScale);
-        telemetry.addData("chassis desired position", currentCommandSegment.chassisMovementPath.getPositionWithLERP(t));
+        debugMessages.put("time(scaled)", t);
+        debugMessages.put("time(raw)", currentSegmentTime);
+        debugMessages.put("dt(s)", dt);
+        debugMessages.put("ETA",1.0f/currentSegmentChassisPathTimeScale);
+        debugMessages.put("chassis desired position", currentCommandSegment.chassisMovementPath.getPositionWithLERP(t));
         robotChassis.setRotationalTask(new Chassis.ChassisRotationalTask(
                         Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                         currentCommandSegment.getCurrentRotationWithLERP(t)),
@@ -124,5 +123,10 @@ public class AutoProgramRunner extends RobotService {
                 && robotChassis.isCurrentTranslationalTaskComplete()
                 && robotChassis.isCurrentRotationalTaskComplete()
                 && segmentEndingComplete;
+    }
+
+    @Override
+    public Map<String, Object> getDebugMessages() {
+        return super.getDebugMessages();
     }
 }

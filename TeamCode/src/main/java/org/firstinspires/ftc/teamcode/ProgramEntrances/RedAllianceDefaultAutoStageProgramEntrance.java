@@ -10,17 +10,21 @@ import org.firstinspires.ftc.teamcode.RobotConfig;
 @Autonomous(name = "[Red Alliance] Auto-Default")
 public class RedAllianceDefaultAutoStageProgramEntrance extends LinearOpMode {
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         AutoStageRobot robot = new AutoStageRobot(
                 hardwareMap,
                 telemetry,
                 () -> opModeIsActive() && !isStopRequested(),
                 RobotConfig.hardwareConfigs_2024Competition,
-                true,
-                new RedAllianceAutoStageProgramDefault());
+                new RedAllianceAutoStageProgramDefault(telemetry));
 
         robot.initializeRobot();
+
         waitForStart();
+
         robot.startRobot();
+
+        while (opModeIsActive() && !isStopRequested())
+            robot.updateRobot();
     }
 }

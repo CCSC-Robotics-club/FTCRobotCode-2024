@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.AutoStages;
 
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Utils.AutoStageProgram;
 import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
@@ -11,22 +12,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class RedAllianceAutoStageProgramDefault extends AutoStageProgram {
-    public RedAllianceAutoStageProgramDefault() {
+    public RedAllianceAutoStageProgramDefault(Telemetry telemetry) {
         super(Robot.Side.RED);
 
-        List<SequentialCommandSegment> commandSegments = new ArrayList<>();
-        long t0 = System.currentTimeMillis();
         BezierCurve path = new BezierCurve(
                 new Vector2D(new double[] {0, 0}),
-                new Vector2D(new double[] {0, 50}),
-                new Vector2D(new double[] {150, 100}),
-                new Vector2D(new double[] {200, 100})
+                new Vector2D(new double[] {-15, 0}),
+                new Vector2D(new double[] {-30, 50}),
+                new Vector2D(new double[] {-30, 100})
         );
         commandSegments.add(new SequentialCommandSegment(
                 path,
+                () -> {
+                    telemetry.update();
+                    telemetry.addLine("program started");
+                    telemetry.update();
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                },
                 () -> {},
-                () -> {},
-                () -> {},
+                () -> {
+                    telemetry.update();
+                    telemetry.addLine("program ended");
+                    telemetry.update();
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                },
                 () -> true,
                 0, Math.PI / 2
         ));

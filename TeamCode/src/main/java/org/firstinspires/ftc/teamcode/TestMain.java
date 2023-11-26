@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
+import com.qualcomm.hardware.adafruit.AdafruitBNO055IMUNew;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -9,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.ImuOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -39,7 +43,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        singleEncoderTest();
+        imuTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -400,14 +404,8 @@ public class TestMain extends LinearOpMode {
     }
 
     private void imuTest() {
-        IMU imu = hardwareMap.get(IMU.class, "alternativeIMU");
-        imu.initialize(
-                new IMU.Parameters(
-                        new RevHubOrientationOnRobot( // expansion hub
-                                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                                RevHubOrientationOnRobot.UsbFacingDirection.UP
-                        )
-                ));
+        AdafruitBNO055IMUNew imu = hardwareMap.get(AdafruitBNO055IMUNew.class, "testIMU");
+        imu.initialize();
 
         waitForStart();
         imu.resetYaw();
@@ -708,7 +706,7 @@ public class TestMain extends LinearOpMode {
                 () -> true,
                 0, Math.PI / 2
         ));
-        AutoProgramRunner autoProgramRunner = new AutoProgramRunner(commandSegments, chassis, telemetry);
+        AutoProgramRunner autoProgramRunner = new AutoProgramRunner(commandSegments, chassis);
 
         waitForStart();
         t0 = System.currentTimeMillis();
