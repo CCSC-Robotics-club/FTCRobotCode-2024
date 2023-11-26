@@ -6,8 +6,8 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.TeleOpMain;
 
 @TeleOp(name = "[Red Alliance] Remote-Control")
-public class RedAllianceProgramEntrance extends TeleOpMain {
-    public RedAllianceProgramEntrance() {
+public class RedAllianceManualStageProgramEntrance extends TeleOpMain {
+    public RedAllianceManualStageProgramEntrance() {
         super(Robot.Side.RED);
     }
 }

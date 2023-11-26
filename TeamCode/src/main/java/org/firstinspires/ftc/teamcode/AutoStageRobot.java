@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 public class AutoStageRobot extends Robot {
     private final AutoStageProgram autoStageProgram;
     public AutoStageRobot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, boolean visualNavigationSupported, AutoStageProgram autoStageProgram) {
-        super(hardwareMap, telemetry, checker, hardwareConfigs, visualNavigationSupported, autoStageProgram.allianceSide, false);
+        super(hardwareMap, telemetry, checker, hardwareConfigs, visualNavigationSupported, autoStageProgram.allianceSide, true);
         this.autoStageProgram = autoStageProgram;
     }
 
