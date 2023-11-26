@@ -69,12 +69,7 @@ public abstract class Robot {
         this.visualNavigationSupported = visualNavigationSupported && independentEncodersAvailable; // visual would not be available without encoders
 
         this.useMultiThread = !debugModeEnabled;
-    }
 
-    /**
-     * initializes the robot
-     */
-    public void initializeRobot() {
         /* <-- chassis --> */
         this.frontLeftMotor = hardwareMap.get(DcMotorEx.class, "frontLeft");
         this.frontRightMotor = hardwareMap.get(DcMotorEx.class, "frontRight");
@@ -159,8 +154,12 @@ public abstract class Robot {
 //                intakeMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor2Name);
 //        intake = new Intake(intakeMotor1, intakeMotor2);
 //        robotModules.add(intake);
+    }
 
-
+    /**
+     * initializes the robot
+     */
+    public void initializeRobot() {
         /* <-- start of program --> */
         initModulesAndService();
 

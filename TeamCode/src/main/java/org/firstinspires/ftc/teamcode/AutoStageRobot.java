@@ -15,14 +15,9 @@ public class AutoStageRobot extends Robot {
     public AutoStageRobot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, AutoStageProgram autoStageProgram) {
         super(hardwareMap, telemetry, checker, hardwareConfigs, true, autoStageProgram.allianceSide, true);
         this.autoStageProgram = autoStageProgram;
-    }
 
-    @Override
-    public void initializeRobot() {
         final AutoProgramRunner autoProgramRunnerService = new AutoProgramRunner(autoStageProgram.commandSegments, super.chassis);
         robotServices.add(autoProgramRunnerService);
-
-        super.initializeRobot();
     }
 
     public Chassis getChassisModule() {
