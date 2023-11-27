@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Services;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
@@ -9,6 +8,8 @@ import org.firstinspires.ftc.teamcode.Utils.Vector2D;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.firstinspires.ftc.teamcode.RobotConfig.ChassisConfigs;
 
 /**
  * runs a sequence of command segment
@@ -100,33 +101,32 @@ public class AutoProgramRunner extends RobotService {
         if (commandSegments.get(segmentID).chassisMovementPath != null) robotChassis.gainOwnerShip(this);
     }
     private double getTimeScaleWithMaximumVelocityAndAcceleration() {
-        /* TODO gain from Robot config */
-        final double maxVelAllowed = 500; // cm/s
-        final double maxAccAllowed = 500; // cm*s^-2
-        final double maxAngularVelAllowed = Math.PI * 2;
-
         final double maxVel = this.commandSegments.get(currentSegment).chassisMovementPath.maximumSpeed;
         final double maxAcc = this.commandSegments.get(currentSegment).chassisMovementPath.maximumAcceleration;
         final double maxAngularVel = this.commandSegments.get(currentSegment).maxAngularVelocity;
 
-        return Math.min(Math.min(maxAccAllowed / maxAcc, maxVelAllowed / maxVel), maxAngularVelAllowed / maxAngularVel);
+        return Math.min(Math.min(ChassisConfigs.autoStageMaxAcceleration / maxAcc, ChassisConfigs.autoStageMaxVelocity/ maxVel), ChassisConfigs.autoStageMaxAngularVelocity / maxAngularVel);
     }
 
     public boolean isAutoStageComplete() {
-        return this.commandSegments.size() - this.currentSegment == 1 && this.isCurrentSegmentComplete();
+        return this.commandSegments.size() - this.currentSegment == 1
+                && this.isCurrentSegmentComplete()
+                && robotChassis.isCurrentTranslationalTaskComplete()
+                && robotChassis.isCurrentRotationalTaskComplete();
     }
 
     public boolean isCurrentSegmentComplete() {
         SequentialCommandSegment currentSegment = this.commandSegments.get(this.currentSegment);
         return currentSegmentTime >= (1.0f/currentSegmentChassisPathTimeScale)
                 && currentSegment.isCompleteChecker.isComplete()
-                && robotChassis.isCurrentTranslationalTaskComplete()
-                && robotChassis.isCurrentRotationalTaskComplete()
                 && segmentEndingComplete;
     }
 
     @Override
     public Map<String, Object> getDebugMessages() {
-        return super.getDebugMessages();
+        Map<String, Object> debugMessages = new HashMap<>(1);
+        debugMessages.put("segment id", currentSegment);
+        debugMessages.put("is auto complete", isAutoStageComplete());
+        return debugMessages;
     }
 }
