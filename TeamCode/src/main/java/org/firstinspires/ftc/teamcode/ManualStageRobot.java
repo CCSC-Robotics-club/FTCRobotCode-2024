@@ -21,11 +21,12 @@ public class ManualStageRobot extends Robot {
 
     @Override
     public void initializeRobot() {
-        super.initializeRobot();
+
         PilotChassisService chassisService = new PilotChassisService(chassis, driverGamePad, hardwareMap.get(DistanceSensor.class, "distance"), independentEncodersAvailable, visualNavigationSupported);
         super.robotServices.add(chassisService);
 
-        final IntakeService intakeService = new IntakeService(intake, driverGamePad, copilotGamepad);
-        super.robotServices.add(intakeService);
+//        final IntakeService intakeService = new IntakeService(intake, driverGamePad, copilotGamepad);
+//        super.robotServices.add(intakeService);
+        super.initializeRobot();
     }
 }

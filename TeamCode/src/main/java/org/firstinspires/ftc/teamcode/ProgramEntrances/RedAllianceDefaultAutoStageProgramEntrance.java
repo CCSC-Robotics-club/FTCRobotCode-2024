@@ -15,7 +15,7 @@ public class RedAllianceDefaultAutoStageProgramEntrance extends LinearOpMode {
                 hardwareMap,
                 telemetry,
                 () -> opModeIsActive() && !isStopRequested(),
-                RobotConfig.hardwareConfigs_2024Competition,
+                RobotConfig.hardwareConfigs_newer_chassis,
                 new RedAllianceAutoStageProgramDefault(telemetry));
 
         robot.initializeRobot();

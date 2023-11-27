@@ -4,8 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 public class TeleOpMain extends LinearOpMode {
     private final Robot.Side side;
-    public TeleOpMain(Robot.Side side) {
+    private final boolean enableDebugMode;
+    public TeleOpMain(Robot.Side side, boolean enableDebugMode) {
         this.side = side;
+        this.enableDebugMode = enableDebugMode;
     }
 
     @Override
@@ -14,12 +16,12 @@ public class TeleOpMain extends LinearOpMode {
                 hardwareMap,
                 telemetry,
                 () -> opModeIsActive() && !isStopRequested(),
-                RobotConfig.hardwareConfigs_2024Competition,
+                RobotConfig.hardwareConfigs_newer_chassis,
                 gamepad1,
                 gamepad2,
                 false,
                 this.side,
-                false
+                enableDebugMode
         );
 
         robot.initializeRobot();
