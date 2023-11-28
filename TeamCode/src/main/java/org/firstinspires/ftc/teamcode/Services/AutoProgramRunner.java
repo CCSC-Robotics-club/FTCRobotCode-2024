@@ -16,13 +16,13 @@ import static org.firstinspires.ftc.teamcode.RobotConfig.ChassisConfigs;
  * the auto stage of our robot is basically running the modules in this service, simulating a pilot's commands
  */
 public class AutoProgramRunner extends RobotService {
-    private static final int autoStageRunnerUpdateRate = 20;
     private final List<SequentialCommandSegment> commandSegments;
     private int currentSegment;
     private final Chassis robotChassis;
     private double currentSegmentTime;
     private double currentSegmentChassisPathTimeScale; // slow the time down when smaller than 1 (=1/ETA)
-    private final  Map<String, Object> debugMessages = new HashMap<>();
+    private final Map<String, Object> debugMessages = new HashMap<>();
+    private boolean errorOccured = false;
 
     public AutoProgramRunner(List<SequentialCommandSegment> commandSegments, Chassis chassis) {
         this.commandSegments = commandSegments;
@@ -83,18 +83,25 @@ public class AutoProgramRunner extends RobotService {
 
         if (commandSegments.size() - currentSegment == 1)
             return;
+        initiateSegment(currentSegment);
+        if (commandSegments.get(currentSegment).chassisMovementPath == null) return;
         double distanceBetweenCurrentEndToNextStart = Vector2D.displacementToTarget(
                 commandSegments.get(currentSegment).chassisMovementPath.getPositionWithLERP(1),
                 commandSegments.get(++currentSegment).chassisMovementPath.getPositionWithLERP(0))
                 .getMagnitude();
-        if (distanceBetweenCurrentEndToNextStart > 5) // TODO do this when initialization
+        if (distanceBetweenCurrentEndToNextStart > 5) // TODO check it when initialization
             throw new IllegalArgumentException("current segment (id:" + currentSegment + ")'s starting point does match the ending point of the last segment with deviation " + distanceBetweenCurrentEndToNextStart);
-        initiateSegment(currentSegment);
+
     }
     private void initiateSegment(int segmentID) {
         this.currentSegmentTime = 0;
         this.currentSegmentChassisPathTimeScale = getTimeScaleWithMaximumVelocityAndAcceleration();
-        this.commandSegments.get(segmentID).beginning.run();
+        try {
+            this.commandSegments.get(segmentID).beginning.run();
+        } catch (Exception e) {
+            errorOccured = true;
+        }
+
         if (commandSegments.get(segmentID).chassisMovementPath != null) robotChassis.gainOwnerShip(this);
     }
     private double getTimeScaleWithMaximumVelocityAndAcceleration() {
@@ -106,6 +113,7 @@ public class AutoProgramRunner extends RobotService {
     }
 
     public boolean isAutoStageComplete() {
+        if (errorOccured) return true;
         return this.commandSegments.size() - this.currentSegment == 1
                 && this.isCurrentSegmentComplete()
                 && robotChassis.isCurrentTranslationalTaskComplete()

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -12,12 +13,23 @@ import org.firstinspires.ftc.teamcode.Utils.ProgramRunningStatusChecker;
 
 public class AutoStageRobot extends Robot {
     private final AutoStageProgram autoStageProgram;
+    final AutoProgramRunner autoProgramRunnerService;
     public AutoStageRobot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, AutoStageProgram autoStageProgram) {
         super(hardwareMap, telemetry, checker, hardwareConfigs, true, autoStageProgram.allianceSide, true);
+        if (hardwareConfigs.encodersParams == null || hardwareConfigs.encoderNames == null)
+            throw new IllegalStateException("auto stage cannot proceed without encoders");
+        autoStageProgram.scheduleCommands(chassis, hardwareMap.get(DistanceSensor.class, "distance"));
         this.autoStageProgram = autoStageProgram;
 
-        final AutoProgramRunner autoProgramRunnerService = new AutoProgramRunner(autoStageProgram.commandSegments, super.chassis);
+        this.autoProgramRunnerService = new AutoProgramRunner(autoStageProgram.commandSegments, super.chassis);
         robotServices.add(autoProgramRunnerService);
+    }
+
+    @Override
+    public void updateRobot() {
+        super.updateRobot();
+        if (autoProgramRunnerService.isAutoStageComplete())
+            super.stopRobot();
     }
 
     public Chassis getChassisModule() {
