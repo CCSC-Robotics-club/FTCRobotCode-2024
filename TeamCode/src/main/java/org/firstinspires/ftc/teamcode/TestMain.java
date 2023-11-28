@@ -45,7 +45,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        conceptServoSync();
+        pixelCameraVerticalParamMeasuring();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -825,7 +825,13 @@ public class TestMain extends LinearOpMode {
     private void pixelCameraVerticalParamMeasuring() {
         TensorCamera testCamera = new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
         testCamera.startRecognizing();
-        FixedAngleCameraProfile.measureCameraVerticalParams(testCamera, telemetry, gamepad1, 20, 40, 10);
+        FixedAngleCameraProfile.measureCameraVerticalParams(testCamera, telemetry, gamepad1, 20, 28, 8);
+        /*
+        * result:
+        * camera radian per pixel:  -0.00202195
+        * camera installation angle radian: 0.663858
+        * r^2: 0.976
+        * */
     }
 
     private void pixelCameraHorizontalParamMeasuring() {
