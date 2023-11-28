@@ -137,8 +137,8 @@ public final class RobotConfig {
         /** within how many times the error tolerance of PID should the translational task be counted as complete */
         public static final double errorToleranceAsProgramFinished = 3;
 
-        public static final double autoStageMaxVelocity = 150;
-        public static final double autoStageMaxAcceleration = 300;
+        public static final double autoStageMaxVelocity = 300;
+        public static final double autoStageMaxAcceleration = 350;
         public static final double autoStageMaxAngularVelocity = Math.PI * 1.4;
     }
 

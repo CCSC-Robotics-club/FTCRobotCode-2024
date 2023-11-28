@@ -17,7 +17,7 @@ public final class RedAllianceAutoStageProgramDefault extends AutoStageProgram {
 
         BezierCurve path = new BezierCurve(
                 new Vector2D(new double[] {0, 0}),
-                new Vector2D(new double[] {22, 5}),
+                new Vector2D(new double[] {25, 5}),
                 new Vector2D(new double[] {15, 20}),
                 new Vector2D(new double[] {15, 60})
         );

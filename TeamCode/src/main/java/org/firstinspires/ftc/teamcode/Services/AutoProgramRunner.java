@@ -22,8 +22,7 @@ public class AutoProgramRunner extends RobotService {
     private final Chassis robotChassis;
     private double currentSegmentTime;
     private double currentSegmentChassisPathTimeScale; // slow the time down when smaller than 1 (=1/ETA)
-    private boolean segmentEndingComplete;
-    private Map<String, Object> debugMessages = new HashMap<>();
+    private final  Map<String, Object> debugMessages = new HashMap<>();
 
     public AutoProgramRunner(List<SequentialCommandSegment> commandSegments, Chassis chassis) {
         this.commandSegments = commandSegments;
@@ -75,7 +74,6 @@ public class AutoProgramRunner extends RobotService {
 
     private void nextSegment() {
         this.commandSegments.get(currentSegment).ending.run();
-        this.segmentEndingComplete = true;
         robotChassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
                 Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY,
                 new Vector2D()), this);
@@ -89,13 +87,12 @@ public class AutoProgramRunner extends RobotService {
                 commandSegments.get(currentSegment).chassisMovementPath.getPositionWithLERP(1),
                 commandSegments.get(++currentSegment).chassisMovementPath.getPositionWithLERP(0))
                 .getMagnitude();
-        if (distanceBetweenCurrentEndToNextStart > 5)
+        if (distanceBetweenCurrentEndToNextStart > 5) // TODO do this when initialization
             throw new IllegalArgumentException("current segment (id:" + currentSegment + ")'s starting point does match the ending point of the last segment with deviation " + distanceBetweenCurrentEndToNextStart);
         initiateSegment(currentSegment);
     }
     private void initiateSegment(int segmentID) {
         this.currentSegmentTime = 0;
-        this.segmentEndingComplete = false;
         this.currentSegmentChassisPathTimeScale = getTimeScaleWithMaximumVelocityAndAcceleration();
         this.commandSegments.get(segmentID).beginning.run();
         if (commandSegments.get(segmentID).chassisMovementPath != null) robotChassis.gainOwnerShip(this);
@@ -117,14 +114,15 @@ public class AutoProgramRunner extends RobotService {
 
     public boolean isCurrentSegmentComplete() {
         SequentialCommandSegment currentSegment = this.commandSegments.get(this.currentSegment);
-        return currentSegmentTime >= (1.0f/currentSegmentChassisPathTimeScale)
-                && currentSegment.isCompleteChecker.isComplete()
-                && segmentEndingComplete;
+        final double ETA = (1.0f/currentSegmentChassisPathTimeScale);
+        debugMessages.put("currentSegmentTime >= ETA", currentSegmentTime >= ETA);
+        debugMessages.put(" currentSegment.isCompleteChecker.isComplete()",  currentSegment.isCompleteChecker.isComplete());
+        return currentSegmentTime >= ETA
+                && currentSegment.isCompleteChecker.isComplete();
     }
 
     @Override
     public Map<String, Object> getDebugMessages() {
-        Map<String, Object> debugMessages = new HashMap<>(1);
         debugMessages.put("segment id", currentSegment);
         debugMessages.put("is auto complete", isAutoStageComplete());
         return debugMessages;
