@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.os.ParcelUuid;
+
 import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.hardware.adafruit.AdafruitBNO055IMUNew;
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -43,7 +45,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        imuTest();
+       fourWheelSpeedTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -194,6 +196,22 @@ public class TestMain extends LinearOpMode {
             if (gamepad1.y)
                 port3.setPower(0.5);
             else port3.setPower(0);
+        }
+    }
+
+    public void motorsMatch() {
+        DcMotorEx mot0 = hardwareMap.get(DcMotorEx.class, "mot0");
+        DcMotorEx mot1 = hardwareMap.get(DcMotorEx.class, "mot1");
+        DcMotorEx mot2 = hardwareMap.get(DcMotorEx.class, "mot2");
+        DcMotorEx mot3 = hardwareMap.get(DcMotorEx.class, "mot3");
+
+        waitForStart();
+
+        while (!isStopRequested() && opModeIsActive()) {
+            mot0.setPower(gamepad1.a ? 0.5:0);
+            mot1.setPower(gamepad1.b ? 0.5:0);
+            mot2.setPower(gamepad1.x ? 0.5:0);
+            mot3.setPower(gamepad1.y ? 0.5:0);
         }
     }
 

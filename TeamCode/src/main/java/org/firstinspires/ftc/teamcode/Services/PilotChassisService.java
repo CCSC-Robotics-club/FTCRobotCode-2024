@@ -42,7 +42,7 @@ public class PilotChassisService extends RobotService {
         this.driverController = driverController;
         this.distanceSensor = distanceSensor;
         this.independentEncodersAvailable = independentEncodersAvailable;
-        this.visualNavigationSupported = visualNavigationSupported;
+        this.visualNavigationSupported = visualNavigationSupported && independentEncodersAvailable && distanceSensor != null;
     }
     @Override
     public void init() {

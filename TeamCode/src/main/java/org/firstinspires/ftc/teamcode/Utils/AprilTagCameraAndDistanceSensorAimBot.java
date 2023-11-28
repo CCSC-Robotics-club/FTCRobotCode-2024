@@ -39,11 +39,15 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         while (!chassis.isVisualNavigationAvailable() && System.currentTimeMillis() - t0 < RobotConfig.VisualNavigationConfigs.maxTimeToWaitForVisualNavigationMS) {
             chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker);
             chassis.periodic();
+            chassis.forceUpdateCamera(modulesCommanderMarker);
+            chassis.forceUpdateEncoders(modulesCommanderMarker);
+            chassis.forceUpdateWheels(modulesCommanderMarker);
             try { Thread.sleep(50); } catch (InterruptedException ignored) {}
+            // throw new IllegalStateException("waiting for target");
         }
+        if (!chassis.isVisualNavigationAvailable()) throw new IllegalStateException("don't see the wall after " + RobotConfig.VisualNavigationConfigs.maxTimeToWaitForVisualNavigationMS + "ms");
         final double distanceSensorReading = distanceSensor.getDistance(DistanceUnit.CM);
         if (distanceSensorReading > RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance) throw new IllegalStateException("target too far");
-        if (!chassis.isVisualNavigationAvailable()) throw new IllegalStateException("don't see the wall after " + RobotConfig.VisualNavigationConfigs.maxTimeToWaitForVisualNavigationMS + "ms");
         resetAimBot();
         updateWallPositionTOF();
     }

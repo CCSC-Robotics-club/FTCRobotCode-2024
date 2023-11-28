@@ -1,20 +1,48 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.EnhancedPIDController;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
 
+import java.net.PortUnreachableException;
+
 public final class RobotConfig {
+    public static final HardwareConfigs hardwareConfigs_2024Competition_backup = new HardwareConfigs( // backup machine
+            new IMU.Parameters(
+                    new RevHubOrientationOnRobot(
+                            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                            RevHubOrientationOnRobot.UsbFacingDirection.UP
+                    )
+            ),
+//            new IMU.Parameters(
+//                    new RevHubOrientationOnRobot(
+//                            RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+//                            RevHubOrientationOnRobot.UsbFacingDirection.UP
+//                    )
+//            ),
+            null,
+            new TripleIndependentEncoderAndIMUPositionEstimator.TripleIndependentEncoderAndIMUSystemParams(
+                    true,
+                    false,
+                    true, // not known yet
+                    135.812,
+                    0.378
+            ),
+            new String[] {"backLeft", "frontRight", "backRight"},
+            true,
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false
+    );
     public static final HardwareConfigs hardwareConfigs_2024Competition = new HardwareConfigs( // new robot for competition
 //            new IMU.Parameters(
 //                    new RevHubOrientationOnRobot(
@@ -76,7 +104,8 @@ public final class RobotConfig {
 
     public static final class IntakeConfigs {
         public static final String intakeMotor1Name = "intake1", intakeMotor2Name = "intake2";
-        public static final double intakeMotor1Power = -0.75, intakeMotor2Power = 0.75;
+        // public static final double intakeMotor1Power = -0.75, intakeMotor2Power = 0.75; // competition machine
+        public static final double intakeMotor1Power = -0.85, intakeMotor2Power = -0.85; // backup machine
     }
 
     public static final class ChassisConfigs {
@@ -135,7 +164,9 @@ public final class RobotConfig {
         public static final double timeToStartDecelerate = 0.32;
 
         /** within how many times the error tolerance of PID should the translational task be counted as complete */
-        public static final double errorToleranceAsProgramFinished = 3;
+        public static final double errorToleranceAsTaskFinished = 3;
+
+        public static final double errorToleranceAsTaskRoughlyFinished = 15;
 
         public static final double autoStageMaxVelocity = 300;
         public static final double autoStageMaxAcceleration = 350;
@@ -178,7 +209,7 @@ public final class RobotConfig {
         public static final double visualApproachSpeed = 100;
         public static final boolean faceToTargetWhenApproaching = true;
 
-        public static final long maxTimeToWaitForVisualNavigationMS = 500; // after this much milliseconds, if the target still does not occur, the navigation will be considered failed
+        public static final long maxTimeToWaitForVisualNavigationMS = 800; // after this much milliseconds, if the target still does not occur, the navigation will be considered failed
     }
 
     public static final class ControlConfigs {

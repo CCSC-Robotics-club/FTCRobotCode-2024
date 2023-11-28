@@ -71,6 +71,8 @@ public class Chassis extends RobotModule {
             calculatedTranslationalSpeed = calculatedTranslationalSpeed.multiplyBy(
                     new Rotation2D(getYaw()).getReversal());
 
+        debugMessages.put("calculated chassis speed", calculatedTranslationalSpeed);
+        debugMessages.put("chassis dt", dt);
         driveMecanumWheels(calculatedTranslationalSpeed, calculatedRotationalSpeed);
     }
 
@@ -237,6 +239,15 @@ public class Chassis extends RobotModule {
         positionEstimator.forceUpdate();
     }
 
+    public void forceUpdateWheels(ModulesCommanderMarker operator) {
+        if (!isOwner(operator))
+            return;
+        frontLeftWheel.periodic();
+        frontRightWheel.periodic();
+        backLeftWheel.periodic();
+        backRightWheel.periodic();
+    }
+
     private void updateVisualTargetAndEncoderReference() {
         if (!isVisualNavigationAvailable()) throw new IllegalStateException("attempt to update visual target when no visual navigation reference tag available");
         final Vector2D wallRelativeFieldPositionToRobotWhenLastSeen = aprilTagCamera.getWallInFront().getRelativePositionToRobot(getYaw()),
@@ -385,10 +396,10 @@ public class Chassis extends RobotModule {
 
     static final double zeroJudge = 0.01;
     public boolean isCurrentTranslationalTaskRoughlyComplete() {
-        return isCurrentTranslationalTaskComplete(ChassisConfigs.errorToleranceAsProgramFinished * 3);
+        return isCurrentTranslationalTaskComplete(ChassisConfigs.errorToleranceAsTaskRoughlyFinished);
     }
     public boolean isCurrentTranslationalTaskComplete() {
-        return isCurrentTranslationalTaskComplete(ChassisConfigs.errorToleranceAsProgramFinished);
+        return isCurrentTranslationalTaskComplete(ChassisConfigs.errorToleranceAsTaskFinished);
     }
     private boolean isCurrentTranslationalTaskComplete(double errorToleranceAsProgramFinished) {
         switch (translationalTask.taskType) {
@@ -410,7 +421,7 @@ public class Chassis extends RobotModule {
                 return Math.abs(rotationalTask.rotationalValue) < zeroJudge;
             case GO_TO_ROTATION:
                 return Math.abs(AngleUtils.getActualDifference(positionEstimator.getRotation(), rotationalTask.rotationalValue))
-                        < ChassisConfigs.errorToleranceAsProgramFinished * 2 * ChassisConfigs.chassisRotationControllerProfile.getErrorTolerance();
+                        < ChassisConfigs.errorToleranceAsTaskFinished * 2 * ChassisConfigs.chassisRotationControllerProfile.getErrorTolerance();
             default:
                 throw new IllegalArgumentException("unknown rotational task" + rotationalTask.taskType.name());
         }

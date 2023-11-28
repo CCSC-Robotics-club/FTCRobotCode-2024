@@ -32,7 +32,7 @@ public class RedAllianceAutoStageProgramDefault extends AutoStageProgram {
                 new Vector2D(new double[] {0, 0}),
                 new Vector2D(new double[] {25, 5}),
                 new Vector2D(new double[] {15, 20}),
-                new Vector2D(new double[] {15, 60})
+                new Vector2D(new double[] {15, 100})
         );
         commandSegments.add(new SequentialCommandSegment(
                 path,
@@ -44,10 +44,10 @@ public class RedAllianceAutoStageProgramDefault extends AutoStageProgram {
         ));
 
         path = new BezierCurve(
-                new Vector2D(new double[] {15, 60}),
-                new Vector2D(new double[] {10, 90}),
+                new Vector2D(new double[] {15, 100}),
+                new Vector2D(new double[] {15, 110}),
                 new Vector2D(new double[] {50, 200}),
-                new Vector2D(new double[] {75, 210})
+                new Vector2D(new double[] {75, 215})
         );
         commandSegments.add(new SequentialCommandSegment(
                 path,

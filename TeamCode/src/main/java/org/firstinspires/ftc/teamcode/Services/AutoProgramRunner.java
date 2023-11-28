@@ -22,7 +22,7 @@ public class AutoProgramRunner extends RobotService {
     private double currentSegmentTime;
     private double currentSegmentChassisPathTimeScale; // slow the time down when smaller than 1 (=1/ETA)
     private final Map<String, Object> debugMessages = new HashMap<>();
-    private boolean errorOccured = false;
+    private boolean errorOccurred = false;
 
     public AutoProgramRunner(List<SequentialCommandSegment> commandSegments, Chassis chassis) {
         this.commandSegments = commandSegments;
@@ -31,6 +31,17 @@ public class AutoProgramRunner extends RobotService {
 
     @Override
     public void init() {
+        /* check if there is any jump in the starting and ending point */
+        for (int currentSegment = 0; currentSegment < commandSegments.size()-1; currentSegment++) {
+            if (commandSegments.get(currentSegment).chassisMovementPath == null || commandSegments.get(currentSegment+1).chassisMovementPath == null)
+                continue;
+            final double distanceBetweenCurrentEndToNextStart = Vector2D.displacementToTarget(
+                            commandSegments.get(currentSegment).chassisMovementPath.getPositionWithLERP(1),
+                            commandSegments.get(currentSegment+1).chassisMovementPath.getPositionWithLERP(0))
+                    .getMagnitude();
+            if (distanceBetweenCurrentEndToNextStart > 10)
+                throw new IllegalArgumentException("current segment (id:" + currentSegment + ")'s starting point does match the ending point of the last segment with deviation " + distanceBetweenCurrentEndToNextStart);
+        }
         this.reset();
     }
 
@@ -49,7 +60,7 @@ public class AutoProgramRunner extends RobotService {
         debugMessages.put("time(raw)", currentSegmentTime);
         debugMessages.put("dt(s)", dt);
         debugMessages.put("ETA",1.0f/currentSegmentChassisPathTimeScale);
-        debugMessages.put("chassis desired position", currentCommandSegment.chassisMovementPath.getPositionWithLERP(t));
+        if (currentCommandSegment.chassisMovementPath!=null) debugMessages.put("chassis desired position", currentCommandSegment.chassisMovementPath.getPositionWithLERP(t));
         robotChassis.setRotationalTask(new Chassis.ChassisRotationalTask(
                         Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                         currentCommandSegment.getCurrentRotationWithLERP(t)),
@@ -74,35 +85,19 @@ public class AutoProgramRunner extends RobotService {
 
     private void nextSegment() {
         this.commandSegments.get(currentSegment).ending.run();
-        robotChassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
-                Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY,
-                new Vector2D()), this);
-        robotChassis.setRotationalTask(new Chassis.ChassisRotationalTask(
-                Chassis.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED,
-                0), this);
 
-        if (commandSegments.size() - currentSegment == 1)
+        if (currentSegment+1 >= commandSegments.size())
             return;
-        initiateSegment(currentSegment);
-        if (commandSegments.get(currentSegment).chassisMovementPath == null) return;
-        double distanceBetweenCurrentEndToNextStart = Vector2D.displacementToTarget(
-                commandSegments.get(currentSegment).chassisMovementPath.getPositionWithLERP(1),
-                commandSegments.get(++currentSegment).chassisMovementPath.getPositionWithLERP(0))
-                .getMagnitude();
-        if (distanceBetweenCurrentEndToNextStart > 5) // TODO check it when initialization
-            throw new IllegalArgumentException("current segment (id:" + currentSegment + ")'s starting point does match the ending point of the last segment with deviation " + distanceBetweenCurrentEndToNextStart);
-
+        initiateSegment(++currentSegment);
     }
+
     private void initiateSegment(int segmentID) {
         this.currentSegmentTime = 0;
-        this.currentSegmentChassisPathTimeScale = getTimeScaleWithMaximumVelocityAndAcceleration();
-        try {
-            this.commandSegments.get(segmentID).beginning.run();
-        } catch (Exception e) {
-            errorOccured = true;
-        }
+        this.commandSegments.get(segmentID).beginning.run();
 
-        if (commandSegments.get(segmentID).chassisMovementPath != null) robotChassis.gainOwnerShip(this);
+        if (commandSegments.get(segmentID).chassisMovementPath == null) return;
+        robotChassis.gainOwnerShip(this);
+        this.currentSegmentChassisPathTimeScale = getTimeScaleWithMaximumVelocityAndAcceleration();
     }
     private double getTimeScaleWithMaximumVelocityAndAcceleration() {
         final double maxVel = this.commandSegments.get(currentSegment).chassisMovementPath.maximumSpeed;
@@ -113,20 +108,18 @@ public class AutoProgramRunner extends RobotService {
     }
 
     public boolean isAutoStageComplete() {
-        if (errorOccured) return true;
+        if (errorOccurred) return true;
         return this.commandSegments.size() - this.currentSegment == 1
-                && this.isCurrentSegmentComplete()
-                && robotChassis.isCurrentTranslationalTaskComplete()
-                && robotChassis.isCurrentRotationalTaskComplete();
+                && this.isCurrentSegmentComplete();
     }
 
     public boolean isCurrentSegmentComplete() {
         SequentialCommandSegment currentSegment = this.commandSegments.get(this.currentSegment);
         final double ETA = (1.0f/currentSegmentChassisPathTimeScale);
-        debugMessages.put("currentSegmentTime >= ETA", currentSegmentTime >= ETA);
-        debugMessages.put(" currentSegment.isCompleteChecker.isComplete()",  currentSegment.isCompleteChecker.isComplete());
         return currentSegmentTime >= ETA
                 && currentSegment.isCompleteChecker.isComplete();
+//                && robotChassis.isCurrentTranslationalTaskRoughlyComplete()
+//                && robotChassis.isCurrentRotationalTaskComplete();
     }
 
     @Override
