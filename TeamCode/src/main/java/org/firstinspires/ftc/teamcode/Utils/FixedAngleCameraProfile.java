@@ -189,7 +189,26 @@ public final class FixedAngleCameraProfile {
             double maxDistanceToCenter,
             int targetID
     ) {
+        measureCameraHorizontalParams(SimpleTargetTrackingCamera.fromAprilTagCamera(cameraToTest, targetID), telemetry, gamepad, distancesToTarget, maxDistanceToCenter);
+    }
 
+    /**
+     * measures the profile of the camera
+     *
+     * @param cameraToTest        the pixel camera to test
+     * @param telemetry           the port to send messages to the control hub
+     * @param gamepad             the game pad to send commands
+     * @param distancesToTarget
+     * @param maxDistanceToCenter
+     */
+    public static void measureCameraHorizontalParams(
+            RawPixelDetectionCamera cameraToTest,
+            Telemetry telemetry,
+            Gamepad gamepad,
+            double[] distancesToTarget,
+            double maxDistanceToCenter
+    ) {
+        measureCameraHorizontalParams(SimpleTargetTrackingCamera.fromPixelCamera(cameraToTest), telemetry, gamepad, distancesToTarget, maxDistanceToCenter);
     }
 
     public static void measureCameraHorizontalParams(SimpleTargetTrackingCamera cameraToTest, Telemetry telemetry, Gamepad gamepad, double[] distancesToTarget, double maxDistanceToCenter) {

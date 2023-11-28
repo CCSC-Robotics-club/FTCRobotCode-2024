@@ -45,7 +45,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        tensorCameraTest();
+        conceptServoSync();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -779,7 +779,6 @@ public class TestMain extends LinearOpMode {
 
     private void conceptServoSync() {
         // moving two parallel and adjacent servos together
-
         final Servo servo1 = hardwareMap.get(Servo.class, "servo1"), servo2 = hardwareMap.get(Servo.class, "servo2");
         final boolean servo1Reversed = false, servo2Reversed = true;
 
@@ -832,7 +831,7 @@ public class TestMain extends LinearOpMode {
     private void pixelCameraHorizontalParamMeasuring() {
         TensorCamera testCamera = new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
         testCamera.startRecognizing();
-        // FixedAngleCameraProfile.measureCameraHorizontalParams(); // TODO finish this
+         FixedAngleCameraProfile.measureCameraHorizontalParams(testCamera, telemetry, gamepad1, new double[] {10, 20, 30}, 15);
     }
 
     private void gamePadTest() {
