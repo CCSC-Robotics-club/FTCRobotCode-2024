@@ -164,9 +164,9 @@ public final class RobotConfig {
         public static final double timeToStartDecelerate = 0.32;
 
         /** within how many times the error tolerance of PID should the translational task be counted as complete */
-        public static final double errorToleranceAsTaskFinished = 3;
+        public static final double errorToleranceAsTaskFinished = 1.5;
 
-        public static final double errorToleranceAsTaskRoughlyFinished = 15;
+        public static final double errorToleranceAsTaskRoughlyFinished = 8;
 
         public static final double autoStageMaxVelocity = 300;
         public static final double autoStageMaxAcceleration = 350;

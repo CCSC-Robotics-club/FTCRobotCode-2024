@@ -25,7 +25,7 @@ public class AutoStageRobot extends Robot {
 
     @Override
     public void initializeRobot() {
-        autoStageProgram.scheduleCommands(chassis, hardwareMap.get(DistanceSensor.class, "distance"), super.aprilTagCamera, autoProgramRunnerService);
+        autoStageProgram.scheduleCommands(chassis, hardwareMap.get(DistanceSensor.class, "distance"), super.aprilTagCamera, autoProgramRunnerService, telemetrySender);
 
         robotServices.add(autoProgramRunnerService);
         super.initializeRobot();

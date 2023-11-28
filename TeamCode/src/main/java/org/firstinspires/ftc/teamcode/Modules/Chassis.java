@@ -71,8 +71,6 @@ public class Chassis extends RobotModule {
             calculatedTranslationalSpeed = calculatedTranslationalSpeed.multiplyBy(
                     new Rotation2D(getYaw()).getReversal());
 
-        debugMessages.put("calculated chassis speed", calculatedTranslationalSpeed);
-        debugMessages.put("chassis dt", dt);
         driveMecanumWheels(calculatedTranslationalSpeed, calculatedRotationalSpeed);
     }
 
@@ -525,6 +523,8 @@ public class Chassis extends RobotModule {
 //        debugMessages.put("speed control", this.wheelSpeedControlEnabled);
 //        debugMessages.put("imu yaw", getYaw());
 //        debugMessages.put("imu yaw vel", getYawVelocity());
+        debugMessages.put("current translational task type", translationalTask.taskType.name());
+        debugMessages.put("current translational task value", translationalTask.translationalValue);
         debugMessages.put("chassis update freq", super.getUpdateCountPerSecond());
         return debugMessages;
     }

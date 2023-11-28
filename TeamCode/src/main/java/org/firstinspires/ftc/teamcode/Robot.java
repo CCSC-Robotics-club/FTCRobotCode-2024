@@ -70,6 +70,8 @@ public abstract class Robot {
 
         this.useMultiThread = !debugModeEnabled;
 
+        telemetrySender = new TelemetrySender(telemetry);
+
         /* <-- chassis --> */
         this.frontLeftMotor = hardwareMap.get(DcMotorEx.class, "frontLeft");
         this.frontRightMotor = hardwareMap.get(DcMotorEx.class, "frontRight");
@@ -207,7 +209,6 @@ public abstract class Robot {
     }
 
     private void initModulesAndService() {
-        telemetrySender = new TelemetrySender(telemetry);
         telemetrySender.init();
         for (RobotModule robotModule:robotModules) {
             robotModule.init();

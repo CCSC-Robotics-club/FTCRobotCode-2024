@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,5 +19,5 @@ public abstract class AutoStageProgram {
         allianceSide = side;
     }
 
-    public abstract void scheduleCommands(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera angleArilTagCamera, ModulesCommanderMarker commanderMarker);
+    public abstract void scheduleCommands(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera angleArilTagCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender);
 }

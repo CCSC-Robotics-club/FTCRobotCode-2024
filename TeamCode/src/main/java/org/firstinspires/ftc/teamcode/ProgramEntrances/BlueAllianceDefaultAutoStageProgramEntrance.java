@@ -4,11 +4,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.AutoStageRobot;
-import org.firstinspires.ftc.teamcode.AutoStages.RedAllianceAutoStageProgramDefault;
+import org.firstinspires.ftc.teamcode.AutoStages.BlueAllianceAutoStageProgramDefault;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 
-@Autonomous(name = "[Red Alliance] Auto-Default")
-public class RedAllianceDefaultAutoStageProgramEntrance extends LinearOpMode {
+@Autonomous(name = "[Blue Alliance] Auto-Default")
+public class BlueAllianceDefaultAutoStageProgramEntrance extends LinearOpMode {
     @Override
     public void runOpMode() {
         AutoStageRobot robot = new AutoStageRobot(
@@ -16,7 +16,7 @@ public class RedAllianceDefaultAutoStageProgramEntrance extends LinearOpMode {
                 telemetry,
                 () -> opModeIsActive() && !isStopRequested(),
                 RobotConfig.hardwareConfigs_newer_chassis,
-                new RedAllianceAutoStageProgramDefault(telemetry));
+                new BlueAllianceAutoStageProgramDefault(telemetry));
 
         robot.initializeRobot();
 
