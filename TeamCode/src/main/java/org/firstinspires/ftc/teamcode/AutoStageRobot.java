@@ -18,11 +18,17 @@ public class AutoStageRobot extends Robot {
         super(hardwareMap, telemetry, checker, hardwareConfigs, true, autoStageProgram.allianceSide, true);
         if (hardwareConfigs.encodersParams == null || hardwareConfigs.encoderNames == null)
             throw new IllegalStateException("auto stage cannot proceed without encoders");
-        autoStageProgram.scheduleCommands(chassis, hardwareMap.get(DistanceSensor.class, "distance"));
-        this.autoStageProgram = autoStageProgram;
 
+        this.autoStageProgram = autoStageProgram;
         this.autoProgramRunnerService = new AutoProgramRunner(autoStageProgram.commandSegments, super.chassis);
+    }
+
+    @Override
+    public void initializeRobot() {
+        autoStageProgram.scheduleCommands(chassis, hardwareMap.get(DistanceSensor.class, "distance"), super.aprilTagCamera, autoProgramRunnerService);
+
         robotServices.add(autoProgramRunnerService);
+        super.initializeRobot();
     }
 
     @Override

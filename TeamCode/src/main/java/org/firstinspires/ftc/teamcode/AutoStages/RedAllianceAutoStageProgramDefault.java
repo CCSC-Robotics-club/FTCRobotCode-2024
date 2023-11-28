@@ -5,9 +5,12 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
+import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Utils.AprilTagCameraAndDistanceSensorAimBot;
 import org.firstinspires.ftc.teamcode.Utils.AutoStageProgram;
 import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
+import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
@@ -23,7 +26,8 @@ public class RedAllianceAutoStageProgramDefault extends AutoStageProgram {
         this.telemetry = telemetry;
     }
 
-    public void scheduleCommands(Chassis chassis, DistanceSensor distanceSensor) {
+    public void scheduleCommands(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, ModulesCommanderMarker commanderMarker) {
+        AprilTagCameraAndDistanceSensorAimBot aimBot = new AprilTagCameraAndDistanceSensorAimBot(chassis, distanceSensor, aprilTagCamera, commanderMarker);
         BezierCurve path = new BezierCurve(
                 new Vector2D(new double[] {0, 0}),
                 new Vector2D(new double[] {25, 5}),
@@ -54,15 +58,6 @@ public class RedAllianceAutoStageProgramDefault extends AutoStageProgram {
                 0, 0
         ));
 
-        commandSegments.add(new SequentialCommandSegment(
-                null,
-                () -> {
-
-                },
-                () -> {},
-                () -> {},
-                () -> true,
-                0, 0
-        ));
+        commandSegments.add(aimBot.createCommandSegment(new Vector2D(new double[] {0, -6})));
     }
 }

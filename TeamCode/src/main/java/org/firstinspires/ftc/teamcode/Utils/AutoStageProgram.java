@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Utils;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
+import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Robot;
 
 import java.util.ArrayList;
@@ -17,5 +18,5 @@ public abstract class AutoStageProgram {
         allianceSide = side;
     }
 
-    public abstract void scheduleCommands(Chassis chassis, DistanceSensor distanceSensor);
+    public abstract void scheduleCommands(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera angleArilTagCamera, ModulesCommanderMarker commanderMarker);
 }

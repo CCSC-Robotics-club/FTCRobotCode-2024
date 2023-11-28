@@ -145,7 +145,8 @@ public abstract class Robot {
             robotModules.add(aprilTagCamera);
         } else aprilTagCamera = null;
 
-        chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, aprilTagCamera, FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL);
+        chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, aprilTagCamera,
+                this.side == Side.RED ? FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL : FixedAngleArilTagCamera.WallTarget.Name.BLUE_ALLIANCE_WALL);
         robotModules.add(chassis);
 
 
