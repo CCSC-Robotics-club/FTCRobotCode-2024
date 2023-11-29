@@ -47,7 +47,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        intakeAndArmTest();
+        armTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -370,41 +370,23 @@ public class TestMain extends LinearOpMode {
     }
 
     private void armTest() {
-        DcMotor motor1 = hardwareMap.get(DcMotor.class, "backRight");
+        DcMotor armMotor = hardwareMap.get(DcMotor.class, "arm");
 
-        EnhancedPIDController armController = new EnhancedPIDController(
-                new EnhancedPIDController.StaticPIDProfile(
-                        Double.POSITIVE_INFINITY,
-                        0.75,
-                        0.14,
-                        Math.toRadians(18),
-                        Math.toRadians(1),
-                        0,
-                        0,
-                        0
-                )
-        );
         waitForStart();
-        final double encoderValuePerRadian = -26000 / (Math.PI*20);
-        double previousTimeMillis = System.currentTimeMillis();
-        int encoderZeroPosition = 0;
+
+        final double powerRate = 0.75;
+        final int startingPos = armMotor.getCurrentPosition();
         while (!isStopRequested() && opModeIsActive()) {
-            if (gamepad1.a) {
-                armController.startNewTask(new EnhancedPIDController.Task(EnhancedPIDController.Task.TaskType.GO_TO_POSITION, Math.toRadians(40)));
-                double correctionPower = armController.getMotorPower((motor1.getCurrentPosition()-encoderZeroPosition) / encoderValuePerRadian, (System.currentTimeMillis() - previousTimeMillis) / 1000.0f);
-                telemetry.addData("correction power", correctionPower);
-                motor1.setPower(correctionPower);
-            } else if (gamepad1.b) {
-                encoderZeroPosition = motor1.getCurrentPosition();
-            } else {
-                motor1.setPower(0);
-            }
-            telemetry.addData("encoder reading:", Math.toDegrees((motor1.getCurrentPosition() - encoderZeroPosition) / encoderValuePerRadian));
-            telemetry.addData("raw:", motor1.getCurrentPosition());
+            double power = gamepad1.left_stick_y * powerRate;
+            if (Math.abs(power) < 0.05)
+                power = 0;
+
+            armMotor.setPower(power);
+
+            telemetry.addData("arm encoder reading", armMotor.getCurrentPosition() - startingPos);
             telemetry.update();
-            previousTimeMillis = System.currentTimeMillis();
+            sleep(50);
         }
-        motor1.setPower(0);
     }
 
     private void singleEncoderTest() {
