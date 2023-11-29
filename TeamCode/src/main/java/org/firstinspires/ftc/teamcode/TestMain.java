@@ -41,14 +41,13 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        armTest();
+        clawTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
     TelemetrySender telemetrySender;
     private Chassis getChassisModuleWithDefaultConfig() {
         FixedAngleArilTagCamera camera = getHuskyWithDefaultConfig();
-
 
         /* hardware */
         DcMotorEx frontLeftMotor = hardwareMap.get(DcMotorEx.class, "frontLeft");
@@ -108,7 +107,7 @@ public class TestMain extends LinearOpMode {
                 hardwareMap.get(DcMotor.class, "frontRight"),
                 hardwareMap.get(DcMotor.class, "backLeft"),
                 imu,
-                RobotConfig.testConfig.encodersParams
+                RobotConfig.hardwareConfigs_2024Competition_backup.encodersParams
         );
         positionEstimator.init();
         robotModules.add(positionEstimator);
@@ -322,10 +321,10 @@ public class TestMain extends LinearOpMode {
     }
 
     private void servoTest() {
-        Servo servo1 = hardwareMap.get(Servo.class, "servo1");
-        Servo servo2 = hardwareMap.get(Servo.class, "servo2");
+        Servo servo1 = hardwareMap.get(Servo.class, "claw1");
+        Servo servo2 = hardwareMap.get(Servo.class, "claw2");
 
-        servo2.setDirection(Servo.Direction.REVERSE);
+        servo1.setDirection(Servo.Direction.REVERSE);
 
         waitForStart();
 
@@ -344,6 +343,27 @@ public class TestMain extends LinearOpMode {
             telemetry.addData("servo angle", servoAngle);
             telemetry.update();
             previousTime = System.currentTimeMillis();
+        }
+    }
+
+    private void clawTest() {
+        final Servo claw1 = hardwareMap.get(Servo.class, "claw1"),
+                claw2 = hardwareMap.get(Servo.class, "claw2");
+
+        claw1.setDirection(Servo.Direction.REVERSE);
+
+        waitForStart();
+        final double openValue = 0.6,
+                closeValue = 0.85;
+        double currentValue = closeValue;
+        while (!isStopRequested() && opModeIsActive()) {
+            if (gamepad1.left_bumper)
+                currentValue = openValue;
+            else if (gamepad1.right_bumper)
+                currentValue = closeValue;
+
+            claw1.setPosition(currentValue);
+            claw2.setPosition(currentValue);
         }
     }
 
@@ -885,7 +905,7 @@ public class TestMain extends LinearOpMode {
                 chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), null);
 
             updateRobot();
-            
+
             sleep(20);
         }
     }
