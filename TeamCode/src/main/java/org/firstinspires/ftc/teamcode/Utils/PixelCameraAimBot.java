@@ -30,12 +30,11 @@ public class PixelCameraAimBot {
 
     private static final Vector2D feedingSweetSpot = new Vector2D(new double[] {0, -10}); // the robot's position to the pixel
 
-    public PixelCameraAimBot(Chassis chassis, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender, Vector2D previousPixelPosition) {
+    public PixelCameraAimBot(Chassis chassis, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
         this.chassis = chassis;
         this.pixelCamera = pixelCamera;
         this.commanderMarker = commanderMarker;
         this.telemetrySender = telemetrySender;
-        this.previousPixelPosition = previousPixelPosition;
 
         status = Status.UNUSED;
     }

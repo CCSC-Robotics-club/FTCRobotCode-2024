@@ -1,12 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.os.ParcelUuid;
-
-import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.hardware.adafruit.AdafruitBNO055IMUNew;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -14,7 +9,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.ImuOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -29,10 +23,10 @@ import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPosi
 import org.firstinspires.ftc.teamcode.Services.AutoProgramRunner;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
-import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.EnhancedPIDController;
 import org.firstinspires.ftc.teamcode.Utils.HuskyAprilTagCamera;
+import org.firstinspires.ftc.teamcode.Utils.PixelCameraAimBot;
 import org.firstinspires.ftc.teamcode.Utils.RawPixelDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
@@ -163,7 +157,21 @@ public class TestMain extends LinearOpMode {
         return new FixedAngleArilTagCamera(new HuskyAprilTagCamera(hardwareMap.get(HuskyLens.class, "husky")), RobotConfig.VisualNavigationConfigs.visualCameraProfile);
     }
 
-    private void updateRobotModules() {
+    private FixedAnglePixelCamera getPixelCameraWithDefaultConfig() {
+        TensorCamera tensorCamera = new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+        return new FixedAnglePixelCamera(
+                tensorCamera,
+                new FixedAngleCameraProfile(
+                        20,
+                        0.663858,
+                        -0.0025,
+                        -0.00202195,
+                        new double[2], new double[2]
+                )
+        );
+    }
+
+    private void updateRobot() {
         for (RobotModule robotModule : robotModules)
             robotModule.periodic();
         telemetrySender.periodic();
@@ -521,7 +529,7 @@ public class TestMain extends LinearOpMode {
 
         chassis.setWheelSpeedControlEnabled(false, null);
         while (!isStopRequested() && opModeIsActive()) {
-            updateRobotModules();
+            updateRobot();
 
             if (gamepad1.left_bumper)
                 chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
@@ -565,7 +573,7 @@ public class TestMain extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive()) {
             chassis.gainOwnerShip(null);
             chassis.setRotationalTask(new Chassis.ChassisRotationalTask(Chassis.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED, 0), null);
-            updateRobotModules();
+            updateRobot();
             switch (statusCode) {
                 case 0: {
                     chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()),null);
@@ -677,7 +685,7 @@ public class TestMain extends LinearOpMode {
                     null
             );
 
-            updateRobotModules();
+            updateRobot();
         }
     }
 
@@ -718,7 +726,7 @@ public class TestMain extends LinearOpMode {
 
         while (opModeIsActive() && !isStopRequested()) {
             autoProgramRunner.periodic();
-            updateRobotModules();
+            updateRobot();
             if (autoProgramRunner.isCurrentSegmentComplete())
                 break;
         }
@@ -828,17 +836,8 @@ public class TestMain extends LinearOpMode {
     }
 
     private void fixedAnglePixelDetectionCameraTest() {
-        TensorCamera tensorCamera = new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
-        FixedAnglePixelCamera pixelCamera = new FixedAnglePixelCamera(
-                tensorCamera,
-                new FixedAngleCameraProfile(
-                        20,
-                        0.663858,
-                        -0.0025,
-                        -0.00202195,
-                        new double[2], new double[2]
-                )
-        );
+        TensorCamera tensorCamera = hardwareMap.get(TensorCamera.class, "Webcam 1");
+        FixedAnglePixelCamera pixelCamera = getPixelCameraWithDefaultConfig();
 
         pixelCamera.init();
         waitForStart();
@@ -865,6 +864,29 @@ public class TestMain extends LinearOpMode {
             telemetry.update();
 
             sleep(50);
+        }
+    }
+
+    private void driveToPixelAimBotTest() {
+        Chassis chassis = getChassisModuleWithDefaultConfig();
+        FixedAnglePixelCamera pixelCamera = getPixelCameraWithDefaultConfig();
+        PixelCameraAimBot aimBot = new PixelCameraAimBot(chassis, pixelCamera, null, telemetrySender);
+
+        waitForStart();
+
+        while (!isStopRequested() && opModeIsActive()) {
+            if (gamepad1.a)
+                aimBot.initiateAim(PixelCameraAimBot.AimMethod.FACE_TO_AND_FEED);
+            else if (gamepad1.b)
+                aimBot.initiateAim(PixelCameraAimBot.AimMethod.LINE_UP_AND_FEED);
+            if (gamepad1.left_bumper)
+                aimBot.update();
+            else
+                chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), null);
+
+            updateRobot();
+            
+            sleep(20);
         }
     }
 }
