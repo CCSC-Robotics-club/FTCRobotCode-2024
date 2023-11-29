@@ -37,7 +37,6 @@ public class FixedAnglePixelCamera extends RobotModule {
      * @return the position, in vector and in cm, null for unseen
      * */
     public Vector2D getNearestPixelPosition() {
-        super.periodic();
         Vector2D pixelPosition = new Vector2D(Math.PI/2, RobotConfig.VisualNavigationConfigs.pixelDetectionMaximumDistance);
         for (RawPixelDetectionCamera.PixelTargetRaw targetRaw:targetsRaw) {
             Vector2D pixelPositionNew = calculatePosition(targetRaw.x, targetRaw.y);

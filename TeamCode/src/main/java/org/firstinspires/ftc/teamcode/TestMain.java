@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.ImuOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -46,7 +47,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        fixedAnglePixelDetectionCameraTest();
+        intakeAndArmTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -872,22 +873,16 @@ public class TestMain extends LinearOpMode {
         }
     }
 
-    private void gamePadTest() {
-        DriverGamePad gamePad = new DriverGamePad(gamepad1);
+    private void limitSwitchTest() {
+        TouchSensor limitSwitch = hardwareMap.get(TouchSensor.class, "limit");
 
         waitForStart();
 
-        int onPressedCount = 0, onReleasedCount = 0;
         while (!isStopRequested() && opModeIsActive()) {
-            gamePad.update();
-            if (gamePad.keyOnPressed(RobotConfig.XboxControllerKey.A))
-                onPressedCount++;
-            else if (gamePad.keyOnReleased(RobotConfig.XboxControllerKey.A))
-                onReleasedCount++;
-            telemetry.addData("on pressed count", onPressedCount);
-            telemetry.addData("on released count", onReleasedCount);
-
+            telemetry.addData("limit switch status", limitSwitch.isPressed());
             telemetry.update();
+
+            sleep(50);
         }
     }
 }
