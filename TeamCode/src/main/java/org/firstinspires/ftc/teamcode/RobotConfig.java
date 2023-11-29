@@ -159,7 +159,7 @@ public final class RobotConfig {
         public static final double xPowerRate = 1.05,
                 yPowerRate = 1;
         /** the distance to set the position target, when pilot sends a command of full speed  */
-        public static final double targetDistanceAtMaxDesiredSpeed = 150;
+        public static final double targetDistanceAtMaxDesiredSpeed = 120;
         /** the smooth-out time, or the time after the pilot let the chassis stop till it start maintaining its current position */
         public static final double timeToStartDecelerate = 0.32;
 
@@ -174,13 +174,21 @@ public final class RobotConfig {
     }
 
     public static final class VisualNavigationConfigs {
+//        public static final FixedAngleCameraProfile visualCameraProfile = new FixedAngleCameraProfile( // newer chassis (prototype)
+//                14,
+//                1.16298,
+//                -0.003366,
+//                -0.0022232,
+//                new double[] {0, 0},
+//                new double[] {0,0});
+
+        // 2024 competition chassis
         public static final FixedAngleCameraProfile visualCameraProfile = new FixedAngleCameraProfile(
-                14,
-                1.16298,
-                -0.003366,
-                -0.0022232,
-                new double[] {0, 0},
-                new double[] {0,0});
+                22,
+                0.8427148,
+                -0.00314,
+                -0.00315,
+                new double[2], new double[2]);
         public static final double visualModuleUpdateRate = 5;
         public static final long timeKeepTrackingAfterTagLostMillis = (long) 10e9;
         /**

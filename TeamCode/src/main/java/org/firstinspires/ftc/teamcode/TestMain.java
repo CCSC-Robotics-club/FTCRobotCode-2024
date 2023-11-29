@@ -41,7 +41,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        fixedAngleAprilTagCameraVerticalParameterMeasuring();
+        fixedAngleAprilTagCameraHorizontalParameterMeasuring();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -644,9 +644,9 @@ public class TestMain extends LinearOpMode {
                 new HuskyAprilTagCamera(hardwareMap.get(HuskyLens.class, "husky")),
                 telemetry,
                 gamepad1,
-                14,
-                70,
-                30,
+                22,
+                60,
+                20,
                 4
         );
 
@@ -664,13 +664,12 @@ public class TestMain extends LinearOpMode {
                 new HuskyAprilTagCamera(hardwareMap.get(HuskyLens.class, "husky")),
                 telemetry,
                 gamepad1,
-                new double[]{40, 50, 60},
-                20,
+                new double[]{30, 40, 50},
+                15,
                 4
         );
 
-        // results:
-        final double cameraAngleRadianPerPixel = -0.003366;
+        // result: -0.00314, r^2 = 0.9903
     }
 
     private void encoderDriveToPositionTest() {
