@@ -24,8 +24,8 @@ public class ManualStageRobot extends Robot {
         PilotChassisService chassisService = new PilotChassisService(chassis, driverGamePad, visualNavigationSupported ? hardwareMap.get(DistanceSensor.class, "distance") : null, independentEncodersAvailable, visualNavigationSupported);
         super.robotServices.add(chassisService);
 
-//        final IntakeService intakeService = new IntakeService(intake, driverGamePad, copilotGamepad);
-//        super.robotServices.add(intakeService);
+        final IntakeService intakeService = new IntakeService(intake, driverGamePad, copilotGamepad);
+        super.robotServices.add(intakeService);
 
         super.initializeRobot();
     }

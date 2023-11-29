@@ -153,10 +153,10 @@ public abstract class Robot {
 
 
         /* <-- intake --> */
-//        final DcMotor intakeMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor1Name),
-//                intakeMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor2Name);
-//        intake = new Intake(intakeMotor1, intakeMotor2);
-//        robotModules.add(intake);
+        final DcMotor intakeMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor1Name),
+                intakeMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor2Name);
+        intake = new Intake(intakeMotor1, intakeMotor2);
+        robotModules.add(intake);
     }
 
     /**
