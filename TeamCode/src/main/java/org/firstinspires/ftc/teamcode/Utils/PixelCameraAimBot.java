@@ -40,7 +40,14 @@ public class PixelCameraAimBot {
     }
 
     public SequentialCommandSegment createAimingCommandSegment(AimMethod aimMethod) {
-        return null; // TODO write this
+        return new SequentialCommandSegment(
+                null,
+                () -> initiateAim(aimMethod),
+                this::update,
+                () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), commanderMarker),
+                () -> status==Status.UNUSED,
+                chassis.getYaw(), chassis.getYaw()
+        );
     }
 
     /**
