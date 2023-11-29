@@ -41,7 +41,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        armTest();
+        pixelCameraHorizontalParamMeasuring();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -162,9 +162,9 @@ public class TestMain extends LinearOpMode {
                 tensorCamera,
                 new FixedAngleCameraProfile(
                         20,
-                        0.663858,
-                        -0.0025,
-                        -0.00202195,
+                        0.70376,
+                        0.002541,
+                        -0.001717,
                         new double[2], new double[2]
                 )
         );
@@ -836,7 +836,7 @@ public class TestMain extends LinearOpMode {
     private void pixelCameraVerticalParamMeasuring() {
         TensorCamera testCamera = new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
         testCamera.startRecognizing();
-        FixedAngleCameraProfile.measureCameraVerticalParams(testCamera, telemetry, gamepad1, 20, 28, 8);
+        FixedAngleCameraProfile.measureCameraVerticalParams(testCamera, telemetry, gamepad1, 20, 34, 14);
         /*
         * result:
         * camera radian per pixel:  -0.00202195
@@ -848,9 +848,9 @@ public class TestMain extends LinearOpMode {
     private void pixelCameraHorizontalParamMeasuring() {
         TensorCamera testCamera = new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
         testCamera.startRecognizing();
-         FixedAngleCameraProfile.measureCameraHorizontalParams(testCamera, telemetry, gamepad1, new double[] {10, 20, 30}, 15);
+         FixedAngleCameraProfile.measureCameraHorizontalParams(testCamera, telemetry, gamepad1, new double[] {15, 20, 25}, 15);
          /*
-         * result: camera radian per pixel 0.003
+         * result: camera radian per pixel 0.002541
          *  */
     }
 
