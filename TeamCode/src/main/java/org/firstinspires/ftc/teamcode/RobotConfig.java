@@ -210,6 +210,9 @@ public final class RobotConfig {
         public static final boolean faceToTargetWhenApproaching = true;
 
         public static final long maxTimeToWaitForVisualNavigationMS = 800; // after this much milliseconds, if the target still does not occur, the navigation will be considered failed
+
+
+        public static final double pixelDetectionMaximumDistance = 50; // in cm
     }
 
     public static final class ControlConfigs {

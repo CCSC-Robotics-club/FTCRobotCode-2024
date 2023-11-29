@@ -23,6 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.EncoderMotorWheel;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
+import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.AutoProgramRunner;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
@@ -45,7 +46,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        pixelCameraVerticalParamMeasuring();
+        fixedAnglePixelDetectionCameraTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -838,6 +839,37 @@ public class TestMain extends LinearOpMode {
         TensorCamera testCamera = new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
         testCamera.startRecognizing();
          FixedAngleCameraProfile.measureCameraHorizontalParams(testCamera, telemetry, gamepad1, new double[] {10, 20, 30}, 15);
+         /*
+         * result: camera radian per pixel 0.003
+         *  */
+    }
+
+    private void fixedAnglePixelDetectionCameraTest() {
+        TensorCamera tensorCamera = new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+        FixedAnglePixelCamera pixelCamera = new FixedAnglePixelCamera(
+                tensorCamera,
+                new FixedAngleCameraProfile(
+                        20,
+                        0.663858,
+                        -0.0025,
+                        -0.00202195,
+                        new double[2], new double[2]
+                )
+        );
+
+        pixelCamera.init();
+        waitForStart();
+
+        pixelCamera.enableCamera();
+
+        while (!isStopRequested() && opModeIsActive()) {
+            pixelCamera.periodic();
+            telemetry.addData("fps", tensorCamera.getCameraRefreshRate());
+            final Vector2D pos = pixelCamera.getNearestPixelPosition();
+            telemetry.addData("nearest pixel relative position to robot", pos!=null ? pos : "unseen");
+            telemetry.update();
+            sleep(50);
+        }
     }
 
     private void gamePadTest() {
