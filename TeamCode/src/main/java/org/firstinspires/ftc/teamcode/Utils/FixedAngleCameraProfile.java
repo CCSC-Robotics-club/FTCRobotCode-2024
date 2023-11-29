@@ -142,7 +142,7 @@ public final class FixedAngleCameraProfile {
             if (gamepad.a) {
                 pixelYSamples[currentSample++] = rawTarget[1];
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(200);
                 } catch (InterruptedException ignored) {
                 }
             }
@@ -310,7 +310,12 @@ public final class FixedAngleCameraProfile {
             return new SimpleTargetTrackingCamera() {
                 @Override
                 public double[] getTargetPosition() {
-                    RawPixelDetectionCamera.PixelTargetRaw targetRaw = pixelCamera.getPixelTargets().isEmpty() ? null : pixelCamera.getPixelTargets().get(0);
+                    RawPixelDetectionCamera.PixelTargetRaw targetRaw;
+                    try {
+                        targetRaw = pixelCamera.getPixelTargets().isEmpty() ? null : pixelCamera.getPixelTargets().get(0);
+                    } catch (IndexOutOfBoundsException e) {
+                        targetRaw = null;
+                    }
                     if (targetRaw == null) return null;
                     return new double[] {targetRaw.x, targetRaw.y};
                 }
