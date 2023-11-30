@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.Services.AutoProgramRunner;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.Claw;
+import org.firstinspires.ftc.teamcode.Utils.DualServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.EnhancedPIDController;
 import org.firstinspires.ftc.teamcode.Utils.HuskyAprilTagCamera;
@@ -43,7 +44,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        armAndSingleClawTest();
+        armAndClawTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -348,15 +349,21 @@ public class TestMain extends LinearOpMode {
         }
     }
 
-    private void armAndSingleClawTest() {
-
-        while (!isStopRequested() && opModeIsActive()) {
-
-        }
-
+    private Claw getSingleServoClawTest() {
         final Servo servo = hardwareMap.get(Servo.class, "claw");
+
+        return new SingleServoClaw(servo, new Claw.ServoProfile(1, 0.75));
+    }
+
+    private Claw getDualServoClawTest() {
+        final Servo servo1 = hardwareMap.get(Servo.class, "claw1"),
+                servo2 = hardwareMap.get(Servo.class, "claw2");
+        return new DualServoClaw(servo1, servo2, new Claw.ServoProfile(1-0.6, 1-0.85), new Claw.ServoProfile(0.6, 0.85));
+    }
+
+    private void armAndClawTest() {
         final DcMotor armMotor = hardwareMap.get(DcMotor.class, "arm");
-        Claw claw = new SingleServoClaw(servo, new Claw.ServoProfile(1, 0.75));
+        final Claw claw = getDualServoClawTest();
 
         waitForStart();
 
@@ -382,24 +389,34 @@ public class TestMain extends LinearOpMode {
             sleep(50);
         }
     }
-    private void dualServoClawTest() {
-        final Servo claw1 = hardwareMap.get(Servo.class, "claw1"),
-                claw2 = hardwareMap.get(Servo.class, "claw2");
-
-        claw1.setDirection(Servo.Direction.REVERSE);
+    private void dualServoClawAndArmTest() {
+        final Servo servo1 = hardwareMap.get(Servo.class, "claw1"),
+                servo2 = hardwareMap.get(Servo.class, "claw2");
+        final DcMotor armMotor = hardwareMap.get(DcMotor.class, "arm");
+        Claw claw = new DualServoClaw(servo1, servo2, new Claw.ServoProfile(1-0.6, 1-0.85), new Claw.ServoProfile(0.6, 0.85));
 
         waitForStart();
-        final double openValue = 0.6,
-                closeValue = 0.85;
-        double currentValue = closeValue;
-        while (!isStopRequested() && opModeIsActive()) {
-            if (gamepad1.left_bumper)
-                currentValue = openValue;
-            else if (gamepad1.right_bumper)
-                currentValue = closeValue;
 
-            claw1.setPosition(currentValue);
-            claw2.setPosition(currentValue);
+        final double powerRate = 0.75;
+        final int startingPos = armMotor.getCurrentPosition();
+
+        while (!isStopRequested() && opModeIsActive()) {
+            if (gamepad1.a)
+                claw.close();
+            else if (gamepad1.b)
+                claw.open();
+
+            double power = gamepad1.left_stick_y * powerRate;
+            if (Math.abs(power) < 0.05)
+                power = 0;
+
+            armMotor.setPower(power);
+
+            telemetry.addData("claw is", claw.isClosed() ? "closed" : "open");
+            telemetry.addData("arm encoder reading", armMotor.getCurrentPosition() - startingPos);
+            telemetry.update();
+
+            sleep(50);
         }
     }
 
