@@ -3,7 +3,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       
-      <link rel="stylesheet" href="file:///c:\Users\SamLi\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.8.10\crossnote\dependencies\katex\katex.min.css">
+      <link rel="stylesheet" href="file:///c:\Users\Sam\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.8.10\crossnote\dependencies\katex\katex.min.css">
       
       
       
@@ -50,7 +50,7 @@
 </ul>
 <h2 id="程序设计">程序设计 </h2>
 <h3 id="1-从动轮导航系统">1. 从动轮导航系统 </h3>
-<p><img src="encoder%20algorithm.jpg" alt="Alt text"> <em>从动轮导航系统(测试车）</em></p>
+<p><img src="encoder algorithm.jpg" width="60%"> <em>从动轮导航系统(测试车）</em></p>
 <ul>
 <li>我们使用从动轮来感知机器的运动，计算机器的位置、速度、加速度等。<br>
 每个从动轮上配有编码器，可以读取从动轮转了多少圈，以此推算出从动轮的位移</li>
@@ -66,14 +66,30 @@
 <li>
 <p>当驾驶员输入移动命令后，系统首先根据自身IMU获取的方向对驾驶员输入进行变换，使机器的移动方向永远和驾驶员参照系的方向一致，不论机器朝向。这个功能简称“无头模式”</p>
 </li>
-<li></li>
+<li>
+<p>而且，机器在运动途中，从动轮会实时监测机器的实际运动，如果与驾驶员的输入存在误差，会用PID算法进行校正，使机器走一条直线<br>
+<img src="encoder-assisted%20drive-1.png" alt="Alt text"></p>
+</li>
 </ul>
 <h3 id="3-自动瞄准系统">3. 自动瞄准系统 </h3>
 <ul>
-<li></li>
+<li>
+<p>绝大多数队伍的机器在手动阶段需要驾驶员自己控制机器接近目标并放置pixel，这样不仅需要浪费很多时间反复微调，还有可能操作不慎装上目标。而我们设计了一套继集编码器、智能摄像头和TOF距离传感器三种感知方式于一体的自动瞄准系统</p>
+</li>
+<li>
+<p>当驾驶员按下手柄上的自动瞄准案件，机器会首先通过智能摄像头计算出目标的大概位置。但是，智能摄像头存在延迟、帧率较低、容易丢失目标等问题。所以，这期间地盘会用从动轮编码器感应自身位置，用PID算法接移动到目标前面，同时正对目标。（第一阶段）<br>
+<img src="visual%20nav.png" alt="Alt text"></p>
+</li>
+<li>
+<p>当机器到达目标面前，tof距离传感器启动，感知目标距离；而智能摄像头则负责感应目标的水平偏差。机器会在0.7秒内完成自动贴近目标</p>
+</li>
 </ul>
 <h3 id="4-自动程序轨迹编辑器">4. 自动程序轨迹编辑器 </h3>
 <h3 id="5-程序优化">5. 程序优化 </h3>
+<ul>
+<li>相比于传统的线性程序，我们的代码使用多线程运行。机器的所有功能，比如地盘、编码器、摄像头、抓手、升降臂被分割成立不同程序模块。这些模块以多个线程平行运行，以提升程序性能。</li>
+<li>我们设计了一个任务管理器，可以让不同模块以不同频率更新。比如地盘涉及到PID导航，对更新速度要求跟高，程序会以100次每秒读取驾驶员指令并更新地盘状态，以此保证绝对的丝滑流畅。但是像吸取结构这种简单结构，我们会让它一秒只更新25次，节省cpu资源。</li>
+</ul>
 
       </div>
       
