@@ -44,7 +44,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        armAndClawTest();
+        fourWheelSpeedTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -327,8 +327,6 @@ public class TestMain extends LinearOpMode {
         Servo servo1 = hardwareMap.get(Servo.class, "claw1");
         Servo servo2 = hardwareMap.get(Servo.class, "claw2");
 
-        servo1.setDirection(Servo.Direction.REVERSE);
-
         waitForStart();
 
         double servoAngle = 0;
@@ -341,7 +339,7 @@ public class TestMain extends LinearOpMode {
             if (gamepad1.a)
                 servoAngle = 0;
             servoAngle = Math.min(Math.max(0,servoAngle), 1);
-            servo1.setPosition(servoAngle);
+            servo1.setPosition(1-servoAngle);
             servo2.setPosition(servoAngle);
             telemetry.addData("servo angle", servoAngle);
             telemetry.update();
@@ -358,7 +356,7 @@ public class TestMain extends LinearOpMode {
     private Claw getDualServoClaw() {
         final Servo servo1 = hardwareMap.get(Servo.class, "claw1"),
                 servo2 = hardwareMap.get(Servo.class, "claw2");
-        return new DualServoClaw(servo1, servo2, new Claw.ServoProfile(1-0.6, 1-0.85), new Claw.ServoProfile(0.6, 0.85));
+        return new DualServoClaw(servo1, servo2, new Claw.ServoProfile(1-0.4, 1-0.16), new Claw.ServoProfile(0.4, 0.16));
     }
 
     private void armAndClawTest() {

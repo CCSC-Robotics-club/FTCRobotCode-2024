@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Modules.Arm;
+import org.firstinspires.ftc.teamcode.Services.ArmService;
 import org.firstinspires.ftc.teamcode.Services.IntakeService;
 import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
 import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
@@ -26,6 +28,9 @@ public class ManualStageRobot extends Robot {
 
         final IntakeService intakeService = new IntakeService(intake, driverGamePad, copilotGamepad);
         super.robotServices.add(intakeService);
+
+        final ArmService armService = new ArmService(super.arm, copilotGamepad);
+        super.robotServices.add(armService);
 
         super.initializeRobot();
     }

@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
+import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.EnhancedPIDController;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
@@ -106,6 +108,24 @@ public final class RobotConfig {
         public static final String intakeMotor1Name = "intake1", intakeMotor2Name = "intake2";
         public static final double intakeMotor1Power = -0.75, intakeMotor2Power = 0.75; // competition machine
 //        public static final double intakeMotor1Power = -0.85, intakeMotor2Power = -0.85; // backup machine
+    }
+
+    public static final class ArmConfigs {
+        public static final String armMotorName = "arm", armEncoderName = "armEncoder", limitSwitchName = "limit";
+        public static final boolean armMotorReversed = true, armEncoderReversed = false;
+        public static final double armMotorMaximumPower = 0.75;
+
+        public static final int positionDifferenceStartDecelerate = 500;
+        public static final int positionTolerance = 50;
+        public static final double frictionPower = 0.2;
+        public static final int lowPos = 1000, midPos = 2000, highPos = 3000;
+        public static final int positionLimit = 3500;
+        public static final Arm.ArmCommand armCommandWhenNoInput = new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0); // null for not needed
+
+        public static final String claw1Name = "claw1", claw2Name = "claw2"; // dual servo claw
+        public static final Claw.ServoProfile claw1Profile = new Claw.ServoProfile(1-0.4, 1-0.16),
+                claw2Profile = new Claw.ServoProfile(0.4, 0.16);
+        // public static final String claw1Name = "claw", claw2Name = null; // single servo claw
     }
 
     public static final class ChassisConfigs {

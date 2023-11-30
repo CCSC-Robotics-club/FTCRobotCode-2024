@@ -7,8 +7,11 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.EncoderMotorWheel;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
@@ -17,13 +20,16 @@ import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPosi
 import org.firstinspires.ftc.teamcode.Services.IntakeService;
 import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
+import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
+import org.firstinspires.ftc.teamcode.Utils.DualServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.HuskyAprilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
 import org.firstinspires.ftc.teamcode.Utils.ProgramRunningStatusChecker;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 import org.firstinspires.ftc.teamcode.Utils.SimpleFeedForwardSpeedController;
+import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +48,7 @@ public abstract class Robot {
     private EncoderMotorWheel frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
     protected Chassis chassis;
     protected Intake intake;
+    protected Arm arm;
     protected PositionEstimator positionEstimator;
     protected FixedAngleArilTagCamera aprilTagCamera;
     protected DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
@@ -157,6 +164,20 @@ public abstract class Robot {
                 intakeMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor2Name);
         intake = new Intake(intakeMotor1, intakeMotor2);
         robotModules.add(intake);
+
+        /* <-- arm --> */
+        SingleServoClaw claw1 = new SingleServoClaw(hardwareMap.get(Servo.class, RobotConfig.ArmConfigs.claw1Name), RobotConfig.ArmConfigs.claw1Profile);
+        Claw claw;
+        if (RobotConfig.ArmConfigs.claw2Name == null) {
+            claw = claw1;
+        } else {
+            SingleServoClaw claw2 = new SingleServoClaw(hardwareMap.get(Servo.class, RobotConfig.ArmConfigs.claw2Name), RobotConfig.ArmConfigs.claw2Profile);
+            claw = new DualServoClaw(claw1, claw2);
+        }
+        final DcMotor armMotor = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armMotorName),
+                armEncoder = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armEncoderName);
+        arm = new Arm(claw, armEncoder, armEncoder, hardwareMap.get(TouchSensor.class, RobotConfig.ArmConfigs.limitSwitchName));
+        robotModules.add(arm);
     }
 
     /**
