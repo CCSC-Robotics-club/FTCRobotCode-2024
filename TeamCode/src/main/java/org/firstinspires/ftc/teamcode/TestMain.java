@@ -356,7 +356,7 @@ public class TestMain extends LinearOpMode {
 
         final Servo servo = hardwareMap.get(Servo.class, "claw");
         final DcMotor armMotor = hardwareMap.get(DcMotor.class, "arm");
-        Claw claw = new SingleServoClaw(servo, new Claw.ServoProfile(1, 0.85));
+        Claw claw = new SingleServoClaw(servo, new Claw.ServoProfile(1, 0.75));
 
         waitForStart();
 
