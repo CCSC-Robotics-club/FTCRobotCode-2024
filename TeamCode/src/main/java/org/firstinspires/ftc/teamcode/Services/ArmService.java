@@ -36,6 +36,9 @@ public class ArmService extends RobotService {
             this.currentArmCommand = ArmConfigs.armCommandWhenNoInput;
         }
 
+        if (copilotGamepad.left_bumper) arm.openClaw(this);
+        else if (copilotGamepad.right_bumper) arm.closeClaw(this);
+
         arm.setArmCommand(currentArmCommand, this);
     }
 

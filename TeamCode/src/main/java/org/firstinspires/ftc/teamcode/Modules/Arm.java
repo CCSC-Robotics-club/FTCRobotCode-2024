@@ -64,6 +64,18 @@ public class Arm extends RobotModule {
         this.currentCommand = armCommand;
     }
 
+    public void openClaw(ModulesCommanderMarker operator) {
+        if (!isOwner(operator))
+            return;
+        this.claw.open();
+    }
+
+    public void closeClaw(ModulesCommanderMarker operator) {
+        if (!isOwner(operator))
+            return;
+        this.claw.close();
+    }
+
     private void resetEncoder() {
         startingEncoderPosition = armEncoder.getCurrentPosition() * encoderFactor;
     }
@@ -81,10 +93,10 @@ public class Arm extends RobotModule {
         switch (currentCommand.commandType) {
             case SET_MOTOR_POWER: {
                 if (currentCommand.commandValue < 0)
-                    if (isLimitSwitchPressed() || getArmPosition() <= 0)
+                    if (isLimitSwitchPressed() || getArmPosition() < 0)
                         return 0;
                 if (currentCommand.commandValue > 0)
-                    if (getArmPosition() >= ArmConfigs.positionLimit)
+                    if (getArmPosition() > ArmConfigs.positionLimit)
                         return 0;
                 return currentCommand.commandValue * this.motorPowerRate;
             }
