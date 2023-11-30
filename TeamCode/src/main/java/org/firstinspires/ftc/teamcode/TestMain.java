@@ -41,7 +41,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        pixelCameraHorizontalParamMeasuring();
+        servoTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -346,7 +346,24 @@ public class TestMain extends LinearOpMode {
         }
     }
 
-    private void clawTest() {
+    private void singleServoClawTest() {
+        final Servo claw = hardwareMap.get(Servo.class, "claw");
+
+        waitForStart();
+
+        final double openValue = 0.6,
+                closeValue = 0.85;
+        double currentValue = closeValue;
+        while (!isStopRequested() && opModeIsActive()) {
+            if (gamepad1.left_bumper)
+                currentValue = openValue;
+            else if (gamepad1.right_bumper)
+                currentValue = closeValue;
+
+            claw.setPosition(currentValue);
+        }
+    }
+    private void dualServoClawTest() {
         final Servo claw1 = hardwareMap.get(Servo.class, "claw1"),
                 claw2 = hardwareMap.get(Servo.class, "claw2");
 
