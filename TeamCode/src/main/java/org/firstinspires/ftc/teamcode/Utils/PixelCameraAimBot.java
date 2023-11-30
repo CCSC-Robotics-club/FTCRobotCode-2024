@@ -1,10 +1,7 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
-import android.text.Spannable;
-
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
-import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 
@@ -13,7 +10,7 @@ public class PixelCameraAimBot {
     private final FixedAnglePixelCamera pixelCamera;
     private final ModulesCommanderMarker commanderMarker;
     private final TelemetrySender telemetrySender;
-    private Vector2D previousPixelPosition = null;
+    private Vector2D pixelFieldPosition = null;
 
 
     public enum AimMethod {
@@ -67,21 +64,23 @@ public class PixelCameraAimBot {
             return false;
 
         this.status = aimMethod == AimMethod.FACE_TO_AND_FEED ? Status.FACING_TO : Status.LINING_UP;
-        this.previousPixelPosition = targetFieldPosition;
+        this.pixelFieldPosition = targetFieldPosition;
         return true;
     }
 
     public void update() {
+        telemetrySender.putSystemMessage("pixel aim-bot status", status);
         switch (status) {
             case FACING_TO: {
                 updateTargetPositionIfSeen();
-                double targetedRotation = previousPixelPosition.getHeading() - Math.PI / 2;
+                double targetedRotation = pixelFieldPosition.getHeading() - Math.PI / 2;
                 chassis.setRotationalTask(
                         new Chassis.ChassisRotationalTask(
                                 Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                                 targetedRotation),
                         commanderMarker
                 );
+                telemetrySender.putSystemMessage("pixel direction", pixelCamera);
 
                 if (chassis.isCurrentRotationalTaskComplete())
                     this.status = Status.FEEDING;
@@ -89,7 +88,7 @@ public class PixelCameraAimBot {
             }
             case LINING_UP: {
                 updateTargetPositionIfSeen();
-                double verticalDistanceToRobot = previousPixelPosition.
+                double verticalDistanceToRobot = pixelFieldPosition.
                         addBy(
                                 chassis.getChassisEncoderPosition().multiplyBy(-1))
                         .multiplyBy(new Rotation2D(chassis.getYaw()).getReversal()
@@ -111,7 +110,7 @@ public class PixelCameraAimBot {
             case FEEDING: {
                 updateTargetPositionIfSeen();
 
-                final Vector2D pixelPositionToRobot = previousPixelPosition.
+                final Vector2D pixelPositionToRobot = pixelFieldPosition.
                         addBy(
                                 chassis.getChassisEncoderPosition().multiplyBy(-1))
                         .multiplyBy(new Rotation2D(chassis.getYaw()).getReversal()
@@ -134,9 +133,12 @@ public class PixelCameraAimBot {
     }
 
     private void updateTargetPositionIfSeen() {
-        final Vector2D targetFieldPosition = getTargetFieldPosition();
-        if (targetFieldPosition != null)
-            previousPixelPosition = targetFieldPosition;
+        final Vector2D pixelFieldPositionNew = getTargetFieldPosition();
+
+        telemetrySender.putSystemMessage("pixel position update", pixelFieldPositionNew);
+
+        if (pixelFieldPositionNew != null)
+            pixelFieldPosition = pixelFieldPositionNew;
     }
 
     private Vector2D getTargetFieldPosition() {
