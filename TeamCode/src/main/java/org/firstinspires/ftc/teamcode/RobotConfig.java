@@ -111,7 +111,7 @@ public final class RobotConfig {
     }
 
     public static final class ArmConfigs {
-        public static final String armMotorName = "arm", armEncoderName = "armEncoder", limitSwitchName = "limit";
+        public static final String armMotorName = "arm", armEncoderName = "arm", limitSwitchName = "limit";
         public static final boolean armMotorReversed = true, armEncoderReversed = false;
         public static final double armMotorMaximumPower = 0.75;
 

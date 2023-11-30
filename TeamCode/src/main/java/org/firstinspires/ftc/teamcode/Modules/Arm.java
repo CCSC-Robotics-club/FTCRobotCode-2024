@@ -9,6 +9,9 @@ import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 
 import static org.firstinspires.ftc.teamcode.RobotConfig.ArmConfigs;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Arm extends RobotModule {
     private final Claw claw;
     private final TouchSensor limitSwitch;
@@ -39,6 +42,9 @@ public class Arm extends RobotModule {
             resetEncoder();
 
         armMotor.setPower(getMotorPower());
+        debugMessages.put("command type", currentCommand.commandType);
+        debugMessages.put("command value", currentCommand.commandValue);
+        debugMessages.put("motor power", getMotorPower());
     }
 
     @Override
@@ -66,14 +72,20 @@ public class Arm extends RobotModule {
         return armEncoder.getCurrentPosition() * encoderFactor - startingEncoderPosition;
     }
 
+    private boolean isLimitSwitchPressed() {
+        return limitSwitch != null && limitSwitch.isPressed();
+    }
+
     private double getMotorPower() {
+        debugMessages.put("encoder reading", getArmPosition());
         switch (currentCommand.commandType) {
             case SET_MOTOR_POWER: {
                 if (currentCommand.commandValue < 0)
-                    if (this.limitSwitch.isPressed() || getArmPosition() <= 0)
+                    if (isLimitSwitchPressed() || getArmPosition() <= 0)
                         return 0;
-                if (currentCommand.commandValue >0)
+                if (currentCommand.commandValue > 0)
                     if (getArmPosition() >= ArmConfigs.positionLimit)
+                        return 0;
                 return currentCommand.commandValue * this.motorPowerRate;
             }
             case SET_POSITION: {
@@ -83,6 +95,8 @@ public class Arm extends RobotModule {
                 final double correctionPower = difference / ArmConfigs.positionDifferenceStartDecelerate * motorPowerRate;
                 if (Math.abs(correctionPower) > ArmConfigs.armMotorMaximumPower)
                     return Math.copySign(ArmConfigs.armMotorMaximumPower, correctionPower);
+                if (Math.abs(correctionPower) < ArmConfigs.frictionPower)
+                    return Math.copySign(ArmConfigs.frictionPower, correctionPower);
                 return correctionPower;
             }
         }
@@ -108,5 +122,11 @@ public class Arm extends RobotModule {
             this.commandValue = commandValue;
         }
 
+    }
+
+    private final Map<String, Object> debugMessages = new HashMap<>(1);
+    @Override
+    public Map<String, Object> getDebugMessages() {
+        return debugMessages;
     }
 }

@@ -176,7 +176,8 @@ public abstract class Robot {
         }
         final DcMotor armMotor = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armMotorName),
                 armEncoder = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armEncoderName);
-        arm = new Arm(claw, armEncoder, armEncoder, hardwareMap.get(TouchSensor.class, RobotConfig.ArmConfigs.limitSwitchName));
+        final TouchSensor limitSwitch = RobotConfig.ArmConfigs.limitSwitchName != null ? hardwareMap.get(TouchSensor.class, RobotConfig.ArmConfigs.limitSwitchName) : null;
+        arm = new Arm(claw, armEncoder, armEncoder, limitSwitch);
         robotModules.add(arm);
     }
 
