@@ -12,13 +12,17 @@ public class PixelCameraAimBot {
     private final TelemetrySender telemetrySender;
     private Vector2D pixelFieldPosition = null;
 
-
+    private long searchInitateTimeMillis = -1;
+    private long searchUntilTimeMillis = -1;
+    private Vector2D searchStartPosition = null;
+    private Vector2D searchDirection = null;
     public enum AimMethod {
         FACE_TO_AND_FEED, // the robot rotates to face the targeted pixel
         LINE_UP_AND_FEED // the robot moves horizontally to line up with the targeted pixel
     }
     private enum Status {
         UNUSED,
+        SEARCHING,
         LINING_UP,
         FACING_TO,
         FEEDING
@@ -50,9 +54,24 @@ public class PixelCameraAimBot {
     /**
      * searches for the target by moving horizontally for a distance
      * @param searchRangeCM the amount of centimeters to search for, negative is to the left
+     * @param robotFacingRotation the robotFacingRotation to face
      * */
-    public SequentialCommandSegment createSearchAndAimCommandSegment(double searchRangeCM) {
-        return null; // TODO write this command
+    public SequentialCommandSegment createSearchAndAimCommandSegment(double searchRangeCM, double robotFacingRotation) {
+        return new SequentialCommandSegment(
+                null,
+                () -> initiateSearch(searchRangeCM, robotFacingRotation),
+                this::update,
+                () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), commanderMarker),
+                () -> status == Status.UNUSED,
+                robotFacingRotation, robotFacingRotation
+        );
+    }
+
+    public void initiateSearch(double searchRangeCM, double robotFacingRotation) {
+        this.searchDirection = new Vector2D(robotFacingRotation - Math.PI / 2, RobotConfig.VisualNavigationConfigs.pixelSearchVelocity);
+        this.searchInitateTimeMillis = System.currentTimeMillis();
+        this.searchUntilTimeMillis = (long) ((searchRangeCM / RobotConfig.VisualNavigationConfigs.pixelSearchVelocity) * 1000.0f + this.searchInitateTimeMillis);
+                this.status = Status.SEARCHING;
     }
 
     /**
@@ -128,6 +147,25 @@ public class PixelCameraAimBot {
                                 ),
                         commanderMarker
                 );
+                return;
+            }
+            case SEARCHING: {
+                if (initiateAim(AimMethod.LINE_UP_AND_FEED))
+                    return;
+                if (System.currentTimeMillis() > searchUntilTimeMillis) {
+                    this.status = Status.UNUSED;
+                    return;
+                }
+
+                final Vector2D desiredSearchPosition = this.searchStartPosition.addBy(
+                        searchDirection.multiplyBy(
+                                (System.currentTimeMillis() - searchInitateTimeMillis) / 1000.f
+                        ));
+
+                chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
+                        Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+                        desiredSearchPosition
+                ), commanderMarker);
             }
         }
     }

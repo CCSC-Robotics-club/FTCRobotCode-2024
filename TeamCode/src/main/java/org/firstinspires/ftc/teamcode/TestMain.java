@@ -355,7 +355,7 @@ public class TestMain extends LinearOpMode {
         return new SingleServoClaw(servo, new Claw.ServoProfile(1, 0.75));
     }
 
-    private Claw getDualServoClawTest() {
+    private Claw getDualServoClaw() {
         final Servo servo1 = hardwareMap.get(Servo.class, "claw1"),
                 servo2 = hardwareMap.get(Servo.class, "claw2");
         return new DualServoClaw(servo1, servo2, new Claw.ServoProfile(1-0.6, 1-0.85), new Claw.ServoProfile(0.6, 0.85));
@@ -363,7 +363,7 @@ public class TestMain extends LinearOpMode {
 
     private void armAndClawTest() {
         final DcMotor armMotor = hardwareMap.get(DcMotor.class, "arm");
-        final Claw claw = getDualServoClawTest();
+        final Claw claw = getDualServoClaw();
 
         waitForStart();
 

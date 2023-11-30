@@ -221,6 +221,7 @@ public final class RobotConfig {
 
 
         public static final double pixelDetectionMaximumDistance = 50; // in cm
+        public static final double pixelSearchVelocity = 100; // in cm/s
     }
 
     public static final class ControlConfigs {
