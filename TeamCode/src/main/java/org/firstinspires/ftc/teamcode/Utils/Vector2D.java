@@ -8,7 +8,7 @@ package org.firstinspires.ftc.teamcode.Utils;
  * @version 0.1
  */
 public class Vector2D {
-    private double[] vector = new double[2];
+    private double[] vector;
 
     /** initialize the vector, with a empty value */
     public Vector2D() {

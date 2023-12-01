@@ -31,6 +31,7 @@ import org.firstinspires.ftc.teamcode.Utils.HuskyAprilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.PixelCameraAimBot;
 import org.firstinspires.ftc.teamcode.Utils.RawPixelDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
+import org.firstinspires.ftc.teamcode.Utils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.SimpleFeedForwardSpeedController;
 import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
@@ -44,13 +45,13 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        encoderParamsMeasuring();
+        driveToPixelAimBotTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
     TelemetrySender telemetrySender;
     private Chassis getChassisModuleWithDefaultConfig() {
-        FixedAngleArilTagCamera camera = getHuskyWithDefaultConfig();
+//        FixedAngleArilTagCamera camera = getHuskyWithDefaultConfig();
 
         /* hardware */
         DcMotorEx frontLeftMotor = hardwareMap.get(DcMotorEx.class, "frontLeft");
@@ -108,28 +109,16 @@ public class TestMain extends LinearOpMode {
         TripleIndependentEncoderAndIMUPositionEstimator positionEstimator = new TripleIndependentEncoderAndIMUPositionEstimator(
                 hardwareMap.get(DcMotor.class, "backRight"),
                 hardwareMap.get(DcMotor.class, "frontRight"),
-                hardwareMap.get(DcMotor.class, "backLeft"),
+                hardwareMap.get(DcMotor.class, "frontLeft"),
                 imu,
                 RobotConfig.hardwareConfigs_2024Competition_backup.encodersParams
         );
         positionEstimator.init();
         robotModules.add(positionEstimator);
 
-        Chassis chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, camera, FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL);
+        Chassis chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, null, FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL);
 
-        EnhancedPIDController.StaticPIDProfile visualPIDControllerProfile = new EnhancedPIDController.StaticPIDProfile(
-                Double.POSITIVE_INFINITY,
-                0.6,
-                0.07,
-                25,
-                3,
-                0.15,
-                0,0
-        );
-        EnhancedPIDController visualPIDControllerX = new EnhancedPIDController(visualPIDControllerProfile),
-                visualPIDControllerY = new EnhancedPIDController(visualPIDControllerProfile);
-
-        camera.init();
+        // camera.init();
         frontRightWheel.init();
         frontLeftWheel.init();
         backRightWheel.init();
@@ -137,7 +126,7 @@ public class TestMain extends LinearOpMode {
         chassis.init();
 
 
-        robotModules.add(camera);
+        // robotModules.add(camera);
         robotModules.add(frontLeftWheel);
         robotModules.add(frontRightWheel);
         robotModules.add(backLeftWheel);
@@ -149,7 +138,7 @@ public class TestMain extends LinearOpMode {
 
         telemetrySender.addRobotModule(chassis);
         telemetrySender.addRobotModule(positionEstimator);
-        telemetrySender.addRobotModule(camera);
+//        telemetrySender.addRobotModule(camera);
 
         chassis.gainOwnerShip(null);
         return chassis;
@@ -166,10 +155,11 @@ public class TestMain extends LinearOpMode {
                 new FixedAngleCameraProfile(
                         20,
                         0.70376,
-                        0.002541,
+                        -0.002541,
                         -0.001717,
                         new double[2], new double[2]
-                )
+                ),
+                Math.PI // facing back
         );
     }
 
@@ -899,11 +889,13 @@ public class TestMain extends LinearOpMode {
     private void driveToPixelAimBotTest() {
         Chassis chassis = getChassisModuleWithDefaultConfig();
         FixedAnglePixelCamera pixelCamera = getPixelCameraWithDefaultConfig();
+        telemetrySender.addRobotModule(pixelCamera);
         PixelCameraAimBot aimBot = new PixelCameraAimBot(chassis, pixelCamera, null, telemetrySender);
 
         waitForStart();
 
         while (!isStopRequested() && opModeIsActive()) {
+            pixelCamera.periodic();
             if (gamepad1.a)
                 aimBot.initiateAim(PixelCameraAimBot.AimMethod.FACE_TO_AND_FEED);
             else if (gamepad1.b)
@@ -916,6 +908,18 @@ public class TestMain extends LinearOpMode {
             updateRobot();
 
             sleep(20);
+        }
+    }
+
+    private void linearMathTest() {
+        waitForStart();
+        while (!isStopRequested() && opModeIsActive()) {
+            telemetry.addData("radian", Math.PI);
+            telemetry.addData("transformation", new Rotation2D(Math.PI));
+            telemetry.addData("i-hat", new Rotation2D(Math.PI).getIHat());
+            telemetry.addData("j-hat", new Rotation2D(Math.PI).getJHat());
+            telemetry.update();
+            sleep(50);
         }
     }
 }

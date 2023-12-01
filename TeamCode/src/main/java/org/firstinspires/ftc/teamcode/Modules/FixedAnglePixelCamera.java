@@ -4,6 +4,8 @@ import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.RawPixelDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
+import org.firstinspires.ftc.teamcode.Utils.Rotation2D;
+import org.firstinspires.ftc.teamcode.Utils.Transformation2D;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
 
 import java.util.ArrayList;
@@ -14,13 +16,15 @@ import java.util.Map;
 public class FixedAnglePixelCamera extends RobotModule {
     private final RawPixelDetectionCamera camera;
     private final FixedAngleCameraProfile cameraProfile;
+    private final Rotation2D cameraFacingCalibration;
 
     private List<RawPixelDetectionCamera.PixelTargetRaw> targetsRaw = new ArrayList<>(1);
     private final Map<String, Object> debugMessages = new HashMap<>(1);
-    public FixedAnglePixelCamera(RawPixelDetectionCamera camera, FixedAngleCameraProfile profile) {
+    public FixedAnglePixelCamera(RawPixelDetectionCamera camera, FixedAngleCameraProfile profile, double cameraFacingDirection) {
         super("PixelCamera", 24);
         this.camera = camera;
         this.cameraProfile = profile;
+        this.cameraFacingCalibration = new Rotation2D(cameraFacingDirection, debugMessages);
     }
 
     public void enableCamera() {
@@ -43,7 +47,8 @@ public class FixedAnglePixelCamera extends RobotModule {
             if (pixelPositionNew.getMagnitude() < pixelPosition.getMagnitude())
                 pixelPosition = pixelPositionNew;
         }
-        return pixelPosition.getMagnitude() < RobotConfig.VisualNavigationConfigs.pixelDetectionMaximumDistance ? pixelPosition : null;
+        return pixelPosition.getMagnitude() < RobotConfig.VisualNavigationConfigs.pixelDetectionMaximumDistance ?
+                pixelPosition.multiplyBy(cameraFacingCalibration) : null;
     }
 
     private Vector2D calculatePosition(double pixelX, double pixelY) {
@@ -60,6 +65,10 @@ public class FixedAnglePixelCamera extends RobotModule {
     @Override
     protected void periodic(double dt) {
         targetsRaw = camera.getPixelTargets();
+        debugMessages.put("i-hat", cameraFacingCalibration.getValue()[0]);
+        debugMessages.put("j-hat", cameraFacingCalibration.getValue()[1]);
+        debugMessages.put("transformation2", cameraFacingCalibration);
+        debugMessages.put("raw pixel target", !camera.getPixelTargets().isEmpty() ? camera.getPixelTargets().get(0) : "unseen");
     }
 
     @Override

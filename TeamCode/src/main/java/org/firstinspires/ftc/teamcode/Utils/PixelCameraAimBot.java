@@ -89,6 +89,7 @@ public class PixelCameraAimBot {
 
     public void update() {
         telemetrySender.putSystemMessage("pixel aim-bot status", status);
+        telemetrySender.putSystemMessage("camera target", pixelCamera.getNearestPixelPosition());
         switch (status) {
             case FACING_TO: {
                 updateTargetPositionIfSeen();

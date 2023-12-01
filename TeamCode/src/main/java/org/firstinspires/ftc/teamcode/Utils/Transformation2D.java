@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
+import android.annotation.SuppressLint;
+
+import androidx.annotation.NonNull;
+
 public class Transformation2D {
     /** the original unstressed space */
     public static final Transformation2D originalSpace = new Transformation2D(new double[] { 1, 0 },
@@ -98,13 +102,12 @@ public class Transformation2D {
     }
 
     /** turn the transformation into string */
+    @NonNull
+    @SuppressLint("DefaultLocale")
     @Override
     public String toString() {
-        return "transformation with value: \n [ "
-                + value[0].getValue()[0] + "  "
-                + value[1].getValue()[0] + " ] \n [ "
-                + value[0].getValue()[1] + "  "
-                + value[1].getValue()[1] + " ]";
+        return String.format("transformation with value: \n [ %.2f  %.2f] \n [%.2f  %.2f]",
+                value[0].getValue()[0], value[1].getValue()[0], value[0].getValue()[1], value[1].getValue()[1]);
     }
 
     /** judge if another transformation is equal to this transformation */
