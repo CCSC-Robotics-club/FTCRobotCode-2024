@@ -11,8 +11,6 @@ import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.EnhancedPIDController;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
 
-import java.net.PortUnreachableException;
-
 public final class RobotConfig {
     public static final HardwareConfigs hardwareConfigs_2024Competition_backup = new HardwareConfigs( // backup machine
             new IMU.Parameters(
@@ -242,6 +240,8 @@ public final class RobotConfig {
 
         public static final double pixelDetectionMaximumDistance = 50; // in cm
         public static final double pixelSearchVelocity = 100; // in cm/s
+        public static final Vector2D pixelFeedingSweetSpot = new Vector2D(new double[]{0, 15});
+        public static final double feedingDistanceForward = 10; // in cm
     }
 
     public static final class ControlConfigs {

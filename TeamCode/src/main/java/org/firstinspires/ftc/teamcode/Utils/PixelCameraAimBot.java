@@ -28,8 +28,7 @@ public class PixelCameraAimBot {
         FEEDING
     }
     private Status status;
-
-    private static final Vector2D feedingSweetSpot = new Vector2D(new double[] {0, -10}); // the robot's position to the pixel
+    
 
     public PixelCameraAimBot(Chassis chassis, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
         this.chassis = chassis;
@@ -93,30 +92,36 @@ public class PixelCameraAimBot {
         switch (status) {
             case FACING_TO: {
                 updateTargetPositionIfSeen();
-                double targetedRotation = pixelFieldPosition.getHeading() - Math.PI / 2;
+                double targetedRotation = pixelFieldPosition.getHeading() + Math.PI / 2;
                 chassis.setRotationalTask(
                         new Chassis.ChassisRotationalTask(
                                 Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                                 targetedRotation),
                         commanderMarker
                 );
+                final Vector2D desiredFieldPosition = pixelFieldPosition.addBy(
+                        RobotConfig.VisualNavigationConfigs.pixelFeedingSweetSpot.multiplyBy(new Rotation2D(targetedRotation))
+                );
+                chassis.setTranslationalTask(
+                        new Chassis.ChassisTranslationalTask(
+                                Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+                                desiredFieldPosition
+                        ), commanderMarker);
+
                 telemetrySender.putSystemMessage("pixel direction", pixelCamera);
+                telemetrySender.putSystemMessage("face-to targeted position", desiredFieldPosition);
 
                 if (chassis.isCurrentRotationalTaskComplete())
-                    this.status = Status.FEEDING;
+                    this.status = Status.UNUSED;
+//                    this.status = Status.FEEDING;
                 return;
             }
             case LINING_UP: {
                 updateTargetPositionIfSeen();
-                double verticalDistanceToRobot = pixelFieldPosition.
-                        addBy(
-                                chassis.getChassisEncoderPosition().multiplyBy(-1))
-                        .multiplyBy(new Rotation2D(chassis.getYaw()).getReversal()
-                        ).getY();
-                final Vector2D desiredRelativePositionToRobot = new Vector2D(new double[] {0, verticalDistanceToRobot}),
-                        desiredFieldPosition = chassis.getChassisEncoderPosition().addBy(
-                                desiredRelativePositionToRobot.multiplyBy(new Rotation2D(chassis.getYaw()))
+                final Vector2D desiredFieldPosition = pixelFieldPosition.addBy(
+                                RobotConfig.VisualNavigationConfigs.pixelFeedingSweetSpot.multiplyBy(new Rotation2D(chassis.getYaw()))
                         );
+                telemetrySender.putSystemMessage("line-up targeted position", desiredFieldPosition);
                 chassis.setTranslationalTask(
                         new Chassis.ChassisTranslationalTask(
                                 Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
@@ -124,30 +129,12 @@ public class PixelCameraAimBot {
                         ), commanderMarker);
 
                 if (chassis.isCurrentTranslationalTaskComplete())
-                    this.status = Status.FEEDING;
+                    this.status = Status.UNUSED;
+//                    this.status = Status.FEEDING;
                 return;
             }
             case FEEDING: {
-                updateTargetPositionIfSeen();
-
-                final Vector2D pixelPositionToRobot = pixelFieldPosition.
-                        addBy(
-                                chassis.getChassisEncoderPosition().multiplyBy(-1))
-                        .multiplyBy(new Rotation2D(chassis.getYaw()).getReversal()
-                );
-
-                if (pixelPositionToRobot.getY() < 0)
-                    status = Status.UNUSED;
-
-                final Vector2D desiredPositionToRobot = new Vector2D(new double[]
-                        {pixelPositionToRobot.getX(), RobotConfig.ChassisConfigs.targetDistanceAtMaxDesiredSpeed * 0.4});
-                chassis.setTranslationalTask(
-                        new Chassis.ChassisTranslationalTask(
-                                Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
-                                desiredPositionToRobot.multiplyBy(new Rotation2D(chassis.getYaw()))
-                                ),
-                        commanderMarker
-                );
+                // TODO: make the feeding really simple logic: just drive forward xxx cm
                 return;
             }
             case SEARCHING: {
