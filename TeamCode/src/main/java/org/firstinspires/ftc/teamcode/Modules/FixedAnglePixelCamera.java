@@ -24,7 +24,7 @@ public class FixedAnglePixelCamera extends RobotModule {
         super("PixelCamera", 24);
         this.camera = camera;
         this.cameraProfile = profile;
-        this.cameraFacingCalibration = new Rotation2D(cameraFacingDirection, debugMessages);
+        this.cameraFacingCalibration = new Rotation2D(cameraFacingDirection);
     }
 
     public void enableCamera() {
@@ -65,9 +65,6 @@ public class FixedAnglePixelCamera extends RobotModule {
     @Override
     protected void periodic(double dt) {
         targetsRaw = camera.getPixelTargets();
-        debugMessages.put("i-hat", cameraFacingCalibration.getValue()[0]);
-        debugMessages.put("j-hat", cameraFacingCalibration.getValue()[1]);
-        debugMessages.put("transformation2", cameraFacingCalibration);
         debugMessages.put("raw pixel target", !camera.getPixelTargets().isEmpty() ? camera.getPixelTargets().get(0) : "unseen");
     }
 

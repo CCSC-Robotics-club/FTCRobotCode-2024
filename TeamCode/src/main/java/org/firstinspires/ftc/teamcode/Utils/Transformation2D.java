@@ -6,13 +6,19 @@ import androidx.annotation.NonNull;
 
 public class Transformation2D {
     /** the original unstressed space */
-    public static final Transformation2D originalSpace = new Transformation2D(new double[] { 1, 0 },
-            new double[] { 0, 1 });
+    public static Transformation2D getOriginalSpace() {
+        /*
+        * don't do static final Transformation2D = ...
+        * the pointer will be the same
+        */
+        return new Transformation2D(new double[] { 1, 0 },
+                new double[] { 0, 1 });
+    }
     /** the value of this transformation */
     private Vector2D[] value;
 
     public Transformation2D() {
-        value = originalSpace.getValue();
+        value = getOriginalSpace().getValue();
     }
 
     public Transformation2D(double[][] initialValue) {
