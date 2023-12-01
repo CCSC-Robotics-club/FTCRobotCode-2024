@@ -28,7 +28,7 @@ public class PixelCameraAimBot {
         FEEDING
     }
     private Status status;
-    
+
 
     public PixelCameraAimBot(Chassis chassis, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
         this.chassis = chassis;
@@ -112,8 +112,7 @@ public class PixelCameraAimBot {
                 telemetrySender.putSystemMessage("face-to targeted position", desiredFieldPosition);
 
                 if (chassis.isCurrentRotationalTaskComplete())
-                    this.status = Status.UNUSED;
-//                    this.status = Status.FEEDING;
+                    initiateFeed();
                 return;
             }
             case LINING_UP: {
@@ -129,12 +128,12 @@ public class PixelCameraAimBot {
                         ), commanderMarker);
 
                 if (chassis.isCurrentTranslationalTaskComplete())
-                    this.status = Status.UNUSED;
-//                    this.status = Status.FEEDING;
+                    initiateFeed();
                 return;
             }
             case FEEDING: {
-                // TODO: make the feeding really simple logic: just drive forward xxx cm
+                if (chassis.isCurrentTranslationalTaskComplete())
+                    status = Status.UNUSED;
                 return;
             }
             case SEARCHING: {
@@ -156,6 +155,21 @@ public class PixelCameraAimBot {
                 ), commanderMarker);
             }
         }
+    }
+
+    private void initiateFeed() {
+        final Vector2D feedStartPosition = chassis.getChassisEncoderPosition(),
+                feedPathForward = new Vector2D(new double[] {0, RobotConfig.VisualNavigationConfigs.feedingDistanceForward}),
+                feedEndPosition = feedStartPosition.addBy(feedPathForward.multiplyBy(new Rotation2D(chassis.getYaw())));
+
+        telemetrySender.putSystemMessage("feed end pos", feedEndPosition);
+
+        chassis.setTranslationalTask(
+                new Chassis.ChassisTranslationalTask(
+                        Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+                        feedEndPosition), commanderMarker);
+
+        this.status = Status.FEEDING;
     }
 
     private void updateTargetPositionIfSeen() {

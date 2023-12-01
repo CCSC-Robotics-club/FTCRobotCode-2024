@@ -902,9 +902,10 @@ public class TestMain extends LinearOpMode {
                 aimBot.initiateAim(PixelCameraAimBot.AimMethod.LINE_UP_AND_FEED);
             if (gamepad1.left_bumper)
                 aimBot.update();
-            else
+            else {
                 chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), null);
-
+                chassis.setRotationalTask(new Chassis.ChassisRotationalTask(Chassis.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED, 0), null);
+            }
             updateRobot();
 
             sleep(20);

@@ -161,10 +161,10 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 0.95,
-                0.06,
-                35,
+                0.05,
+                30,
                 1,
-                0.1,
+                0.08,
                 0, 0
         );
 
@@ -241,7 +241,7 @@ public final class RobotConfig {
         public static final double pixelDetectionMaximumDistance = 50; // in cm
         public static final double pixelSearchVelocity = 100; // in cm/s
         public static final Vector2D pixelFeedingSweetSpot = new Vector2D(new double[]{0, 15});
-        public static final double feedingDistanceForward = 10; // in cm
+        public static final double feedingDistanceForward = -10; // in cm
     }
 
     public static final class ControlConfigs {
