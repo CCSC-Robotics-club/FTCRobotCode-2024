@@ -44,7 +44,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        limitSwitchTest();
+        encoderParamsMeasuring();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -178,39 +178,6 @@ public class TestMain extends LinearOpMode {
             robotModule.periodic();
         telemetrySender.periodic();
     }
-
-    private void portMatching() {
-        DcMotor port0 = hardwareMap.get(DcMotor.class, "port0"),
-                port1 = hardwareMap.get(DcMotor.class, "port1"),
-                port2 = hardwareMap.get(DcMotor.class, "port2"),
-                port3 = hardwareMap.get(DcMotor.class, "port3");
-
-        waitForStart();
-
-        while (!isStopRequested() && opModeIsActive()) {
-            telemetry.addLine("press A to turn port0");
-            telemetry.addLine("press B to turn port1");
-            telemetry.addLine("press X to turn port2");
-            telemetry.addLine("press Y to turn port3");
-            telemetry.update();
-            if (gamepad1.a)
-                port0.setPower(0.5);
-            else port0.setPower(0);
-
-            if (gamepad1.b)
-                port1.setPower(0.5);
-            else port1.setPower(0);
-
-            if (gamepad1.x)
-                port2.setPower(0.5);
-            else port2.setPower(0);
-
-            if (gamepad1.y)
-                port3.setPower(0.5);
-            else port3.setPower(0);
-        }
-    }
-
     public void motorsMatch() {
         DcMotorEx mot0 = hardwareMap.get(DcMotorEx.class, "mot0");
         DcMotorEx mot1 = hardwareMap.get(DcMotorEx.class, "mot1");
@@ -503,9 +470,9 @@ public class TestMain extends LinearOpMode {
      * measurement for EncoderBiasPerRadian
      */
     private void encoderParamsMeasuring() {
-        DcMotorEx verticalEncoder1 = hardwareMap.get(DcMotorEx.class, "frontRight"); // vertical 1, not reversed
-        DcMotorEx verticalEncoder2 = hardwareMap.get(DcMotorEx.class, "backLeft"); // vertical 2, reversed
-        DcMotorEx horizontalEncoder = hardwareMap.get(DcMotorEx.class, "backRight"); // horizontal, reversed
+        DcMotorEx verticalEncoder1 = hardwareMap.get(DcMotorEx.class, "frontLeft"); // vertical 1
+        DcMotorEx verticalEncoder2 = hardwareMap.get(DcMotorEx.class, "frontRight"); // vertical 2
+        DcMotorEx horizontalEncoder = hardwareMap.get(DcMotorEx.class, "backRight"); // horizontal
 
         DcMotor frontLeftMotor = hardwareMap.get(DcMotor.class, "frontLeft"),
                 frontRightMotor = hardwareMap.get(DcMotor.class, "frontRight"),
@@ -521,21 +488,13 @@ public class TestMain extends LinearOpMode {
                 horizontalEncoder,
                 verticalEncoder1,
                 verticalEncoder2,
-                new boolean[] {false, false, true},
+                new boolean[] {true, true, false},
                 frontLeftMotor,
                 frontRightMotor,
                 backLeftMotor,
                 backRightMotor,
                 gamepad1,
                 telemetry
-        );
-
-        TripleIndependentEncoderAndIMUPositionEstimator.TripleIndependentEncoderAndIMUSystemParams tripleIndependentEncoderAndIMUSystemParams = new TripleIndependentEncoderAndIMUPositionEstimator.TripleIndependentEncoderAndIMUSystemParams(
-                true,
-                false,
-                true,
-                135.812,
-                0.2049
         );
     }
 

@@ -30,12 +30,12 @@ public final class RobotConfig {
             null,
             new TripleIndependentEncoderAndIMUPositionEstimator.TripleIndependentEncoderAndIMUSystemParams(
                     true,
-                    false,
-                    true, // not known yet
+                    true,
+                    false, // not known yet
                     135.812,
-                    0.378
+                    -0.385
             ),
-            new String[] {"backLeft", "frontRight", "backRight"},
+            new String[] {"backRight", "frontRight", "frontLeft"},
             true,
             false,
             true,

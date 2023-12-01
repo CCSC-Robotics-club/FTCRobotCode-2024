@@ -25,9 +25,9 @@ public class IntakeService extends RobotService {
 
     @Override
     public void periodic(double dt) {
-        if (driverGamePad.keyOnHold(KeyBindings.processAutoIntakePixelButton) || copilotGamepad.x)
+        if (driverGamePad.keyOnHold(KeyBindings.processAutoIntakePixelButton) || copilotGamepad.right_trigger > RobotConfig.ControlConfigs.triggerThreshold)
             intake.setMotion(Intake.Motion.ACTIVATED, this);
-        else if (driverGamePad.keyOnHold(RobotConfig.XboxControllerKey.RIGHT_BUMPER) || copilotGamepad.y)
+        else if (driverGamePad.keyOnHold(RobotConfig.XboxControllerKey.RIGHT_BUMPER) || copilotGamepad.right_bumper)
             intake.setMotion(Intake.Motion.REVERSE, this);
         else intake.setMotion(Intake.Motion.STOP, this);
     }
