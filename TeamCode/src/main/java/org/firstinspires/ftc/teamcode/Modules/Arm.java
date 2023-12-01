@@ -125,7 +125,7 @@ public class Arm extends RobotModule {
 
         public ArmCommand(ArmCommandType commandType, double commandValue) {
             this.commandType = commandType;
-            if (this.commandType != ArmCommandType.SET_MOTOR_POWER) {
+            if (this.commandType == ArmCommandType.SET_MOTOR_POWER) {
                 if (commandValue > 1)
                     commandValue = 1;
                 else if (commandValue < -1)
