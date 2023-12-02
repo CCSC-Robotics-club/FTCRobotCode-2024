@@ -102,21 +102,22 @@ public class PilotChassisService extends RobotService {
                 initiateVisualApproach = driverController.keyOnPressed(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported;
         if (driverController.keyOnReleased(RobotConfig.KeyBindings.processVisualApproachButton))
             this.visualTaskStatus = VisualTaskStatus.FINISHED;
+
+        double aimCenter = 0;
+        if (driverController.keyOnHold(RobotConfig.KeyBindings.setAimPositionLeftButton))
+            aimCenter -= RobotConfig.VisualNavigationConfigs.aimPositionHorizontalMargin;
+        if (driverController.keyOnHold(RobotConfig.KeyBindings.setAimPositionRightButton))
+            aimCenter += RobotConfig.VisualNavigationConfigs.aimPositionHorizontalMargin;
+
         if (initiateVisualApproach)
-            this.initiateWallApproach();
-        if (processVisualApproach) {
-            double aimCenter = 0;
-            if (driverController.keyOnHold(RobotConfig.KeyBindings.setAimPositionLeftButton))
-                aimCenter -= RobotConfig.VisualNavigationConfigs.aimPositionHorizontalMargin;
-            if (driverController.keyOnHold(RobotConfig.KeyBindings.setAimPositionRightButton))
-                aimCenter += RobotConfig.VisualNavigationConfigs.aimPositionHorizontalMargin;
+            this.initiateWallApproach(aimCenter);
+        if (processVisualApproach)
             this.processVisualNavigationTask(dt, aimCenter);
-        }
         else
             this.visualTaskStatus = VisualTaskStatus.UNUSED;
         if (visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
             chassis.setTranslationalTask(translationalTaskByPilotStickControl, this);
-        debugMessages.put("chassis task finished", chassis.isCurrentTranslationalTaskRoughlyComplete());
+        debugMessages.put("chassis task finished", chassis.isCurrentTranslationalTaskComplete());
         debugMessages.put("visual task status", visualTaskStatus);
 
         /* <--rotation--> */
@@ -171,7 +172,7 @@ public class PilotChassisService extends RobotService {
         debugMessages.put("previous aim ", lastAimSucceeded ? "succeeded" : "failed");
         switch (visualTaskStatus) {
             case UNUSED: {
-                initiateWallApproach();
+                initiateWallApproach(aimCenter);
                 return;
             }
             case VISUAL_ROUGH_APPROACH: {
@@ -265,7 +266,10 @@ public class PilotChassisService extends RobotService {
     }
 
 
-    private void initiateWallApproach() {
+    private void initiateWallApproach(double aimCenter) {
+        final Vector2D targetedRelativePositionToWall = RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach.addBy(
+                new Vector2D(new double[] {aimCenter, 0})
+        );
         if (!chassis.isVisualNavigationAvailable()) {
             this.visualTaskStatus = VisualTaskStatus.UNUSED;
             return;
@@ -274,7 +278,7 @@ public class PilotChassisService extends RobotService {
         chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
                 Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                 chassis.getChassisEncoderPosition().addBy(
-                        RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach.addBy(
+                        targetedRelativePositionToWall.addBy(
                                 chassis.getRelativeFieldPositionToWall().multiplyBy(-1)
                 ))), this);
 

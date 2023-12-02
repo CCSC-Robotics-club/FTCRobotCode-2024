@@ -143,7 +143,7 @@ public final class RobotConfig {
 
         public static final double chassisRotation_maximumCorrectionPower = 0.6;
         public static final double chassisRotation_minimumCorrectionPower = 0.06;
-        public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(50);
+        public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(40);
         public static final double chassisRotation_errorTolerance = Math.toRadians(1.5);
         public static final double chassisRotation_feedForwardDelay = 0.15; // in seconds
         public static final EnhancedPIDController.StaticPIDProfile chassisRotationControllerProfile = new EnhancedPIDController.StaticPIDProfile(
@@ -184,7 +184,7 @@ public final class RobotConfig {
         public static final double timeToStartDecelerate = 0.4;
 
         /** within how many times the error tolerance of PID should the translational task be counted as complete */
-        public static final double errorToleranceAsTaskFinished = 1.5;
+        public static final double errorToleranceAsTaskFinished = 1.8;
 
         public static final double errorToleranceAsTaskRoughlyFinished = 8;
 
@@ -232,7 +232,7 @@ public final class RobotConfig {
 
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -23});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3.5});
-        public static final double aimPositionHorizontalMargin = 8;
+        public static final double aimPositionHorizontalMargin = 16;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 100;
@@ -277,7 +277,7 @@ public final class RobotConfig {
     }
 
     public static final class KeyBindings {
-        public static final XboxControllerKey resetIMUKey = XboxControllerKey.B;
+        public static final XboxControllerKey resetIMUKey = XboxControllerKey.DPAD_RIGHT;
         public static final XboxControllerKey toggleSpeedControlButton = XboxControllerKey.A;
         public static final XboxControllerKey maintainCurrentRotationButton = XboxControllerKey.LEFT_STICK_BUTTON;
         public static final XboxControllerKey faceFrontButton = XboxControllerKey.DPAD_DOWN;
