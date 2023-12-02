@@ -246,7 +246,7 @@ public final class FixedAngleCameraProfile {
                 if (gamepad.a) {
                     pixelXSamples[currentSample++] = rawTarget[0];
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(300);
                     } catch (InterruptedException ignored) {
                     }
                 }

@@ -45,7 +45,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        driveToPixelAimBotTest();
+        fixedAngleAprilTagCameraHorizontalParameterMeasuring();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -644,15 +644,15 @@ public class TestMain extends LinearOpMode {
                 new HuskyAprilTagCamera(hardwareMap.get(HuskyLens.class, "husky")),
                 telemetry,
                 gamepad1,
-                22,
+                24,
                 60,
                 20,
-                4
+                5
         );
 
         // results:
-        final double cameraAngleRadianPerPixel = -0.00295;
-        final double cameraInstallationAngleRadian = 1.05986;
+        final double cameraAngleRadianPerPixel = -0.003432;
+        final double cameraInstallationAngleRadian = 0.955;
     }
 
     private void fixedAngleAprilTagCameraHorizontalParameterMeasuring() {
@@ -665,8 +665,7 @@ public class TestMain extends LinearOpMode {
                 telemetry,
                 gamepad1,
                 new double[]{30, 40, 50},
-                15,
-                4
+                15, 5
         );
 
         // result: -0.00314, r^2 = 0.9903
@@ -909,18 +908,6 @@ public class TestMain extends LinearOpMode {
             updateRobot();
 
             sleep(20);
-        }
-    }
-
-    private void linearMathTest() {
-        waitForStart();
-        while (!isStopRequested() && opModeIsActive()) {
-            telemetry.addData("radian", Math.PI);
-            telemetry.addData("transformation", new Rotation2D(Math.PI));
-            telemetry.addData("i-hat", new Rotation2D(Math.PI).getIHat());
-            telemetry.addData("j-hat", new Rotation2D(Math.PI).getJHat());
-            telemetry.update();
-            sleep(50);
         }
     }
 }

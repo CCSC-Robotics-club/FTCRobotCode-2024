@@ -203,9 +203,9 @@ public final class RobotConfig {
         // 2024 competition chassis
         public static final FixedAngleCameraProfile visualCameraProfile = new FixedAngleCameraProfile(
                 22,
-                0.8427148,
-                -0.00314,
+                0.955,
                 -0.00315,
+                -0.003432,
                 new double[2], new double[2]);
         public static final double visualModuleUpdateRate = 5;
         public static final long timeKeepTrackingAfterTagLostMillis = (long) 10e9;
@@ -228,8 +228,8 @@ public final class RobotConfig {
         public static final double distanceSensorMinDistance = 1.5;
         public static final double approachReverseSpeedTolerance = 20; // if the robot goes away from the wall in more than 20cm/s, we think the distance sensor failed
 
-        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -30});
-        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -6});
+        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -20});
+        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -4});
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 100;
