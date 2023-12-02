@@ -26,12 +26,10 @@ import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.DualServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
-import org.firstinspires.ftc.teamcode.Utils.EnhancedPIDController;
 import org.firstinspires.ftc.teamcode.Utils.HuskyAprilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.PixelCameraAimBot;
 import org.firstinspires.ftc.teamcode.Utils.RawPixelDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
-import org.firstinspires.ftc.teamcode.Utils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.SimpleFeedForwardSpeedController;
 import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
@@ -45,7 +43,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        fixedAngleAprilTagCameraHorizontalParameterMeasuring();
+        armAndClawTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -304,10 +302,10 @@ public class TestMain extends LinearOpMode {
         }
     }
 
-    private Claw getSingleServoClawTest() {
-        final Servo servo = hardwareMap.get(Servo.class, "claw");
+    private Claw getSingleServoClaw() {
+        final Servo servo = hardwareMap.get(Servo.class, "claw1");
 
-        return new SingleServoClaw(servo, new Claw.ServoProfile(1, 0.75));
+        return new SingleServoClaw(servo, new Claw.ServoProfile(1, 0.8));
     }
 
     private Claw getDualServoClaw() {
@@ -318,7 +316,7 @@ public class TestMain extends LinearOpMode {
 
     private void armAndClawTest() {
         final DcMotor armMotor = hardwareMap.get(DcMotor.class, "arm");
-        final Claw claw = getDualServoClaw();
+        final Claw claw = getSingleServoClaw();
 
         waitForStart();
 

@@ -120,10 +120,12 @@ public final class RobotConfig {
         public static final int positionLimit = 3500;
         public static final Arm.ArmCommand armCommandWhenNoInput = new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0); // null for not needed
 
-        public static final String claw1Name = "claw1", claw2Name = "claw2"; // dual servo claw
-        public static final Claw.ServoProfile claw1Profile = new Claw.ServoProfile(1-0.4, 1-0.16),
-                claw2Profile = new Claw.ServoProfile(0.4, 0.16);
-        // public static final String claw1Name = "claw", claw2Name = null; // single servo claw
+//        public static final String claw1Name = "claw1", claw2Name = "claw2"; // dual servo claw
+//        public static final Claw.ServoProfile claw1Profile = new Claw.ServoProfile(1-0.4, 1-0.16),
+//                claw2Profile = new Claw.ServoProfile(0.4, 0.16);
+        public static final Claw.ServoProfile claw1Profile = new Claw.ServoProfile(1, 0.8),
+        claw2Profile = null;
+        public static final String claw1Name = "claw1", claw2Name = null; // single servo claw
     }
 
     public static final class ChassisConfigs {
@@ -162,9 +164,9 @@ public final class RobotConfig {
                 Double.POSITIVE_INFINITY,
                 0.95,
                 0.05,
-                30,
+                40,
                 1,
-                0.08,
+                0.13,
                 0, 0
         );
 
@@ -179,7 +181,7 @@ public final class RobotConfig {
         /** the distance to set the position target, when pilot sends a command of full speed  */
         public static final double targetDistanceAtMaxDesiredSpeed = 120;
         /** the smooth-out time, or the time after the pilot let the chassis stop till it start maintaining its current position */
-        public static final double timeToStartDecelerate = 0.32;
+        public static final double timeToStartDecelerate = 0.4;
 
         /** within how many times the error tolerance of PID should the translational task be counted as complete */
         public static final double errorToleranceAsTaskFinished = 1.5;
@@ -228,8 +230,8 @@ public final class RobotConfig {
         public static final double distanceSensorMinDistance = 1.5;
         public static final double approachReverseSpeedTolerance = 20; // if the robot goes away from the wall in more than 20cm/s, we think the distance sensor failed
 
-        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -20});
-        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -4});
+        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -23});
+        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -2});
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 100;
