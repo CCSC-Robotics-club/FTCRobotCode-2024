@@ -231,7 +231,8 @@ public final class RobotConfig {
         public static final double approachReverseSpeedTolerance = 20; // if the robot goes away from the wall in more than 20cm/s, we think the distance sensor failed
 
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -23});
-        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -2});
+        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3.5});
+        public static final double aimPositionHorizontalMargin = 8;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 100;
@@ -278,8 +279,12 @@ public final class RobotConfig {
     public static final class KeyBindings {
         public static final XboxControllerKey resetIMUKey = XboxControllerKey.B;
         public static final XboxControllerKey toggleSpeedControlButton = XboxControllerKey.A;
+        public static final XboxControllerKey maintainCurrentRotationButton = XboxControllerKey.LEFT_STICK_BUTTON;
+        public static final XboxControllerKey faceFrontButton = XboxControllerKey.DPAD_DOWN;
         public static final XboxControllerKey toggleChassisDriveModeButton = XboxControllerKey.DPAD_UP;
         public static final XboxControllerKey processVisualApproachButton = XboxControllerKey.LEFT_BUMPER;
+        public static final XboxControllerKey setAimPositionLeftButton = XboxControllerKey.X;
+        public static final XboxControllerKey setAimPositionRightButton = XboxControllerKey.B;
 
         public static final XboxControllerKey processAutoIntakePixelButton = XboxControllerKey.RIGHT_TRIGGER;
     }

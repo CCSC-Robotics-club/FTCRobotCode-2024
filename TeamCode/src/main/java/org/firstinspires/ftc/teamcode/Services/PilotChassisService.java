@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
+import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
@@ -103,8 +104,14 @@ public class PilotChassisService extends RobotService {
             this.visualTaskStatus = VisualTaskStatus.FINISHED;
         if (initiateVisualApproach)
             this.initiateWallApproach();
-        if (processVisualApproach)
-            this.processVisualNavigationTask(dt);
+        if (processVisualApproach) {
+            double aimCenter = 0;
+            if (driverController.keyOnHold(RobotConfig.KeyBindings.setAimPositionLeftButton))
+                aimCenter -= RobotConfig.VisualNavigationConfigs.aimPositionHorizontalMargin;
+            if (driverController.keyOnHold(RobotConfig.KeyBindings.setAimPositionRightButton))
+                aimCenter += RobotConfig.VisualNavigationConfigs.aimPositionHorizontalMargin;
+            this.processVisualNavigationTask(dt, aimCenter);
+        }
         else
             this.visualTaskStatus = VisualTaskStatus.UNUSED;
         if (visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
@@ -119,15 +126,14 @@ public class PilotChassisService extends RobotService {
                 pilotRotationalCommand
         );
 
-        // TODO make the two buttons in robot config
-        if (driverController.keyOnPressed(RobotConfig.XboxControllerKey.LEFT_STICK_BUTTON))
+        if (driverController.keyOnPressed(RobotConfig.KeyBindings.maintainCurrentRotationButton))
             rotationWhenStickPressed = chassis.getYaw();
-        if (driverController.keyOnHold(RobotConfig.XboxControllerKey.LEFT_STICK_BUTTON))
+        if (driverController.keyOnHold(RobotConfig.KeyBindings.maintainCurrentRotationButton))
             rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
                     Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                     rotationWhenStickPressed
             );
-        if (driverController.keyOnHold(RobotConfig.XboxControllerKey.DPAD_DOWN))
+        if (driverController.keyOnHold(RobotConfig.KeyBindings.faceFrontButton))
             rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
                     Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                     0
@@ -161,7 +167,7 @@ public class PilotChassisService extends RobotService {
     private Vector2D previousWallPosition;
     private long timeTOFStageInitiated = -1;
     private boolean targetSeen = false;
-    private void processVisualNavigationTask(double dt) {
+    private void processVisualNavigationTask(double dt, double aimCenter) {
         debugMessages.put("previous aim ", lastAimSucceeded ? "succeeded" : "failed");
         switch (visualTaskStatus) {
             case UNUSED: {
@@ -174,15 +180,21 @@ public class PilotChassisService extends RobotService {
                     this.targetSeen = false;
                     this.visualTaskStatus = VisualTaskStatus.TOF_PRECISE_APPROACH;
                     this.previousWallPosition = new Vector2D(new double[]{chassis.getCurrentTranslationalTask().getTranslationalValue().getX(), 0});
-                    processVisualNavigationTask(0); // go immediately
+                    processVisualNavigationTask(0, aimCenter); // go immediately
                 }
                 return;
             }
             case TOF_PRECISE_APPROACH: {
+                final Vector2D targetedRelativePositionToWall = RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.addBy(
+                        new Vector2D(new double[] {aimCenter, 0})
+                );
+
                 targetSeen |= chassis.isVisualNavigationAvailable();
                 final boolean noSignOfWall = !targetSeen && System.currentTimeMillis() - timeTOFStageInitiated > RobotConfig.VisualNavigationConfigs.maxTimeToWaitForVisualNavigationMS; // if still no sign of the wall after 500ms
                 if (noSignOfWall ||
-                        (!processTOFPreciseGoToPosition(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach, RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance))) {
+                        (!processTOFPreciseGoToPosition(
+                                targetedRelativePositionToWall,
+                                RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance))) {
                     aimFail();
                     return;
                 }
