@@ -19,7 +19,6 @@ public class TeleOpMain extends LinearOpMode {
                 RobotConfig.hardwareConfigs_2024Competition,
                 gamepad1,
                 gamepad2,
-                true,
                 this.side,
                 enableDebugMode
         );

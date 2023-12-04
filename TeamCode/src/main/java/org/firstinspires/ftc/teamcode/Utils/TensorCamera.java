@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TensorCamera implements RawPixelDetectionCamera {
-    private static final Size defaultCameraResolution = new Size(640, 480);
+    private static final Size defaultCameraResolution = new Size(1280, 720);
     private static final int[] defaultLeftRightCast = new int[] {0, 0}, defaultTopBottomCast = {0, 0};
-    private static float minConfident = 0.75f;
+    private static float minConfident = 0.8f;
     private final TfodProcessor tfod;
     private final int[] cameraResolution;
     private final VisionPortal.Builder visionPortalBuilding;

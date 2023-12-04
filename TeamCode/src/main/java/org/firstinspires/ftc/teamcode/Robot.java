@@ -11,10 +11,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.EncoderMotorWheel;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
+import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.IntakeService;
@@ -30,6 +32,7 @@ import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 import org.firstinspires.ftc.teamcode.Utils.SimpleFeedForwardSpeedController;
 import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
+import org.firstinspires.ftc.teamcode.Utils.TensorCamera;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +46,13 @@ public abstract class Robot {
     protected final ProgramRunningStatusChecker programRunningStatusChecker;
     protected DriverGamePad driverGamePad = null;
 
-    protected final boolean visualNavigationSupported, independentEncodersAvailable, useMultiThread;
+    protected final boolean useMultiThread;
 
     private EncoderMotorWheel frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
     protected Chassis chassis;
     protected Intake intake;
     protected Arm arm;
+    protected FixedAnglePixelCamera pixelCamera;
     protected PositionEstimator positionEstimator;
     protected FixedAngleArilTagCamera aprilTagCamera;
     protected DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
@@ -62,18 +66,16 @@ public abstract class Robot {
         BLUE
     }
     protected final Side side;
-    public Robot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, boolean visualNavigationSupported, Side side) {
-        this(hardwareMap, telemetry, checker, hardwareConfigs, visualNavigationSupported, side, false);
+    public Robot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, Side side) {
+        this(hardwareMap, telemetry, checker, hardwareConfigs, side, false);
     }
-    public Robot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, boolean visualNavigationSupported, Side side, boolean debugModeEnabled) {
+    public Robot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, Side side, boolean debugModeEnabled) {
         this.side = side;
-        this.independentEncodersAvailable = hardwareConfigs.encodersParams != null && hardwareConfigs.encoderNames != null;
 
         this.hardwareConfigs = hardwareConfigs;
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
         this.programRunningStatusChecker = checker;
-        this.visualNavigationSupported = visualNavigationSupported && independentEncodersAvailable; // visual would not be available without encoders
 
         this.useMultiThread = !debugModeEnabled;
 
@@ -146,13 +148,18 @@ public abstract class Robot {
         robotModules.add(backLeftWheel);
         robotModules.add(backRightWheel);
 
-        if (visualNavigationSupported) {
-            aprilTagCamera = new FixedAngleArilTagCamera(
-                    new HuskyAprilTagCamera(hardwareMap.get(HuskyLens.class, "husky")),
-                    RobotConfig.VisualNavigationConfigs.visualCameraProfile
-            );
-            robotModules.add(aprilTagCamera);
-        } else aprilTagCamera = null;
+        aprilTagCamera = new FixedAngleArilTagCamera(
+                new HuskyAprilTagCamera(hardwareMap.get(HuskyLens.class, "husky")),
+                RobotConfig.VisualNavigationConfigs.visualCameraProfile
+        );
+        robotModules.add(aprilTagCamera);
+
+        pixelCamera = new FixedAnglePixelCamera(
+                new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1")),
+                RobotConfig.VisualNavigationConfigs.pixelCameraSetUpProfile,
+                RobotConfig.VisualNavigationConfigs.pixelCameraInstallFacing
+        );
+        robotModules.add(pixelCamera);
 
         chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, aprilTagCamera,
                 this.side == Side.RED ? FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL : FixedAngleArilTagCamera.WallTarget.Name.BLUE_ALLIANCE_WALL);

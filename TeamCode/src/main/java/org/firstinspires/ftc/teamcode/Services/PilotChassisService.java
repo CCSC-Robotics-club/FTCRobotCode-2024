@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
+import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
@@ -22,7 +23,6 @@ public class PilotChassisService extends RobotService {
     private final Chassis chassis;
     private final DriverGamePad driverController;
     public final DistanceSensor distanceSensor;
-    private final boolean independentEncodersAvailable, visualNavigationSupported;
     private double rotationWhenStickPressed;
     private Vector2D currentDesiredPosition;
     /** time since last translational command sent by pilot */
@@ -37,12 +37,10 @@ public class PilotChassisService extends RobotService {
 
     private Map<String, Object> debugMessages = new HashMap<>(1);
     private int aimCenter = 0;
-    public PilotChassisService(Chassis chassis, DriverGamePad driverController, DistanceSensor distanceSensor, boolean independentEncodersAvailable, boolean visualNavigationSupported) {
+    public PilotChassisService(Chassis chassis, DriverGamePad driverController, DistanceSensor distanceSensor, FixedAnglePixelCamera pixelCamera) {
         this.chassis = chassis;
         this.driverController = driverController;
         this.distanceSensor = distanceSensor;
-        this.independentEncodersAvailable = independentEncodersAvailable;
-        this.visualNavigationSupported = visualNavigationSupported && independentEncodersAvailable && distanceSensor != null;
     }
     @Override
     public void init() {
@@ -75,8 +73,6 @@ public class PilotChassisService extends RobotService {
 
         currentDesiredPosition = new Vector2D(new double[]{currentDesiredPositionX, currentDesiredPositionY});
 
-        if (!independentEncodersAvailable && controlMode == ControlMode.ENCODER_ASSISTED_FIELD_ORIENTATED) // if tries to use encoder when unavailable
-            controlMode = ControlMode.MANUAL; // switch back to manual
         debugMessages.put("control mode", controlMode);
         switch (controlMode) {
             case MANUAL_FIELD_ORIENTATED: {
@@ -97,8 +93,8 @@ public class PilotChassisService extends RobotService {
 
         /* visual navigation */
         chassis.setLowSpeedModeEnabled(driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton));
-        final boolean processVisualApproach = driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported,
-                initiateVisualApproach = driverController.keyOnPressed(RobotConfig.KeyBindings.processVisualApproachButton) && visualNavigationSupported;
+        final boolean processVisualApproach = driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton),
+                initiateVisualApproach = driverController.keyOnPressed(RobotConfig.KeyBindings.processVisualApproachButton);
         if (driverController.keyOnReleased(RobotConfig.KeyBindings.processVisualApproachButton))
             this.visualTaskStatus = VisualTaskStatus.FINISHED;
 
@@ -147,9 +143,6 @@ public class PilotChassisService extends RobotService {
 
         if (driverController.keyOnHold(RobotConfig.KeyBindings.resetIMUKey))
             chassis.resetYaw(this);
-
-        if (driverController.keyOnPressed(RobotConfig.KeyBindings.toggleSpeedControlButton))
-            chassis.setWheelSpeedControlEnabled((!chassis.isWheelSpeedControlEnabled()) && (!independentEncodersAvailable), this); // where there is independent encoder, no way we will use speed control
 
         if (driverController.keyOnPressed(RobotConfig.KeyBindings.toggleChassisDriveModeButton)) nextControlMode();
     }
@@ -386,7 +379,7 @@ public class PilotChassisService extends RobotService {
         this.currentDesiredPosition = chassis.getChassisEncoderPosition();
         this.controlMode = RobotConfig.ControlConfigs.defaultControlMode;
         visualTaskStatus = VisualTaskStatus.UNUSED;
-        if (independentEncodersAvailable) chassis.setWheelSpeedControlEnabled(false, this);
+        chassis.setWheelSpeedControlEnabled(false, this);
         aimCenter = 0;
     }
 
