@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
-import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
@@ -18,7 +17,6 @@ import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 public class PilotChassisService extends RobotService {
     private final Chassis chassis;
@@ -38,6 +36,7 @@ public class PilotChassisService extends RobotService {
     private ControlMode controlMode;
 
     private Map<String, Object> debugMessages = new HashMap<>(1);
+    private int aimCenter = 0;
     public PilotChassisService(Chassis chassis, DriverGamePad driverController, DistanceSensor distanceSensor, boolean independentEncodersAvailable, boolean visualNavigationSupported) {
         this.chassis = chassis;
         this.driverController = driverController;
@@ -103,16 +102,19 @@ public class PilotChassisService extends RobotService {
         if (driverController.keyOnReleased(RobotConfig.KeyBindings.processVisualApproachButton))
             this.visualTaskStatus = VisualTaskStatus.FINISHED;
 
-        double aimCenter = 0;
-        if (driverController.keyOnHold(RobotConfig.KeyBindings.setAimPositionLeftButton))
-            aimCenter -= RobotConfig.VisualNavigationConfigs.aimPositionHorizontalMargin;
+        if (driverController.keyOnPressed(RobotConfig.KeyBindings.setAimPositionLeftButton))
+            aimCenter++;
         if (driverController.keyOnHold(RobotConfig.KeyBindings.setAimPositionRightButton))
-            aimCenter += RobotConfig.VisualNavigationConfigs.aimPositionHorizontalMargin;
+            aimCenter--;
+        final int aimCenterMax = RobotConfig.VisualNavigationConfigs.aimHorizontalPositions.length;
+        if (aimCenter <= -aimCenterMax) aimCenter = -aimCenterMax + 1;
+        else if (aimCenter >= aimCenterMax) aimCenter = aimCenterMax - 1;
 
+        final double aimCenterCM = Math.copySign(RobotConfig.VisualNavigationConfigs.aimHorizontalPositions[Math.abs(aimCenter)], aimCenter);
         if (initiateVisualApproach)
-            this.initiateWallApproach(aimCenter);
+            this.initiateWallApproach();
         if (processVisualApproach)
-            this.processVisualNavigationTask(dt, aimCenter);
+            this.processVisualNavigationTask(dt, aimCenterCM);
         else
             this.visualTaskStatus = VisualTaskStatus.UNUSED;
         if (visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
@@ -168,14 +170,27 @@ public class PilotChassisService extends RobotService {
     private Vector2D previousWallPosition;
     private long timeTOFStageInitiated = -1;
     private boolean targetSeen = false;
-    private void processVisualNavigationTask(double dt, double aimCenter) {
+    private Vector2D wallFieldPositionForRoughApproach = null;
+    private void processVisualNavigationTask(double dt, double aimCenterCM) {
         debugMessages.put("previous aim ", lastAimSucceeded ? "succeeded" : "failed");
         switch (visualTaskStatus) {
             case UNUSED: {
-                initiateWallApproach(aimCenter);
+                initiateWallApproach();
                 return;
             }
             case VISUAL_ROUGH_APPROACH: {
+                final Vector2D targetedRelativePositionToWall = RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach.addBy(
+                        new Vector2D(new double[] {aimCenterCM, 0})
+                );
+                chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
+                        Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+                        wallFieldPositionForRoughApproach.addBy(targetedRelativePositionToWall)), this);
+
+                chassis.setRotationalTask(new Chassis.ChassisRotationalTask(
+                        Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
+                        0
+                ), this);
+
                 if (chassis.isCurrentTranslationalTaskRoughlyComplete() && chassis.isCurrentRotationalTaskComplete()) {
                     this.timeTOFStageInitiated = System.currentTimeMillis();
                     this.targetSeen = false;
@@ -186,52 +201,16 @@ public class PilotChassisService extends RobotService {
                 return;
             }
             case TOF_PRECISE_APPROACH: {
-                final Vector2D targetedRelativePositionToWall = RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.addBy(
-                        new Vector2D(new double[] {aimCenter, 0})
-                );
-
-                targetSeen |= chassis.isVisualNavigationAvailable();
-                final boolean noSignOfWall = !targetSeen && System.currentTimeMillis() - timeTOFStageInitiated > RobotConfig.VisualNavigationConfigs.maxTimeToWaitForVisualNavigationMS; // if still no sign of the wall after 500ms
-                if (noSignOfWall ||
-                        (!processTOFPreciseGoToPosition(
-                                targetedRelativePositionToWall,
-                                RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance))) {
+                if (!goToWallPrecise(aimCenterCM))
                     aimFail();
-                    return;
-                }
-                if (chassis.isCurrentTranslationalTaskComplete()) // if the difference lies with tolerance, and that the chassis reports that current task is finished
+                if (chassis.isCurrentTranslationalTaskComplete() && Math.abs(driverController.getTranslationStickVector().getX()) > 0.1) // if the difference lies with tolerance, and that the chassis reports that current task is finished
                 {
                     this.visualTaskStatus = VisualTaskStatus.MAINTAIN_AND_AIM; // end of this stage
                 }
                 return;
             }
-            case MAINTAIN_AND_AIM: {
-                updateWallPositionTOF(RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance_maintainAndAim);
-                double pilotXCommand = driverController.getTranslationStickVector().getX()
-                        * RobotConfig.ChassisConfigs.lowSpeedModeMaximumMotorSpeedConstrain / 2;
-
-                /* do not go beyond the x-bias limit */
-                final Vector2D relativeEncoderPositionToWall = previousWallPosition.addBy(chassis.getChassisEncoderPosition().multiplyBy(-1));
-                if (pilotXCommand < 0 && relativeEncoderPositionToWall.getX() > RobotConfig.VisualNavigationConfigs.maximumXBiasToWallCenterDuringAimingCM)
-                    pilotXCommand = 0;
-                else if (pilotXCommand > 0 && relativeEncoderPositionToWall.getX() < -RobotConfig.VisualNavigationConfigs.maximumXBiasToWallCenterDuringAimingCM)
-                    pilotXCommand = 0;
-
-                /* send pilot's x command, and the maintain distance y command by tof sensor, to the chassis */
-                final Vector2D aimTargetEncoder = new Vector2D(new double[] {
-                        pilotXCommand * targetDistanceAtMaxDesiredSpeed + chassis.getChassisEncoderPosition().getX(),
-                        previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach).getY()
-                });
-                chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
-                        aimTargetEncoder), this);
-
-                /* keep on maintaining rotation */
-                chassis.setRotationalTask(new Chassis.ChassisRotationalTask(Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
-                        0), this);
-
-                debugMessages.put("received dt", dt);
-                debugMessages.put("maintain and aim target (enc, field)", aimTargetEncoder);
-            }
+            case MAINTAIN_AND_AIM:
+                stickToWallAndManualAdjust(dt);
         }
     }
 
@@ -266,28 +245,57 @@ public class PilotChassisService extends RobotService {
     }
 
 
-    private void initiateWallApproach(double aimCenter) {
-        final Vector2D targetedRelativePositionToWall = RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach.addBy(
-                new Vector2D(new double[] {aimCenter, 0})
-        );
+    private void initiateWallApproach() {
+        aimCenter = 0;
         if (!chassis.isVisualNavigationAvailable()) {
             this.visualTaskStatus = VisualTaskStatus.UNUSED;
             return;
         }
-
-        chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
-                Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
-                chassis.getChassisEncoderPosition().addBy(
-                        targetedRelativePositionToWall.addBy(
-                                chassis.getRelativeFieldPositionToWall().multiplyBy(-1)
-                ))), this);
-
-        chassis.setRotationalTask(new Chassis.ChassisRotationalTask(
-                Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
-                0
-        ), this);
+        wallFieldPositionForRoughApproach = chassis.getChassisEncoderPosition().addBy(
+                        chassis.getRelativeFieldPositionToWall().multiplyBy(-1));
         this.visualTaskStatus = VisualTaskStatus.VISUAL_ROUGH_APPROACH;
         this.lastAimSucceeded = true;
+    }
+
+    private boolean goToWallPrecise(double aimCenterCM) {
+        final Vector2D targetedRelativePositionToWall = RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.addBy(
+                new Vector2D(new double[] {aimCenterCM, 0})
+        );
+
+        targetSeen |= chassis.isVisualNavigationAvailable();
+        final boolean noSignOfWall = !targetSeen && System.currentTimeMillis() - timeTOFStageInitiated > RobotConfig.VisualNavigationConfigs.maxTimeToWaitForVisualNavigationMS; // if still no sign of the wall after 500ms
+        return !noSignOfWall &&
+                (processTOFPreciseGoToPosition(
+                        targetedRelativePositionToWall,
+                        RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance));
+    }
+
+    private void stickToWallAndManualAdjust(double dt) {
+        updateWallPositionTOF(RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance_maintainAndAim);
+        double pilotXCommand = driverController.getTranslationStickVector().getX()
+                * RobotConfig.ChassisConfigs.lowSpeedModeMaximumMotorSpeedConstrain / 2;
+
+        /* do not go beyond the x-bias limit */
+        final Vector2D relativeEncoderPositionToWall = previousWallPosition.addBy(chassis.getChassisEncoderPosition().multiplyBy(-1));
+        if (pilotXCommand < 0 && relativeEncoderPositionToWall.getX() > RobotConfig.VisualNavigationConfigs.maximumXBiasToWallCenterDuringAimingCM)
+            pilotXCommand = 0;
+        else if (pilotXCommand > 0 && relativeEncoderPositionToWall.getX() < -RobotConfig.VisualNavigationConfigs.maximumXBiasToWallCenterDuringAimingCM)
+            pilotXCommand = 0;
+
+        /* send pilot's x command, and the maintain distance y command by tof sensor, to the chassis */
+        final Vector2D aimTargetEncoder = new Vector2D(new double[] {
+                pilotXCommand * targetDistanceAtMaxDesiredSpeed + chassis.getChassisEncoderPosition().getX(),
+                previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach).getY()
+        });
+        chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+                aimTargetEncoder), this);
+
+        /* keep on maintaining rotation */
+        chassis.setRotationalTask(new Chassis.ChassisRotationalTask(Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
+                0), this);
+
+        debugMessages.put("received dt", dt);
+        debugMessages.put("maintain and aim target (enc, field)", aimTargetEncoder);
     }
 
     private void aimFail() {
@@ -380,6 +388,7 @@ public class PilotChassisService extends RobotService {
         this.controlMode = RobotConfig.ControlConfigs.defaultControlMode;
         visualTaskStatus = VisualTaskStatus.UNUSED;
         if (independentEncodersAvailable) chassis.setWheelSpeedControlEnabled(false, this);
+        aimCenter = 0;
     }
 
     @Override
