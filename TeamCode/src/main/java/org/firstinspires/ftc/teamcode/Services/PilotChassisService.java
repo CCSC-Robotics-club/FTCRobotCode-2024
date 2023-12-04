@@ -103,9 +103,9 @@ public class PilotChassisService extends RobotService {
             this.visualTaskStatus = VisualTaskStatus.FINISHED;
 
         if (driverController.keyOnPressed(RobotConfig.KeyBindings.setAimPositionLeftButton))
-            aimCenter++;
-        if (driverController.keyOnHold(RobotConfig.KeyBindings.setAimPositionRightButton))
             aimCenter--;
+        if (driverController.keyOnHold(RobotConfig.KeyBindings.setAimPositionRightButton))
+            aimCenter++;
         final int aimCenterMax = RobotConfig.VisualNavigationConfigs.aimHorizontalPositions.length;
         if (aimCenter <= -aimCenterMax) aimCenter = -aimCenterMax + 1;
         else if (aimCenter >= aimCenterMax) aimCenter = aimCenterMax - 1;

@@ -233,7 +233,7 @@ public final class RobotConfig {
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -23});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3.5});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
-        public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
+        public static final double maximumXBiasToWallCenterDuringAimingCM = 22;
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 100;
         public static final boolean faceToTargetWhenApproaching = true;
