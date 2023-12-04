@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
+import org.firstinspires.ftc.teamcode.Utils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
 import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
 
@@ -37,10 +38,12 @@ public class PilotChassisService extends RobotService {
 
     private Map<String, Object> debugMessages = new HashMap<>(1);
     private int aimCenter = 0;
-    public PilotChassisService(Chassis chassis, DriverGamePad driverController, DistanceSensor distanceSensor, FixedAnglePixelCamera pixelCamera) {
+    private final Rotation2D pilotFacingRotation;
+    public PilotChassisService(Chassis chassis, DriverGamePad driverController, DistanceSensor distanceSensor, FixedAnglePixelCamera pixelCamera, double pilotFacing) {
         this.chassis = chassis;
         this.driverController = driverController;
         this.distanceSensor = distanceSensor;
+        this.pilotFacingRotation = new Rotation2D(pilotFacing);
     }
     @Override
     public void init() {
@@ -76,6 +79,7 @@ public class PilotChassisService extends RobotService {
         debugMessages.put("control mode", controlMode);
         switch (controlMode) {
             case MANUAL_FIELD_ORIENTATED: {
+                pilotTranslationalCommand = pilotTranslationalCommand.multiplyBy(pilotFacingRotation);
                 chassis.setOrientationMode(Chassis.OrientationMode.FIELD_ORIENTATED, this);
                 break;
             }
@@ -84,6 +88,7 @@ public class PilotChassisService extends RobotService {
                 break;
             }
             case ENCODER_ASSISTED_FIELD_ORIENTATED: {
+                pilotTranslationalCommand = pilotTranslationalCommand.multiplyBy(pilotFacingRotation);
                 translationalTaskByPilotStickControl = new Chassis.ChassisTranslationalTask(
                         Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         currentDesiredPosition.addBy(pilotTranslationalCommand.multiplyBy(targetDistanceAtMaxDesiredSpeed))

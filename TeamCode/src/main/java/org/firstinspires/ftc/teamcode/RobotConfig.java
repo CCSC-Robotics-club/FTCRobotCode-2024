@@ -127,6 +127,8 @@ public final class RobotConfig {
         public static final Claw.ServoProfile claw1Profile = new Claw.ServoProfile(1, 0.8),
         claw2Profile = null;
         public static final String claw1Name = "claw1", claw2Name = null; // single servo claw
+
+        public static final double servoValueOrigin = 0, servoValueExtend = 1;
     }
 
     public static final class ChassisConfigs {

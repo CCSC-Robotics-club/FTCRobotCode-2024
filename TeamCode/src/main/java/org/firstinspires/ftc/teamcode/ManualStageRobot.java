@@ -15,15 +15,18 @@ import org.firstinspires.ftc.teamcode.Utils.ProgramRunningStatusChecker;
 
 public class ManualStageRobot extends Robot {
     private final Gamepad copilotGamepad;
+    private final Side side;
     public ManualStageRobot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, Gamepad gamepad1, Gamepad gamepad2, Side side, boolean debugModeEnabled) {
         super(hardwareMap, telemetry, checker, hardwareConfigs, side, debugModeEnabled);
         super.driverGamePad = new DriverGamePad(gamepad1);
         this.copilotGamepad = gamepad2;
+        this.side = side;
     }
 
     @Override
     public void initializeRobot() {
-        PilotChassisService chassisService = new PilotChassisService(chassis, driverGamePad, hardwareMap.get(DistanceSensor.class, "distance"), pixelCamera);
+        final double pilotFacing = side == Side.RED ? Math.PI / 2 : -Math.PI / 2;
+        PilotChassisService chassisService = new PilotChassisService(chassis, driverGamePad, hardwareMap.get(DistanceSensor.class, "distance"), pixelCamera, pilotFacing);
         super.robotServices.add(chassisService);
 
         final IntakeService intakeService = new IntakeService(intake, driverGamePad, copilotGamepad);
