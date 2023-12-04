@@ -272,8 +272,7 @@ public class PilotChassisService extends RobotService {
 
     private void stickToWallAndManualAdjust(double dt) {
         updateWallPositionTOF(RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance_maintainAndAim);
-        double pilotXCommand = driverController.getTranslationStickVector().getX()
-                * RobotConfig.ChassisConfigs.lowSpeedModeMaximumMotorSpeedConstrain / 2;
+        double pilotXCommand = driverController.getTranslationStickVector().getX() * RobotConfig.ControlConfigs.pilotController_translationStickXPreciseAimSensitivity;
 
         /* do not go beyond the x-bias limit */
         final Vector2D relativeEncoderPositionToWall = previousWallPosition.addBy(chassis.getChassisEncoderPosition().multiplyBy(-1));

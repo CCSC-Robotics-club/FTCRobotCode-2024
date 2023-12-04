@@ -254,6 +254,7 @@ public final class RobotConfig {
         public static final double pilotController_fullStickDeadBand = 0.25;
         public static final double pilotController_translationStickXSensitivity = 1;
         public static final double pilotController_translationStickYSensitivity = -1;
+        public static final double pilotController_translationStickXPreciseAimSensitivity = 0.2; // during wall aim
         public static final double pilotController_rotationSensitivity = -0.75;
 
         /** the exponent of the the x axis of translational stick, 1 for linear */
