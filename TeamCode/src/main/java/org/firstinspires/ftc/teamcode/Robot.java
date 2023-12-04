@@ -154,12 +154,13 @@ public abstract class Robot {
         );
         robotModules.add(aprilTagCamera);
 
-        pixelCamera = new FixedAnglePixelCamera(
-                new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1")),
-                RobotConfig.VisualNavigationConfigs.pixelCameraSetUpProfile,
-                RobotConfig.VisualNavigationConfigs.pixelCameraInstallFacing
-        );
-        robotModules.add(pixelCamera);
+//        pixelCamera = new FixedAnglePixelCamera(
+//                new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1")),
+//                RobotConfig.VisualNavigationConfigs.pixelCameraSetUpProfile,
+//                RobotConfig.VisualNavigationConfigs.pixelCameraInstallFacing
+//        );
+//        robotModules.add(pixelCamera);
+        pixelCamera = null;
 
         chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, aprilTagCamera,
                 this.side == Side.RED ? FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL : FixedAngleArilTagCamera.WallTarget.Name.BLUE_ALLIANCE_WALL);

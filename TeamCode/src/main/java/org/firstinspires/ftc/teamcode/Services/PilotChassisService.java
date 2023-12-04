@@ -55,6 +55,8 @@ public class PilotChassisService extends RobotService {
         /* <--translation--> */
         final double zeroJudge = 0.001;
         Vector2D pilotTranslationalCommand = driverController.getTranslationStickVector();
+        if (controlMode != ControlMode.MANUAL)
+            pilotTranslationalCommand = pilotTranslationalCommand.multiplyBy(pilotFacingRotation);
         Chassis.ChassisTranslationalTask translationalTaskByPilotStickControl = new Chassis.ChassisTranslationalTask(
                 Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY,
                 pilotTranslationalCommand
@@ -79,7 +81,6 @@ public class PilotChassisService extends RobotService {
         debugMessages.put("control mode", controlMode);
         switch (controlMode) {
             case MANUAL_FIELD_ORIENTATED: {
-                pilotTranslationalCommand = pilotTranslationalCommand.multiplyBy(pilotFacingRotation);
                 chassis.setOrientationMode(Chassis.OrientationMode.FIELD_ORIENTATED, this);
                 break;
             }
@@ -88,7 +89,6 @@ public class PilotChassisService extends RobotService {
                 break;
             }
             case ENCODER_ASSISTED_FIELD_ORIENTATED: {
-                pilotTranslationalCommand = pilotTranslationalCommand.multiplyBy(pilotFacingRotation);
                 translationalTaskByPilotStickControl = new Chassis.ChassisTranslationalTask(
                         Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         currentDesiredPosition.addBy(pilotTranslationalCommand.multiplyBy(targetDistanceAtMaxDesiredSpeed))
