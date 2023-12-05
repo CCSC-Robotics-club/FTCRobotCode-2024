@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-import java.util.stream.StreamSupport;
-
 public class EnhancedPIDController2D {
     private final EnhancedPIDController xController, yController;
+    private final EnhancedPIDController.PIDProfile xConfig, yConfig;
+    private final double xMinPowerToMove, yMinPowerToMove;
     private long previousTimeMillis;
 
     public EnhancedPIDController2D(EnhancedPIDController.PIDProfile config) {
@@ -15,6 +13,10 @@ public class EnhancedPIDController2D {
     public EnhancedPIDController2D(EnhancedPIDController.PIDProfile xConfig, EnhancedPIDController.PIDProfile yConfig) {
         this.xController = new EnhancedPIDController(xConfig);
         this.yController = new EnhancedPIDController(yConfig);
+        this.xConfig = xConfig;
+        this.yConfig = yConfig;
+        xMinPowerToMove = xConfig.getMinPowerToMove();
+        yMinPowerToMove = yConfig.getMinPowerToMove();
         this.previousTimeMillis = System.currentTimeMillis();
     }
 
@@ -35,6 +37,15 @@ public class EnhancedPIDController2D {
         double dt = (System.currentTimeMillis() - previousTimeMillis) / 1000.0f;
         double xCorrectionPower = this.xController.getMotorPower(currentPosition.getX(), currentVelocity.getX(), dt);
         double yCorrectionPower = this.yController.getMotorPower(currentPosition.getY(), currentVelocity.getY(), dt);
+        /* if movement along the other axis is big enough, we ignore the difference in the other axes */
+        if (Math.abs(yCorrectionPower) > 2 * yMinPowerToMove)
+            xConfig.setMinPowerToMove(0);
+        else
+            xConfig.setMinPowerToMove(xMinPowerToMove);
+        if (Math.abs(xCorrectionPower) > 2 * xMinPowerToMove)
+            yConfig.setMinPowerToMove(0);
+        else
+            yConfig.setMinPowerToMove(yMinPowerToMove);
         this.previousTimeMillis = System.currentTimeMillis();
         return new Vector2D(new double[]{xCorrectionPower, yCorrectionPower});
     }
@@ -45,5 +56,9 @@ public class EnhancedPIDController2D {
             this.xTask = new EnhancedPIDController.Task(taskType, value.getX());
             this.yTask = new EnhancedPIDController.Task(taskType, value.getY());
         }
+    }
+
+    private static boolean almostEqual(double a, double b) {
+        return Math.abs(a - b) < 0.01;
     }
 }

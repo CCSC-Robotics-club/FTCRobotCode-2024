@@ -165,10 +165,10 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 0.95,
-                0.06,
+                0.1,
                 35,
                 1,
-                0.15,
+                0.12,
                 0, 0
         );
 

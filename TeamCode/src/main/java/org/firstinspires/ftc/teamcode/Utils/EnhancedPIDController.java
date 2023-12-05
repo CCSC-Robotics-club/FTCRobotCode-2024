@@ -384,6 +384,10 @@ public class EnhancedPIDController {
             return (maxPowerAllowed - minPowerToMove) /
                     (errorStartDecelerate - errorTolerance);
         }
+
+        public void setMinPowerToMove(double newMinPowerToMove) {
+            this.minPowerToMove = newMinPowerToMove;
+        }
     }
 
     public static class StaticPIDProfile extends PIDProfile {
