@@ -112,7 +112,7 @@ public class PixelCameraAimBot {
                 telemetrySender.putSystemMessage("face-to targeted position", desiredFieldPosition);
 
                 if (chassis.isCurrentRotationalTaskComplete())
-                    initiateFeed();
+                    status = Status.UNUSED;
                 return;
             }
             case LINING_UP: {
@@ -168,6 +168,7 @@ public class PixelCameraAimBot {
                 new Chassis.ChassisTranslationalTask(
                         Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         feedEndPosition), commanderMarker);
+        chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), commanderMarker);
 
         this.status = Status.FEEDING;
     }

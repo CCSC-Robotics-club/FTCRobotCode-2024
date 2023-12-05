@@ -43,7 +43,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        pixelCameraVerticalParamMeasuring();
+        driveToPixelAimBotTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -104,12 +104,13 @@ public class TestMain extends LinearOpMode {
         backLeftWheel.setMotorReversed(RobotConfig.testConfig.backLeftWheel_motorReversed);
         backRightWheel.setMotorReversed(RobotConfig.testConfig.backRightWheel_motorReversed);
 
+        final RobotConfig.HardwareConfigs hardwareConfigs = RobotConfig.hardwareConfigs_2024Competition;
         TripleIndependentEncoderAndIMUPositionEstimator positionEstimator = new TripleIndependentEncoderAndIMUPositionEstimator(
-                hardwareMap.get(DcMotor.class, "backRight"),
-                hardwareMap.get(DcMotor.class, "frontRight"),
-                hardwareMap.get(DcMotor.class, "frontLeft"),
+                hardwareMap.get(DcMotor.class, hardwareConfigs.encoderNames[0]),
+                hardwareMap.get(DcMotor.class, hardwareConfigs.encoderNames[1]),
+                hardwareMap.get(DcMotor.class, hardwareConfigs.encoderNames[2]),
                 imu,
-                RobotConfig.hardwareConfigs_2024Competition_backup.encodersParams
+                hardwareConfigs.encodersParams
         );
         positionEstimator.init();
         robotModules.add(positionEstimator);
@@ -150,14 +151,8 @@ public class TestMain extends LinearOpMode {
         TensorCamera tensorCamera = new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
         return new FixedAnglePixelCamera(
                 tensorCamera,
-                new FixedAngleCameraProfile(
-                        20,
-                        0.70376,
-                        -0.002541,
-                        -0.001717,
-                        new double[2], new double[2]
-                ),
-                Math.PI // facing back
+                RobotConfig.VisualNavigationConfigs.pixelCameraSetUpProfile,
+                RobotConfig.VisualNavigationConfigs.pixelCameraInstallFacing
         );
     }
 
@@ -836,18 +831,18 @@ public class TestMain extends LinearOpMode {
         FixedAngleCameraProfile.measureCameraVerticalParams(testCamera, telemetry, gamepad1, 20, 34, 14);
         /*
         * result:
-        * camera radian per pixel:  -0.00202195
-        * camera installation angle radian: 0.663858
-        * r^2: 0.976
+        * camera radian per pixel:  -9.19E-4
+        * camera installation angle radian: 0.784
+        * r^2: 0.995
         * */
     }
 
     private void pixelCameraHorizontalParamMeasuring() {
         TensorCamera testCamera = new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
         testCamera.startRecognizing();
-         FixedAngleCameraProfile.measureCameraHorizontalParams(testCamera, telemetry, gamepad1, new double[] {15, 20, 25}, 15);
+         FixedAngleCameraProfile.measureCameraHorizontalParams(testCamera, telemetry, gamepad1, new double[] {15, 20, 25}, 12);
          /*
-         * result: camera radian per pixel 0.002541
+         * result: camera radian per pixel 0.001092
          *  */
     }
 

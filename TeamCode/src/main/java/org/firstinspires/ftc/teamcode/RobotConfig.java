@@ -4,7 +4,6 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.Modules.Arm;
-import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
 import org.firstinspires.ftc.teamcode.Utils.Claw;
@@ -182,7 +181,7 @@ public final class RobotConfig {
         public static final double xPowerRate = 1.05,
                 yPowerRate = 1;
         /** the distance to set the position target, when pilot sends a command of full speed  */
-        public static final double targetDistanceAtMaxDesiredSpeed = 120;
+        public static final double targetDistanceAtMaxDesiredSpeed = 65;
         /** the smooth-out time, or the time after the pilot let the chassis stop till it start maintaining its current position */
         public static final double timeToStartDecelerate = 0.4;
 
@@ -247,12 +246,13 @@ public final class RobotConfig {
 
         public static final FixedAngleCameraProfile pixelCameraSetUpProfile = new FixedAngleCameraProfile(
                 20,
-                0.70376,
-                -0.002541,
-                -0.001717,
+                0.784,
+                -0.001092,
+                -9.19E-4,
                 new double[2], new double[2]
         );
-        public static final double pixelCameraInstallFacing = Math.PI;
+        public static final float tensorCameraMinConfident = 0.82f;
+        public static final double pixelCameraInstallFacing = Math.PI;  // facing back
         public static final double pixelDetectionMaximumDistance = 50; // in cm
         public static final double pixelSearchVelocity = 100; // in cm/s
         public static final Vector2D pixelFeedingSweetSpot = new Vector2D(new double[]{0, 15});
