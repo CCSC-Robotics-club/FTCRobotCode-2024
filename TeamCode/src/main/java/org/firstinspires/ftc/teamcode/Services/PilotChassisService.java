@@ -131,21 +131,23 @@ public class PilotChassisService extends RobotService {
         debugMessages.put("visual task status", visualTaskStatus);
 
         /* visual navigation:pixel */
-        final boolean pixelAimSupported = this.pixelAimBot != null,
-                startFacePixelAndFeedTask = driverController.keyOnPressed(RobotConfig.KeyBindings.processFaceToPixelAndFeedButton) && pixelAimSupported,
-                startLineUpWithPixelAndFeedTask = driverController.keyOnPressed(RobotConfig.KeyBindings.processLineUpWithPixelAndFeedButton) && pixelAimSupported,
-                processPixelNavigation = (driverController.keyOnHold(RobotConfig.KeyBindings.processFaceToPixelAndFeedButton) || driverController.keyOnHold(RobotConfig.KeyBindings.processLineUpWithPixelAndFeedButton))
-                        && pixelAimSupported;
-        if (startFacePixelAndFeedTask)
-            pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.FACE_TO_AND_FEED);
-        else if (startLineUpWithPixelAndFeedTask)
-            pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.LINE_UP_AND_FEED);
-        if (processPixelNavigation)
+        if (pixelAimBot != null) {
+            final boolean startFacePixelAndFeedTask = driverController.keyOnHold(RobotConfig.KeyBindings.processFaceToPixelAndFeedButton) && !pixelAimBot.isAimBotBusy(),
+                    startLineUpWithPixelAndFeedTask = driverController.keyOnHold(RobotConfig.KeyBindings.processLineUpWithPixelAndFeedButton) && !pixelAimBot.isAimBotBusy(),
+                    processPixelNavigation = (driverController.keyOnHold(RobotConfig.KeyBindings.processFaceToPixelAndFeedButton) || driverController.keyOnHold(RobotConfig.KeyBindings.processLineUpWithPixelAndFeedButton));
+            if (startFacePixelAndFeedTask)
+                pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.FACE_TO_AND_FEED);
+            else if (startLineUpWithPixelAndFeedTask)
+                pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.LINE_UP_AND_FEED);
+            if (!processPixelNavigation)
+                pixelAimBot.cancel();
             pixelAimBot.update();
+        }
 
         /* send pilot command to chassis if both types of visual navigation are unused */
         if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
-            && !processPixelNavigation)
+            &&
+                (pixelAimBot == null || !pixelAimBot.isAimBotBusy()))
             chassis.setTranslationalTask(translationalTaskByPilotStickControl, this);
 
         /* <--rotation--> */
@@ -169,7 +171,8 @@ public class PilotChassisService extends RobotService {
             );
 
         if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
-                && !processPixelNavigation)
+                &&
+                (pixelAimBot == null || !pixelAimBot.isAimBotBusy()))
             chassis.setRotationalTask(rotationalTaskByPilotStick, this);
 
         if (driverController.keyOnHold(RobotConfig.KeyBindings.resetIMUKey))

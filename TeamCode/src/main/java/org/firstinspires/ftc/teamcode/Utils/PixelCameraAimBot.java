@@ -89,6 +89,10 @@ public class PixelCameraAimBot {
         return true;
     }
 
+    public void cancel() {
+        this.status = Status.UNUSED;
+    }
+
     public void update() {
         debugMessages.put("pixel aim-bot status", status);
         debugMessages.put("camera target", pixelCamera.getNearestPixelPosition());
@@ -203,6 +207,9 @@ public class PixelCameraAimBot {
 
     public boolean shouldIntakeStart() {
         return this.status == Status.FEEDING;
-        // return this.status != Status.UNUSED;
+    }
+
+    public boolean isAimBotBusy() {
+        return this.status != Status.UNUSED;
     }
 }
