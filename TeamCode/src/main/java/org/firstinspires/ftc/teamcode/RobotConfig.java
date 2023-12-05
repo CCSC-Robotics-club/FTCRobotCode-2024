@@ -127,7 +127,7 @@ public final class RobotConfig {
         claw2Profile = null;
         public static final String claw1Name = "claw1", claw2Name = null; // single servo claw
 
-        public static final double servoValueOrigin = 0, servoValueExtend = 1;
+        public static final double servoValueOrigin = 0, servoValueExtend = 0.42;
         public static final double extendTime = 0.5;
     }
 
@@ -260,6 +260,12 @@ public final class RobotConfig {
         public static final double feedingSpotErrorTolerance = 4;
         public static final double feedingDistanceForward = -22; // in cm
         public static final long feedTimeMillis = 2000;
+
+
+        public static final int teamElementAprilTagID = 10; // TODO figure out this value
+        public static final Vector2D teamElementPositionLeft = new Vector2D(new double[] {0, 0});
+        public static final Vector2D teamElementPositionCenter = new Vector2D(new double[] {0, 0});
+        public static final Vector2D teamElementPositionRight = new Vector2D(new double[] {0, 0});
     }
 
     public static final class ControlConfigs {
