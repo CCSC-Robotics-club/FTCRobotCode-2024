@@ -77,6 +77,7 @@ public class PixelCameraAimBot {
     /**
      * @return whether the aim task is initiated or denied because the target is lost
      * */
+    private double startingRotation = 0;
     public boolean initiateAim(AimMethod aimMethod) {
         final Vector2D targetFieldPosition = getTargetFieldPosition();
         if (targetFieldPosition == null)
@@ -84,6 +85,7 @@ public class PixelCameraAimBot {
 
         this.status = aimMethod == AimMethod.FACE_TO_AND_FEED ? Status.FACING_TO : Status.LINING_UP;
         this.pixelFieldPosition = targetFieldPosition;
+        startingRotation = chassis.getYaw();
         return true;
     }
 
@@ -92,6 +94,7 @@ public class PixelCameraAimBot {
         debugMessages.put("camera target", pixelCamera.getNearestPixelPosition());
         switch (status) {
             case FACING_TO: {
+                // TODO bugs are found in this aiming mode, the robot goes to the wrong rotation
                 updateTargetPositionIfSeen();
                 double targetedRotation = pixelFieldPosition.getHeading() + Math.PI / 2;
                 chassis.setRotationalTask(
@@ -127,6 +130,12 @@ public class PixelCameraAimBot {
                                 Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                                 desiredFieldPosition
                         ), commanderMarker);
+                chassis.setRotationalTask(
+                        new Chassis.ChassisRotationalTask(
+                                Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
+                                startingRotation),
+                        commanderMarker
+                );
 
                 if (Vector2D.displacementToTarget(chassis.getChassisEncoderPosition(), desiredFieldPosition).getMagnitude() < RobotConfig.VisualNavigationConfigs.feedingSpotErrorTolerance)
                     initiateFeed();

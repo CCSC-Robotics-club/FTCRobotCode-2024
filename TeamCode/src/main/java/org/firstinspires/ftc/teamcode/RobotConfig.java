@@ -256,7 +256,7 @@ public final class RobotConfig {
         public static final double pixelDetectionMaximumDistance = 50; // in cm
         public static final double pixelSearchVelocity = 100; // in cm/s
         public static final Vector2D pixelFeedingSweetSpot = new Vector2D(new double[]{0, 15});
-        public static final double feedingSpotErrorTolerance = 3;
+        public static final double feedingSpotErrorTolerance = 4;
         public static final double feedingDistanceForward = -22; // in cm
         public static final long feedTimeMillis = 2000;
     }
