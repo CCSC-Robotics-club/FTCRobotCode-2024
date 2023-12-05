@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Modules;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 
@@ -13,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Arm extends RobotModule {
-    private final Claw claw;
+    private final ExtendableClaw claw;
     private final TouchSensor limitSwitch;
     private final DcMotor armMotor, armEncoder;
     private final double motorPowerRate;
@@ -21,9 +20,9 @@ public class Arm extends RobotModule {
 
     private int startingEncoderPosition = 0;
     private ArmCommand currentCommand;
-    public Arm(Claw claw, DcMotor armMotor, DcMotor armEncoder, TouchSensor limitSwitch) {
+    public Arm(DcMotor armMotor, DcMotor armEncoder, ExtendableClaw extendableClaw, TouchSensor limitSwitch) {
         super("arm");
-        this.claw = claw;
+        this.claw = extendableClaw;
         this.armMotor = armMotor;
         this.armEncoder = armEncoder;
         this.limitSwitch = limitSwitch;
@@ -55,7 +54,8 @@ public class Arm extends RobotModule {
     @Override
     public void reset() {
         resetEncoder();
-        claw.open();
+        claw.reset();
+        claw.gainOwnerShip(this);
     }
 
     public void setArmCommand(ArmCommand armCommand, ModulesCommanderMarker operator) {
@@ -64,16 +64,16 @@ public class Arm extends RobotModule {
         this.currentCommand = armCommand;
     }
 
-    public void openClaw(ModulesCommanderMarker operator) {
+    public void placePixel(ModulesCommanderMarker operator) {
         if (!isOwner(operator))
             return;
-        this.claw.open();
+        this.claw.placePixelToBoard(this);
     }
 
-    public void closeClaw(ModulesCommanderMarker operator) {
+    public void holdPixel(ModulesCommanderMarker operator) {
         if (!isOwner(operator))
             return;
-        this.claw.close();
+        this.claw.holdPixel(this);
     }
 
     private void resetEncoder() {

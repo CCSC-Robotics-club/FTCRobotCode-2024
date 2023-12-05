@@ -128,6 +128,7 @@ public final class RobotConfig {
         public static final String claw1Name = "claw1", claw2Name = null; // single servo claw
 
         public static final double servoValueOrigin = 0, servoValueExtend = 1;
+        public static final double extendTime = 0.5;
     }
 
     public static final class ChassisConfigs {

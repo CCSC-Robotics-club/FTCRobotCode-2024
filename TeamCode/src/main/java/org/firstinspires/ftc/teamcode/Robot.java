@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.EncoderMotorWheel;
+import org.firstinspires.ftc.teamcode.Modules.ExtendableClaw;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.Modules.Intake;
@@ -185,7 +186,7 @@ public abstract class Robot {
         final DcMotor armMotor = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armMotorName),
                 armEncoder = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armEncoderName);
         final TouchSensor limitSwitch = RobotConfig.ArmConfigs.limitSwitchName != null ? hardwareMap.get(TouchSensor.class, RobotConfig.ArmConfigs.limitSwitchName) : null;
-        arm = new Arm(claw, armEncoder, armEncoder, limitSwitch);
+        arm = new Arm(armEncoder, armEncoder, new ExtendableClaw(claw, hardwareMap.get(Servo.class, "extend")), limitSwitch);
         robotModules.add(arm);
     }
 

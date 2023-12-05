@@ -34,13 +34,22 @@ public class ExtendableClaw extends RobotModule {
     @Override
     protected void periodic(double dt) {
         timer += dt;
-        switch (status) {
-            case RELEASE: {
-                claw.open();
-                extendControllerServo.setPosition(ArmConfigs.servoValueOrigin);
-                return;
-            }
-        }
+
+        if (status == Status.PLACE_TO_BOARD && timer > ArmConfigs.extendTime) {
+            status = Status.RELEASE;
+            timer = 0;
+        } else if (status == Status.RELEASE && timer > ArmConfigs.extendTime)
+            status = Status.STANDBY;
+
+        if (status == Status.STANDBY || status == Status.RELEASE)
+            claw.open();
+        else
+            claw.close();
+
+        if (status == Status.HOLD_PIXEL || status == Status.PLACE_TO_BOARD)
+            extendControllerServo.setPosition(ArmConfigs.servoValueExtend);
+        else
+            extendControllerServo.setPosition(ArmConfigs.servoValueOrigin);
     }
 
     @Override
