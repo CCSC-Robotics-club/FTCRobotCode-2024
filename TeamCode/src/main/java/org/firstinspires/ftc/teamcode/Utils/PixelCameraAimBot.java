@@ -188,4 +188,9 @@ public class PixelCameraAimBot {
                 targetRelativePositionToRobot.multiplyBy(new Rotation2D(chassis.getYaw()))
         );
     }
+
+    public boolean shouldIntakeStart() {
+        return this.status == Status.FEEDING;
+        // return this.status != Status.UNUSED;
+    }
 }

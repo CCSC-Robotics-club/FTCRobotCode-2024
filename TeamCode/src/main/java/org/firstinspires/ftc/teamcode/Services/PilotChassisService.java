@@ -26,6 +26,7 @@ public class PilotChassisService extends RobotService {
     private final DriverGamePad driverController;
     public final DistanceSensor distanceSensor;
     private final PixelCameraAimBot pixelAimBot;
+    public final IntakeService.PixelDetector pixelDetector;
     private double rotationWhenStickPressed;
     private Vector2D currentDesiredPosition;
     /** time since last translational command sent by pilot */
@@ -47,7 +48,11 @@ public class PilotChassisService extends RobotService {
         this.distanceSensor = distanceSensor;
         this.pilotFacingRotation = new Rotation2D(pilotFacing);
         pixelAimBot = pixelCamera != null ?
-                new PixelCameraAimBot(chassis, pixelCamera, this, debugMessages) : null;
+                new PixelCameraAimBot(chassis, pixelCamera, this, debugMessages)
+                : null;
+        pixelDetector = pixelAimBot != null ?
+                pixelAimBot::shouldIntakeStart
+                : () -> false;
     }
     @Override
     public void init() {
@@ -136,7 +141,6 @@ public class PilotChassisService extends RobotService {
             pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.LINE_UP_AND_FEED);
         if (processPixelNavigation)
             pixelAimBot.update();
-        
 
         /* send pilot command to chassis if both types of visual navigation are unused */
         if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
@@ -163,7 +167,8 @@ public class PilotChassisService extends RobotService {
                     0
             );
 
-        if (this.visualTaskStatus == VisualTaskStatus.FINISHED || this.visualTaskStatus == VisualTaskStatus.UNUSED)
+        if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
+                && !processPixelNavigation)
             chassis.setRotationalTask(rotationalTaskByPilotStick, this);
 
         if (driverController.keyOnHold(RobotConfig.KeyBindings.resetIMUKey))

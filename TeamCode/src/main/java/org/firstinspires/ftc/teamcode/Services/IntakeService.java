@@ -11,11 +11,11 @@ import org.firstinspires.ftc.teamcode.Utils.RobotService;
 
 public class IntakeService extends RobotService {
     private final Intake intake;
-    private final DriverGamePad driverGamePad;
+    private final PixelDetector pixelDetector;
     private final Gamepad copilotGamepad;
-    public IntakeService(Intake intake,DriverGamePad driverGamePad, Gamepad copilotGamepad) {
+    public IntakeService(Intake intake, PixelDetector pixelDetector, Gamepad copilotGamepad) {
         this.intake = intake;
-        this.driverGamePad = driverGamePad;
+        this.pixelDetector = pixelDetector;
         this.copilotGamepad = copilotGamepad;
     }
     @Override
@@ -25,8 +25,7 @@ public class IntakeService extends RobotService {
 
     @Override
     public void periodic(double dt) {
-        if (driverGamePad.keyOnHold(KeyBindings.processFaceToPixelAndFeedButton)
-                || driverGamePad.keyOnHold(KeyBindings.processLineUpWithPixelAndFeedButton)
+        if (pixelDetector.isPixelInFront()
                 || copilotGamepad.right_trigger > RobotConfig.ControlConfigs.triggerThreshold)
             intake.setMotion(Intake.Motion.ACTIVATED, this);
         else if (copilotGamepad.right_bumper)
@@ -44,5 +43,9 @@ public class IntakeService extends RobotService {
     public void reset() {
         intake.reset();
         intake.gainOwnerShip(this);
+    }
+
+    public interface PixelDetector {
+        boolean isPixelInFront();
     }
 }
