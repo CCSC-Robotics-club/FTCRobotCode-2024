@@ -40,11 +40,11 @@ public class EnhancedPIDController2D {
 
         /* if correction power along the one axis is big enough, we discard friction compensation of the other axis */
         if (Math.abs(yCorrectionPower) > 2 * yMinPowerToMove)
-            xConfig.setMinPowerToMove(0);
+            xConfig.setMinPowerToMove(xMinPowerToMove / 3);
         else
             xConfig.setMinPowerToMove(xMinPowerToMove);
         if (Math.abs(xCorrectionPower) > 2 * xMinPowerToMove)
-            yConfig.setMinPowerToMove(0);
+            yConfig.setMinPowerToMove(yMinPowerToMove / 3);
         else
             yConfig.setMinPowerToMove(yMinPowerToMove);
         this.previousTimeMillis = System.currentTimeMillis();

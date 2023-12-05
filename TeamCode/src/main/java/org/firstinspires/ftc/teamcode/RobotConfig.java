@@ -164,11 +164,11 @@ public final class RobotConfig {
         /* encoder drive-to-position PID */
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
-                0.95,
-                0.09,
-                35,
                 1,
                 0.1,
+                43,
+                1,
+                0.13,
                 0, 0
         );
 
@@ -183,7 +183,7 @@ public final class RobotConfig {
         /** the distance to set the position target, when pilot sends a command of full speed  */
         public static final double targetDistanceAtMaxDesiredSpeed = 65;
         /** the smooth-out time, or the time after the pilot let the chassis stop till it start maintaining its current position */
-        public static final double timeToStartDecelerate = 0.4;
+        public static final double timeToStartDecelerate = 0.5;
 
         /** within how many times the error tolerance of PID should the translational task be counted as complete */
         public static final double errorToleranceAsTaskFinished = 1.8;
@@ -256,7 +256,9 @@ public final class RobotConfig {
         public static final double pixelDetectionMaximumDistance = 50; // in cm
         public static final double pixelSearchVelocity = 100; // in cm/s
         public static final Vector2D pixelFeedingSweetSpot = new Vector2D(new double[]{0, 15});
-        public static final double feedingDistanceForward = -10; // in cm
+        public static final double feedingSpotErrorTolerance = 3;
+        public static final double feedingDistanceForward = -22; // in cm
+        public static final long feedTimeMillis = 2000;
     }
 
     public static final class ControlConfigs {

@@ -109,7 +109,7 @@ public class PixelCameraAimBot {
                                 desiredFieldPosition
                         ), commanderMarker);
 
-                debugMessages.put("pixel direction", pixelCamera);
+                debugMessages.put("pixel direction", targetedRotation);
                 debugMessages.put("face-to targeted position", desiredFieldPosition);
 
                 if (chassis.isCurrentRotationalTaskComplete())
@@ -128,12 +128,13 @@ public class PixelCameraAimBot {
                                 desiredFieldPosition
                         ), commanderMarker);
 
-                if (chassis.isCurrentTranslationalTaskComplete())
+                if (Vector2D.displacementToTarget(chassis.getChassisEncoderPosition(), desiredFieldPosition).getMagnitude() < RobotConfig.VisualNavigationConfigs.feedingSpotErrorTolerance)
                     initiateFeed();
                 return;
             }
             case FEEDING: {
-                if (chassis.isCurrentTranslationalTaskComplete())
+                if (chassis.isCurrentTranslationalTaskComplete()
+                        || System.currentTimeMillis()-feedingProcessStartTimeMillis >= RobotConfig.VisualNavigationConfigs.feedTimeMillis)
                     status = Status.UNUSED;
                 return;
             }
@@ -158,6 +159,7 @@ public class PixelCameraAimBot {
         }
     }
 
+    private double feedingProcessStartTimeMillis = 0;
     private void initiateFeed() {
         final Vector2D feedStartPosition = chassis.getChassisEncoderPosition(),
                 feedPathForward = new Vector2D(new double[] {0, RobotConfig.VisualNavigationConfigs.feedingDistanceForward}),
@@ -170,6 +172,7 @@ public class PixelCameraAimBot {
                         Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         feedEndPosition), commanderMarker);
         this.status = Status.FEEDING;
+        feedingProcessStartTimeMillis = System.currentTimeMillis();
     }
 
     private void updateTargetPositionIfSeen() {

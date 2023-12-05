@@ -114,11 +114,12 @@ public class PilotChassisService extends RobotService {
 
         if (driverController.keyOnPressed(RobotConfig.KeyBindings.setAimPositionLeftButton))
             aimCenter--;
-        if (driverController.keyOnHold(RobotConfig.KeyBindings.setAimPositionRightButton))
+        if (driverController.keyOnPressed(RobotConfig.KeyBindings.setAimPositionRightButton))
             aimCenter++;
         final int aimCenterMax = RobotConfig.VisualNavigationConfigs.aimHorizontalPositions.length;
         if (aimCenter <= -aimCenterMax) aimCenter = -aimCenterMax + 1;
         else if (aimCenter >= aimCenterMax) aimCenter = aimCenterMax - 1;
+        debugMessages.put("aim center", aimCenter);
 
         final double aimCenterCM = Math.copySign(RobotConfig.VisualNavigationConfigs.aimHorizontalPositions[Math.abs(aimCenter)], aimCenter);
         if (initiateVisualApproach)
@@ -315,9 +316,6 @@ public class PilotChassisService extends RobotService {
         /* keep on maintaining rotation */
         chassis.setRotationalTask(new Chassis.ChassisRotationalTask(Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                 0), this);
-
-        debugMessages.put("received dt", dt);
-        debugMessages.put("maintain and aim target (enc, field)", aimTargetEncoder);
     }
 
     private void aimFail() {

@@ -263,7 +263,7 @@ public abstract class Robot {
                         robotService.periodic();
                     telemetrySender.periodic();
 
-                    while (System.currentTimeMillis() - previousTimeMillis + 3 < 1000d / RobotConfig.ControlConfigs.pilotControllerKeyUpdatingRate) {
+                    while (System.currentTimeMillis() - previousTimeMillis + 3 < 1000f / RobotConfig.ControlConfigs.pilotControllerKeyUpdatingRate) {
                         try {
                             Thread.sleep(3);
                         } catch (InterruptedException e) {
@@ -271,7 +271,7 @@ public abstract class Robot {
                         }
                     }
 
-                    telemetrySender.putSystemMessage("services dt", System.currentTimeMillis() - previousTimeMillis);
+                    telemetrySender.putSystemMessage("services update rate", 1000 / (System.currentTimeMillis() - previousTimeMillis));
                     previousTimeMillis = System.currentTimeMillis();
                 }
             }
