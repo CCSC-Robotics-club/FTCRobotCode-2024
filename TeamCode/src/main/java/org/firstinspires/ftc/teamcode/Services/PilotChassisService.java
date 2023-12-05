@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
+import org.firstinspires.ftc.teamcode.Utils.PixelCameraAimBot;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 import org.firstinspires.ftc.teamcode.Utils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
@@ -24,6 +25,7 @@ public class PilotChassisService extends RobotService {
     private final Chassis chassis;
     private final DriverGamePad driverController;
     public final DistanceSensor distanceSensor;
+    private final PixelCameraAimBot pixelAimBot;
     private double rotationWhenStickPressed;
     private Vector2D currentDesiredPosition;
     /** time since last translational command sent by pilot */
@@ -44,6 +46,8 @@ public class PilotChassisService extends RobotService {
         this.driverController = driverController;
         this.distanceSensor = distanceSensor;
         this.pilotFacingRotation = new Rotation2D(pilotFacing);
+        pixelAimBot = pixelCamera != null ?
+                new PixelCameraAimBot(chassis, pixelCamera, this, debugMessages) : null;
     }
     @Override
     public void init() {
@@ -96,7 +100,7 @@ public class PilotChassisService extends RobotService {
             }
         }
 
-        /* visual navigation */
+        /* visual navigation: wall */
         chassis.setLowSpeedModeEnabled(driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton));
         final boolean processVisualApproach = driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton),
                 initiateVisualApproach = driverController.keyOnPressed(RobotConfig.KeyBindings.processVisualApproachButton);
@@ -118,10 +122,26 @@ public class PilotChassisService extends RobotService {
             this.processVisualNavigationTask(dt, aimCenterCM);
         else
             this.visualTaskStatus = VisualTaskStatus.UNUSED;
-        if (visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
-            chassis.setTranslationalTask(translationalTaskByPilotStickControl, this);
-        debugMessages.put("chassis task finished", chassis.isCurrentTranslationalTaskComplete());
         debugMessages.put("visual task status", visualTaskStatus);
+
+        /* visual navigation:pixel */
+        final boolean pixelAimSupported = this.pixelAimBot != null,
+                startFacePixelAndFeedTask = driverController.keyOnPressed(RobotConfig.KeyBindings.processFaceToPixelAndFeedButton) && pixelAimSupported,
+                startLineUpWithPixelAndFeedTask = driverController.keyOnPressed(RobotConfig.KeyBindings.processLineUpWithPixelAndFeedButton) && pixelAimSupported,
+                processPixelNavigation = (driverController.keyOnHold(RobotConfig.KeyBindings.processFaceToPixelAndFeedButton) || driverController.keyOnHold(RobotConfig.KeyBindings.processLineUpWithPixelAndFeedButton))
+                        && pixelAimSupported;
+        if (startFacePixelAndFeedTask)
+            pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.FACE_TO_AND_FEED);
+        else if (startLineUpWithPixelAndFeedTask)
+            pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.LINE_UP_AND_FEED);
+        if (processPixelNavigation)
+            pixelAimBot.update();
+        
+
+        /* send pilot command to chassis if both types of visual navigation are unused */
+        if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
+            && !processPixelNavigation)
+            chassis.setTranslationalTask(translationalTaskByPilotStickControl, this);
 
         /* <--rotation--> */
         double pilotRotationalCommand = driverController.getRotationStickValue();

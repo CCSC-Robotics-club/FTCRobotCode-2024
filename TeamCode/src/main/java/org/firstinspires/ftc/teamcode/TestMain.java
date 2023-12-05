@@ -37,6 +37,7 @@ import org.firstinspires.ftc.teamcode.Utils.TensorCamera;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @TeleOp(name="Test_main")
@@ -882,7 +883,7 @@ public class TestMain extends LinearOpMode {
         Chassis chassis = getChassisModuleWithDefaultConfig();
         FixedAnglePixelCamera pixelCamera = getPixelCameraWithDefaultConfig();
         telemetrySender.addRobotModule(pixelCamera);
-        PixelCameraAimBot aimBot = new PixelCameraAimBot(chassis, pixelCamera, null, telemetrySender);
+        PixelCameraAimBot aimBot = new PixelCameraAimBot(chassis, pixelCamera, null, new HashMap<>());
 
         waitForStart();
 

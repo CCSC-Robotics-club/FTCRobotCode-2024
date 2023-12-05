@@ -3,13 +3,14 @@ package org.firstinspires.ftc.teamcode.Utils;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.RobotConfig;
-import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
+
+import java.util.Map;
 
 public class PixelCameraAimBot {
     private final Chassis chassis;
     private final FixedAnglePixelCamera pixelCamera;
     private final ModulesCommanderMarker commanderMarker;
-    private final TelemetrySender telemetrySender;
+    private final Map<String, Object> debugMessages;
     private Vector2D pixelFieldPosition = null;
 
     private long searchInitateTimeMillis = -1;
@@ -30,11 +31,11 @@ public class PixelCameraAimBot {
     private Status status;
 
 
-    public PixelCameraAimBot(Chassis chassis, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
+    public PixelCameraAimBot(Chassis chassis, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, Map<String, Object> debugMessages) {
         this.chassis = chassis;
         this.pixelCamera = pixelCamera;
         this.commanderMarker = commanderMarker;
-        this.telemetrySender = telemetrySender;
+        this.debugMessages = debugMessages;
 
         status = Status.UNUSED;
     }
@@ -87,8 +88,8 @@ public class PixelCameraAimBot {
     }
 
     public void update() {
-        telemetrySender.putSystemMessage("pixel aim-bot status", status);
-        telemetrySender.putSystemMessage("camera target", pixelCamera.getNearestPixelPosition());
+        debugMessages.put("pixel aim-bot status", status);
+        debugMessages.put("camera target", pixelCamera.getNearestPixelPosition());
         switch (status) {
             case FACING_TO: {
                 updateTargetPositionIfSeen();
@@ -108,11 +109,11 @@ public class PixelCameraAimBot {
                                 desiredFieldPosition
                         ), commanderMarker);
 
-                telemetrySender.putSystemMessage("pixel direction", pixelCamera);
-                telemetrySender.putSystemMessage("face-to targeted position", desiredFieldPosition);
+                debugMessages.put("pixel direction", pixelCamera);
+                debugMessages.put("face-to targeted position", desiredFieldPosition);
 
                 if (chassis.isCurrentRotationalTaskComplete())
-                    status = Status.UNUSED;
+                    initiateFeed();
                 return;
             }
             case LINING_UP: {
@@ -120,7 +121,7 @@ public class PixelCameraAimBot {
                 final Vector2D desiredFieldPosition = pixelFieldPosition.addBy(
                                 RobotConfig.VisualNavigationConfigs.pixelFeedingSweetSpot.multiplyBy(new Rotation2D(chassis.getYaw()))
                         );
-                telemetrySender.putSystemMessage("line-up targeted position", desiredFieldPosition);
+                debugMessages.put("line-up targeted position", desiredFieldPosition);
                 chassis.setTranslationalTask(
                         new Chassis.ChassisTranslationalTask(
                                 Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
@@ -162,21 +163,19 @@ public class PixelCameraAimBot {
                 feedPathForward = new Vector2D(new double[] {0, RobotConfig.VisualNavigationConfigs.feedingDistanceForward}),
                 feedEndPosition = feedStartPosition.addBy(feedPathForward.multiplyBy(new Rotation2D(chassis.getYaw())));
 
-        telemetrySender.putSystemMessage("feed end pos", feedEndPosition);
+        debugMessages.put("feed end pos", feedEndPosition);
 
         chassis.setTranslationalTask(
                 new Chassis.ChassisTranslationalTask(
                         Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         feedEndPosition), commanderMarker);
-        // chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), commanderMarker);
-
         this.status = Status.FEEDING;
     }
 
     private void updateTargetPositionIfSeen() {
         final Vector2D pixelFieldPositionNew = getTargetFieldPosition();
 
-        telemetrySender.putSystemMessage("pixel position update", pixelFieldPositionNew);
+        debugMessages.put("pixel position update", pixelFieldPositionNew);
 
         if (pixelFieldPositionNew != null)
             pixelFieldPosition = pixelFieldPositionNew;

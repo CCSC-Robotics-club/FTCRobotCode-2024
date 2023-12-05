@@ -165,7 +165,7 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 0.95,
-                0.1,
+                0.08,
                 35,
                 1,
                 0.12,
@@ -299,7 +299,8 @@ public final class RobotConfig {
         public static final XboxControllerKey setAimPositionLeftButton = XboxControllerKey.X;
         public static final XboxControllerKey setAimPositionRightButton = XboxControllerKey.B;
 
-        public static final XboxControllerKey processAutoIntakePixelButton = XboxControllerKey.RIGHT_TRIGGER;
+        public static final XboxControllerKey processFaceToPixelAndFeedButton = XboxControllerKey.RIGHT_TRIGGER;
+        public static final XboxControllerKey processLineUpWithPixelAndFeedButton = XboxControllerKey.RIGHT_BUMPER;
     }
 
     public enum XboxControllerKey {

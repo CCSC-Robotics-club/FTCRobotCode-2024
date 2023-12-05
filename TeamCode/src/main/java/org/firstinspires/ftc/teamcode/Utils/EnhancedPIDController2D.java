@@ -37,7 +37,8 @@ public class EnhancedPIDController2D {
         double dt = (System.currentTimeMillis() - previousTimeMillis) / 1000.0f;
         double xCorrectionPower = this.xController.getMotorPower(currentPosition.getX(), currentVelocity.getX(), dt);
         double yCorrectionPower = this.yController.getMotorPower(currentPosition.getY(), currentVelocity.getY(), dt);
-        /* if movement along the other axis is big enough, we ignore the difference in the other axes */
+
+        /* if correction power along the one axis is big enough, we discard friction compensation of the other axis */
         if (Math.abs(yCorrectionPower) > 2 * yMinPowerToMove)
             xConfig.setMinPowerToMove(0);
         else
