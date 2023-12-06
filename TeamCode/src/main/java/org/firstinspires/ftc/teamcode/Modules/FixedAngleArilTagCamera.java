@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.RawArilTagRecognitionCamera;
+import org.firstinspires.ftc.teamcode.Utils.RawPixelDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
@@ -113,6 +114,10 @@ public class FixedAngleArilTagCamera extends RobotModule {
         final double yDistance = profile.getDistanceFromYPixel(rawTarget.y),
             xDistance = yDistance / Math.tan(profile.getTargetAngleRadianFromXPixel(rawTarget.x));
         return new Vector2D(new double[] {xDistance, yDistance});
+    }
+
+    public RawArilTagRecognitionCamera getRawAprilTagCamera() {
+        return this.camera;
     }
 
     @Deprecated

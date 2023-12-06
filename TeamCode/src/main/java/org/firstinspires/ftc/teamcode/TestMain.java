@@ -44,7 +44,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        driveToPixelAimBotTest();
+        huskyTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -275,8 +275,8 @@ public class TestMain extends LinearOpMode {
     }
 
     private void servoTest() {
-        Servo servo1 = hardwareMap.get(Servo.class, "claw1");
-        Servo servo2 = hardwareMap.get(Servo.class, "claw2");
+        Servo servo1 = hardwareMap.get(Servo.class, "launch");
+        Servo servo2 = hardwareMap.get(Servo.class, "extend");
 
         waitForStart();
 
