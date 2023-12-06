@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Modules;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 
@@ -56,6 +57,7 @@ public class Arm extends RobotModule {
         resetEncoder();
         claw.reset();
         claw.gainOwnerShip(this);
+        currentCommand = ArmConfigs.armCommandWhenNoInput;
     }
 
     public void setArmCommand(ArmCommand armCommand, ModulesCommanderMarker operator) {

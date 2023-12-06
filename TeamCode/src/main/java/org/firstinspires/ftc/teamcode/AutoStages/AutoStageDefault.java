@@ -48,19 +48,20 @@ public class AutoStageDefault extends AutoStageProgram {
                 () -> {},
                 () -> true,
                 constantsTable.startingRobotFacing,
-                constantsTable.startingRobotFacing + Objects.requireNonNull(RobotConfig.TeamElementFinderConfigs.teamElementPositionSearchRotationRanges.get(TeamElementFinder.TeamElementPosition.LEFT))[0]
+                constantsTable.centerTeamElementRotation + Objects.requireNonNull(RobotConfig.TeamElementFinderConfigs.teamElementPositionSearchRotationRanges.get(TeamElementFinder.TeamElementPosition.LEFT))[0]
         ));
 
         /* scan for team element */
-        commandSegments.add(teamElementFinder.getDistanceSensorFindingCommand(TeamElementFinder.TeamElementPosition.LEFT, constantsTable.centerTeamElementRotation));
-        commandSegments.add(teamElementFinder.getDistanceSensorFindingCommand(TeamElementFinder.TeamElementPosition.CENTER, constantsTable.centerTeamElementRotation));
-        commandSegments.add(teamElementFinder.getDistanceSensorFindingCommand(TeamElementFinder.TeamElementPosition.RIGHT, constantsTable.centerTeamElementRotation));
+        commandSegments.add(teamElementFinder.getDistanceSensorFindingCommand(TeamElementFinder.TeamElementPosition.LEFT, constantsTable.centerTeamElementRotation, telemetrySender));
+        commandSegments.add(teamElementFinder.getDistanceSensorFindingCommand(TeamElementFinder.TeamElementPosition.CENTER, constantsTable.centerTeamElementRotation, telemetrySender));
+        commandSegments.add(teamElementFinder.getDistanceSensorFindingCommand(TeamElementFinder.TeamElementPosition.RIGHT, constantsTable.centerTeamElementRotation, telemetrySender));
 
 
-        telemetrySender.putSystemMessage("element position", teamElementFinder.getFindingResult());
         commandSegments.add(new SequentialCommandSegment(
                 null,
-                () -> {},
+                () -> {
+                    telemetrySender.putSystemMessage("element position", teamElementFinder.getFindingResult());
+                },
                 () -> {},
                 () -> {},
                 () -> false,
@@ -108,7 +109,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 constantsTable.scanTeamElementPosition,
                 new Vector2D(),
                 new Vector2D(new double[] {constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(), constantsTable.centerLineYPosition}),
-                new Vector2D(new double[] {})
+                new Vector2D(new double[] {0, 0})
         );
         commandSegments.add(
                 new SequentialCommandSegment(
@@ -133,7 +134,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 0,
                 -Math.PI / 2,
                 0,
-                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {70,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})

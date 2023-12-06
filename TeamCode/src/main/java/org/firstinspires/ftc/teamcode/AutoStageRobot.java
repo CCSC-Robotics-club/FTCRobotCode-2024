@@ -15,7 +15,7 @@ public class AutoStageRobot extends Robot {
     private final AutoStageProgram autoStageProgram;
     final AutoProgramRunner autoProgramRunnerService;
     public AutoStageRobot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, AutoStageProgram autoStageProgram) {
-        super(hardwareMap, telemetry, checker, hardwareConfigs, autoStageProgram.allianceSide, true);
+        super(hardwareMap, telemetry, checker, hardwareConfigs, autoStageProgram.allianceSide, false);
         if (hardwareConfigs.encodersParams == null || hardwareConfigs.encoderNames == null)
             throw new IllegalStateException("auto stage cannot proceed without encoders");
 

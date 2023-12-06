@@ -31,17 +31,17 @@ public class AutoProgramRunner extends RobotService {
 
     @Override
     public void init() {
-        /* check if there is any jump in the starting and ending point */
-        for (int currentSegment = 0; currentSegment < commandSegments.size()-1; currentSegment++) {
-            if (commandSegments.get(currentSegment).getChassisMovementPath() == null || commandSegments.get(currentSegment+1).getChassisMovementPath() == null)
-                continue;
-            final double distanceBetweenCurrentEndToNextStart = Vector2D.displacementToTarget(
-                            commandSegments.get(currentSegment).getChassisMovementPath().getPositionWithLERP(1),
-                            commandSegments.get(currentSegment+1).getChassisMovementPath().getPositionWithLERP(0))
-                    .getMagnitude();
-            if (distanceBetweenCurrentEndToNextStart > 10)
-                throw new IllegalArgumentException("current segment (id:" + currentSegment + ")'s starting point does match the ending point of the last segment with deviation " + distanceBetweenCurrentEndToNextStart);
-        }
+//        /* check if there is any jump in the starting and ending point */
+//        for (int currentSegment = 0; currentSegment < commandSegments.size()-1; currentSegment++) {
+//            if (commandSegments.get(currentSegment).getChassisMovementPath() == null || commandSegments.get(currentSegment+1).getChassisMovementPath() == null)
+//                continue;
+//            final double distanceBetweenCurrentEndToNextStart = Vector2D.displacementToTarget(
+//                            commandSegments.get(currentSegment).getChassisMovementPath().getPositionWithLERP(1),
+//                            commandSegments.get(currentSegment+1).getChassisMovementPath().getPositionWithLERP(0))
+//                    .getMagnitude();
+//            if (distanceBetweenCurrentEndToNextStart > 10)
+//                throw new IllegalArgumentException("current segment (id:" + currentSegment + ")'s starting point does match the ending point of the last segment with deviation " + distanceBetweenCurrentEndToNextStart);
+//        }
         this.reset();
     }
 

@@ -285,7 +285,7 @@ public final class RobotConfig {
 
     public static final class TeamElementFinderConfigs {
         public static final Map<TeamElementFinder.TeamElementPosition, Double[]> teamElementPositionSearchRotationRanges = new HashMap<>();
-        public static final double distanceThreshold = 5;
+        public static final double distanceThreshold = 12;
         static {
             teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.LEFT, new Double[]{Math.toRadians(125), Math.toRadians(55)});
             teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.CENTER, new Double[]{Math.toRadians(35), Math.toRadians(-35)});
@@ -308,7 +308,7 @@ public final class RobotConfig {
         /** the exponent of the the y axis of translational stick, 1 for linear */
         public static final double pilotController_translationStickYExp = 1.6;
         /** the exponent of the rotational axis , 1 for linear */
-        public static final double pilotController_rotationalStickExp = 1.8;
+        public static final double pilotController_rotationalStickExp = 2;
 
 
         public static final double visualNavigationAimingSensitivityCMPS = 30;
