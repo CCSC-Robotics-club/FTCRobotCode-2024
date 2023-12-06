@@ -131,8 +131,16 @@ public final class RobotConfig {
         claw2Profile = null;
         public static final String claw1Name = "claw1", claw2Name = null; // single servo claw
 
-        public static final double servoValueOrigin = 0, servoValueExtend = 0.42;
+        public static final double servoValueOrigin = 1, servoValueExtend = 0.58;
         public static final double extendTime = 0.5;
+    }
+
+    public static final class LauncherConfigs {
+        public static final double launcherZeroPosition = 0,
+                launcherActivatePosition = 0.4,
+                liftZeroPosition = 0,
+                liftActivatePosition = 0.35,
+                servoMovementTime = 0.5;
     }
 
     public static final class ChassisConfigs {
