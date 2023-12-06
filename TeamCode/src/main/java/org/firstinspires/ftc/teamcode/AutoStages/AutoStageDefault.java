@@ -100,12 +100,9 @@ public class AutoStageDefault extends AutoStageProgram {
                         },
                         () -> true,
                         () -> constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI,
-                        () -> 0
+                        () -> 0 // face front
                 )
         );
-
-        /* drive to the pixel  */
-        commandSegments.add()
     }
 
 
