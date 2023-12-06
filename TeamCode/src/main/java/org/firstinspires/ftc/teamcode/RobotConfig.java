@@ -120,7 +120,7 @@ public final class RobotConfig {
         public static final int positionDifferenceStartDecelerate = 500;
         public static final int positionTolerance = 50;
         public static final double frictionPower = 0.2;
-        public static final int lowPos = 1800, midPos = 2600, highPos = 3400;
+        public static final int feedPos = 200, lowPos = 1800, midPos = 2600, highPos = 3400;
         public static final int positionLimit = 3500;
         public static final Arm.ArmCommand armCommandWhenNoInput = new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0); // null for not needed
 
@@ -131,15 +131,15 @@ public final class RobotConfig {
         claw2Profile = null;
         public static final String claw1Name = "claw1", claw2Name = null; // single servo claw
 
-        public static final double servoValueOrigin = 1, servoValueExtend = 0.58;
-        public static final double extendTime = 0.5;
+        public static final double servoValueOrigin = 0.95, servoValueExtend = 0.58;
+        public static final double extendTime = 0.3;
     }
 
     public static final class LauncherConfigs {
-        public static final double launcherZeroPosition = 0,
-                launcherActivatePosition = 0.4,
-                liftZeroPosition = 0,
-                liftActivatePosition = 0.35,
+        public static final double launcherZeroPosition = 1,
+                launcherActivatePosition = 0.6,
+                liftZeroPosition = 1,
+                liftActivatePosition = 0.65,
                 servoMovementTime = 0.5;
     }
 

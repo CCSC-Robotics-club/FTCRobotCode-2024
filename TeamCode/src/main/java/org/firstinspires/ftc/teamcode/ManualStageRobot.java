@@ -38,7 +38,7 @@ public class ManualStageRobot extends Robot {
         final ArmService armService = new ArmService(super.arm, copilotGamepad);
         super.robotServices.add(armService);
 
-        final PlaneLauncher planeLauncher = new PlaneLauncher(hardwareMap.get(Servo.class, "launcher"), hardwareMap.get(Servo.class, "lift"));
+        final PlaneLauncher planeLauncher = new PlaneLauncher(hardwareMap.get(Servo.class, "launch"), hardwareMap.get(Servo.class, "lift"));
         super.robotModules.add(planeLauncher);
         final PlaneLaunchService planeLaunchService = new PlaneLaunchService(planeLauncher, copilotGamepad);
         super.robotServices.add(planeLaunchService);

@@ -44,7 +44,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        huskyTest();
+        servoTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -290,7 +290,7 @@ public class TestMain extends LinearOpMode {
             if (gamepad1.a)
                 servoAngle = 0;
             servoAngle = Math.min(Math.max(0,servoAngle), 1);
-            servo1.setPosition(1-servoAngle);
+            servo1.setPosition(servoAngle);
             servo2.setPosition(servoAngle);
             telemetry.addData("servo angle", servoAngle);
             telemetry.update();
