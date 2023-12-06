@@ -92,10 +92,16 @@ public class AutoProgramRunner extends RobotService {
     }
 
     private void initiateSegment(int segmentID) {
-        this.currentSegmentTime = 0;
-        this.commandSegments.get(segmentID).beginning.run();
+        final SequentialCommandSegment segment = this.commandSegments.get(segmentID);
+        if (!segment.initiateCondition.initiateOrSkip()) {
+            nextSegment(); // skip this segment
+            return;
+        }
 
-        if (commandSegments.get(segmentID).chassisMovementPath == null) return;
+        this.currentSegmentTime = 0;
+        segment.beginning.run();
+
+        if (segment.chassisMovementPath == null) return;
         robotChassis.gainOwnerShip(this);
         this.currentSegmentChassisPathTimeScale = getTimeScaleWithMaximumVelocityAndAcceleration();
     }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.AutoStages;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Utils.TeamElementFinder;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
 
 public class AutoStageConstantsTable {
@@ -29,6 +30,18 @@ public class AutoStageConstantsTable {
         this.pixelStashOuter = pixelStashOuter;
         this.pixelStashMiddle = pixelStashMiddle;
         this.pixelStashInner = pixelStashInner;
+    }
+
+    public Vector2D getFeedingPosition(TeamElementFinder.TeamElementPosition teamElementPosition) {
+        switch (teamElementPosition) {
+            case LEFT:
+                return teamElementLinePositionLeft;
+            case RIGHT:
+                return teamElementLinePositionRight;
+            case CENTER:
+                return teamElementLinePositionCenter;
+        }
+        return null;
     }
 }
 

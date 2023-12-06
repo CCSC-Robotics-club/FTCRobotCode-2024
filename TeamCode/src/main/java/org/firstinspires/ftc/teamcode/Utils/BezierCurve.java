@@ -8,6 +8,16 @@ public class BezierCurve {
     private static final int samples = 100;
     public final double maximumSpeed, maximumAcceleration, length;
 
+    /**
+     * create a bezier curve to be a straight line
+     * */
+    public BezierCurve(Vector2D startingPoint, Vector2D endingPoint) {
+        this(
+                startingPoint,
+                startingPoint.addBy(Vector2D.displacementToTarget(startingPoint, endingPoint).multiplyBy(1/3)),
+                startingPoint.addBy(Vector2D.displacementToTarget(startingPoint, endingPoint).multiplyBy(2/3)),
+                endingPoint);
+    }
     public BezierCurve(Vector2D startingPoint, Vector2D startingPointAnotherPoint, Vector2D endingPointAnotherPoint, Vector2D endingPoint) {
         this.p0 = startingPoint;
         this.p1 = startingPointAnotherPoint;
