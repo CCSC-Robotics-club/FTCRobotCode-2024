@@ -24,12 +24,11 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class AutoStageDefault extends AutoStageProgram {
-    private final boolean frontField, useInnerWalkWay;
+    private final boolean frontField;
     private final AutoStageConstantsTable constantsTable;
-    public AutoStageDefault(AutoStageConstantsTable constantsTable, boolean frontField, boolean useInnerWalkWay) {
+    public AutoStageDefault(AutoStageConstantsTable constantsTable, boolean frontField) {
         super(constantsTable.allianceSide);
         this.frontField = frontField;
-        this.useInnerWalkWay =  useInnerWalkWay;
         this.constantsTable = constantsTable;
     }
 
@@ -43,7 +42,9 @@ public class AutoStageDefault extends AutoStageProgram {
         BezierCurve path = new BezierCurve(new Vector2D(), constantsTable.scanTeamElementPosition);
         commandSegments.add(new SequentialCommandSegment(
                 path,
-                () -> {},
+                () -> {
+                    chassis.setCurrentYaw(constantsTable.startingRobotFacing);
+                },
                 () -> {},
                 () -> {},
                 () -> true,
@@ -56,7 +57,21 @@ public class AutoStageDefault extends AutoStageProgram {
         commandSegments.add(teamElementFinder.getDistanceSensorFindingCommand(TeamElementFinder.TeamElementPosition.CENTER, constantsTable.centerTeamElementRotation));
         commandSegments.add(teamElementFinder.getDistanceSensorFindingCommand(TeamElementFinder.TeamElementPosition.RIGHT, constantsTable.centerTeamElementRotation));
 
-        if (true) return;
+
+        telemetrySender.putSystemMessage("element position", teamElementFinder.getFindingResult());
+        commandSegments.add(new SequentialCommandSegment(
+                path,
+                () -> {},
+                () -> {},
+                () -> {},
+                () -> false,
+                constantsTable.startingRobotFacing + Objects.requireNonNull(RobotConfig.TeamElementFinderConfigs.teamElementPositionSearchRotationRanges.get(TeamElementFinder.TeamElementPosition.LEFT))[0],
+                constantsTable.startingRobotFacing + Objects.requireNonNull(RobotConfig.TeamElementFinderConfigs.teamElementPositionSearchRotationRanges.get(TeamElementFinder.TeamElementPosition.LEFT))[0]
+        )); // wait forever TODO test the part before this
+
+
+
+
         /* if there is an result, drive there */
         commandSegments.add(
                 new SequentialCommandSegment(
@@ -88,12 +103,16 @@ public class AutoStageDefault extends AutoStageProgram {
                         () -> 0
                 )
         );
+
+        /* drive to the pixel  */
+        commandSegments.add()
     }
 
 
     public static final class AutoStageConstantsTables {
         public static final AutoStageConstantsTable blueAllianceFrontField = new AutoStageConstantsTable( // first we work on this one
                 Robot.Side.BLUE,
+                false,
                 0,
                 -Math.PI / 2,
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
@@ -104,6 +123,7 @@ public class AutoStageDefault extends AutoStageProgram {
 
         public static final AutoStageConstantsTable blueAllianceBackField = new AutoStageConstantsTable(
                 Robot.Side.BLUE,
+                true,
                 0,
                 -Math.PI / 2,
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
@@ -115,7 +135,8 @@ public class AutoStageDefault extends AutoStageProgram {
 
         public static final AutoStageConstantsTable redAllianceFrontField = new AutoStageConstantsTable(
                 Robot.Side.RED,
-                0,
+                false,
+                Math.PI,
                 Math.PI / 2,
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
@@ -125,8 +146,9 @@ public class AutoStageDefault extends AutoStageProgram {
 
         public static final AutoStageConstantsTable redAllianceBackField = new AutoStageConstantsTable(
                 Robot.Side.RED,
+                true,
+                Math.PI,
                 Math.PI / 2,
-                0,
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),

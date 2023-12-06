@@ -445,6 +445,10 @@ public class Chassis extends RobotModule {
         return this.positionEstimator.getRotation();
     }
 
+    public void setCurrentYaw(double yaw) {
+        positionEstimator.setRotation(yaw);
+    }
+
     public double getYawVelocity() {
         return this.positionEstimator.getAngularVelocity();
     }

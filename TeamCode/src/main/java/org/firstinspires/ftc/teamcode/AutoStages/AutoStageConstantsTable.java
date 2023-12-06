@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.Utils.Vector2D;
 
 public class AutoStageConstantsTable {
     public final Robot.Side allianceSide;
+    public final boolean backField;
     public final double startingRobotFacing;
     public final double centerTeamElementRotation;
     public final Vector2D scanTeamElementPosition, teamElementLinePositionLeft, teamElementLinePositionRight, teamElementLinePositionCenter,
@@ -15,12 +16,14 @@ public class AutoStageConstantsTable {
 
     public AutoStageConstantsTable(
             Robot.Side allianceSide,
+            boolean backField,
             double startingRobotFacing,
             double centerTeamElementRotation,
             Vector2D scanTeamElementPosition, Vector2D teamElementLinePositionLeft, Vector2D teamElementLinePositionRight, Vector2D teamElementLinePositionCenter,
             Vector2D lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross, Vector2D lowestHorizontalWalkWayAndInnerVerticalWalkWayCross,
             Vector2D aimWallSweetSpot, Vector2D pixelStashOuter, Vector2D pixelStashMiddle, Vector2D pixelStashInner) {
         this.allianceSide = allianceSide;
+        this.backField = backField;
         this.startingRobotFacing = startingRobotFacing;
         this.centerTeamElementRotation = centerTeamElementRotation;
         this.scanTeamElementPosition = scanTeamElementPosition;
