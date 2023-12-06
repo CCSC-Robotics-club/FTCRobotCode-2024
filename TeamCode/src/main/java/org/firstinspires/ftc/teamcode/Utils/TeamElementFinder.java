@@ -2,8 +2,11 @@ package org.firstinspires.ftc.teamcode.Utils;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
-import org.firstinspires.ftc.teamcode.RobotConfig;
+import static org.firstinspires.ftc.teamcode.RobotConfig.TeamElementFinderConfigs;
+
+import java.util.Objects;
 
 public class TeamElementFinder {
     public enum TeamElementPosition {
@@ -15,50 +18,31 @@ public class TeamElementFinder {
 
     private final Chassis chassis;
     private final DistanceSensor distanceSensor;
-    private final RawArilTagRecognitionCamera aprilTagCameraRaw;
     private TeamElementPosition teamElementPosition;
-    public TeamElementFinder(Chassis chassis, DistanceSensor distanceSensor, RawArilTagRecognitionCamera aprilTagCameraRaw) {
+    public TeamElementFinder(Chassis chassis, DistanceSensor distanceSensor) {
         this.chassis = chassis;
         this.distanceSensor = distanceSensor;
-        this.aprilTagCameraRaw = aprilTagCameraRaw;
 
         this.teamElementPosition = TeamElementPosition.UNDETERMINED;
     }
 
-    public TeamElementPosition findElementWithAprilTagCamera() {
-        RawArilTagRecognitionCamera.AprilTagTargetRaw aprilTagTargetRaw = aprilTagCameraRaw.getRawAprilTagByID(RobotConfig.VisualNavigationConfigs.teamElementAprilTagID);
-        if (aprilTagTargetRaw == null)
-            return this.teamElementPosition;
-        Vector2D teamElementPositionRaw = new Vector2D(new double[] {aprilTagTargetRaw.x, aprilTagTargetRaw.y});
-        final double differenceToLeftPosition = Vector2D.displacementToTarget(teamElementPositionRaw, RobotConfig.VisualNavigationConfigs.teamElementPositionLeft).getMagnitude(),
-                differenceToCenterPosition = Vector2D.displacementToTarget(teamElementPositionRaw, RobotConfig.VisualNavigationConfigs.teamElementPositionCenter).getMagnitude(),
-                differenceToRightPosition = Vector2D.displacementToTarget(teamElementPositionRaw, RobotConfig.VisualNavigationConfigs.teamElementPositionRight).getMagnitude(),
-                minDifference = Math.min(Math.min(differenceToLeftPosition, differenceToRightPosition), differenceToCenterPosition);
-
-        if (minDifference == differenceToLeftPosition)
-            return this.teamElementPosition = TeamElementPosition.LEFT;
-        if (minDifference == differenceToCenterPosition)
-            return this.teamElementPosition = TeamElementPosition.CENTER;
-        if (minDifference == differenceToRightPosition)
-            return this.teamElementPosition = TeamElementPosition.RIGHT;
-        return teamElementPosition;
-    }
-
-    public SequentialCommandSegment getDistanceSensorFindingCommand() {
+    public SequentialCommandSegment getDistanceSensorFindingCommand(TeamElementPosition positionToSearch, double centerTeamElementRotation) {
+        final double startingRotation = Objects.requireNonNull(TeamElementFinderConfigs.teamElementPositionSearchRotationRanges.get(positionToSearch))[0] + centerTeamElementRotation,
+                endingRotation = Objects.requireNonNull(TeamElementFinderConfigs.teamElementPositionSearchRotationRanges.get(positionToSearch))[1] + centerTeamElementRotation;
         return new SequentialCommandSegment(
+                () -> getFindingResult() == TeamElementPosition.UNDETERMINED,
                 null,
+                () -> {},
                 () -> {
-
+                    if (!AngleUtils.isWithInRange(chassis.getYaw(), startingRotation, endingRotation))
+                        return;
+                    if (distanceSensor.getDistance(DistanceUnit.CM) < TeamElementFinderConfigs.distanceThreshold)
+                        this.teamElementPosition = positionToSearch;
                 },
-                () -> {
-
-                },
-                () -> {
-
-                },
-                () -> true,
-                0, 0
-        ); // TODO write this part
+                () -> {},
+                () -> getFindingResult() == TeamElementPosition.UNDETERMINED,
+                startingRotation, endingRotation
+        );
     }
 
     public TeamElementPosition getFindingResult() {

@@ -9,7 +9,11 @@ import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
 import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.EnhancedPIDController;
+import org.firstinspires.ftc.teamcode.Utils.TeamElementFinder;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public final class RobotConfig {
     public static final HardwareConfigs hardwareConfigs_2024Competition_backup = new HardwareConfigs( // backup machine
@@ -266,6 +270,16 @@ public final class RobotConfig {
         public static final Vector2D teamElementPositionLeft = new Vector2D(new double[] {0, 0});
         public static final Vector2D teamElementPositionCenter = new Vector2D(new double[] {0, 0});
         public static final Vector2D teamElementPositionRight = new Vector2D(new double[] {0, 0});
+    }
+
+    public static final class TeamElementFinderConfigs {
+        public static final Map<TeamElementFinder.TeamElementPosition, Double[]> teamElementPositionSearchRotationRanges = new HashMap<>();
+        public static final double distanceThreshold = 5;
+        static {
+            teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.LEFT, new Double[]{Math.toRadians(125), Math.toRadians(55)});
+            teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.CENTER, new Double[]{Math.toRadians(35), Math.toRadians(-35)});
+            teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.RIGHT, new Double[]{Math.toRadians(-55), Math.toRadians(-125)});
+        }
     }
 
     public static final class ControlConfigs {

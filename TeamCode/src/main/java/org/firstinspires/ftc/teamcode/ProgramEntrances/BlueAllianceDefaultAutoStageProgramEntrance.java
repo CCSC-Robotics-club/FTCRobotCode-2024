@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.AutoStageRobot;
+import org.firstinspires.ftc.teamcode.AutoStages.AutoStageConstantsTable;
+import org.firstinspires.ftc.teamcode.AutoStages.AutoStageDefault;
 import org.firstinspires.ftc.teamcode.AutoStages.BlueAllianceAutoStageProgramDefault;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 
@@ -15,8 +17,8 @@ public class BlueAllianceDefaultAutoStageProgramEntrance extends LinearOpMode {
                 hardwareMap,
                 telemetry,
                 () -> opModeIsActive() && !isStopRequested(),
-                RobotConfig.hardwareConfigs_newer_chassis,
-                new BlueAllianceAutoStageProgramDefault(telemetry));
+                RobotConfig.hardwareConfigs_2024Competition,
+                new AutoStageDefault(AutoStageDefault.AutoStageConstantsTables.blueAllianceFrontField, true, false));
 
         robot.initializeRobot();
 

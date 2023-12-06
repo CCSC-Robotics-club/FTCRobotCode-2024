@@ -40,4 +40,11 @@ public class AngleUtils {
                 rotation1 + getActualDifference(rotation1, rotation2)
         );
     }
+
+    public static boolean isWithInRange(double rotation, double limit1, double limit2) {
+        double range = getActualDifference(limit1, limit2);
+        if (range == 0) return false;
+        final double limit1ToRotation = getActualDifference(limit1, rotation);
+        return limit1ToRotation * rotation >= 0 && Math.abs(limit1ToRotation) < Math.abs(range);
+    }
 }
