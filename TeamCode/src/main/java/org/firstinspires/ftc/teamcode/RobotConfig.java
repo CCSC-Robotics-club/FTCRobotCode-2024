@@ -120,7 +120,7 @@ public final class RobotConfig {
         public static final int positionDifferenceStartDecelerate = 500;
         public static final int positionTolerance = 50;
         public static final double frictionPower = 0.2;
-        public static final int feedPos = 200, lowPos = 1800, midPos = 2600, highPos = 3400;
+        public static final int feedPos = 260, lowPos = 1800, midPos = 2600, highPos = 3400;
         public static final int positionLimit = 3500;
         public static final Arm.ArmCommand armCommandWhenNoInput = new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0); // null for not needed
 
@@ -131,7 +131,7 @@ public final class RobotConfig {
         claw2Profile = null;
         public static final String claw1Name = "claw1", claw2Name = null; // single servo claw
 
-        public static final double servoValueOrigin = 0.95, servoValueExtend = 0.58;
+        public static final double servoValueOrigin = 0.95, servoValueExtend = 0.5;
         public static final double extendTime = 0.3;
     }
 
@@ -175,12 +175,21 @@ public final class RobotConfig {
         public static final int positionEstimator_speedEstimationFrequency = 40;
 
         /* encoder drive-to-position PID */
-        public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfile = new EnhancedPIDController.StaticPIDProfile(
+        public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileX = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1,
-                0.1,
+                0.09, // for precise wall aiming
                 43,
                 1,
+                0.13,
+                0, 0
+        );
+        public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileY = new EnhancedPIDController.StaticPIDProfile(
+                Double.POSITIVE_INFINITY,
+                1,
+                0.05,
+                43,
+                1.25,
                 0.13,
                 0, 0
         );
