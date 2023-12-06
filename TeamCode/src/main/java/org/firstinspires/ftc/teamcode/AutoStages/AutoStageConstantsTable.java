@@ -9,6 +9,7 @@ public class AutoStageConstantsTable {
     public final boolean backField;
     public final double startingRobotFacing;
     public final double centerTeamElementRotation;
+    public final double centerLineYPosition; // field center line, the horizontal line that separates the front and back field
     public final Vector2D scanTeamElementPosition, teamElementLinePositionLeft, teamElementLinePositionRight, teamElementLinePositionCenter,
             lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross, lowestHorizontalWalkWayAndInnerVerticalWalkWayCross,
             aimWallSweetSpot,
@@ -19,13 +20,14 @@ public class AutoStageConstantsTable {
             boolean backField,
             double startingRobotFacing,
             double centerTeamElementRotation,
-            Vector2D scanTeamElementPosition, Vector2D teamElementLinePositionLeft, Vector2D teamElementLinePositionRight, Vector2D teamElementLinePositionCenter,
+            double centerLineYPosition, Vector2D scanTeamElementPosition, Vector2D teamElementLinePositionLeft, Vector2D teamElementLinePositionRight, Vector2D teamElementLinePositionCenter,
             Vector2D lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross, Vector2D lowestHorizontalWalkWayAndInnerVerticalWalkWayCross,
             Vector2D aimWallSweetSpot, Vector2D pixelStashOuter, Vector2D pixelStashMiddle, Vector2D pixelStashInner) {
         this.allianceSide = allianceSide;
         this.backField = backField;
         this.startingRobotFacing = startingRobotFacing;
         this.centerTeamElementRotation = centerTeamElementRotation;
+        this.centerLineYPosition = centerLineYPosition;
         this.scanTeamElementPosition = scanTeamElementPosition;
         this.teamElementLinePositionLeft = teamElementLinePositionLeft;
         this.teamElementLinePositionRight = teamElementLinePositionRight;
