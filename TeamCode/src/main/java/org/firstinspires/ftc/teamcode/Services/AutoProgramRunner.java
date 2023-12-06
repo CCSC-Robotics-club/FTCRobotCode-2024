@@ -33,11 +33,11 @@ public class AutoProgramRunner extends RobotService {
     public void init() {
         /* check if there is any jump in the starting and ending point */
         for (int currentSegment = 0; currentSegment < commandSegments.size()-1; currentSegment++) {
-            if (commandSegments.get(currentSegment).chassisMovementPath == null || commandSegments.get(currentSegment+1).chassisMovementPath == null)
+            if (commandSegments.get(currentSegment).getChassisMovementPath() == null || commandSegments.get(currentSegment+1).getChassisMovementPath() == null)
                 continue;
             final double distanceBetweenCurrentEndToNextStart = Vector2D.displacementToTarget(
-                            commandSegments.get(currentSegment).chassisMovementPath.getPositionWithLERP(1),
-                            commandSegments.get(currentSegment+1).chassisMovementPath.getPositionWithLERP(0))
+                            commandSegments.get(currentSegment).getChassisMovementPath().getPositionWithLERP(1),
+                            commandSegments.get(currentSegment+1).getChassisMovementPath().getPositionWithLERP(0))
                     .getMagnitude();
             if (distanceBetweenCurrentEndToNextStart > 10)
                 throw new IllegalArgumentException("current segment (id:" + currentSegment + ")'s starting point does match the ending point of the last segment with deviation " + distanceBetweenCurrentEndToNextStart);
@@ -51,16 +51,16 @@ public class AutoProgramRunner extends RobotService {
 
         final SequentialCommandSegment currentCommandSegment = commandSegments.get(currentSegment);
         final double t = currentSegmentTime * currentSegmentChassisPathTimeScale;
-        if (commandSegments.get(currentSegment).chassisMovementPath != null)
+        if (commandSegments.get(currentSegment).getChassisMovementPath() != null)
             robotChassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
                             Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
-                            currentCommandSegment.chassisMovementPath.getPositionWithLERP(t)),
+                            currentCommandSegment.getChassisMovementPath().getPositionWithLERP(t)),
                     this);
         debugMessages.put("time(scaled)", t);
         debugMessages.put("time(raw)", currentSegmentTime);
         debugMessages.put("dt(s)", dt);
         debugMessages.put("ETA",1.0f/currentSegmentChassisPathTimeScale);
-        if (currentCommandSegment.chassisMovementPath!=null) debugMessages.put("chassis desired position", currentCommandSegment.chassisMovementPath.getPositionWithLERP(t));
+        if (currentCommandSegment.getChassisMovementPath()!=null) debugMessages.put("chassis desired position", currentCommandSegment.getChassisMovementPath().getPositionWithLERP(t));
         robotChassis.setRotationalTask(new Chassis.ChassisRotationalTask(
                         Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                         currentCommandSegment.getCurrentRotationWithLERP(t)),
@@ -101,14 +101,14 @@ public class AutoProgramRunner extends RobotService {
         this.currentSegmentTime = 0;
         segment.beginning.run();
 
-        if (segment.chassisMovementPath == null) return;
+        if (segment.getChassisMovementPath() == null) return;
         robotChassis.gainOwnerShip(this);
         this.currentSegmentChassisPathTimeScale = getTimeScaleWithMaximumVelocityAndAcceleration();
     }
     private double getTimeScaleWithMaximumVelocityAndAcceleration() {
-        final double maxVel = this.commandSegments.get(currentSegment).chassisMovementPath.maximumSpeed;
-        final double maxAcc = this.commandSegments.get(currentSegment).chassisMovementPath.maximumAcceleration;
-        final double maxAngularVel = this.commandSegments.get(currentSegment).maxAngularVelocity;
+        final double maxVel = this.commandSegments.get(currentSegment).getChassisMovementPath().maximumSpeed;
+        final double maxAcc = this.commandSegments.get(currentSegment).getChassisMovementPath().maximumAcceleration;
+        final double maxAngularVel = this.commandSegments.get(currentSegment).getMaxAngularVelocity();
 
         return Math.min(Math.min(ChassisConfigs.autoStageMaxAcceleration / maxAcc, ChassisConfigs.autoStageMaxVelocity/ maxVel), ChassisConfigs.autoStageMaxAngularVelocity / maxAngularVel);
     }

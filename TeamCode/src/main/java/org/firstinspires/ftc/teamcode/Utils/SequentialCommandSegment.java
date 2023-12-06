@@ -56,6 +56,10 @@ public class SequentialCommandSegment {
         return Math.abs(AngleUtils.getActualDifference(getStartingRotation(),  getEndingRotation()));
     }
 
+    public BezierCurve getChassisMovementPath() {
+        return chassisMovementPathFeeder.getBezierCurve();
+    }
+
     public interface IsCompleteChecker {
         /** check whether this checkpoint */
         boolean isComplete();
