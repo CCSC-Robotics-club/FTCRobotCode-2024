@@ -2,10 +2,14 @@ package org.firstinspires.ftc.teamcode.AutoStages;
 
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.sun.tools.javac.util.Position;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
+import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
+import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.AprilTagCameraAndDistanceSensorAimBot;
@@ -22,7 +26,7 @@ public class BlueAllianceAutoStageProgramDefault extends AutoStageProgram {
         this.telemetry = telemetry;
     }
 
-    public void scheduleCommands(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
+    public void scheduleCommands(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, Arm arm, Intake intake, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
         AprilTagCameraAndDistanceSensorAimBot aimBot = new AprilTagCameraAndDistanceSensorAimBot(chassis, distanceSensor, aprilTagCamera, commanderMarker, telemetrySender);
         BezierCurve path = new BezierCurve(
                 new Vector2D(new double[] {0, 0}),

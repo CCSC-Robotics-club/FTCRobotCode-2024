@@ -2,8 +2,11 @@ package org.firstinspires.ftc.teamcode.AutoStages;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
+import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
+import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
+import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.AngleUtils;
@@ -11,9 +14,12 @@ import org.firstinspires.ftc.teamcode.Utils.AprilTagCameraAndDistanceSensorAimBo
 import org.firstinspires.ftc.teamcode.Utils.AutoStageProgram;
 import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
+import org.firstinspires.ftc.teamcode.Utils.PixelCameraAimBot;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.TeamElementFinder;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
+
+import java.util.HashMap;
 
 public class AutoStageDefault extends AutoStageProgram {
     private final boolean frontField, useInnerWalkWay;
@@ -26,11 +32,11 @@ public class AutoStageDefault extends AutoStageProgram {
     }
 
     long teamElementFindingTimer;
-    Vector2D unloadPixelPosition;
     @Override
-    public void scheduleCommands(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
+    public void scheduleCommands(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, Arm arm, Intake intake, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
         final TeamElementFinder teamElementFinder = new TeamElementFinder(chassis, distanceSensor, aprilTagCamera.getRawAprilTagCamera());
         final AprilTagCameraAndDistanceSensorAimBot aimBot = new AprilTagCameraAndDistanceSensorAimBot(chassis, distanceSensor, aprilTagCamera, commanderMarker, telemetrySender);
+        final PixelCameraAimBot pixelCameraAimBot = new PixelCameraAimBot(chassis, pixelCamera, commanderMarker, new HashMap<>());
 
         /* move to the scanning position */
         BezierCurve path = new BezierCurve(new Vector2D(), constantsTable.scanTeamElementPosition);
@@ -64,39 +70,35 @@ public class AutoStageDefault extends AutoStageProgram {
 
         // TODO: here, if there isn't a result and tof search is needed
 
-        /* if there is an result, drive there and place the pixel */
+        /* if there is an result, drive there */
         commandSegments.add(
                 new SequentialCommandSegment(
                         () -> teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
-                        null,
-                        () -> {
-                            chassis.setTranslationalTask(
-                                    new Chassis.ChassisTranslationalTask(
-                                            Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
-                                            constantsTable.getFeedingPosition(teamElementFinder.getFindingResult())
-                                            ), commanderMarker);
-                        },
+                        () -> new BezierCurve(new Vector2D(), constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult())),
                         () -> {},
-                        () -> {
-                            chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), commanderMarker);
-                        },
-                        () -> chassis.isCurrentTranslationalTaskComplete() && chassis.isCurrentRotationalTaskComplete(),
-                        constantsTable.startingRobotFacing, AngleUtils.simplifyAngle(constantsTable.startingRobotFacing + Math.PI) // turn around and feed
+                        () -> {},
+                        () -> {},
+                        () -> true,
+                        () -> constantsTable.startingRobotFacing,
+                        () -> constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI // feeding is in the back end
                 )
         );
+
+        /* place the pixel in place, and leave, face front*/
         commandSegments.add(
                 new SequentialCommandSegment(
                         () -> teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
-                        null,
+                        () -> new BezierCurve(new Vector2D(), constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult())),
                         () -> {
-
+                            intake.setMotion(Intake.Motion.REVERSE, commanderMarker);
                         },
                         () -> {},
                         () -> {
-
+                            intake.setMotion(Intake.Motion.STOP, commanderMarker);
                         },
-                        () -> chassis.isCurrentTranslationalTaskComplete() && chassis.isCurrentRotationalTaskComplete(),
-                        constantsTable.startingRobotFacing, AngleUtils.simplifyAngle(constantsTable.startingRobotFacing + Math.PI) // turn around and feed
+                        () -> true,
+                        () -> constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI,
+                        () -> 0
                 )
         );
     }

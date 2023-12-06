@@ -32,7 +32,7 @@ public class AutoStageConstantsTable {
         this.pixelStashInner = pixelStashInner;
     }
 
-    public Vector2D getFeedingPosition(TeamElementFinder.TeamElementPosition teamElementPosition) {
+    public Vector2D getReleasePixelLinePosition(TeamElementFinder.TeamElementPosition teamElementPosition) {
         switch (teamElementPosition) {
             case LEFT:
                 return teamElementLinePositionLeft;
@@ -42,6 +42,18 @@ public class AutoStageConstantsTable {
                 return teamElementLinePositionCenter;
         }
         return null;
+    }
+
+    public double getReleasePixelRotation(TeamElementFinder.TeamElementPosition teamElementPosition) {
+        switch (teamElementPosition) {
+            case LEFT:
+                return this.startingRobotFacing + Math.PI / 2;
+            case RIGHT:
+                return this.startingRobotFacing - Math.PI / 2;
+            case CENTER:
+                return this.startingRobotFacing;
+        }
+        return 0;
     }
 }
 
