@@ -8,6 +8,9 @@ import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 
 import static org.firstinspires.ftc.teamcode.RobotConfig.ArmConfigs;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ExtendableClaw extends RobotModule {
     private final Claw claw;
     private final Servo extendControllerServo;
@@ -46,7 +49,7 @@ public class ExtendableClaw extends RobotModule {
         else
             claw.close();
 
-        if (status == Status.HOLD_PIXEL || status == Status.PLACE_TO_BOARD)
+        if (status == Status.RELEASE || status == Status.PLACE_TO_BOARD)
             extendControllerServo.setPosition(ArmConfigs.servoValueExtend);
         else
             extendControllerServo.setPosition(ArmConfigs.servoValueOrigin);
@@ -75,5 +78,12 @@ public class ExtendableClaw extends RobotModule {
         if (status == Status.HOLD_PIXEL)
             status = Status.PLACE_TO_BOARD;
         this.timer = 0;
+    }
+
+    @Override
+    public Map<String, Object> getDebugMessages() {
+        Map<String, Object> debugMessages = new HashMap<>();
+        debugMessages.put("claw status", status);
+        return debugMessages;
     }
 }

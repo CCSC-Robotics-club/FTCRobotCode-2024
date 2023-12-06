@@ -290,7 +290,7 @@ public class TestMain extends LinearOpMode {
             if (gamepad1.a)
                 servoAngle = 0;
             servoAngle = Math.min(Math.max(0,servoAngle), 1);
-            servo1.setPosition(1-servoAngle);
+            servo1.setPosition(servoAngle);
             servo2.setPosition(servoAngle);
             telemetry.addData("servo angle", servoAngle);
             telemetry.update();
@@ -490,6 +490,8 @@ public class TestMain extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested() && opModeIsActive()) {
+            if (gamepad1.a) camera.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION); // TODO use this as detection
+            if (gamepad1.b) camera.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
             for(HuskyLens.Block block: camera.blocks()) {
                 telemetry.addData("object:", block.id);
                 telemetry.addData("x", block.x);

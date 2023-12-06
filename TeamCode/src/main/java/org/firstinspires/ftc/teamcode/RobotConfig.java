@@ -120,7 +120,7 @@ public final class RobotConfig {
         public static final int positionDifferenceStartDecelerate = 500;
         public static final int positionTolerance = 50;
         public static final double frictionPower = 0.2;
-        public static final int lowPos = 1800, midPos = 2600, highPos = 3400;
+        public static final int feedPos = 260, lowPos = 1800, midPos = 2600, highPos = 3400;
         public static final int positionLimit = 3500;
         public static final Arm.ArmCommand armCommandWhenNoInput = new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0); // null for not needed
 
@@ -131,8 +131,16 @@ public final class RobotConfig {
         claw2Profile = null;
         public static final String claw1Name = "claw1", claw2Name = null; // single servo claw
 
-        public static final double servoValueOrigin = 0, servoValueExtend = 0.42;
-        public static final double extendTime = 0.5;
+        public static final double servoValueOrigin = 0.95, servoValueExtend = 0.5;
+        public static final double extendTime = 0.3;
+    }
+
+    public static final class LauncherConfigs {
+        public static final double launcherZeroPosition = 1,
+                launcherActivatePosition = 0.6,
+                liftZeroPosition = 1,
+                liftActivatePosition = 0.65,
+                servoMovementTime = 0.5;
     }
 
     public static final class ChassisConfigs {
@@ -167,12 +175,21 @@ public final class RobotConfig {
         public static final int positionEstimator_speedEstimationFrequency = 40;
 
         /* encoder drive-to-position PID */
-        public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfile = new EnhancedPIDController.StaticPIDProfile(
+        public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileX = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1,
-                0.1,
+                0.09, // for precise wall aiming
                 43,
                 1,
+                0.13,
+                0, 0
+        );
+        public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileY = new EnhancedPIDController.StaticPIDProfile(
+                Double.POSITIVE_INFINITY,
+                1,
+                0.05,
+                43,
+                1.25,
                 0.13,
                 0, 0
         );
@@ -268,7 +285,7 @@ public final class RobotConfig {
 
     public static final class TeamElementFinderConfigs {
         public static final Map<TeamElementFinder.TeamElementPosition, Double[]> teamElementPositionSearchRotationRanges = new HashMap<>();
-        public static final double distanceThreshold = 5;
+        public static final double distanceThreshold = 12;
         static {
             teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.LEFT, new Double[]{Math.toRadians(125), Math.toRadians(55)});
             teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.CENTER, new Double[]{Math.toRadians(35), Math.toRadians(-35)});
@@ -291,7 +308,7 @@ public final class RobotConfig {
         /** the exponent of the the y axis of translational stick, 1 for linear */
         public static final double pilotController_translationStickYExp = 1.6;
         /** the exponent of the rotational axis , 1 for linear */
-        public static final double pilotController_rotationalStickExp = 1.8;
+        public static final double pilotController_rotationalStickExp = 2;
 
 
         public static final double visualNavigationAimingSensitivityCMPS = 30;

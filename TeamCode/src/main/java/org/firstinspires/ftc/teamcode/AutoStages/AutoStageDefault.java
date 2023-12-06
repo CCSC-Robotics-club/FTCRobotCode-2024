@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
-import org.firstinspires.ftc.teamcode.Utils.AngleUtils;
 import org.firstinspires.ftc.teamcode.Utils.AprilTagCameraAndDistanceSensorAimBot;
 import org.firstinspires.ftc.teamcode.Utils.AutoStageProgram;
 import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
@@ -49,19 +48,20 @@ public class AutoStageDefault extends AutoStageProgram {
                 () -> {},
                 () -> true,
                 constantsTable.startingRobotFacing,
-                constantsTable.startingRobotFacing + Objects.requireNonNull(RobotConfig.TeamElementFinderConfigs.teamElementPositionSearchRotationRanges.get(TeamElementFinder.TeamElementPosition.LEFT))[0]
+                constantsTable.centerTeamElementRotation + Objects.requireNonNull(RobotConfig.TeamElementFinderConfigs.teamElementPositionSearchRotationRanges.get(TeamElementFinder.TeamElementPosition.LEFT))[0]
         ));
 
         /* scan for team element */
-        commandSegments.add(teamElementFinder.getDistanceSensorFindingCommand(TeamElementFinder.TeamElementPosition.LEFT, constantsTable.centerTeamElementRotation));
-        commandSegments.add(teamElementFinder.getDistanceSensorFindingCommand(TeamElementFinder.TeamElementPosition.CENTER, constantsTable.centerTeamElementRotation));
-        commandSegments.add(teamElementFinder.getDistanceSensorFindingCommand(TeamElementFinder.TeamElementPosition.RIGHT, constantsTable.centerTeamElementRotation));
+        commandSegments.add(teamElementFinder.getDistanceSensorFindingCommand(TeamElementFinder.TeamElementPosition.LEFT, constantsTable.centerTeamElementRotation, telemetrySender));
+        commandSegments.add(teamElementFinder.getDistanceSensorFindingCommand(TeamElementFinder.TeamElementPosition.CENTER, constantsTable.centerTeamElementRotation, telemetrySender));
+        commandSegments.add(teamElementFinder.getDistanceSensorFindingCommand(TeamElementFinder.TeamElementPosition.RIGHT, constantsTable.centerTeamElementRotation, telemetrySender));
 
 
-        telemetrySender.putSystemMessage("element position", teamElementFinder.getFindingResult());
         commandSegments.add(new SequentialCommandSegment(
-                path,
-                () -> {},
+                null,
+                () -> {
+                    telemetrySender.putSystemMessage("element position", teamElementFinder.getFindingResult());
+                },
                 () -> {},
                 () -> {},
                 () -> false,
@@ -76,7 +76,7 @@ public class AutoStageDefault extends AutoStageProgram {
         commandSegments.add(
                 new SequentialCommandSegment(
                         () -> teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
-                        () -> new BezierCurve(new Vector2D(), constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult())),
+                        () -> new BezierCurve(constantsTable.scanTeamElementPosition, constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult())),
                         () -> {},
                         () -> {},
                         () -> {},
@@ -90,7 +90,7 @@ public class AutoStageDefault extends AutoStageProgram {
         commandSegments.add(
                 new SequentialCommandSegment(
                         () -> teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
-                        () -> new BezierCurve(new Vector2D(), constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult())),
+                        () -> new BezierCurve(constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult()), constantsTable.scanTeamElementPosition),
                         () -> {
                             intake.setMotion(Intake.Motion.REVERSE, commanderMarker);
                         },
@@ -103,6 +103,27 @@ public class AutoStageDefault extends AutoStageProgram {
                         () -> 0 // face front
                 )
         );
+
+        /* if we are at the back filed, drive to front field */
+        path = new BezierCurve(
+                constantsTable.scanTeamElementPosition,
+                new Vector2D(),
+                new Vector2D(new double[] {constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(), constantsTable.centerLineYPosition}),
+                new Vector2D(new double[] {0, 0})
+        );
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        () -> constantsTable.backField,
+                        path,
+                        () -> {},
+                        () -> {},
+                        () -> {},
+                        () -> true,
+                        0, 0
+                )
+        );
+
+        /* TODO next, go to the wall */
     }
 
 
@@ -112,7 +133,8 @@ public class AutoStageDefault extends AutoStageProgram {
                 false,
                 0,
                 -Math.PI / 2,
-                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                0,
+                new Vector2D(new double[] {70,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
@@ -123,6 +145,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 true,
                 0,
                 -Math.PI / 2,
+                0,
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
@@ -135,6 +158,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 false,
                 Math.PI,
                 Math.PI / 2,
+                0,
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
@@ -146,7 +170,8 @@ public class AutoStageDefault extends AutoStageProgram {
                 true,
                 Math.PI,
                 Math.PI / 2,
-                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                0
+                , new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})

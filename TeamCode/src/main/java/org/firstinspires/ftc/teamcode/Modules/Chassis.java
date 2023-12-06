@@ -54,7 +54,7 @@ public class Chassis extends RobotModule {
         this.allianceWallName = allianceWall;
 
         this.rotationController = new EnhancedPIDController(ChassisConfigs.chassisRotationControllerProfile);
-        this.translationalControllerEncoder = new EnhancedPIDController2D(ChassisConfigs.encoderTranslationalControllerProfile);
+        this.translationalControllerEncoder = new EnhancedPIDController2D(ChassisConfigs.encoderTranslationalControllerProfileX, ChassisConfigs.encoderTranslationalControllerProfileY);
     }
 
     @Override
@@ -405,10 +405,10 @@ public class Chassis extends RobotModule {
                 return translationalTask.translationalValue.getMagnitude() < zeroJudge; // set velocity is a continuous command, it is only finished if the pilot idles the controller
             case DRIVE_TO_POSITION_ENCODER:
                 return isCloseEnough(getChassisEncoderPosition(), translationalTask.translationalValue,
-                        ChassisConfigs.encoderTranslationalControllerProfile.getErrorTolerance() * errorToleranceAsProgramFinished);
+                        ChassisConfigs.encoderTranslationalControllerProfileX.getErrorTolerance() * errorToleranceAsProgramFinished);
             case DRIVE_TO_POSITION_VISUAL:
                 return isCloseEnough(getChassisEncoderPosition(), wallAbsoluteEncoderPositionField.addBy(translationalTask.translationalValue),
-                        ChassisConfigs.encoderTranslationalControllerProfile.getErrorTolerance() * errorToleranceAsProgramFinished);
+                        ChassisConfigs.encoderTranslationalControllerProfileX.getErrorTolerance() * errorToleranceAsProgramFinished);
             default:
                 throw new IllegalArgumentException("unknown translational task" + translationalTask.taskType.name());
         }
