@@ -164,10 +164,15 @@ public class PilotChassisService extends RobotService {
                     Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                     rotationWhenStickPressed
             );
-        if (driverController.keyOnHold(RobotConfig.KeyBindings.faceFrontButton))
+        if (driverController.keyOnHold(RobotConfig.KeyBindings.facePilotLeftButton))
             rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
                     Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
-                    0
+                    pilotFacingRotation.getRadian() + Math.PI / 2
+            );
+        else if (driverController.keyOnHold(RobotConfig.KeyBindings.facePilotRightButton))
+            rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
+                    Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
+                    pilotFacingRotation.getRadian() - Math.PI / 2
             );
 
         if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)

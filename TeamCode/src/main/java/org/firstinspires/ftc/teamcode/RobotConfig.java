@@ -264,12 +264,6 @@ public final class RobotConfig {
         public static final double feedingSpotErrorTolerance = 4;
         public static final double feedingDistanceForward = -22; // in cm
         public static final long feedTimeMillis = 2000;
-
-
-        public static final int teamElementAprilTagID = 10; // TODO figure out this value
-        public static final Vector2D teamElementPositionLeft = new Vector2D(new double[] {0, 0});
-        public static final Vector2D teamElementPositionCenter = new Vector2D(new double[] {0, 0});
-        public static final Vector2D teamElementPositionRight = new Vector2D(new double[] {0, 0});
     }
 
     public static final class TeamElementFinderConfigs {
@@ -313,11 +307,11 @@ public final class RobotConfig {
     }
 
     public static final class KeyBindings {
-        public static final XboxControllerKey resetIMUKey = XboxControllerKey.DPAD_RIGHT;
-        public static final XboxControllerKey toggleSpeedControlButton = XboxControllerKey.A;
+        public static final XboxControllerKey resetIMUKey = XboxControllerKey.Y;
         public static final XboxControllerKey maintainCurrentRotationButton = XboxControllerKey.LEFT_STICK_BUTTON;
-        public static final XboxControllerKey faceFrontButton = XboxControllerKey.DPAD_DOWN;
-        public static final XboxControllerKey toggleChassisDriveModeButton = XboxControllerKey.DPAD_UP;
+        public static final XboxControllerKey facePilotLeftButton = XboxControllerKey.DPAD_LEFT;
+        public static final XboxControllerKey facePilotRightButton = XboxControllerKey.DPAD_RIGHT;
+        public static final XboxControllerKey toggleChassisDriveModeButton = XboxControllerKey.A;
         public static final XboxControllerKey processVisualApproachButton = XboxControllerKey.LEFT_BUMPER;
         public static final XboxControllerKey setAimPositionLeftButton = XboxControllerKey.X;
         public static final XboxControllerKey setAimPositionRightButton = XboxControllerKey.B;
