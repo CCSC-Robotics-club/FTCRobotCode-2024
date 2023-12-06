@@ -14,7 +14,14 @@ public class SequentialCommandSegment {
     }
 
     public SequentialCommandSegment(InitiateCondition initiateCondition, BezierCurve pathSchedule, Runnable beginning, Runnable periodic, Runnable ending, IsCompleteChecker isCompleteChecker, double startingRotation, double endingRotation) {
-        // TODO finish here
+        this(
+                initiateCondition,
+                () -> pathSchedule,
+                beginning, periodic, ending,
+                isCompleteChecker,
+                () -> startingRotation,
+                () -> endingRotation
+        );
     }
 
     public SequentialCommandSegment(InitiateCondition initiateCondition,  BezierCurveFeeder pathFeeder, Runnable beginning, Runnable periodic, Runnable ending, IsCompleteChecker isCompleteChecker, RotationFeeder startingRotation, RotationFeeder endingRotation) {
