@@ -28,6 +28,7 @@ public class TeamElementFinder {
         this.teamElementPosition = TeamElementPosition.UNDETERMINED;
     }
 
+    @Deprecated
     public SequentialCommandSegment getDistanceSensorFindingCommand(TeamElementPosition positionToSearch, double centerTeamElementRotation, TelemetrySender telemetrySender) {
         final double startingRotation = Objects.requireNonNull(TeamElementFinderConfigs.teamElementPositionSearchRotationRanges.get(positionToSearch))[0] + centerTeamElementRotation,
                 endingRotation = Objects.requireNonNull(TeamElementFinderConfigs.teamElementPositionSearchRotationRanges.get(positionToSearch))[1] + centerTeamElementRotation;
@@ -46,6 +47,10 @@ public class TeamElementFinder {
                 () -> getFindingResult() == TeamElementPosition.UNDETERMINED,
                 startingRotation, endingRotation
         );
+    }
+
+    public void getResultWithHuskyLens() {
+
     }
 
     public TeamElementPosition getFindingResult() {

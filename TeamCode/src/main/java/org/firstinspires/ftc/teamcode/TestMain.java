@@ -44,7 +44,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        tofDistanceSensorTest();
+        huskyTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -490,6 +490,8 @@ public class TestMain extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested() && opModeIsActive()) {
+            if (gamepad1.a) camera.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION); // TODO use this as detection
+            if (gamepad1.b) camera.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
             for(HuskyLens.Block block: camera.blocks()) {
                 telemetry.addData("object:", block.id);
                 telemetry.addData("x", block.x);
