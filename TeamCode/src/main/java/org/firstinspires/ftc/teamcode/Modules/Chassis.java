@@ -62,6 +62,7 @@ public class Chassis extends RobotModule {
         reset();
     }
 
+    int count = 0;
     @Override
     public void periodic(double dt) {
         debugMessages.put("chassis desired task type", translationalTask.taskType);
@@ -69,6 +70,7 @@ public class Chassis extends RobotModule {
         Vector2D calculatedTranslationalSpeed = calculateTranslationalSpeedWithProperMethod(translationalTask);
         double calculatedRotationalSpeed = calculateRotationalMotorSpeedWithProperMethod(rotationalTask, dt);
         debugMessages.put("translational speed", calculatedTranslationalSpeed);
+        debugMessages.put("count", count++); // TODO why did the chassis not update
 
         if (translationalTask.taskType == ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY && this.orientationMode == OrientationMode.FIELD_ORIENTATED)
             calculatedTranslationalSpeed = calculatedTranslationalSpeed.multiplyBy(
@@ -344,6 +346,7 @@ public class Chassis extends RobotModule {
     public void setTranslationalTask(ChassisTranslationalTask translationalTask, ModulesCommanderMarker operator) {
         debugMessages.put("set trans task", translationalTask.translationalValue);
         debugMessages.put("operator", operator);
+        debugMessages.put("is owner", isOwner(operator));
         if (!isOwner(operator))
             return;
 
@@ -358,6 +361,8 @@ public class Chassis extends RobotModule {
                 break;
             }
         }
+
+        debugMessages.put("chassis task set result", this.translationalTask.translationalValue);
     }
 
     public void setTranslationalTaskToBreak(ModulesCommanderMarker operator) {
