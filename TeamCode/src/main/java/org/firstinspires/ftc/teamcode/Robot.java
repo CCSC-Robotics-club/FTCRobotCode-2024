@@ -137,7 +137,6 @@ public abstract class Robot {
                 hardwareMap.get(DcMotor.class, encoderNames[1]),
                 hardwareMap.get(DcMotor.class, encoderNames[2]),
                 imu,
-                alternativeIMU,
                 this.hardwareConfigs.encodersParams
         );
         ((RobotModule) positionEstimator).init();

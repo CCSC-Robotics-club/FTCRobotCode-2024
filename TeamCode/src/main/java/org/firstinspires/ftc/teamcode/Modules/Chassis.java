@@ -524,11 +524,10 @@ public class Chassis extends RobotModule {
 
     @Override
     public Map<String, Object> getDebugMessages() {
-//        debugMessages.put("speed control", this.wheelSpeedControlEnabled);
-//        debugMessages.put("imu yaw", getYaw());
-//        debugMessages.put("imu yaw vel", getYawVelocity());
-        debugMessages.put("current translational task type", translationalTask.taskType.name());
-        debugMessages.put("current translational task value", translationalTask.translationalValue);
+        debugMessages.put("chassis rotation task type", rotationalTask.taskType);
+        debugMessages.put("chassis rotation task value", Math.toDegrees(rotationalTask.rotationalValue));
+        debugMessages.put("chassis yaw", Math.toDegrees(getYaw()));
+        debugMessages.put("yaw vel", Math.toDegrees(getYawVelocity()));
         debugMessages.put("chassis update freq", super.getUpdateCountPerSecond());
         return debugMessages;
     }

@@ -143,7 +143,7 @@ public class AutoStageDefault extends AutoStageProgram {
                         },
                         () -> chassis.isCurrentRotationalTaskComplete() && chassis.isCurrentTranslationalTaskComplete(), // make sure it is precise
                         chassis::getYaw,
-                        () -> constantsTable.getReleasePixelRotation() + Math.PI // feeding is in the back end
+                        constantsTable::getReleasePixelRotation // feeding is in the back end
                 )
         );
 
@@ -166,8 +166,8 @@ public class AutoStageDefault extends AutoStageProgram {
                             intake.setMotion(Intake.Motion.STOP, commanderMarker);
                         },
                         () -> System.currentTimeMillis() - spewPixelTimer > RobotConfig.IntakeConfigs.spewPixelTimeMillis,
-                        () -> constantsTable.getReleasePixelRotation() + Math.PI,
-                        () -> constantsTable.getReleasePixelRotation() + Math.PI // face front
+                        constantsTable::getReleasePixelRotation,
+                        constantsTable::getReleasePixelRotation
                 )
         );
 
@@ -199,7 +199,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 false,
                 0,
                 -Math.PI / 2,
-                -Math.toRadians(50),
+                Math.toRadians(50),
                 0,
                 new Vector2D(new double[] {48, 0}), new Vector2D(new double[] {65, 0}),
                 new Vector2D(new double[] {48,40}), new Vector2D(new double[] {95,30}), new Vector2D(new double[] {53,-14}),
@@ -215,8 +215,8 @@ public class AutoStageDefault extends AutoStageProgram {
                 -Math.PI / 2,
                 -Math.toRadians(50),
                 0,
-                new Vector2D(new double[] {0, 0}), new Vector2D(new double[] {0, 0}),
-                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {48, 0}), new Vector2D(new double[] {65, 0}),
+                new Vector2D(new double[] {48,-40}), new Vector2D(new double[] {95,-30}), new Vector2D(new double[] {53,14}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
@@ -230,8 +230,8 @@ public class AutoStageDefault extends AutoStageProgram {
                 Math.PI / 2,
                 -Math.toRadians(50),
                 0,
-                new Vector2D(new double[] {0, 0}), new Vector2D(new double[] {0, 0}),
-                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {-48, 0}), new Vector2D(new double[] {-65, 0}),
+                new Vector2D(new double[] {-48,40}), new Vector2D(new double[] {-95,30}), new Vector2D(new double[] {-53,-14}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
@@ -242,10 +242,10 @@ public class AutoStageDefault extends AutoStageProgram {
                 true,
                 Math.PI,
                 Math.PI / 2,
-                -Math.toRadians(50),
+                Math.toRadians(50),
                 0,
-                new Vector2D(new double[] {0, 0}), new Vector2D(new double[] {0, 0}),
-                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {-48, 0}), new Vector2D(new double[] {-65, 0}),
+                new Vector2D(new double[] {-48,-40}), new Vector2D(new double[] {-95,-30}), new Vector2D(new double[] {-53,14}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})

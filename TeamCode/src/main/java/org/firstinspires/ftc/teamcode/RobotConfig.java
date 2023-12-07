@@ -23,12 +23,6 @@ public final class RobotConfig {
                             RevHubOrientationOnRobot.UsbFacingDirection.UP
                     )
             ),
-//            new IMU.Parameters(
-//                    new RevHubOrientationOnRobot(
-//                            RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-//                            RevHubOrientationOnRobot.UsbFacingDirection.UP
-//                    )
-//            ),
             null,
             new TripleIndependentEncoderAndIMUPositionEstimator.TripleIndependentEncoderAndIMUSystemParams(
                     true,
@@ -48,15 +42,9 @@ public final class RobotConfig {
             false
     );
     public static final HardwareConfigs hardwareConfigs_2024Competition = new HardwareConfigs( // new robot for competition
-//            new IMU.Parameters(
-//                    new RevHubOrientationOnRobot(
-//                            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-//                            RevHubOrientationOnRobot.UsbFacingDirection.UP
-//                    )
-//            ),
             new IMU.Parameters(
-                    new RevHubOrientationOnRobot( // expansion hub
-                            RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                    new RevHubOrientationOnRobot(
+                            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                             RevHubOrientationOnRobot.UsbFacingDirection.UP
                     )
             ),
@@ -162,7 +150,7 @@ public final class RobotConfig {
         public static final double chassisRotation_maximumCorrectionPower = 0.7;
         public static final double chassisRotation_minimumCorrectionPower = 0.06;
         public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(45);
-        public static final double chassisRotation_errorTolerance = Math.toRadians(1.5);
+        public static final double chassisRotation_errorTolerance = Math.toRadians(1);
         public static final double chassisRotation_feedForwardDelay = 0.15; // in seconds
         public static final EnhancedPIDController.StaticPIDProfile chassisRotationControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Math.PI * 2,
