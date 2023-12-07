@@ -20,6 +20,7 @@ public class FixedAnglePixelCamera extends RobotModule {
 
     private List<RawPixelDetectionCamera.PixelTargetRaw> targetsRaw = new ArrayList<>(1);
     private final Map<String, Object> debugMessages = new HashMap<>(1);
+    private boolean enabled = true;
     public FixedAnglePixelCamera(RawPixelDetectionCamera camera, FixedAngleCameraProfile profile, double cameraFacingDirection) {
         super("PixelCamera", 24);
         this.camera = camera;
@@ -28,11 +29,16 @@ public class FixedAnglePixelCamera extends RobotModule {
     }
 
     public void enableCamera() {
+        if (enabled)
+            return; // already enabled
         camera.startRecognizing();
+        enabled = true;
     }
 
     public void disableCamera() {
+        if (!enabled) return; // already disabled
         camera.stopRecognizing();
+        enabled = false;
     }
 
     /**
@@ -59,7 +65,7 @@ public class FixedAnglePixelCamera extends RobotModule {
 
     @Override
     public void init() {
-
+        reset();
     }
 
     @Override
@@ -75,7 +81,7 @@ public class FixedAnglePixelCamera extends RobotModule {
 
     @Override
     public void reset() {
-
+        enabled = true;
     }
 
     @Override

@@ -95,7 +95,7 @@ public class PixelCameraAimBot {
     }
 
     public void update() {
-        pixelCamera.enableCamera();
+        // pixelCamera.enableCamera();
         debugMessages.put("pixel aim-bot status", status);
         debugMessages.put("camera target", pixelCamera.getNearestPixelPosition());
         switch (status) {

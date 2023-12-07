@@ -203,7 +203,6 @@ public class PilotChassisService extends RobotService {
     private boolean targetSeen = false;
     private Vector2D wallFieldPositionForRoughApproach = null;
     private void processVisualNavigationTask(double dt, double aimCenterCM) {
-        debugMessages.put("previous aim ", lastAimSucceeded ? "succeeded" : "failed");
         switch (visualTaskStatus) {
             case UNUSED: {
                 initiateWallApproach();
@@ -277,7 +276,7 @@ public class PilotChassisService extends RobotService {
 
 
     private void initiateWallApproach() {
-        aimCenter = 0;
+        // aimCenter = 0;
         if (!chassis.isVisualNavigationAvailable()) {
             this.visualTaskStatus = VisualTaskStatus.UNUSED;
             return;

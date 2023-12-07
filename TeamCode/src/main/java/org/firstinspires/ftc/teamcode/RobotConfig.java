@@ -147,9 +147,9 @@ public final class RobotConfig {
         public static final double wheel_maxVelocity = 2500;
 
 
-        public static final double chassisRotation_maximumCorrectionPower = 0.7;
+        public static final double chassisRotation_maximumCorrectionPower = 0.65;
         public static final double chassisRotation_minimumCorrectionPower = 0.06;
-        public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(60);
+        public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(45);
         public static final double chassisRotation_errorTolerance = Math.toRadians(1);
         public static final double chassisRotation_feedForwardDelay = 0.15; // in seconds
         public static final EnhancedPIDController.StaticPIDProfile chassisRotationControllerProfile = new EnhancedPIDController.StaticPIDProfile(
