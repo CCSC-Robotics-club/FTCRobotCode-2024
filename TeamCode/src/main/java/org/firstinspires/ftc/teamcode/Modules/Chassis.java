@@ -64,9 +64,11 @@ public class Chassis extends RobotModule {
 
     @Override
     public void periodic(double dt) {
+        debugMessages.put("chassis desired task type", translationalTask.taskType);
+        debugMessages.put("chassis desired task", translationalTask.translationalValue);
         Vector2D calculatedTranslationalSpeed = calculateTranslationalSpeedWithProperMethod(translationalTask);
         double calculatedRotationalSpeed = calculateRotationalMotorSpeedWithProperMethod(rotationalTask, dt);
-        debugMessages.put("rotation speed", calculatedRotationalSpeed);
+        debugMessages.put("translational speed", calculatedTranslationalSpeed);
 
         if (translationalTask.taskType == ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY && this.orientationMode == OrientationMode.FIELD_ORIENTATED)
             calculatedTranslationalSpeed = calculatedTranslationalSpeed.multiplyBy(
@@ -176,6 +178,8 @@ public class Chassis extends RobotModule {
             correctionPowerToRobot = correctionPowerToField.multiplyBy(
                 new Rotation2D(positionEstimator.getRotation())
                         .getReversal());
+        debugMessages.put("pid control desired position", desiredEncoderPosition);
+        // debugMessages.put("correction power to field", correctionPowerToField);
         final Transformation2D motorPowerRate = new Transformation2D(
                 new Vector2D(new double[] {ChassisConfigs.xPowerRate, 0}),
                 new Vector2D(new double[] {0, ChassisConfigs.yPowerRate}));
@@ -338,6 +342,8 @@ public class Chassis extends RobotModule {
     }
 
     public void setTranslationalTask(ChassisTranslationalTask translationalTask, ModulesCommanderMarker operator) {
+        debugMessages.put("set trans task", translationalTask.translationalValue);
+        debugMessages.put("operator", operator);
         if (!isOwner(operator))
             return;
 
@@ -525,10 +531,10 @@ public class Chassis extends RobotModule {
 
     @Override
     public Map<String, Object> getDebugMessages() {
-        debugMessages.put("chassis rotation task type", rotationalTask.taskType);
-        debugMessages.put("chassis rotation task value", Math.toDegrees(rotationalTask.rotationalValue));
-        debugMessages.put("chassis yaw", Math.toDegrees(getYaw()));
-        debugMessages.put("yaw vel", Math.toDegrees(getYawVelocity()));
+//        debugMessages.put("chassis rotation task type", rotationalTask.taskType);
+//        debugMessages.put("chassis rotation task value", Math.toDegrees(rotationalTask.rotationalValue));
+//        debugMessages.put("chassis yaw", Math.toDegrees(getYaw()));
+//        debugMessages.put("yaw vel", Math.toDegrees(getYawVelocity()));
         debugMessages.put("chassis update freq", super.getUpdateCountPerSecond());
         return debugMessages;
     }

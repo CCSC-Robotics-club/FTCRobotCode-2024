@@ -46,10 +46,11 @@ public class AutoStageDefault extends AutoStageProgram {
         commandSegments.add(new SequentialCommandSegment(
                 path,
                 () -> {
+                    chassis.gainOwnerShip(commanderMarker);
                     chassis.setCurrentYaw(constantsTable.startingRobotFacing);
                     arm.gainOwnerShip(commanderMarker);
                     intake.gainOwnerShip(commanderMarker);
-                    arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.lowPos), commanderMarker);
+                    // arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.lowPos), commanderMarker);
                 },
                 () -> {},
                 () -> {},
@@ -135,7 +136,7 @@ public class AutoStageDefault extends AutoStageProgram {
                                 constantsTable.scanTeamCenterElementPosition,
                                 constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult())),
                         () -> {
-                            arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, 0), commanderMarker);
+                            // arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, 0), commanderMarker);
                         },
                         () -> {},
                         () -> {
@@ -169,6 +170,21 @@ public class AutoStageDefault extends AutoStageProgram {
                         constantsTable::getReleasePixelRotation
                 )
         );
+
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        () -> true,
+                        () -> null,
+                        () -> {},
+                        () -> {},
+                        () -> {},
+                        ()->false,
+                        chassis::getYaw,
+                        chassis::getYaw
+                )
+        );
+
+        // TODO below this line are those waiting to be tested:
 
         /* if we are at the back filed, drive to front field */
         commandSegments.add(
@@ -241,6 +257,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 )
         );
 
+        /* aim and place the first pixel */
         commandSegments.add(wallAimBot.createCommandSegment(teamElementFinder, () -> true));
         commandSegments.add(
                 new SequentialCommandSegment(
@@ -254,6 +271,22 @@ public class AutoStageDefault extends AutoStageProgram {
                             arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.feedPos), commanderMarker);
                         },
                         () -> System.currentTimeMillis() - servoTimer > RobotConfig.ArmConfigs.extendTime * 2,
+                        0, 0
+                )
+        );
+
+        // TODO here, push the new pixel from the intake to the claw and place it if no result found
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        () -> teamElementFinder.getFindingResult() == TeamElementFinder.TeamElementPosition.UNDETERMINED,
+                        null,
+                        () -> {
+                            arm.holdPixel(commanderMarker);
+                            servoTimer = System.currentTimeMillis();
+                        },
+                        () -> {},
+                        () -> {},
+                        () -> System.currentTimeMillis() - servoTimer > RobotConfig.ArmConfigs.extendTime,
                         0, 0
                 )
         );

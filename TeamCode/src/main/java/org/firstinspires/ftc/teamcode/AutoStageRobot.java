@@ -15,7 +15,7 @@ public class AutoStageRobot extends Robot {
     private final AutoStageProgram autoStageProgram;
     final AutoProgramRunner autoProgramRunnerService;
     public AutoStageRobot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, AutoStageProgram autoStageProgram) {
-        super(hardwareMap, telemetry, null, hardwareConfigs, autoStageProgram.allianceSide, false);
+        super(hardwareMap, telemetry, null, hardwareConfigs, autoStageProgram.allianceSide, false); // TODO find out why multi-thread fails
         if (hardwareConfigs.encodersParams == null || hardwareConfigs.encoderNames == null)
             throw new IllegalStateException("auto stage cannot proceed without encoders");
 
