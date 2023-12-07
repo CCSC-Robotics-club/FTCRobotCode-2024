@@ -9,6 +9,7 @@ public class AutoStageConstantsTable {
     public final boolean backField;
     public final double startingRobotFacing;
     public final double centerTeamElementRotation;
+    public final double releasePixelRotationToCenterLineAngle;
     public final double centerLineYPosition; // field center line, the horizontal line that separates the front and back field
     public final Vector2D scanTeamLeftRightElementPosition, scanTeamCenterElementPosition, teamElementLinePositionLeft, teamElementLinePositionRight, teamElementLinePositionCenter,
             lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross, lowestHorizontalWalkWayAndInnerVerticalWalkWayCross,
@@ -20,6 +21,7 @@ public class AutoStageConstantsTable {
             boolean backField,
             double startingRobotFacing,
             double centerTeamElementRotation,
+            double releasePixelRotationToCenterLineAngle, // angle between the center line of team element and the rotation in which robot release the pixel
             double centerLineYPosition,
             Vector2D scanTeamLeftRightElementPosition, Vector2D scanTeamCenterElementPosition, Vector2D teamElementLinePositionLeft, Vector2D teamElementLinePositionCenter, Vector2D teamElementLinePositionRight,
             Vector2D lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross, Vector2D lowestHorizontalWalkWayAndInnerVerticalWalkWayCross,
@@ -28,6 +30,7 @@ public class AutoStageConstantsTable {
         this.backField = backField;
         this.startingRobotFacing = startingRobotFacing;
         this.centerTeamElementRotation = centerTeamElementRotation;
+        this.releasePixelRotationToCenterLineAngle = releasePixelRotationToCenterLineAngle;
         this.centerLineYPosition = centerLineYPosition;
         this.scanTeamLeftRightElementPosition = scanTeamLeftRightElementPosition;
         this.scanTeamCenterElementPosition = scanTeamCenterElementPosition;
@@ -54,15 +57,8 @@ public class AutoStageConstantsTable {
         return null;
     }
 
-    public double getReleasePixelRotation(TeamElementFinder.TeamElementPosition teamElementPosition) {
-        switch (teamElementPosition) {
-            case LEFT:
-            case CENTER:
-                return this.centerTeamElementRotation - Math.PI / 4;
-            case RIGHT:
-                return this.centerTeamElementRotation - Math.PI / 2;
-        }
-        return 0;
+    public double getReleasePixelRotation() {
+        return centerTeamElementRotation + releasePixelRotationToCenterLineAngle;
     }
 
 }
