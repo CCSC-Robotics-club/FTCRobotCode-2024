@@ -15,7 +15,7 @@ public class ResetArm extends LinearOpMode {
 
         waitForStart();
 
-        final double powerRate = 0.75;
+        final double powerRate = 1;
         final int startingPos = armMotor.getCurrentPosition();
         while (opModeIsActive() && !isStopRequested()) {
             double power = gamepad1.left_stick_y * powerRate;

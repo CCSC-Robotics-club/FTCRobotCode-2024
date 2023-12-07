@@ -43,6 +43,31 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         );
     }
 
+    public SequentialCommandSegment createCommandSegment(TeamElementFinder teamElementFinder, SequentialCommandSegment.InitiateCondition initiateCondition) {
+        return new SequentialCommandSegment(
+                initiateCondition,
+                null,
+                this::init,
+                () -> this.update(getWallPosition(teamElementFinder.getFindingResult())),
+                () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker),
+                chassis::isCurrentTranslationalTaskComplete,
+                0, 0
+        );
+    }
+
+    private Vector2D getWallPosition(TeamElementFinder.TeamElementPosition teamElementPosition) {
+        switch (teamElementPosition) {
+            case UNDETERMINED:
+            case CENTER:
+                return RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach;
+            case LEFT:
+                return new Vector2D(new double[]{-RobotConfig.VisualNavigationConfigs.aimHorizontalPositions[3], RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach.getY()});
+            case RIGHT:
+                return new Vector2D(new double[]{RobotConfig.VisualNavigationConfigs.aimHorizontalPositions[3], RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach.getY()});
+        }
+        return new Vector2D();
+    }
+
     boolean distanceSensorTrustable = true;
 
     private void init() {

@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.TeamElementFinder;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
 
+import java.nio.file.ClosedWatchServiceException;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -33,11 +34,11 @@ public class AutoStageDefault extends AutoStageProgram {
         this.constantsTable = constantsTable;
     }
 
-    private long teamElementFinderTimer= -1, spewPixelTimer = -1;
+    private long teamElementFinderTimer= -1, spewPixelTimer = -1, servoTimer = -1;
     @Override
     public void scheduleCommands(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, Arm arm, Intake intake, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
         final TeamElementFinder teamElementFinder = new TeamElementFinder(chassis, distanceSensor, (HuskyAprilTagCamera) aprilTagCamera.getRawAprilTagCamera());
-        final AprilTagCameraAndDistanceSensorAimBot aimBot = new AprilTagCameraAndDistanceSensorAimBot(chassis, distanceSensor, aprilTagCamera, commanderMarker, telemetrySender);
+        final AprilTagCameraAndDistanceSensorAimBot wallAimBot = new AprilTagCameraAndDistanceSensorAimBot(chassis, distanceSensor, aprilTagCamera, commanderMarker, telemetrySender);
         final PixelCameraAimBot pixelCameraAimBot = new PixelCameraAimBot(chassis, pixelCamera, commanderMarker, new HashMap<>());
 
         /* move to the scanning position */
@@ -48,11 +49,10 @@ public class AutoStageDefault extends AutoStageProgram {
                     chassis.setCurrentYaw(constantsTable.startingRobotFacing);
                     arm.gainOwnerShip(commanderMarker);
                     intake.gainOwnerShip(commanderMarker);
+                    arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.lowPos), commanderMarker);
                 },
                 () -> {},
-                () -> {
-
-                },
+                () -> {},
                 () -> true,
                 constantsTable.startingRobotFacing,
                 constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation
@@ -135,8 +135,7 @@ public class AutoStageDefault extends AutoStageProgram {
                                 constantsTable.scanTeamCenterElementPosition,
                                 constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult())),
                         () -> {
-                            telemetrySender.putSystemMessage("starting rotation of segment 6", Math.toDegrees(chassis.getYaw()));
-                            telemetrySender.putSystemMessage("ending rotation of segment 6", Math.toDegrees(constantsTable.getReleasePixelRotation() + Math.PI));
+                            arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, 0), commanderMarker);
                         },
                         () -> {},
                         () -> {
@@ -172,25 +171,92 @@ public class AutoStageDefault extends AutoStageProgram {
         );
 
         /* if we are at the back filed, drive to front field */
-//        path = new BezierCurve(
-//                constantsTable.scanTeamLeftRightElementPosition,
-//                new Vector2D(),
-//                new Vector2D(),
-//                new Vector2D(new double[] {constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(), constantsTable.centerLineYPosition})
-//        );
-//        commandSegments.add(
-//                new SequentialCommandSegment(
-//                        () -> constantsTable.backField,
-//                        path,
-//                        () -> {},
-//                        () -> {},
-//                        () -> {},
-//                        () -> true,
-//                        0, 0
-//                )
-//        );
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        () -> constantsTable.backField,
+                        () -> new BezierCurve(
+                                chassis.getChassisEncoderPosition(),
+                                new Vector2D(new double[] {
+                                        constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
+                                        0
+                                }),
+                                new Vector2D(new double[] {
+                                        constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
+                                        0
+                                }),
+                                new Vector2D(new double[]{
+                                                constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
+                                                constantsTable.centerLineYPosition
+                                })
+                        ),
+                        () -> {
+                            arm.holdPixel(commanderMarker);
+                        },
+                        () -> {},
+                        () -> {},
+                        () -> true,
+                        constantsTable::getReleasePixelRotation,
+                        () -> 0
+                )
+        );
 
-        /* TODO next, go to the wall */
+        /* if we are at back-field, drive there with a smooth path */
+        SequentialCommandSegment.BezierCurveFeeder bezierCurveFeeder;
+        if (constantsTable.backField)
+            bezierCurveFeeder =
+                    () -> new BezierCurve(
+                    new Vector2D(new double[]{
+                            constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
+                            constantsTable.centerLineYPosition
+                    }),
+                    new Vector2D(new double[] {
+                            constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
+                            constantsTable.aimWallSweetSpot.getY()
+                    }),
+                    new Vector2D(new double[] {
+                            constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
+                            constantsTable.aimWallSweetSpot.getY()
+                    }),
+                    constantsTable.aimWallSweetSpot
+            );
+        /* otherwise, just drive there in a straight line */
+        else
+            bezierCurveFeeder =
+                    () -> new BezierCurve(
+                            chassis.getChassisEncoderPosition(),
+                            constantsTable.aimWallSweetSpot
+                    );
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        () -> constantsTable.backField,
+                        bezierCurveFeeder,
+                        () -> {
+                            arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.lowPos), commanderMarker);
+                        },
+                        () -> {},
+                        () -> {},
+                        () -> true,
+                        constantsTable::getReleasePixelRotation,
+                        () -> 0
+                )
+        );
+
+        commandSegments.add(wallAimBot.createCommandSegment(teamElementFinder, () -> true));
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        null,
+                        () -> {
+                            arm.placePixel(commanderMarker);
+                            servoTimer = System.currentTimeMillis();
+                        },
+                        () -> {},
+                        () -> {
+                            arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.feedPos), commanderMarker);
+                        },
+                        () -> System.currentTimeMillis() - servoTimer > RobotConfig.ArmConfigs.extendTime * 2,
+                        0, 0
+                )
+        );
     }
 
     public static final class AutoStageConstantsTables {
