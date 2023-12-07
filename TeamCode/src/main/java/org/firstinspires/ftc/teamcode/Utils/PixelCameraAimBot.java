@@ -91,9 +91,11 @@ public class PixelCameraAimBot {
 
     public void cancel() {
         this.status = Status.UNUSED;
+        // pixelCamera.disableCamera();
     }
 
     public void update() {
+        pixelCamera.enableCamera();
         debugMessages.put("pixel aim-bot status", status);
         debugMessages.put("camera target", pixelCamera.getNearestPixelPosition());
         switch (status) {

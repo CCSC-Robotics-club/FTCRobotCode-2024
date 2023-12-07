@@ -23,7 +23,7 @@ import java.util.Map;
 public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule implements PositionEstimator {
     private final DcMotor horizontalEncoder, verticalEncoder1, verticalEncoder2;
     private final IMU primaryIMU;
-    private boolean isPrimaryIMUTrustable, imuNeedsReset;
+    private boolean imuNeedsReset;
     private final double horizontalEncoderFactor, verticalEncoder1Factor, verticalEncoder2Factor, verticalDifferenceToHorizontalBias;
     private Vector2D previousPosition;
     private double horizontalEncoderPreviousReading, verticalEncoder1PreviousReading, verticalEncoder2PreviousReading, imuReading, imuVelocity;
@@ -75,16 +75,18 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     @Override
     public void periodic(double dt) {
         if (!positionEncodersAvailable) return;
-        updateRotation();
+        updateRotation(dt);
         estimatePositions();
         estimateVelocity(dt);
     }
 
-    private void updateRotation() {
+    private void updateRotation(double dt) {
         if (imuNeedsReset) resetIMU();
-        long t1 = System.currentTimeMillis();
-        this.imuReading = primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        this.imuVelocity = primaryIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
+        final long t1 = System.currentTimeMillis();
+        final double imuNewReading = primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+//        this.imuVelocity = primaryIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
+        this.imuVelocity = (imuNewReading - imuReading) / dt;
+        this.imuReading = imuNewReading;
          debugMessages.put("imu reading time", System.currentTimeMillis() - t1);
     }
 
@@ -135,7 +137,6 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
         this.verticalEncoder1PreviousReading = verticalEncoder1.getCurrentPosition() * verticalEncoder1Factor;
         this.verticalEncoder2PreviousReading = verticalEncoder2.getCurrentPosition() * verticalEncoder2Factor;
         this.imuRotationBias = 0;
-        this.isPrimaryIMUTrustable = true;
 
         imuNeedsReset = true;
         calibratePosition();

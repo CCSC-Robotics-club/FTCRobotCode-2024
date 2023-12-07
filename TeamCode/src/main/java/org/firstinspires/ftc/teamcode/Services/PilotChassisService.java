@@ -139,8 +139,7 @@ public class PilotChassisService extends RobotService {
                 pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.FACE_TO_AND_FEED);
             else if (startLineUpWithPixelAndFeedTask)
                 pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.LINE_UP_AND_FEED);
-            if (!processPixelNavigation)
-                pixelAimBot.cancel();
+            if (!processPixelNavigation) pixelAimBot.cancel();
             pixelAimBot.update();
         }
 

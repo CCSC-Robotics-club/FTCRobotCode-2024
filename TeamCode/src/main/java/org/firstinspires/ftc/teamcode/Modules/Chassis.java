@@ -66,6 +66,7 @@ public class Chassis extends RobotModule {
     public void periodic(double dt) {
         Vector2D calculatedTranslationalSpeed = calculateTranslationalSpeedWithProperMethod(translationalTask);
         double calculatedRotationalSpeed = calculateRotationalMotorSpeedWithProperMethod(rotationalTask, dt);
+        debugMessages.put("rotation speed", calculatedRotationalSpeed);
 
         if (translationalTask.taskType == ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY && this.orientationMode == OrientationMode.FIELD_ORIENTATED)
             calculatedTranslationalSpeed = calculatedTranslationalSpeed.multiplyBy(
