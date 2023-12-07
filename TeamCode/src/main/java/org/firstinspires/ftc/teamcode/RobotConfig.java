@@ -291,6 +291,11 @@ public final class RobotConfig {
             teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.CENTER, new Double[]{Math.toRadians(35), Math.toRadians(-35)});
             teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.RIGHT, new Double[]{Math.toRadians(-55), Math.toRadians(-125)});
         }
+        public static final int searchRangePixels = 100;
+        public static final int minimumSize = 55;
+        public static final Vector2D expectedTargetPosition = new Vector2D();
+        public static final double searchRotation = Math.toRadians(45); // in reference to the center team element position
+        public static final long timeOut = 500;
     }
 
     public static final class ControlConfigs {

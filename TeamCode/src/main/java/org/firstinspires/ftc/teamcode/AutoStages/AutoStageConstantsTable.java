@@ -10,7 +10,7 @@ public class AutoStageConstantsTable {
     public final double startingRobotFacing;
     public final double centerTeamElementRotation;
     public final double centerLineYPosition; // field center line, the horizontal line that separates the front and back field
-    public final Vector2D scanTeamElementPosition, teamElementLinePositionLeft, teamElementLinePositionRight, teamElementLinePositionCenter,
+    public final Vector2D scanTeamLeftRightElementPosition, scanTeamCenterElementPosition, teamElementLinePositionLeft, teamElementLinePositionRight, teamElementLinePositionCenter,
             lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross, lowestHorizontalWalkWayAndInnerVerticalWalkWayCross,
             aimWallSweetSpot,
             pixelStashOuter, pixelStashMiddle, pixelStashInner;
@@ -20,7 +20,8 @@ public class AutoStageConstantsTable {
             boolean backField,
             double startingRobotFacing,
             double centerTeamElementRotation,
-            double centerLineYPosition, Vector2D scanTeamElementPosition, Vector2D teamElementLinePositionLeft, Vector2D teamElementLinePositionRight, Vector2D teamElementLinePositionCenter,
+            double centerLineYPosition,
+            Vector2D scanTeamLeftRightElementPosition, Vector2D scanTeamCenterElementPosition, Vector2D teamElementLinePositionLeft, Vector2D teamElementLinePositionRight, Vector2D teamElementLinePositionCenter,
             Vector2D lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross, Vector2D lowestHorizontalWalkWayAndInnerVerticalWalkWayCross,
             Vector2D aimWallSweetSpot, Vector2D pixelStashOuter, Vector2D pixelStashMiddle, Vector2D pixelStashInner) {
         this.allianceSide = allianceSide;
@@ -28,7 +29,8 @@ public class AutoStageConstantsTable {
         this.startingRobotFacing = startingRobotFacing;
         this.centerTeamElementRotation = centerTeamElementRotation;
         this.centerLineYPosition = centerLineYPosition;
-        this.scanTeamElementPosition = scanTeamElementPosition;
+        this.scanTeamLeftRightElementPosition = scanTeamLeftRightElementPosition;
+        this.scanTeamCenterElementPosition = scanTeamCenterElementPosition;
         this.teamElementLinePositionLeft = teamElementLinePositionLeft;
         this.teamElementLinePositionRight = teamElementLinePositionRight;
         this.teamElementLinePositionCenter = teamElementLinePositionCenter;

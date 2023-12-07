@@ -8,7 +8,9 @@ import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 
 import static org.firstinspires.ftc.teamcode.RobotConfig.TeamElementFinderConfigs;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Vector;
 
 public class TeamElementFinder {
     public enum TeamElementPosition {
@@ -21,9 +23,11 @@ public class TeamElementFinder {
     private final Chassis chassis;
     private final DistanceSensor distanceSensor;
     private TeamElementPosition teamElementPosition;
-    public TeamElementFinder(Chassis chassis, DistanceSensor distanceSensor) {
+    private final HuskyAprilTagCamera huskyCamera;
+    public TeamElementFinder(Chassis chassis, DistanceSensor distanceSensor, HuskyAprilTagCamera huskyCamera) {
         this.chassis = chassis;
         this.distanceSensor = distanceSensor;
+        this.huskyCamera = huskyCamera;
 
         this.teamElementPosition = TeamElementPosition.UNDETERMINED;
     }
@@ -49,8 +53,21 @@ public class TeamElementFinder {
         );
     }
 
-    public void getResultWithHuskyLens() {
+    public void search(TeamElementPosition teamElementPosition) {
+        huskyCamera.setToColorMode();
+        try { Thread.sleep(100); } catch (InterruptedException e) { throw new RuntimeException(e); }
+        final boolean flag = getResultWithHuskyLens();
+        if (flag) this.teamElementPosition = teamElementPosition;
+        huskyCamera.setToDefaultMode();
+    }
+    private boolean getResultWithHuskyLens(){
+        final List<RawArilTagRecognitionCamera.AprilTagTargetRaw> results = huskyCamera.getRawArilTagTargets();
+        if (results.isEmpty())
+            return false;
+        final RawArilTagRecognitionCamera.AprilTagTargetRaw targetRaw = results.get(0);
+        final Vector2D targetPosition = new Vector2D(new double[] {targetRaw.x, targetRaw.y}).addBy(TeamElementFinderConfigs.expectedTargetPosition.multiplyBy(-1));
 
+        return targetPosition.getMagnitude() < TeamElementFinderConfigs.searchRangePixels;
     }
 
     public TeamElementPosition getFindingResult() {
