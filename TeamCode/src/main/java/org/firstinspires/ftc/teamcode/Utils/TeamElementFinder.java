@@ -10,7 +10,6 @@ import static org.firstinspires.ftc.teamcode.RobotConfig.TeamElementFinderConfig
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Vector;
 
 public class TeamElementFinder {
     public enum TeamElementPosition {
@@ -53,12 +52,17 @@ public class TeamElementFinder {
         );
     }
 
-    public void search(TeamElementPosition teamElementPosition) {
-        huskyCamera.setToColorMode();
-        try { Thread.sleep(100); } catch (InterruptedException e) { throw new RuntimeException(e); }
+    public void proceedSearch(TeamElementPosition teamElementPosition) {
         final boolean flag = getResultWithHuskyLens();
         if (flag) this.teamElementPosition = teamElementPosition;
+    }
+
+    public void stopSearch() {
         huskyCamera.setToDefaultMode();
+    }
+
+    public void startSearch() {
+        huskyCamera.setToColorMode();
     }
     private boolean getResultWithHuskyLens(){
         final List<RawArilTagRecognitionCamera.AprilTagTargetRaw> results = huskyCamera.getRawArilTagTargets();

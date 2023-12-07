@@ -47,7 +47,9 @@ public class AutoStageDefault extends AutoStageProgram {
                     chassis.setCurrentYaw(constantsTable.startingRobotFacing);
                 },
                 () -> {},
-                () -> {},
+                () -> {
+
+                },
                 () -> true,
                 constantsTable.startingRobotFacing,
                 constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation
@@ -58,12 +60,13 @@ public class AutoStageDefault extends AutoStageProgram {
                 null,
                 () -> {
                     teamElementFinderTimer = System.currentTimeMillis();
+                    teamElementFinder.startSearch();
                 },
                 () -> {
-                    teamElementFinder.search(TeamElementFinder.TeamElementPosition.LEFT);
+                    teamElementFinder.proceedSearch(TeamElementFinder.TeamElementPosition.LEFT);
                 },
-                () -> {},
-                () -> teamElementFinderTimer > RobotConfig.TeamElementFinderConfigs.timeOut || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
+                teamElementFinder::stopSearch,
+                () -> System.currentTimeMillis() - teamElementFinderTimer > RobotConfig.TeamElementFinderConfigs.timeOut || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
                 constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation, constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation
         ));
         /* face center */
@@ -74,7 +77,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 () -> {},
                 () -> {},
                 () -> {},
-                () -> teamElementFinderTimer > RobotConfig.TeamElementFinderConfigs.timeOut || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
+                () -> true,
                 constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation, constantsTable.centerTeamElementRotation
         ));
         /* scan center */
@@ -83,12 +86,13 @@ public class AutoStageDefault extends AutoStageProgram {
                 null,
                 () -> {
                     teamElementFinderTimer = System.currentTimeMillis();
+                    teamElementFinder.startSearch();
                 },
                 () -> {
-                    teamElementFinder.search(TeamElementFinder.TeamElementPosition.CENTER);
+                    teamElementFinder.proceedSearch(TeamElementFinder.TeamElementPosition.CENTER);
                 },
-                () -> {},
-                () -> teamElementFinderTimer > RobotConfig.TeamElementFinderConfigs.timeOut || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
+                teamElementFinder::stopSearch,
+                () -> System.currentTimeMillis() - teamElementFinderTimer > RobotConfig.TeamElementFinderConfigs.timeOut || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
                 constantsTable.centerTeamElementRotation, constantsTable.centerTeamElementRotation
         ));
         /* face right side */
@@ -99,7 +103,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 () -> {},
                 () -> {},
                 () -> {},
-                () -> teamElementFinderTimer > RobotConfig.TeamElementFinderConfigs.timeOut || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
+                () -> true,
                 constantsTable.centerTeamElementRotation, constantsTable.centerTeamElementRotation - RobotConfig.TeamElementFinderConfigs.searchRotation
         ));
         /* scan right side */
@@ -108,26 +112,28 @@ public class AutoStageDefault extends AutoStageProgram {
                 null,
                 () -> {
                     teamElementFinderTimer = System.currentTimeMillis();
+                    teamElementFinder.startSearch();
                 },
                 () -> {
-                    teamElementFinder.search(TeamElementFinder.TeamElementPosition.RIGHT);
+                    teamElementFinder.proceedSearch(TeamElementFinder.TeamElementPosition.RIGHT);
                 },
-                () -> {},
-                () -> teamElementFinderTimer > RobotConfig.TeamElementFinderConfigs.timeOut || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
+                teamElementFinder::stopSearch,
+                () -> System.currentTimeMillis() - teamElementFinderTimer > RobotConfig.TeamElementFinderConfigs.timeOut || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
                 constantsTable.centerTeamElementRotation - RobotConfig.TeamElementFinderConfigs.searchRotation, constantsTable.centerTeamElementRotation - RobotConfig.TeamElementFinderConfigs.searchRotation
         ));
 
 
         commandSegments.add(new SequentialCommandSegment(
-                null,
+                () -> true,
+                () -> null,
                 () -> {
                     telemetrySender.putSystemMessage("element position", teamElementFinder.getFindingResult());
                 },
                 () -> {},
                 () -> {},
                 () -> false,
-                constantsTable.startingRobotFacing + Objects.requireNonNull(RobotConfig.TeamElementFinderConfigs.teamElementPositionSearchRotationRanges.get(TeamElementFinder.TeamElementPosition.LEFT))[0],
-                constantsTable.startingRobotFacing + Objects.requireNonNull(RobotConfig.TeamElementFinderConfigs.teamElementPositionSearchRotationRanges.get(TeamElementFinder.TeamElementPosition.LEFT))[0]
+                chassis::getYaw,
+                chassis::getYaw
         )); // wait forever TODO test the part before this
 
 
@@ -146,42 +152,42 @@ public class AutoStageDefault extends AutoStageProgram {
                 )
         );
 
-//        /* place the pixel in place, and leave, face front*/
-//        commandSegments.add(
-//                new SequentialCommandSegment(
-//                        () -> teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
-//                        () -> new BezierCurve(constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult()), constantsTable.scanTeamElementPosition),
-//                        () -> {
-//                            intake.setMotion(Intake.Motion.REVERSE, commanderMarker);
-//                        },
-//                        () -> {},
-//                        () -> {
-//                            intake.setMotion(Intake.Motion.STOP, commanderMarker);
-//                        },
-//                        () -> true,
-//                        () -> constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI,
-//                        () -> 0 // face front
-//                )
-//        );
-//
-//        /* if we are at the back filed, drive to front field */
-//        path = new BezierCurve(
-//                constantsTable.scanTeamElementPosition,
-//                new Vector2D(),
-//                new Vector2D(new double[] {constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(), constantsTable.centerLineYPosition}),
-//                new Vector2D(new double[] {0, 0})
-//        );
-//        commandSegments.add(
-//                new SequentialCommandSegment(
-//                        () -> constantsTable.backField,
-//                        path,
-//                        () -> {},
-//                        () -> {},
-//                        () -> {},
-//                        () -> true,
-//                        0, 0
-//                )
-//        );
+        /* place the pixel in place, and leave, face front*/
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        () -> teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
+                        () -> new BezierCurve(constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult()), constantsTable.scanTeamLeftRightElementPosition),
+                        () -> {
+                            intake.setMotion(Intake.Motion.REVERSE, commanderMarker);
+                        },
+                        () -> {},
+                        () -> {
+                            intake.setMotion(Intake.Motion.STOP, commanderMarker);
+                        },
+                        () -> true,
+                        () -> constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI,
+                        () -> 0 // face front
+                )
+        );
+
+        /* if we are at the back filed, drive to front field */
+        path = new BezierCurve(
+                constantsTable.scanTeamLeftRightElementPosition,
+                new Vector2D(),
+                new Vector2D(),
+                new Vector2D(new double[] {constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(), constantsTable.centerLineYPosition})
+        );
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        () -> constantsTable.backField,
+                        path,
+                        () -> {},
+                        () -> {},
+                        () -> {},
+                        () -> true,
+                        0, 0
+                )
+        );
 
         /* TODO next, go to the wall */
     }
@@ -193,7 +199,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 0,
                 -Math.PI / 2,
                 0,
-                new Vector2D(new double[] {0, 0}), new Vector2D(new double[] {0, 0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {45, 0}), new Vector2D(new double[] {55, 0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})

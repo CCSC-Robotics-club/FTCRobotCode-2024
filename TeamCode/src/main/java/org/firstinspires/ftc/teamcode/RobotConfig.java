@@ -295,7 +295,7 @@ public final class RobotConfig {
         public static final int minimumSize = 55;
         public static final Vector2D expectedTargetPosition = new Vector2D();
         public static final double searchRotation = Math.toRadians(45); // in reference to the center team element position
-        public static final long timeOut = 500;
+        public static final long timeOut = 1000;
     }
 
     public static final class ControlConfigs {

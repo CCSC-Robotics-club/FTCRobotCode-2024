@@ -101,9 +101,9 @@ public class AutoProgramRunner extends RobotService {
         this.currentSegmentTime = 0;
         segment.beginning.run();
 
+        if (segment.getChassisMovementPath() == null) return;
         robotChassis.gainOwnerShip(this);
-        if (segment.getChassisMovementPath() == null) robotChassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), this);
-        else this.currentSegmentChassisPathTimeScale = getTimeScaleWithMaximumVelocityAndAcceleration();
+        this.currentSegmentChassisPathTimeScale = getTimeScaleWithMaximumVelocityAndAcceleration();
     }
     private double getTimeScaleWithMaximumVelocityAndAcceleration() {
         final double maxVel = this.commandSegments.get(currentSegment).getChassisMovementPath().maximumSpeed;
