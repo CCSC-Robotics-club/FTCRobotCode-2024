@@ -44,7 +44,7 @@ public abstract class Robot {
     protected final HardwareMap hardwareMap;
     protected final RobotConfig.HardwareConfigs hardwareConfigs;
     protected final Telemetry telemetry;
-    protected final ProgramRunningStatusChecker programRunningStatusChecker;
+    protected ProgramRunningStatusChecker programRunningStatusChecker;
     protected DriverGamePad driverGamePad = null;
 
     protected final boolean useMultiThread;

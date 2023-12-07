@@ -48,6 +48,8 @@ public class AutoProgramRunner extends RobotService {
 
     @Override
     public void periodic(double dt) {
+        if (isAutoStageComplete())
+            return;
         currentSegmentTime += dt;
 
         final SequentialCommandSegment currentCommandSegment = commandSegments.get(currentSegment);

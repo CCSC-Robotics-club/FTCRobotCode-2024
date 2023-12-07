@@ -15,12 +15,13 @@ public class AutoStageRobot extends Robot {
     private final AutoStageProgram autoStageProgram;
     final AutoProgramRunner autoProgramRunnerService;
     public AutoStageRobot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, AutoStageProgram autoStageProgram) {
-        super(hardwareMap, telemetry, checker, hardwareConfigs, autoStageProgram.allianceSide, false);
+        super(hardwareMap, telemetry, null, hardwareConfigs, autoStageProgram.allianceSide, false);
         if (hardwareConfigs.encodersParams == null || hardwareConfigs.encoderNames == null)
             throw new IllegalStateException("auto stage cannot proceed without encoders");
 
         this.autoStageProgram = autoStageProgram;
         this.autoProgramRunnerService = new AutoProgramRunner(autoStageProgram.commandSegments, super.chassis);
+        super.programRunningStatusChecker = () -> checker.isProgramActive() && (!autoProgramRunnerService.isAutoStageComplete());
     }
 
     @Override

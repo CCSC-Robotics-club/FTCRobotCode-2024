@@ -150,7 +150,7 @@ public class AutoStageDefault extends AutoStageProgram {
 
                         },
                         () -> true,
-                        () -> constantsTable.startingRobotFacing,
+                        chassis::getYaw,
                         () -> constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI // feeding is in the back end
                 )
         );
