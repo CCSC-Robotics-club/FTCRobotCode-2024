@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
+import java.lang.reflect.GenericDeclaration;
+
 public class SequentialCommandSegment {
     public final BezierCurveFeeder chassisMovementPathFeeder;
     public final Runnable beginning, periodic, ending;
@@ -38,10 +40,10 @@ public class SequentialCommandSegment {
         this.endingRotationFeeder = endingRotation;
     }
 
-    public double getCurrentRotationWithLERP(double t) {
+    public static double getCurrentRotationWithLERP(double startingRotation, double endingRotation, double t) {
         if (t<0) t=0;
         else if (t>1) t=1;
-        return AngleUtils.simplifyAngle(startingRotationFeeder.getRotation() + AngleUtils.getActualDifference(getStartingRotation(), getEndingRotation())*t);
+        return AngleUtils.simplifyAngle(startingRotation + AngleUtils.getActualDifference(startingRotation, endingRotation)*t);
     }
 
     public double getStartingRotation() {

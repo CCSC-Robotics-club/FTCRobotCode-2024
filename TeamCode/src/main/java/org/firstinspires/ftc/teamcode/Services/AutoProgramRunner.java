@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Services;
 
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
+import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
@@ -54,16 +55,16 @@ public class AutoProgramRunner extends RobotService {
         if (commandSegments.get(currentSegment).getChassisMovementPath() != null)
             robotChassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
                             Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
-                            currentCommandSegment.getChassisMovementPath().getPositionWithLERP(t)),
+                            currentPath.getPositionWithLERP(t)),
                     this);
         debugMessages.put("time(scaled)", t);
         debugMessages.put("time(raw)", currentSegmentTime);
         debugMessages.put("dt(s)", dt);
         debugMessages.put("ETA",1.0f/currentSegmentChassisPathTimeScale);
-        if (currentCommandSegment.getChassisMovementPath()!=null) debugMessages.put("chassis desired position", currentCommandSegment.getChassisMovementPath().getPositionWithLERP(t));
+        if (currentPath!=null) debugMessages.put("chassis desired position", currentPath.getPositionWithLERP(t));
         robotChassis.setRotationalTask(new Chassis.ChassisRotationalTask(
                         Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
-                        currentCommandSegment.getCurrentRotationWithLERP(t)),
+                        SequentialCommandSegment.getCurrentRotationWithLERP(currentSegmentStartingRotation, currentSegmentEndingRotation, t)),
                 this);
         currentCommandSegment.periodic.run();
 
@@ -91,6 +92,8 @@ public class AutoProgramRunner extends RobotService {
         else initiateSegment(++currentSegment);
     }
 
+    private double currentSegmentStartingRotation = 0, currentSegmentEndingRotation = 0, currentSegmentMaxAngularVelocity = 0;
+    private BezierCurve currentPath = null;
     private void initiateSegment(int segmentID) {
         final SequentialCommandSegment segment = this.commandSegments.get(segmentID);
         if (!segment.initiateCondition.initiateOrSkip()) {
@@ -101,14 +104,19 @@ public class AutoProgramRunner extends RobotService {
         this.currentSegmentTime = 0;
         segment.beginning.run();
 
+        this.currentSegmentStartingRotation = segment.getStartingRotation();
+        this.currentSegmentEndingRotation = segment.getEndingRotation();
+        this.currentSegmentMaxAngularVelocity = segment.getMaxAngularVelocity();
+        this.currentPath = segment.getChassisMovementPath();
+
         if (segment.getChassisMovementPath() == null) return;
         robotChassis.gainOwnerShip(this);
         this.currentSegmentChassisPathTimeScale = getTimeScaleWithMaximumVelocityAndAcceleration();
     }
     private double getTimeScaleWithMaximumVelocityAndAcceleration() {
-        final double maxVel = this.commandSegments.get(currentSegment).getChassisMovementPath().maximumSpeed;
-        final double maxAcc = this.commandSegments.get(currentSegment).getChassisMovementPath().maximumAcceleration;
-        final double maxAngularVel = this.commandSegments.get(currentSegment).getMaxAngularVelocity();
+        final double maxVel = currentPath.maximumSpeed;
+        final double maxAcc = currentPath.maximumAcceleration;
+        final double maxAngularVel = currentSegmentMaxAngularVelocity;
 
         return Math.min(Math.min(ChassisConfigs.autoStageMaxAcceleration / maxAcc, ChassisConfigs.autoStageMaxVelocity/ maxVel), ChassisConfigs.autoStageMaxAngularVelocity / maxAngularVel);
     }
