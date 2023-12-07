@@ -89,8 +89,10 @@ public class AutoProgramRunner extends RobotService {
     private void nextSegment() {
         this.commandSegments.get(currentSegment).ending.run();
 
-        if (currentSegment+1 >= commandSegments.size())
+        if (currentSegment+1 >= commandSegments.size()) {
             robotChassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), this);
+            robotChassis.setRotationalTask(new Chassis.ChassisRotationalTask(Chassis.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED, 0), this);
+        }
         else initiateSegment(++currentSegment);
     }
 

@@ -26,7 +26,7 @@ public class BlueAllianceDefaultAutoStageProgramEntrance extends LinearOpMode {
 
         robot.startRobot();
 
-        while (opModeIsActive() && !isStopRequested())
+        while (robot.programRunningStatusChecker.isProgramActive())
             robot.updateRobot();
     }
 }

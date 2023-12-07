@@ -28,7 +28,8 @@ public class TeleOpMain extends LinearOpMode {
         waitForStart();
         robot.startRobot();
 
-        while (opModeIsActive() && !isStopRequested()) robot.updateRobot();
+        while (robot.programRunningStatusChecker.isProgramActive())
+            robot.updateRobot();
 
         robot.stopRobot();
     }

@@ -33,7 +33,7 @@ public class AutoStageDefault extends AutoStageProgram {
         this.constantsTable = constantsTable;
     }
 
-    private long teamElementFinderTimer= -1;
+    private long teamElementFinderTimer= -1, spewPixelTimer = -1;
     @Override
     public void scheduleCommands(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, Arm arm, Intake intake, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
         final TeamElementFinder teamElementFinder = new TeamElementFinder(chassis, distanceSensor, (HuskyAprilTagCamera) aprilTagCamera.getRawAprilTagCamera());
@@ -123,31 +123,17 @@ public class AutoStageDefault extends AutoStageProgram {
                 constantsTable.centerTeamElementRotation - RobotConfig.TeamElementFinderConfigs.searchRotation, constantsTable.centerTeamElementRotation - RobotConfig.TeamElementFinderConfigs.searchRotation
         ));
 
-
-//        commandSegments.add(new SequentialCommandSegment(
-//                () -> true,
-//                () -> null,
-//                () -> {
-//                    telemetrySender.putSystemMessage("element position", teamElementFinder.getFindingResult());
-//                },
-//                () -> {},
-//                () -> {},
-//                () -> false,
-//                chassis::getYaw,
-//                chassis::getYaw
-//        )); // wait forever
-
-
-
         /* if there is an result, drive there */
         commandSegments.add(
                 new SequentialCommandSegment(
                         () -> teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
                         () -> new BezierCurve(constantsTable.scanTeamLeftRightElementPosition, constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult())),
-                        () -> {},
+                        () -> {
+                            telemetrySender.putSystemMessage("starting rotation of segment 6", chassis.getYaw());
+                            telemetrySender.putSystemMessage("ending rotation of segment 6", constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI);
+                        },
                         () -> {},
                         () -> {
-
                         },
                         () -> true,
                         chassis::getYaw,
@@ -155,28 +141,42 @@ public class AutoStageDefault extends AutoStageProgram {
                 )
         );
 
-        /* place the pixel in place, and leave, face front*/
-        commandSegments.add(
-                new SequentialCommandSegment(
-                        () -> teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
-                        () -> new BezierCurve(
-                                constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult()),
-                                constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult()).addBy(
-                                        new Vector2D(new double[] {0, -RobotConfig.IntakeConfigs.spewPixelDriveBackDistance})
-                                                .multiplyBy(new Rotation2D(constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI)) // drive back a little
-                                )),
-                        () -> {
-                            intake.setMotion(Intake.Motion.REVERSE, commanderMarker);
-                        },
-                        () -> {},
-                        () -> {
-                            intake.setMotion(Intake.Motion.STOP, commanderMarker);
-                        },
-                        () -> true,
-                        () -> constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI,
-                        () -> 0 // face front
-                )
-        );
+        commandSegments.add(new SequentialCommandSegment(
+                () -> true,
+                () -> null,
+                () -> {
+                    telemetrySender.putSystemMessage("element position", teamElementFinder.getFindingResult());
+                },
+                () -> {},
+                () -> {},
+                () -> false,
+                chassis::getYaw,
+                chassis::getYaw
+        )); // wait forever
+
+//        /* place the pixel in place, and leave, face front*/
+//        commandSegments.add(
+//                new SequentialCommandSegment(
+//                        () -> teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
+//                        () -> new BezierCurve(
+//                                constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult()),
+//                                constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult()).addBy(
+//                                        new Vector2D(new double[] {0, -RobotConfig.IntakeConfigs.spewPixelDriveBackDistance})
+//                                                .multiplyBy(new Rotation2D(constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI)) // drive back a little
+//                                )),
+//                        () -> {
+//                            intake.setMotion(Intake.Motion.REVERSE, commanderMarker);
+//                            spewPixelTimer = System.currentTimeMillis();
+//                        },
+//                        () -> {},
+//                        () -> {
+//                            intake.setMotion(Intake.Motion.STOP, commanderMarker);
+//                        },
+//                        () -> System.currentTimeMillis() - spewPixelTimer > RobotConfig.IntakeConfigs.spewPixelTimeMillis,
+//                        () -> constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI,
+//                        () -> 0 // face front
+//                )
+//        );
 
         /* if we are at the back filed, drive to front field */
 //        path = new BezierCurve(
