@@ -21,7 +21,7 @@ public class AutoStageConstantsTable {
             double startingRobotFacing,
             double centerTeamElementRotation,
             double centerLineYPosition,
-            Vector2D scanTeamLeftRightElementPosition, Vector2D scanTeamCenterElementPosition, Vector2D teamElementLinePositionLeft, Vector2D teamElementLinePositionRight, Vector2D teamElementLinePositionCenter,
+            Vector2D scanTeamLeftRightElementPosition, Vector2D scanTeamCenterElementPosition, Vector2D teamElementLinePositionLeft, Vector2D teamElementLinePositionCenter, Vector2D teamElementLinePositionRight,
             Vector2D lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross, Vector2D lowestHorizontalWalkWayAndInnerVerticalWalkWayCross,
             Vector2D aimWallSweetSpot, Vector2D pixelStashOuter, Vector2D pixelStashMiddle, Vector2D pixelStashInner) {
         this.allianceSide = allianceSide;
@@ -57,11 +57,10 @@ public class AutoStageConstantsTable {
     public double getReleasePixelRotation(TeamElementFinder.TeamElementPosition teamElementPosition) {
         switch (teamElementPosition) {
             case LEFT:
-                return this.startingRobotFacing + Math.PI / 2;
-            case RIGHT:
-                return this.startingRobotFacing - Math.PI / 2;
             case CENTER:
-                return this.startingRobotFacing;
+                return this.centerTeamElementRotation + Math.PI / 4;
+            case RIGHT:
+                return this.centerTeamElementRotation + Math.PI / 2;
         }
         return 0;
     }

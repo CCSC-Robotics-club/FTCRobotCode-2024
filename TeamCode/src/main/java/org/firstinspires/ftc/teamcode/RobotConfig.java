@@ -110,6 +110,8 @@ public final class RobotConfig {
         public static final String intakeMotor1Name = "intake1", intakeMotor2Name = "intake2";
         public static final double intakeMotor1Power = -0.75, intakeMotor2Power = 0.75; // competition machine
 //        public static final double intakeMotor1Power = -0.85, intakeMotor2Power = -0.85; // backup machine
+
+        public static final double spewPixelDriveBackDistance = 10;
     }
 
     public static final class ArmConfigs {
@@ -214,7 +216,7 @@ public final class RobotConfig {
 
         public static final double autoStageMaxVelocity = 300;
         public static final double autoStageMaxAcceleration = 350;
-        public static final double autoStageMaxAngularVelocity = Math.PI * 1.4;
+        public static final double autoStageMaxAngularVelocity = Math.PI * 0.7;
     }
 
     public static final class VisualNavigationConfigs {
@@ -292,10 +294,10 @@ public final class RobotConfig {
             teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.RIGHT, new Double[]{Math.toRadians(-55), Math.toRadians(-125)});
         }
         public static final int searchRangePixels = 100;
-        public static final int minimumSize = 55;
+        public static final int minimumSize = 20;
         public static final Vector2D expectedTargetPosition = new Vector2D();
         public static final double searchRotation = Math.toRadians(45); // in reference to the center team element position
-        public static final long timeOut = 1000;
+        public static final long timeOut = 1500;
     }
 
     public static final class ControlConfigs {
