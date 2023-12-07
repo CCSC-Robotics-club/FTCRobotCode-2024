@@ -58,9 +58,9 @@ public class AutoStageConstantsTable {
         switch (teamElementPosition) {
             case LEFT:
             case CENTER:
-                return this.centerTeamElementRotation + Math.PI / 4;
+                return this.centerTeamElementRotation - Math.PI / 4;
             case RIGHT:
-                return this.centerTeamElementRotation + Math.PI / 2;
+                return this.centerTeamElementRotation - Math.PI / 2;
         }
         return 0;
     }

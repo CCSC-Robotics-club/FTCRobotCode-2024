@@ -46,6 +46,8 @@ public class AutoStageDefault extends AutoStageProgram {
                 path,
                 () -> {
                     chassis.setCurrentYaw(constantsTable.startingRobotFacing);
+                    arm.gainOwnerShip(commanderMarker);
+                    intake.gainOwnerShip(commanderMarker);
                 },
                 () -> {},
                 () -> {
@@ -129,54 +131,41 @@ public class AutoStageDefault extends AutoStageProgram {
                         () -> teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
                         () -> new BezierCurve(constantsTable.scanTeamLeftRightElementPosition, constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult())),
                         () -> {
-                            telemetrySender.putSystemMessage("starting rotation of segment 6", chassis.getYaw());
-                            telemetrySender.putSystemMessage("ending rotation of segment 6", constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI);
+                            telemetrySender.putSystemMessage("starting rotation of segment 6", Math.toDegrees(chassis.getYaw()));
+                            telemetrySender.putSystemMessage("ending rotation of segment 6", Math.toDegrees(constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI));
                         },
                         () -> {},
                         () -> {
                         },
-                        () -> true,
+                        () -> chassis.isCurrentRotationalTaskComplete() && chassis.isCurrentTranslationalTaskComplete(), // make sure it is precise
                         chassis::getYaw,
                         () -> constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI // feeding is in the back end
                 )
         );
 
-        commandSegments.add(new SequentialCommandSegment(
-                () -> true,
-                () -> null,
-                () -> {
-                    telemetrySender.putSystemMessage("element position", teamElementFinder.getFindingResult());
-                },
-                () -> {},
-                () -> {},
-                () -> false,
-                chassis::getYaw,
-                chassis::getYaw
-        )); // wait forever
-
-//        /* place the pixel in place, and leave, face front*/
-//        commandSegments.add(
-//                new SequentialCommandSegment(
-//                        () -> teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
-//                        () -> new BezierCurve(
-//                                constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult()),
-//                                constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult()).addBy(
-//                                        new Vector2D(new double[] {0, -RobotConfig.IntakeConfigs.spewPixelDriveBackDistance})
-//                                                .multiplyBy(new Rotation2D(constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI)) // drive back a little
-//                                )),
-//                        () -> {
-//                            intake.setMotion(Intake.Motion.REVERSE, commanderMarker);
-//                            spewPixelTimer = System.currentTimeMillis();
-//                        },
-//                        () -> {},
-//                        () -> {
-//                            intake.setMotion(Intake.Motion.STOP, commanderMarker);
-//                        },
-//                        () -> System.currentTimeMillis() - spewPixelTimer > RobotConfig.IntakeConfigs.spewPixelTimeMillis,
-//                        () -> constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI,
-//                        () -> 0 // face front
-//                )
-//        );
+        /* place the pixel in place, and leave, face front*/
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        () -> teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
+                        () -> new BezierCurve(
+                                constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult()),
+                                constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult()).addBy(
+                                        new Vector2D(new double[] {0, -RobotConfig.IntakeConfigs.spewPixelDriveBackDistance})
+                                                .multiplyBy(new Rotation2D(constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI)) // drive back a little
+                                )),
+                        () -> {
+                            intake.setMotion(Intake.Motion.REVERSE, commanderMarker);
+                            spewPixelTimer = System.currentTimeMillis();
+                        },
+                        () -> {},
+                        () -> {
+                            intake.setMotion(Intake.Motion.STOP, commanderMarker);
+                        },
+                        () -> System.currentTimeMillis() - spewPixelTimer > RobotConfig.IntakeConfigs.spewPixelTimeMillis,
+                        () -> constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI,
+                        () -> constantsTable.getReleasePixelRotation(teamElementFinder.getFindingResult()) + Math.PI // face front
+                )
+        );
 
         /* if we are at the back filed, drive to front field */
 //        path = new BezierCurve(
@@ -207,7 +196,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 0,
                 -Math.PI / 2,
                 0,
-                new Vector2D(new double[] {48, 0}), new Vector2D(new double[] {65, 0}), new Vector2D(new double[] {45,35}), new Vector2D(new double[] {95,30}), new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {48, 0}), new Vector2D(new double[] {65, 0}), new Vector2D(new double[] {48,40}), new Vector2D(new double[] {95,30}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
