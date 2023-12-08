@@ -175,19 +175,6 @@ public class AutoStageDefault extends AutoStageProgram {
                 )
         );
 
-        commandSegments.add(
-                new SequentialCommandSegment(
-                        () -> true,
-                        () -> null,
-                        () -> {},
-                        () -> {},
-                        () -> {},
-                        ()->false,
-                        chassis::getYaw,
-                        chassis::getYaw
-                )
-        );
-
         // TODO below this line are those waiting to be tested:
 
         /* if we are at the back filed, drive to front field */
@@ -271,6 +258,19 @@ public class AutoStageDefault extends AutoStageProgram {
                 )
         );
 
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        () -> true,
+                        () -> null,
+                        () -> {},
+                        () -> {},
+                        () -> {},
+                        ()->false,
+                        chassis::getYaw,
+                        chassis::getYaw
+                )
+        );
+
         // TODO here, push the new pixel from the intake to the claw and place it if no result found
 //        commandSegments.add(
 //                new SequentialCommandSegment(
@@ -317,7 +317,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 Math.toRadians(90),
                 0,
                 new Vector2D(new double[] {48, 0}), new Vector2D(new double[] {65, 0}),
-                new Vector2D(new double[] {100, 27}), new Vector2D(new double[] {85,45}), new Vector2D(new double[] {80,-8}),
+                new Vector2D(new double[] {85,45}), new Vector2D(new double[] {100, 27}),new Vector2D(new double[] {80,-8}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
