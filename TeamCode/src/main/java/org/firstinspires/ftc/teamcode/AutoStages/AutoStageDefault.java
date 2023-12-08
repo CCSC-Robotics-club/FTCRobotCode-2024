@@ -185,6 +185,7 @@ public class AutoStageDefault extends AutoStageProgram {
         );
 
         // TODO below this line are those waiting to be tested:
+        if (1==1) return;
 
         /* if we are at the back filed, drive to front field */
         commandSegments.add(
@@ -301,7 +302,91 @@ public class AutoStageDefault extends AutoStageProgram {
                 )
         );
 
-        // TODO take the pixel stacks in the back
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        new BezierCurve(
+                                new Vector2D(new double[] {constantsTable.lowestHorizontalWalkWayAndInnerVerticalWalkWayCross.getX(), constantsTable.centerLineYPosition}),
+                                constantsTable.lowestHorizontalWalkWayAndInnerVerticalWalkWayCross
+                        ),
+                        () -> {},
+                        () -> {},
+                        () -> {},
+                        () -> true,
+                        0, 0
+                )
+        );
+
+        // commandSegments.add(pixelCameraAimBot.createAimingCommandSegment(PixelCameraAimBot.AimMethod.LINE_UP_AND_FEED));
+
+        /* intake two pixels from stack*/
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        new BezierCurve(
+                                constantsTable.lowestHorizontalWalkWayAndInnerVerticalWalkWayCross,
+                                constantsTable.pixelStashInner
+                        ),
+                        () -> {
+                            intake.setMotion(Intake.Motion.ACTIVATED, commanderMarker);
+                        },
+                        () -> {},
+                        () -> {},
+                        () -> true,
+                        0, 0
+                )
+        );
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        new BezierCurve(
+                                constantsTable.pixelStashInner,
+                                constantsTable.lowestHorizontalWalkWayAndInnerVerticalWalkWayCross
+                        ),
+                        () -> {
+                            intake.setMotion(Intake.Motion.STOP, commanderMarker);
+                        },
+                        () -> {},
+                        () -> {},
+                        () -> true,
+                        0, 0
+                )
+        );
+
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        new BezierCurve(
+                                constantsTable.lowestHorizontalWalkWayAndInnerVerticalWalkWayCross,
+                                new Vector2D(new double[] {constantsTable.lowestHorizontalWalkWayAndInnerVerticalWalkWayCross.getX(), constantsTable.centerLineYPosition})
+                        ),
+                        () -> {
+                            arm.holdPixel(commanderMarker);
+                            intake.setMotion(Intake.Motion.ACTIVATED, commanderMarker);
+                        },
+                        () -> {},
+                        () -> {
+                            intake.setMotion(Intake.Motion.STOP, commanderMarker);
+                        },
+                        () -> true,
+                        0, 0
+                )
+        );
+
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        new BezierCurve(
+                                new Vector2D(new double[] {constantsTable.lowestHorizontalWalkWayAndInnerVerticalWalkWayCross.getX(), constantsTable.centerLineYPosition}),
+                                new Vector2D(new double[] {constantsTable.lowestHorizontalWalkWayAndInnerVerticalWalkWayCross.getX(), constantsTable.aimWallSweetSpot.getY()}),
+                                constantsTable.aimWallSweetSpot
+                        ),
+                        () -> {
+                            arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.lowPos), commanderMarker);
+                        },
+                        () -> {},
+                        () -> {},
+                        () -> true,
+                        0, 0
+                )
+        );
+
+        // TODO here, aim and place the two pixels
     }
 
     public static final class AutoStageConstantsTables {

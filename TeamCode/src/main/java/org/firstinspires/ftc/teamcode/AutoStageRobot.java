@@ -15,13 +15,12 @@ public class AutoStageRobot extends Robot {
     private final AutoStageProgram autoStageProgram;
     final AutoProgramRunner autoProgramRunnerService;
     public AutoStageRobot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, AutoStageProgram autoStageProgram) {
-        super(hardwareMap, telemetry, null, hardwareConfigs, autoStageProgram.allianceSide, false); // TODO find out why multi-thread fails
+        super(hardwareMap, telemetry, checker, hardwareConfigs, autoStageProgram.allianceSide, true); // TODO find out why multi-thread fails
         if (hardwareConfigs.encodersParams == null || hardwareConfigs.encoderNames == null)
             throw new IllegalStateException("auto stage cannot proceed without encoders");
 
         this.autoStageProgram = autoStageProgram;
         this.autoProgramRunnerService = new AutoProgramRunner(autoStageProgram.commandSegments, super.chassis);
-        super.programRunningStatusChecker = () -> checker.isProgramActive() && (!autoProgramRunnerService.isAutoStageComplete());
     }
 
     @Override
@@ -36,8 +35,8 @@ public class AutoStageRobot extends Robot {
     public void updateRobot() {
         super.updateRobot();
         telemetrySender.putSystemMessage("chassis thread update count", chassis.updateCount);
-        if (autoProgramRunnerService.isAutoStageComplete())
-            super.stopRobot();
+//        if (autoProgramRunnerService.isAutoStageComplete())
+//            super.stopRobot();
     }
 
     public Chassis getChassisModule() {
