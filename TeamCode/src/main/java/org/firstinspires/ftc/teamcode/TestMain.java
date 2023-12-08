@@ -44,7 +44,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        huskyTest();
+        newArmTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -904,6 +904,24 @@ public class TestMain extends LinearOpMode {
             updateRobot();
 
             sleep(20);
+        }
+    }
+
+    private void newArmTest() {
+        DcMotor arm1 = hardwareMap.get(DcMotor.class, "arm1"), arm2 = hardwareMap.get(DcMotor.class, "arm2");
+
+        waitForStart();
+
+        while (!isStopRequested() && opModeIsActive()) {
+            final double arm1Power = Math.abs(gamepad1.left_stick_y) > 0.05 ? -gamepad1.left_stick_y:0,
+            arm2Power = Math.abs(gamepad1.left_stick_y) > 0.05 ? -gamepad1.left_stick_y:0;
+
+            arm1.setPower(arm1Power);
+            arm2.setPower(arm2Power);
+
+            telemetry.addData("arm1 pow", arm1Power);
+            telemetry.addData("arm2 pow", arm2Power);
+            telemetry.update();
         }
     }
 }

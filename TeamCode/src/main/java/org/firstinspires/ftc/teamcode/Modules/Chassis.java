@@ -100,10 +100,10 @@ public class Chassis extends RobotModule {
             backRightWheelMotorPower *= (powerConstrain / greatestPower);
         }
 
-//        frontLeftWheel.setVelocity(frontLeftWheelMotorPower);
-//        frontRightWheel.setVelocity(frontRightWheelMotorPower);
-//        backLeftWheel.setVelocity(backLeftWheelMotorPower);
-//        backRightWheel.setVelocity(backRightWheelMotorPower);
+        frontLeftWheel.setVelocity(frontLeftWheelMotorPower);
+        frontRightWheel.setVelocity(frontRightWheelMotorPower);
+        backLeftWheel.setVelocity(backLeftWheelMotorPower);
+        backRightWheel.setVelocity(backRightWheelMotorPower);
     }
 
     private Vector2D calculateTranslationalSpeedWithProperMethod(ChassisTranslationalTask task) {
