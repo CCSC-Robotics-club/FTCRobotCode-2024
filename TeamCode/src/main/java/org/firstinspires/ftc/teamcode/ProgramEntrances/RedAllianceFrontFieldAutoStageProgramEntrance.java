@@ -26,7 +26,5 @@ public class RedAllianceFrontFieldAutoStageProgramEntrance extends LinearOpMode 
 
         while (robot.programRunningStatusChecker.isProgramActive())
             robot.updateRobot();
-
-        robot.stopRobot();
     }
 }
