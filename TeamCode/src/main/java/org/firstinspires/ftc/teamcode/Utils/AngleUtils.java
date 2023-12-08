@@ -7,6 +7,8 @@ public class AngleUtils {
      * @return the simplified angle, in radian and in the range 0 < x < Math.Pi*2
      * */
     public static double simplifyAngle(double radian) {
+        if (radian > 1e5)
+            throw new IllegalArgumentException("radian is infinity"); // if the radian is infinity, the following will lead to a dead loop
         while (radian > Math.PI * 2)
             radian -= Math.PI * 2;
         while (radian < 0)
@@ -22,8 +24,6 @@ public class AngleUtils {
      * */
     public static double getActualDifference(double currentRotation, double targetedRotation) {
         double loopLength = Math.PI * 2;
-        if (loopLength == Double.POSITIVE_INFINITY)
-            return targetedRotation - currentRotation;
         currentRotation = simplifyAngle(currentRotation);
         targetedRotation = simplifyAngle(targetedRotation);
         double difference = targetedRotation - currentRotation;
