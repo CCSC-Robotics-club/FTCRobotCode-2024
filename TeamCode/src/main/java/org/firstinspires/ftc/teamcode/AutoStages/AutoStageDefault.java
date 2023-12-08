@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.AutoStages;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
+import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
@@ -50,10 +51,12 @@ public class AutoStageDefault extends AutoStageProgram {
                     chassis.setCurrentYaw(constantsTable.startingRobotFacing);
                     arm.gainOwnerShip(commanderMarker);
                     intake.gainOwnerShip(commanderMarker);
-                    // arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.lowPos), commanderMarker);
+                    arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.lowPos), commanderMarker);
                 },
                 () -> {},
-                () -> {},
+                () -> {
+                    arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0), commanderMarker);
+                },
                 () -> true,
                 constantsTable.startingRobotFacing,
                 constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation
@@ -142,6 +145,7 @@ public class AutoStageDefault extends AutoStageProgram {
                         () -> {
                         },
                         () -> chassis.isCurrentRotationalTaskComplete() && chassis.isCurrentTranslationalTaskComplete(), // make sure it is precise
+                        // ()->true,
                         chassis::getYaw,
                         constantsTable::getReleasePixelRotation // feeding is in the back end
                 )
@@ -154,8 +158,8 @@ public class AutoStageDefault extends AutoStageProgram {
                         () -> new BezierCurve(
                                 constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult()),
                                 constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult()).addBy(
-                                        new Vector2D(new double[] {0, -RobotConfig.IntakeConfigs.spewPixelDriveBackDistance})
-//                                                .multiplyBy(new Rotation2D(constantsTable.getReleasePixelRotation() + Math.PI)) // drive back a little
+                                        new Vector2D(new double[] {0, RobotConfig.IntakeConfigs.spewPixelDriveBackDistance})
+                                                .multiplyBy(new Rotation2D(constantsTable.getReleasePixelRotation())) // drive back a little
                                 )),
                         () -> {
                             intake.setMotion(Intake.Motion.REVERSE, commanderMarker);
@@ -310,10 +314,10 @@ public class AutoStageDefault extends AutoStageProgram {
                 false,
                 0,
                 -Math.PI / 2,
-                Math.toRadians(50),
+                Math.toRadians(90),
                 0,
                 new Vector2D(new double[] {48, 0}), new Vector2D(new double[] {65, 0}),
-                new Vector2D(new double[] {48,40}), new Vector2D(new double[] {95,30}), new Vector2D(new double[] {53,-14}),
+                new Vector2D(new double[] {100, 27}), new Vector2D(new double[] {85,45}), new Vector2D(new double[] {80,-8}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
@@ -327,7 +331,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 -Math.toRadians(50),
                 0,
                 new Vector2D(new double[] {48, 0}), new Vector2D(new double[] {65, 0}),
-                new Vector2D(new double[] {48,-40}), new Vector2D(new double[] {95,-30}), new Vector2D(new double[] {53,14}),
+                new Vector2D(new double[] {48,-40}), new Vector2D(new double[] {95,-30}), new Vector2D(new double[] {53,14}), // TODO left right should reverse
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
@@ -339,10 +343,10 @@ public class AutoStageDefault extends AutoStageProgram {
                 false,
                 Math.PI,
                 Math.PI / 2,
-                -Math.toRadians(50),
+                -Math.toRadians(90),
                 0,
                 new Vector2D(new double[] {-48, 0}), new Vector2D(new double[] {-65, 0}),
-                new Vector2D(new double[] {-48,40}), new Vector2D(new double[] {-95,30}), new Vector2D(new double[] {-53,-14}),
+                new Vector2D(new double[] {-80,-8}), new Vector2D(new double[] {-100, 27}), new Vector2D(new double[] {-85,45}), // newest
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
