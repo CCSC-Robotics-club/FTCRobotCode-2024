@@ -53,9 +53,7 @@ public abstract class RobotModule extends ModulesCommanderMarker {
                     while (System.currentTimeMillis() - t + 1 < periodMS)
                         try {
                             Thread.sleep(2);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
+                        } catch (InterruptedException ignored) {}
                     t = System.currentTimeMillis();
                 }
             }

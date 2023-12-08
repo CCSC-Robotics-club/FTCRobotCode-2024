@@ -254,6 +254,7 @@ public abstract class Robot {
 
     Thread updateServicesThread;
     List<Thread> updateModulesThreads = new ArrayList<>(1);
+    private Thread chassisThread;
     private void scheduleThreads() {
         updateServicesThread = new Thread(new Runnable() {
             private double previousTimeMillis = System.currentTimeMillis();
@@ -274,6 +275,7 @@ public abstract class Robot {
                     }
 
                     telemetrySender.putSystemMessage("services update rate", 1000 / (System.currentTimeMillis() - previousTimeMillis));
+                    telemetrySender.putSystemMessage("chassis thread status", chassisThread.getState());
                     previousTimeMillis = System.currentTimeMillis();
                 }
             }
@@ -282,6 +284,8 @@ public abstract class Robot {
         for (RobotModule module : robotModules) {
             Runnable moduleUpdateRunnable = module.getRunnable(programRunningStatusChecker);
             updateModulesThreads.add(new Thread(moduleUpdateRunnable));
+            if (module == chassis)
+                chassisThread = updateModulesThreads.get(updateModulesThreads.size()-1);
         }
     }
 
