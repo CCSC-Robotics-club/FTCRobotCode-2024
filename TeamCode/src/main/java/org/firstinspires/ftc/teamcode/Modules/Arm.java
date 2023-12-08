@@ -15,19 +15,21 @@ import java.util.Map;
 public class Arm extends RobotModule {
     private final ExtendableClaw claw;
     private final TouchSensor limitSwitch;
-    private final DcMotor armMotor, armEncoder;
-    private final double motorPowerRate;
+    private final DcMotor armMotor1, armMotor2, armEncoder;
+    private final double motor1PowerRate, motor2PowerRate;
     private final int encoderFactor;
 
     private int startingEncoderPosition = 0;
     private ArmCommand currentCommand;
-    public Arm(DcMotor armMotor, DcMotor armEncoder, ExtendableClaw extendableClaw, TouchSensor limitSwitch) {
+    public Arm(DcMotor armMotor1, DcMotor armMotor2, DcMotor armEncoder, ExtendableClaw extendableClaw, TouchSensor limitSwitch) {
         super("arm");
         this.claw = extendableClaw;
-        this.armMotor = armMotor;
+        this.armMotor1 = armMotor1;
+        this.armMotor2 = armMotor2;
         this.armEncoder = armEncoder;
         this.limitSwitch = limitSwitch;
-        this.motorPowerRate = ArmConfigs.armMotorReversed ? -1 : 1 * ArmConfigs.armMotorMaximumPower;
+        this.motor1PowerRate = ArmConfigs.armMotor1Reversed ? -1 : 1 * ArmConfigs.armMotorMaximumPower;
+        this.motor2PowerRate = ArmConfigs.armMotor2Reversed ? -1:1 * ArmConfigs.armMotorMaximumPower;
         this.encoderFactor = ArmConfigs.armEncoderReversed ? -1 : 1;
     }
 
@@ -41,7 +43,9 @@ public class Arm extends RobotModule {
         if (limitSwitch.isPressed())
             resetEncoder();
 
-        armMotor.setPower(getMotorPower());
+        final double motorPower = getMotorPower();
+        armMotor1.setPower(motorPower * motor1PowerRate);
+        armMotor2.setPower(motorPower * motor2PowerRate);
         debugMessages.put("command type", currentCommand.commandType);
         debugMessages.put("command value", currentCommand.commandValue);
         debugMessages.put("motor power", getMotorPower());
@@ -100,13 +104,13 @@ public class Arm extends RobotModule {
                 if (currentCommand.commandValue > 0)
                     if (getArmPosition() > ArmConfigs.positionLimit)
                         return 0;
-                return currentCommand.commandValue * this.motorPowerRate;
+                return currentCommand.commandValue;
             }
             case SET_POSITION: {
                 final double difference = currentCommand.commandValue - getArmPosition();
                 if (Math.abs(difference) < ArmConfigs.positionTolerance)
                     return 0;
-                final double correctionPower = difference / ArmConfigs.positionDifferenceStartDecelerate * motorPowerRate;
+                final double correctionPower = difference / ArmConfigs.positionDifferenceStartDecelerate;
                 if (Math.abs(correctionPower) > ArmConfigs.armMotorMaximumPower)
                     return Math.copySign(ArmConfigs.armMotorMaximumPower, correctionPower);
                 if (Math.abs(correctionPower) < ArmConfigs.frictionPower)
