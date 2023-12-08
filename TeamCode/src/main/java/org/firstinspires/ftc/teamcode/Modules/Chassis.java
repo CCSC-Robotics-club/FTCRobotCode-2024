@@ -62,15 +62,11 @@ public class Chassis extends RobotModule {
         reset();
     }
 
-    int count = 0;
     @Override
     public void periodic(double dt) {
-        debugMessages.put("chassis desired task type", translationalTask.taskType);
-        debugMessages.put("chassis desired task", translationalTask.translationalValue);
+        // TODO chassis isn't updating at auto stage if running at multi-thread
         Vector2D calculatedTranslationalSpeed = calculateTranslationalSpeedWithProperMethod(translationalTask);
         double calculatedRotationalSpeed = calculateRotationalMotorSpeedWithProperMethod(rotationalTask, dt);
-        debugMessages.put("translational speed", calculatedTranslationalSpeed);
-        debugMessages.put("count", count++); // TODO why did the chassis not update
 
         if (translationalTask.taskType == ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY && this.orientationMode == OrientationMode.FIELD_ORIENTATED)
             calculatedTranslationalSpeed = calculatedTranslationalSpeed.multiplyBy(

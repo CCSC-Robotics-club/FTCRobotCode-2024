@@ -39,6 +39,8 @@ public abstract class RobotModule extends ModulesCommanderMarker {
     protected boolean isOwner(ModulesCommanderMarker operator) {
         return owners.contains(operator) || operator == null;
     }
+
+    public int updateCount = 0;
     public Runnable getRunnable(ProgramRunningStatusChecker checker) {
         final double periodMS = 1000.0f / desiredUpdateFrequency;
         return new Runnable() {
@@ -46,6 +48,7 @@ public abstract class RobotModule extends ModulesCommanderMarker {
             @Override
             public void run() {
                 while (checker.isProgramActive() && (!terminated)) {
+                    updateCount++;
                     if (enabled) periodic();
                     while (System.currentTimeMillis() - t + 1 < periodMS)
                         try {

@@ -35,6 +35,7 @@ public class AutoStageRobot extends Robot {
     @Override
     public void updateRobot() {
         super.updateRobot();
+        telemetrySender.putSystemMessage("chassis thread update count", chassis.updateCount);
         if (autoProgramRunnerService.isAutoStageComplete())
             super.stopRobot();
     }
