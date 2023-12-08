@@ -23,7 +23,7 @@ import java.util.Map;
 public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule implements PositionEstimator {
     private final DcMotor horizontalEncoder, verticalEncoder1, verticalEncoder2;
     private final IMU primaryIMU;
-    private boolean imuNeedsReset;
+    private boolean isPrimaryIMUTrustable, imuNeedsReset;
     private final double horizontalEncoderFactor, verticalEncoder1Factor, verticalEncoder2Factor, verticalDifferenceToHorizontalBias;
     private Vector2D previousPosition;
     private double horizontalEncoderPreviousReading, verticalEncoder1PreviousReading, verticalEncoder2PreviousReading, imuReading, imuVelocity;
@@ -46,7 +46,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
             DcMotor verticalEncoder2,
             IMU imu,
             TripleIndependentEncoderAndIMUSystemParams params
-            ) {
+    ) {
         super("position estimator", RobotConfig.ChassisConfigs.positionEstimator_speedEstimationFrequency);
         this.horizontalEncoder = horizontalEncoder;
         this.verticalEncoder1 = verticalEncoder1;
@@ -75,19 +75,17 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     @Override
     public void periodic(double dt) {
         if (!positionEncodersAvailable) return;
-        updateRotation(dt);
+        updateRotation();
         estimatePositions();
         estimateVelocity(dt);
     }
 
-    private void updateRotation(double dt) {
+    private void updateRotation() {
         if (imuNeedsReset) resetIMU();
-        final long t1 = System.currentTimeMillis();
-        final double imuNewReading = primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-//        this.imuVelocity = primaryIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
-        this.imuVelocity = (imuNewReading - imuReading) / dt;
-        this.imuReading = imuNewReading;
-         debugMessages.put("imu reading time", System.currentTimeMillis() - t1);
+        long t1 = System.currentTimeMillis();
+        this.imuReading = primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        this.imuVelocity = primaryIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
+        debugMessages.put("imu reading time", System.currentTimeMillis() - t1);
     }
 
     private void estimatePositions() {
@@ -137,6 +135,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
         this.verticalEncoder1PreviousReading = verticalEncoder1.getCurrentPosition() * verticalEncoder1Factor;
         this.verticalEncoder2PreviousReading = verticalEncoder2.getCurrentPosition() * verticalEncoder2Factor;
         this.imuRotationBias = 0;
+        this.isPrimaryIMUTrustable = true;
 
         imuNeedsReset = true;
         calibratePosition();
@@ -183,7 +182,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
 
     @Override
     public double getAngularVelocity() {
-       return imuVelocity;
+        return imuVelocity;
     }
 
     /**
@@ -235,7 +234,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
                 IMU imu,
                 Gamepad testGamePad,
                 Telemetry telemetry
-                ) {
+        ) {
             final int loops = 10;
 
             double previousRotation = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), radianRotated = 0;
