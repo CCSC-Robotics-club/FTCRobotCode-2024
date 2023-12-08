@@ -196,10 +196,6 @@ public class AutoStageDefault extends AutoStageProgram {
                                         constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
                                         0
                                 }),
-                                new Vector2D(new double[] {
-                                        constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
-                                        0
-                                }),
                                 new Vector2D(new double[]{
                                                 constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
                                                 constantsTable.centerLineYPosition
@@ -224,10 +220,6 @@ public class AutoStageDefault extends AutoStageProgram {
                     new Vector2D(new double[]{
                             constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
                             constantsTable.centerLineYPosition
-                    }),
-                    new Vector2D(new double[] {
-                            constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
-                            constantsTable.aimWallSweetSpot.getY()
                     }),
                     new Vector2D(new double[] {
                             constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
@@ -276,20 +268,40 @@ public class AutoStageDefault extends AutoStageProgram {
         );
 
         // TODO here, push the new pixel from the intake to the claw and place it if no result found
+//        commandSegments.add(
+//                new SequentialCommandSegment(
+//                        () -> teamElementFinder.getFindingResult() == TeamElementFinder.TeamElementPosition.UNDETERMINED,
+//                        null,
+//                        () -> {
+//                            arm.holdPixel(commanderMarker);
+//                            servoTimer = System.currentTimeMillis();
+//                        },
+//                        () -> {},
+//                        () -> {},
+//                        () -> System.currentTimeMillis() - servoTimer > RobotConfig.ArmConfigs.extendTime,
+//                        0, 0
+//                )
+//        );
+
+        /* take the inner path to go back */
         commandSegments.add(
                 new SequentialCommandSegment(
-                        () -> teamElementFinder.getFindingResult() == TeamElementFinder.TeamElementPosition.UNDETERMINED,
-                        null,
+                        new BezierCurve(
+                                constantsTable.aimWallSweetSpot,
+                                new Vector2D(new double[] {constantsTable.lowestHorizontalWalkWayAndInnerVerticalWalkWayCross.getX(), constantsTable.aimWallSweetSpot.getY()}),
+                                new Vector2D(new double[] {constantsTable.lowestHorizontalWalkWayAndInnerVerticalWalkWayCross.getX(), constantsTable.centerLineYPosition})
+                        ),
                         () -> {
-                            arm.holdPixel(commanderMarker);
-                            servoTimer = System.currentTimeMillis();
+                            arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, 0), commanderMarker);
                         },
                         () -> {},
                         () -> {},
-                        () -> System.currentTimeMillis() - servoTimer > RobotConfig.ArmConfigs.extendTime,
+                        arm::isArmDesiredPositionReached,
                         0, 0
                 )
         );
+
+        // TODO take the pixel stacks in the back
     }
 
     public static final class AutoStageConstantsTables {

@@ -94,6 +94,12 @@ public class Arm extends RobotModule {
         return limitSwitch != null && limitSwitch.isPressed();
     }
 
+    public boolean isArmDesiredPositionReached() {
+        if (this.currentCommand.commandType == ArmCommand.ArmCommandType.SET_MOTOR_POWER)
+            return true;
+        return Math.abs(getArmPosition() - currentCommand.commandValue) < ArmConfigs.positionErrorAsCommandFinished;
+    }
+
     private double getMotorPower() {
         debugMessages.put("encoder reading", getArmPosition());
         switch (currentCommand.commandType) {

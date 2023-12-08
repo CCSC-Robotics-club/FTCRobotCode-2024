@@ -109,8 +109,8 @@ public final class RobotConfig {
         public static final double armMotorMaximumPower = 1;
 
         public static final int positionDifferenceStartDecelerate = 500;
-        public static final int positionTolerance = 50;
-        public static final double frictionPower = 0.2;
+        public static final int positionTolerance = 40;
+        public static final double frictionPower = 0.25;
         public static final int feedPos = 260, lowPos = 1800, midPos = 2600, highPos = 3400;
         public static final int positionLimit = 3500;
         public static final Arm.ArmCommand armCommandWhenNoInput = new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0); // null for not needed
@@ -124,6 +124,7 @@ public final class RobotConfig {
 
         public static final double servoValueOrigin = 0.95, servoValueExtend = 0.5;
         public static final double extendTime = 0.3;
+        public static final int positionErrorAsCommandFinished = 80;
     }
 
     public static final class LauncherConfigs {

@@ -18,6 +18,9 @@ public class BezierCurve {
                 startingPoint.addBy(Vector2D.displacementToTarget(startingPoint, endingPoint).multiplyBy(2/3)),
                 endingPoint);
     }
+    public BezierCurve(Vector2D startingPoint, Vector2D midPoint, Vector2D endingPoint) {
+        this(startingPoint, midPoint, midPoint, endingPoint);
+    }
     public BezierCurve(Vector2D startingPoint, Vector2D startingPointAnotherPoint, Vector2D endingPointAnotherPoint, Vector2D endingPoint) {
         this.p0 = startingPoint;
         this.p1 = startingPointAnotherPoint;
