@@ -16,7 +16,7 @@ public class RedAllianceFrontFieldAutoStageProgramEntrance extends LinearOpMode 
                 telemetry,
                 () -> opModeIsActive() && !isStopRequested(),
                 RobotConfig.hardwareConfigs_2024Competition,
-                new AutoStageDefault(AutoStageDefault.AutoStageConstantsTables.redAllianceFrontField, true));
+                new AutoStageDefault(AutoStageDefault.AutoStageConstantsTables.redAllianceFrontField));
 
         robot.initializeRobot();
 

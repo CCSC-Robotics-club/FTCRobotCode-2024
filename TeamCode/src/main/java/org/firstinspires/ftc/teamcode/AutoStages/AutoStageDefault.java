@@ -27,11 +27,9 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class AutoStageDefault extends AutoStageProgram {
-    private final boolean frontField;
     private final AutoStageConstantsTable constantsTable;
-    public AutoStageDefault(AutoStageConstantsTable constantsTable, boolean frontField) {
+    public AutoStageDefault(AutoStageConstantsTable constantsTable) {
         super(constantsTable.allianceSide);
-        this.frontField = frontField;
         this.constantsTable = constantsTable;
     }
 
@@ -44,7 +42,7 @@ public class AutoStageDefault extends AutoStageProgram {
 
         /* move to the scanning position */
         BezierCurve path = new BezierCurve(new Vector2D(), constantsTable.scanTeamLeftRightElementPosition);
-        commandSegments.add(new SequentialCommandSegment(
+        commandSegments.add(new SequentialCommandSegment( // 0
                 path,
                 () -> {
                     chassis.gainOwnerShip(commanderMarker);
@@ -63,7 +61,7 @@ public class AutoStageDefault extends AutoStageProgram {
         ));
 
         /* scan left side */
-        commandSegments.add(new SequentialCommandSegment(
+        commandSegments.add(new SequentialCommandSegment( // 1
                 null,
                 () -> {
                     teamElementFinderTimer = System.currentTimeMillis();
@@ -78,7 +76,7 @@ public class AutoStageDefault extends AutoStageProgram {
         ));
         /* face center */
         path = new BezierCurve(constantsTable.scanTeamLeftRightElementPosition, constantsTable.scanTeamCenterElementPosition);
-        commandSegments.add(new SequentialCommandSegment(
+        commandSegments.add(new SequentialCommandSegment( // 2
                 () -> teamElementFinder.getFindingResult() == TeamElementFinder.TeamElementPosition.UNDETERMINED,
                 path,
                 () -> {},
@@ -88,7 +86,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation, constantsTable.centerTeamElementRotation
         ));
         /* scan center */
-        commandSegments.add(new SequentialCommandSegment(
+        commandSegments.add(new SequentialCommandSegment( // 3
                 () -> teamElementFinder.getFindingResult() == TeamElementFinder.TeamElementPosition.UNDETERMINED,
                 null,
                 () -> {
@@ -104,7 +102,7 @@ public class AutoStageDefault extends AutoStageProgram {
         ));
         /* face right side */
         path = new BezierCurve(constantsTable.scanTeamCenterElementPosition, constantsTable.scanTeamLeftRightElementPosition);
-        commandSegments.add(new SequentialCommandSegment(
+        commandSegments.add(new SequentialCommandSegment( // 4
                 () -> teamElementFinder.getFindingResult() == TeamElementFinder.TeamElementPosition.UNDETERMINED,
                 path,
                 () -> {},
@@ -114,7 +112,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 constantsTable.centerTeamElementRotation, constantsTable.centerTeamElementRotation - RobotConfig.TeamElementFinderConfigs.searchRotation
         ));
         /* scan right side */
-        commandSegments.add(new SequentialCommandSegment(
+        commandSegments.add(new SequentialCommandSegment( // 5
                 () -> teamElementFinder.getFindingResult() == TeamElementFinder.TeamElementPosition.UNDETERMINED,
                 null,
                 () -> {
@@ -131,7 +129,7 @@ public class AutoStageDefault extends AutoStageProgram {
 
         /* if there is an result, drive there */
         commandSegments.add(
-                new SequentialCommandSegment(
+                new SequentialCommandSegment( // 6
                         () -> teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
                         () -> new BezierCurve(
                                 constantsTable.scanTeamLeftRightElementPosition,
@@ -139,10 +137,12 @@ public class AutoStageDefault extends AutoStageProgram {
                                 constantsTable.scanTeamCenterElementPosition,
                                 constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult())),
                         () -> {
-                            // arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, 0), commanderMarker);
+                            arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, 0), commanderMarker);
                         },
                         () -> {},
                         () -> {
+                            arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0), commanderMarker);
+                            arm.holdPixel(commanderMarker);
                         },
                         () -> chassis.isCurrentRotationalTaskComplete() && chassis.isCurrentTranslationalTaskComplete(), // make sure it is precise
                         // ()->true,
@@ -153,7 +153,7 @@ public class AutoStageDefault extends AutoStageProgram {
 
         /* place the pixel in place, and leave, face front*/
         commandSegments.add(
-                new SequentialCommandSegment(
+                new SequentialCommandSegment( // 7
                         () -> teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
                         () -> new BezierCurve(
                                 constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult()),
@@ -178,9 +178,10 @@ public class AutoStageDefault extends AutoStageProgram {
         // TODO below this line are those waiting to be tested:
 
         /* if we are at the back filed, drive to front field */
-        commandSegments.add(
+        if (constantsTable.backField)
+            commandSegments.add(
                 new SequentialCommandSegment(
-                        () -> constantsTable.backField,
+                        () -> true,
                         () -> new BezierCurve(
                                 chassis.getChassisEncoderPosition(),
                                 new Vector2D(new double[] {
@@ -192,9 +193,7 @@ public class AutoStageDefault extends AutoStageProgram {
                                                 constantsTable.centerLineYPosition
                                 })
                         ),
-                        () -> {
-                            arm.holdPixel(commanderMarker);
-                        },
+                        () -> {},
                         () -> {},
                         () -> {},
                         () -> true,
@@ -319,7 +318,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 new Vector2D(new double[] {48, 0}), new Vector2D(new double[] {65, 0}),
                 new Vector2D(new double[] {85,45}), new Vector2D(new double[] {100, 27}),new Vector2D(new double[] {80,-8}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
-                new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {70, 70}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
         );
 

@@ -81,7 +81,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
             try { Thread.sleep(50); } catch (InterruptedException ignored) {}
             // throw new IllegalStateException("waiting for target");
         }
-        if (!chassis.isVisualNavigationAvailable()) throw new IllegalStateException("don't see the wall after " + RobotConfig.VisualNavigationConfigs.maxTimeToWaitForVisualNavigationMS + "ms");
+        if (!chassis.isVisualNavigationAvailable()) return;
         final double distanceSensorReading = distanceSensor.getDistance(DistanceUnit.CM);
         if (distanceSensorReading > RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance) throw new IllegalStateException("target too far");
         resetAimBot();

@@ -16,7 +16,7 @@ public class BlueAllianceBackFieldAutoStageProgramEntrance extends LinearOpMode 
                 telemetry,
                 () -> opModeIsActive() && !isStopRequested(),
                 RobotConfig.hardwareConfigs_2024Competition,
-                new AutoStageDefault(AutoStageDefault.AutoStageConstantsTables.blueAllianceBackField, false));
+                new AutoStageDefault(AutoStageDefault.AutoStageConstantsTables.blueAllianceBackField));
 
         robot.initializeRobot();
 
