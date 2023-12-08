@@ -86,8 +86,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
         final double imuNewReading = primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 //        this.imuVelocity = primaryIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
         if (dt > 1e-4)
-            this.imuVelocity = (imuNewReading - imuReading) / dt; // if dt is too small, we abandon the action since this will make velocity infinity
-            // this.imuVelocity = AngleUtils.getActualDifference(imuReading, imuNewReading) / dt;
+            this.imuVelocity = AngleUtils.getActualDifference(imuReading, imuNewReading) / dt; // if dt is too small, we abandon the action since this will make velocity infinity
         this.imuReading = imuNewReading;
         debugMessages.put("imu reading time", System.currentTimeMillis() - t1);
     }
@@ -122,6 +121,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     }
 
     private void estimateVelocity(double dt) {
+        if (dt < 1e-4) return;
         Vector2D positionDifference = currentPosition2D.addBy(previousPosition.multiplyBy(-1));
         this.currentVelocity2D = positionDifference.multiplyBy(1/dt);
 
