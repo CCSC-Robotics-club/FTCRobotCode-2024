@@ -105,7 +105,7 @@ public final class RobotConfig {
 
     public static final class ArmConfigs {
         public static final String armMotor1Name = "arm1", armMotor2Name = "arm2", armEncoderName = "arm1", limitSwitchName = "limit";
-        public static final boolean armMotor1Reversed = true, armMotor2Reversed = true, armEncoderReversed = false;
+        public static final boolean armMotor1Reversed = true, armMotor2Reversed = false, armEncoderReversed = false;
         public static final double armMotorMaximumPower = 1;
 
         public static final int positionDifferenceStartDecelerate = 500;

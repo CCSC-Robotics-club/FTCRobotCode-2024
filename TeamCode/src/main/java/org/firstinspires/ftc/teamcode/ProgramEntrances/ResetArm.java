@@ -6,26 +6,28 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.teamcode.Modules.Arm;
+import org.firstinspires.ftc.teamcode.RobotConfig;
+
 @TeleOp(name="Arm-Reset")
 public class ResetArm extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         final TouchSensor limitSwitch = hardwareMap.get(TouchSensor.class, "limit");
-        final DcMotor armMotor = hardwareMap.get(DcMotor.class, "arm");
+        final DcMotor armMotor1 = hardwareMap.get(DcMotor.class, "arm1"), armMotor2 = hardwareMap.get(DcMotor.class, "arm2");
 
         waitForStart();
 
-        final double powerRate = 1;
-        final int startingPos = armMotor.getCurrentPosition();
+        final int startingPos = armMotor1.getCurrentPosition();
         while (opModeIsActive() && !isStopRequested()) {
-            double power = gamepad1.left_stick_y * powerRate;
-            if (Math.abs(power) < 0.05)
-                power = 0;
+            double power = -gamepad1.left_stick_y;
+            if (Math.abs(power) < 0.05) power = 0;
 
-            armMotor.setPower(power);
+            armMotor1.setPower(RobotConfig.ArmConfigs.armMotor1Reversed ? power:-power);
+            armMotor2.setPower(RobotConfig.ArmConfigs.armMotor2Reversed ? power:-power);
 
             telemetry.addData("limit switch pressed", limitSwitch.getValue());
-            telemetry.addData("arm encoder reading", armMotor.getCurrentPosition() - startingPos);
+            telemetry.addData("arm encoder reading", armMotor1.getCurrentPosition() - startingPos);
             telemetry.update();
 
             sleep(50);

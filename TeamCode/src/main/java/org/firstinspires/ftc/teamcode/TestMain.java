@@ -914,7 +914,7 @@ public class TestMain extends LinearOpMode {
 
         while (!isStopRequested() && opModeIsActive()) {
             final double arm1Power = Math.abs(gamepad1.left_stick_y) > 0.05 ? -gamepad1.left_stick_y:0,
-            arm2Power = Math.abs(gamepad1.left_stick_y) > 0.05 ? -gamepad1.left_stick_y:0;
+            arm2Power = Math.abs(gamepad1.right_stick_y) > 0.05 ? -gamepad1.right_stick_y:0;
 
             arm1.setPower(arm1Power);
             arm2.setPower(arm2Power);
