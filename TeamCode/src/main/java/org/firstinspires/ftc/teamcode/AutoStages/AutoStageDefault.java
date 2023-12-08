@@ -177,67 +177,23 @@ public class AutoStageDefault extends AutoStageProgram {
 
         // TODO below this line are those waiting to be tested:
 
-        /* if we are at the back filed, drive to front field */
-        if (constantsTable.backField)
-            commandSegments.add(
-                new SequentialCommandSegment(
-                        () -> true,
-                        () -> new BezierCurve(
-                                chassis.getChassisEncoderPosition(),
-                                new Vector2D(new double[] {
-                                        constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
-                                        0
-                                }),
-                                new Vector2D(new double[]{
-                                                constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
-                                                constantsTable.centerLineYPosition
-                                })
-                        ),
-                        () -> {},
-                        () -> {},
-                        () -> {},
-                        () -> true,
-                        constantsTable::getReleasePixelRotation,
-                        () -> 0
-                )
-        );
-
-        /* if we are at back-field, drive there with a smooth path */
-        SequentialCommandSegment.BezierCurveFeeder bezierCurveFeeder;
-        if (constantsTable.backField)
-            bezierCurveFeeder =
-                    () -> new BezierCurve(
-                    new Vector2D(new double[]{
-                            constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
-                            constantsTable.centerLineYPosition
-                    }),
-                    new Vector2D(new double[] {
-                            constantsTable.lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross.getX(),
-                            constantsTable.aimWallSweetSpot.getY()
-                    }),
-                    constantsTable.aimWallSweetSpot
-            );
-        /* otherwise, just drive there in a straight line */
-        else
-            bezierCurveFeeder =
+        SequentialCommandSegment.BezierCurveFeeder bezierCurveFeeder =
                     () -> new BezierCurve(
                             chassis.getChassisEncoderPosition(),
                             constantsTable.aimWallSweetSpot
                     );
-        commandSegments.add(
-                new SequentialCommandSegment(
-                        () -> constantsTable.backField,
-                        bezierCurveFeeder,
-                        () -> {
-                            arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.lowPos), commanderMarker);
-                        },
-                        () -> {},
-                        () -> {},
-                        () -> true,
-                        constantsTable::getReleasePixelRotation,
-                        () -> 0
-                )
-        );
+        commandSegments.add( new SequentialCommandSegment( // 8
+                () -> true,
+                bezierCurveFeeder,
+                () -> {
+                    arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.lowPos), commanderMarker);
+                    },
+                () -> {},
+                () -> {},
+                () -> true,
+                constantsTable::getReleasePixelRotation,
+                () -> 0
+        ));
 
         /* aim and place the first pixel */
         commandSegments.add(wallAimBot.createCommandSegment(teamElementFinder, () -> true));
