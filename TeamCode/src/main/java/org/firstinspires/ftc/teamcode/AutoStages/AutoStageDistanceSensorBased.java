@@ -23,9 +23,9 @@ import org.firstinspires.ftc.teamcode.Utils.Vector2D;
 
 import java.util.HashMap;
 
-public class AutoStageDefault extends AutoStageProgram {
+public class AutoStageDistanceSensorBased extends AutoStageProgram {
     private final AutoStageConstantsTable constantsTable;
-    public AutoStageDefault(AutoStageConstantsTable constantsTable) {
+    public AutoStageDistanceSensorBased(AutoStageConstantsTable constantsTable) {
         super(constantsTable.allianceSide);
         this.constantsTable = constantsTable;
     }

@@ -96,7 +96,7 @@ public final class RobotConfig {
 
     public static final class IntakeConfigs {
         public static final String intakeMotor1Name = "intake1", intakeMotor2Name = "intake2";
-        public static final double intakeMotor1Power = -0.85, intakeMotor2Power = 0.85; // competition machine
+        public static final double intakeMotor1Power = -0.75, intakeMotor2Power = 0.75; // competition machine
 //        public static final double intakeMotor1Power = -0.85, intakeMotor2Power = -0.85; // backup machine
 
         public static final double spewPixelDriveBackDistance = 20;
