@@ -96,7 +96,7 @@ public final class RobotConfig {
 
     public static final class IntakeConfigs {
         public static final String intakeMotor1Name = "intake1", intakeMotor2Name = "intake2";
-        public static final double intakeMotor1Power = -0.75, intakeMotor2Power = 0.75; // competition machine
+        public static final double intakeMotor1Power = -0.85, intakeMotor2Power = 0.85; // competition machine
 //        public static final double intakeMotor1Power = -0.85, intakeMotor2Power = -0.85; // backup machine
 
         public static final double spewPixelDriveBackDistance = 20;
@@ -171,18 +171,18 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileX = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1,
-                0.09, // for precise wall aiming
-                43,
-                1,
-                0.13,
+                0.11, // for precise wall aiming
+                40,
+                1.2,
+                0.14,
                 0, 0
         );
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileY = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
-                1,
+                0.9,
                 0.05,
-                43,
-                1.25,
+                40,
+                1.2,
                 0.13,
                 0, 0
         );
@@ -196,7 +196,7 @@ public final class RobotConfig {
         public static final double xPowerRate = 1.05,
                 yPowerRate = 1;
         /** the distance to set the position target, when pilot sends a command of full speed  */
-        public static final double targetDistanceAtMaxDesiredSpeed = 65;
+        public static final double targetDistanceAtMaxDesiredSpeed = 50;
         /** the smooth-out time, or the time after the pilot let the chassis stop till it start maintaining its current position */
         public static final double timeToStartDecelerate = 0.5;
 
