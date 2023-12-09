@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.AutoStages;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
+import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
@@ -30,7 +31,7 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
         this.constantsTable = constantsTable;
     }
 
-    private long teamElementFinderTimer= -1, spewPixelTimer = -1, servoTimer = -1;
+    private long teamElementFinderTimer= -1, spewPixelTimer = -1, servoTimer = -1, programTimer = -1;
     @Override
     public void scheduleCommands(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, Arm arm, Intake intake, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
         final TeamElementFinder teamElementFinder = new TeamElementFinder(chassis, distanceSensor, (HuskyAprilTagCamera) aprilTagCamera.getRawAprilTagCamera());
@@ -42,6 +43,7 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
         commandSegments.add(new SequentialCommandSegment( // 0
                 path,
                 () -> {
+                    programTimer = System.currentTimeMillis();
                     chassis.gainOwnerShip(commanderMarker);
                     chassis.setCurrentYaw(constantsTable.startingRobotFacing);
                     arm.gainOwnerShip(commanderMarker);
@@ -172,8 +174,26 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
                 )
         );
 
-        // TODO below this line are those waiting to be tested:
+        /* before we walk to aiming spot, walk to the side of the wall and wait till the last 8 seconds */
+//        commandSegments.add(new SequentialCommandSegment(
+//                () -> true,
+//                () -> new BezierCurve(
+//                        chassis.getChassisEncoderPosition(),
+//                        new Vector2D(new double[] {5, constantsTable.aimWallSweetSpot.getY()})
+//                ),
+//                () -> {
+//                    arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.lowPos), commanderMarker);
+//                },
+//                () -> {},
+//                () -> {
+//                    arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0), commanderMarker);
+//                },
+//                () -> System.currentTimeMillis() - programTimer < 22 * 1000,
+//                constantsTable::getReleasePixelRotation,
+//                () -> 0
+//                ));
 
+        /* go to aim spot */
         SequentialCommandSegment.BezierCurveFeeder bezierCurveFeeder =
                 () -> new BezierCurve(
                         chassis.getChassisEncoderPosition(),
@@ -186,7 +206,9 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
                     arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.lowPos), commanderMarker);
                 },
                 () -> {},
-                () -> {},
+                () -> {
+                    arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0), commanderMarker);
+                },
                 () -> true,
                 constantsTable::getReleasePixelRotation,
                 () -> 0

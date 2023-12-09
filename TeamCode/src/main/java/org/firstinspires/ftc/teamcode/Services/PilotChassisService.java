@@ -178,7 +178,7 @@ public class PilotChassisService extends RobotService {
         if (pilotDesiredFacing != -1)
             rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
                     Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
-                    pilotDesiredFacing
+                    pilotDesiredFacing + pilotFacingRotation.getRadian()
             );
 
         /* if there is no visual task going, send the pilot's rotation command to chassis module */
