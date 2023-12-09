@@ -111,7 +111,7 @@ public final class RobotConfig {
         public static final int positionDifferenceStartDecelerate = 500;
         public static final int positionTolerance = 40;
         public static final double frictionPower = 0.25;
-        public static final int feedPos = 260, lowPos = 2100, midPos = 2800, highPos = 3500;
+        public static final int feedPos = 0, lowPos = 2100, midPos = 2300, highPos = 3500;
         public static final int positionLimit = 3500;
         public static final Arm.ArmCommand armCommandWhenNoInput = new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0); // null for not needed
 

@@ -31,8 +31,6 @@ public class ArmService extends RobotService {
         } else if (copilotGamepad.b) {
             this.currentArmCommand = new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, ArmConfigs.midPos);
         } else if (copilotGamepad.a) {
-            this.currentArmCommand = new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, ArmConfigs.lowPos);
-        } else if (copilotGamepad.x) {
             this.currentArmCommand = new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, ArmConfigs.feedPos);
         }else if (ArmConfigs.armCommandWhenNoInput != null){
             this.currentArmCommand = ArmConfigs.armCommandWhenNoInput;
