@@ -202,10 +202,27 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
                             servoTimer = System.currentTimeMillis();
                         },
                         () -> {},
-                        () -> {
-                            arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.feedPos), commanderMarker);
-                        },
+                        () -> {},
                         () -> System.currentTimeMillis() - servoTimer > RobotConfig.ArmConfigs.extendTime * 2,
+                        0, 0
+                )
+        );
+
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        new BezierCurve(
+                                constantsTable.aimWallSweetSpot,
+                                new Vector2D(new double[] {constantsTable.parkingPosition.getX(), constantsTable.aimWallSweetSpot.getY()}),
+                                constantsTable.parkingPosition
+                        ),
+                        () -> {
+                            arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, 0), commanderMarker);
+                        },
+                        () -> {},
+                        () -> {
+                            arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0), commanderMarker);
+                        },
+                        chassis::isCurrentTranslationalTaskComplete,
                         0, 0
                 )
         );
@@ -272,8 +289,8 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
                 new Vector2D(new double[] {85,45}), new Vector2D(new double[] {100, 27}),new Vector2D(new double[] {80,-8}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {70, 70}),
-                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
-        );
+                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {10, 120}));
 
         public static final AutoStageConstantsTable blueAllianceBackField = new AutoStageConstantsTable(
                 Robot.Side.BLUE,
@@ -286,8 +303,8 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
                 new Vector2D(new double[] {48,-40}), new Vector2D(new double[] {95,-30}), new Vector2D(new double[] {53,14}), // TODO left right should reverse
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
-                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
-        );
+                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {0, 0}));
 
 
         public static final AutoStageConstantsTable redAllianceFrontField = new AutoStageConstantsTable(
@@ -301,8 +318,8 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
                 new Vector2D(new double[] {-80,-8}), new Vector2D(new double[] {-100, 27}), new Vector2D(new double[] {-85,45}), // newest
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
-                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
-        );
+                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {-10, 120}));
 
         public static final AutoStageConstantsTable redAllianceBackField = new AutoStageConstantsTable(
                 Robot.Side.RED,
@@ -315,7 +332,7 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
                 new Vector2D(new double[] {-48,-40}), new Vector2D(new double[] {-95,-30}), new Vector2D(new double[] {-53,14}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
-                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
-        );
+                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {0, 0}));
     }
 }

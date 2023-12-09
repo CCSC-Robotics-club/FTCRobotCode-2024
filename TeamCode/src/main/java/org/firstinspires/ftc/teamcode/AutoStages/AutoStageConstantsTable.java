@@ -14,7 +14,8 @@ public class AutoStageConstantsTable {
     public final Vector2D scanTeamLeftRightElementPosition, scanTeamCenterElementPosition, teamElementLinePositionLeft, teamElementLinePositionRight, teamElementLinePositionCenter,
             lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross, lowestHorizontalWalkWayAndInnerVerticalWalkWayCross,
             aimWallSweetSpot,
-            pixelStashOuter, pixelStashMiddle, pixelStashInner;
+            pixelStashOuter, pixelStashMiddle, pixelStashInner,
+            parkingPosition;
 
     public AutoStageConstantsTable(
             Robot.Side allianceSide,
@@ -25,7 +26,7 @@ public class AutoStageConstantsTable {
             double centerLineYPosition,
             Vector2D scanTeamLeftRightElementPosition, Vector2D scanTeamCenterElementPosition, Vector2D teamElementLinePositionLeft, Vector2D teamElementLinePositionCenter, Vector2D teamElementLinePositionRight,
             Vector2D lowestHorizontalWalkWayAndOutMostVerticalWalkWayCross, Vector2D lowestHorizontalWalkWayAndInnerVerticalWalkWayCross,
-            Vector2D aimWallSweetSpot, Vector2D pixelStashOuter, Vector2D pixelStashMiddle, Vector2D pixelStashInner) {
+            Vector2D aimWallSweetSpot, Vector2D pixelStashOuter, Vector2D pixelStashMiddle, Vector2D pixelStashInner, Vector2D parkingPosition) {
         this.allianceSide = allianceSide;
         this.backField = backField;
         this.startingRobotFacing = startingRobotFacing;
@@ -43,6 +44,7 @@ public class AutoStageConstantsTable {
         this.pixelStashOuter = pixelStashOuter;
         this.pixelStashMiddle = pixelStashMiddle;
         this.pixelStashInner = pixelStashInner;
+        this.parkingPosition = parkingPosition;
     }
 
     public Vector2D getReleasePixelLinePosition(TeamElementFinder.TeamElementPosition teamElementPosition) {

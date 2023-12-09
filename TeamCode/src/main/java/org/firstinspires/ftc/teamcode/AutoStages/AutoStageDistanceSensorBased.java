@@ -279,8 +279,8 @@ public class AutoStageDistanceSensorBased extends AutoStageProgram {
                 new Vector2D(new double[] {85,45}), new Vector2D(new double[] {100, 27}),new Vector2D(new double[] {80,-8}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {70, 70}),
-                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
-        );
+                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {10, 120}));
 
         public static final AutoStageConstantsTable blueAllianceBackField = new AutoStageConstantsTable(
                 Robot.Side.BLUE,
@@ -293,7 +293,8 @@ public class AutoStageDistanceSensorBased extends AutoStageProgram {
                 new Vector2D(new double[] {48,-40}), new Vector2D(new double[] {95,-30}), new Vector2D(new double[] {53,14}), // TODO left right should reverse
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
-                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
+                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {0,0})
         );
 
 
@@ -308,8 +309,8 @@ public class AutoStageDistanceSensorBased extends AutoStageProgram {
                 new Vector2D(new double[] {-80,-8}), new Vector2D(new double[] {-100, 27}), new Vector2D(new double[] {-85,45}), // newest
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {-70,70}),
-                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
-        );
+                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {-10, 120}));
 
         public static final AutoStageConstantsTable redAllianceBackField = new AutoStageConstantsTable(
                 Robot.Side.RED,
@@ -322,7 +323,7 @@ public class AutoStageDistanceSensorBased extends AutoStageProgram {
                 new Vector2D(new double[] {-48,-40}), new Vector2D(new double[] {-95,-30}), new Vector2D(new double[] {-53,14}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
-                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
-        );
+                new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {0, 0}));
     }
 }
