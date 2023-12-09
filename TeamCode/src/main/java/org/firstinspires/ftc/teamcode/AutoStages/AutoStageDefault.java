@@ -52,9 +52,9 @@ public class AutoStageDefault extends AutoStageProgram {
                 () -> {
                     // arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0), commanderMarker);
                 },
-                () -> true,
+                chassis::isCurrentRotationalTaskComplete,
                 constantsTable.startingRobotFacing,
-                constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation
+                constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation + RobotConfig.TeamElementFinderConfigs.searchRange
         ));
 
         /* scan left side */
@@ -68,8 +68,9 @@ public class AutoStageDefault extends AutoStageProgram {
                     teamElementFinder.proceedTOFSearch(TeamElementFinder.TeamElementPosition.LEFT);
                 },
                 teamElementFinder::stopSearch,
-                () -> System.currentTimeMillis() - teamElementFinderTimer > RobotConfig.TeamElementFinderConfigs.timeOut || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
-                constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation, constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation
+                () -> chassis.isCurrentRotationalTaskComplete() || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
+                constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation + RobotConfig.TeamElementFinderConfigs.searchRange,
+                constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation - RobotConfig.TeamElementFinderConfigs.searchRange
         ));
         /* face center */
         path = new BezierCurve(constantsTable.scanTeamLeftRightElementPosition, constantsTable.scanTeamCenterElementPosition);
@@ -80,7 +81,8 @@ public class AutoStageDefault extends AutoStageProgram {
                 () -> {},
                 () -> {},
                 () -> true,
-                constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation, constantsTable.centerTeamElementRotation
+                constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRotation - RobotConfig.TeamElementFinderConfigs.searchRange,
+                constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRange
         ));
         /* scan center */
         commandSegments.add(new SequentialCommandSegment( // 3
@@ -94,8 +96,9 @@ public class AutoStageDefault extends AutoStageProgram {
                     teamElementFinder.proceedTOFSearch(TeamElementFinder.TeamElementPosition.CENTER);
                 },
                 teamElementFinder::stopSearch,
-                () -> System.currentTimeMillis() - teamElementFinderTimer > RobotConfig.TeamElementFinderConfigs.timeOut || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
-                constantsTable.centerTeamElementRotation, constantsTable.centerTeamElementRotation
+                () -> chassis.isCurrentRotationalTaskComplete() || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
+                constantsTable.centerTeamElementRotation + RobotConfig.TeamElementFinderConfigs.searchRange,
+                constantsTable.centerTeamElementRotation - RobotConfig.TeamElementFinderConfigs.searchRange
         ));
         /* face right side */
         path = new BezierCurve(constantsTable.scanTeamCenterElementPosition, constantsTable.scanTeamLeftRightElementPosition);
@@ -105,8 +108,9 @@ public class AutoStageDefault extends AutoStageProgram {
                 () -> {},
                 () -> {},
                 () -> {},
-                () -> true,
-                constantsTable.centerTeamElementRotation, constantsTable.centerTeamElementRotation - RobotConfig.TeamElementFinderConfigs.searchRotation
+                chassis::isCurrentRotationalTaskComplete,
+                constantsTable.centerTeamElementRotation - RobotConfig.TeamElementFinderConfigs.searchRange,
+                constantsTable.centerTeamElementRotation - RobotConfig.TeamElementFinderConfigs.searchRotation + RobotConfig.TeamElementFinderConfigs.searchRange
         ));
         /* scan right side */
         commandSegments.add(new SequentialCommandSegment( // 5
@@ -120,9 +124,25 @@ public class AutoStageDefault extends AutoStageProgram {
                     teamElementFinder.proceedTOFSearch(TeamElementFinder.TeamElementPosition.RIGHT);
                 },
                 teamElementFinder::stopSearch,
-                () -> System.currentTimeMillis() - teamElementFinderTimer > RobotConfig.TeamElementFinderConfigs.timeOut || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
-                constantsTable.centerTeamElementRotation - RobotConfig.TeamElementFinderConfigs.searchRotation, constantsTable.centerTeamElementRotation - RobotConfig.TeamElementFinderConfigs.searchRotation
+                () -> chassis.isCurrentRotationalTaskComplete() || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
+                constantsTable.centerTeamElementRotation - RobotConfig.TeamElementFinderConfigs.searchRotation + RobotConfig.TeamElementFinderConfigs.searchRange,
+                constantsTable.centerTeamElementRotation - RobotConfig.TeamElementFinderConfigs.searchRotation - RobotConfig.TeamElementFinderConfigs.searchRange
         ));
+
+        commandSegments.add(
+                new SequentialCommandSegment(
+                        () -> true,
+                        () -> null,
+                        () -> {
+                            telemetrySender.putSystemMessage("team element position", teamElementFinder.getFindingResult());
+                        },
+                        () -> {},
+                        () -> {},
+                        ()->false,
+                        chassis::getYaw,
+                        chassis::getYaw
+                )
+        );
 
         /* if there is an result, drive there */
         commandSegments.add(
@@ -172,8 +192,6 @@ public class AutoStageDefault extends AutoStageProgram {
                 )
         );
 
-        // TODO below this line are those waiting to be tested:
-
         SequentialCommandSegment.BezierCurveFeeder bezierCurveFeeder =
                     () -> new BezierCurve(
                             chassis.getChassisEncoderPosition(),
@@ -210,18 +228,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 )
         );
 
-        commandSegments.add(
-                new SequentialCommandSegment(
-                        () -> true,
-                        () -> null,
-                        () -> {},
-                        () -> {},
-                        () -> {},
-                        ()->false,
-                        chassis::getYaw,
-                        chassis::getYaw
-                )
-        );
+        if (1==1) return;
 
         // TODO here, push the new pixel from the intake to the claw and place it if no result found
 //        commandSegments.add(
@@ -268,7 +275,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 -Math.PI / 2,
                 Math.toRadians(90),
                 0,
-                new Vector2D(new double[] {66, 0}), new Vector2D(new double[] {75, 0}),
+                new Vector2D(new double[] {62, 0}), new Vector2D(new double[] {75, 0}),
                 new Vector2D(new double[] {85,45}), new Vector2D(new double[] {100, 27}),new Vector2D(new double[] {80,-8}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {70, 70}),
@@ -297,7 +304,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 Math.PI / 2,
                 -Math.toRadians(90),
                 0,
-                new Vector2D(new double[] {-66, 0}), new Vector2D(new double[] {-75, 0}),
+                new Vector2D(new double[] {-62, 0}), new Vector2D(new double[] {-75, 0}),
                 new Vector2D(new double[] {-80,-8}), new Vector2D(new double[] {-100, 27}), new Vector2D(new double[] {-85,45}), // newest
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {-70,70}),
