@@ -275,7 +275,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 -Math.PI / 2,
                 Math.toRadians(90),
                 0,
-                new Vector2D(new double[] {62, 0}), new Vector2D(new double[] {75, 0}),
+                new Vector2D(new double[] {65, 0}), new Vector2D(new double[] {75, 0}),
                 new Vector2D(new double[] {85,45}), new Vector2D(new double[] {100, 27}),new Vector2D(new double[] {80,-8}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {70, 70}),
@@ -304,7 +304,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 Math.PI / 2,
                 -Math.toRadians(90),
                 0,
-                new Vector2D(new double[] {-62, 0}), new Vector2D(new double[] {-75, 0}),
+                new Vector2D(new double[] {-65, 0}), new Vector2D(new double[] {-75, 0}),
                 new Vector2D(new double[] {-80,-8}), new Vector2D(new double[] {-100, 27}), new Vector2D(new double[] {-85,45}), // newest
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {-70,70}),

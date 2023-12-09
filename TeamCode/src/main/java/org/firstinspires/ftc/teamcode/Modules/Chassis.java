@@ -427,7 +427,7 @@ public class Chassis extends RobotModule {
                 return Math.abs(rotationalTask.rotationalValue) < zeroJudge;
             case GO_TO_ROTATION:
                 return Math.abs(AngleUtils.getActualDifference(positionEstimator.getRotation(), rotationalTask.rotationalValue))
-                        < ChassisConfigs.errorToleranceAsTaskFinished * 2 * ChassisConfigs.chassisRotationControllerProfile.getErrorTolerance();
+                        < ChassisConfigs.chassisRotationErrorAsFinished;
             default:
                 throw new IllegalArgumentException("unknown rotational task" + rotationalTask.taskType.name());
         }

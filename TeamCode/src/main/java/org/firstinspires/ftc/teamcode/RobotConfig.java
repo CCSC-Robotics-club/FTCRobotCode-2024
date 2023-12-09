@@ -152,6 +152,7 @@ public final class RobotConfig {
         public static final double chassisRotation_minimumCorrectionPower = 0.06;
         public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(45);
         public static final double chassisRotation_errorTolerance = Math.toRadians(1);
+        public static final double chassisRotationErrorAsFinished = Math.toRadians(6);
         public static final double chassisRotation_feedForwardDelay = 0.15; // in seconds
         public static final EnhancedPIDController.StaticPIDProfile chassisRotationControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Math.PI * 2,
@@ -277,7 +278,7 @@ public final class RobotConfig {
 
     public static final class TeamElementFinderConfigs {
         public static final Map<TeamElementFinder.TeamElementPosition, Double[]> teamElementPositionSearchRotationRanges = new HashMap<>();
-        public static final double distanceThreshold = 15;
+        public static final double distanceThreshold = 20;
         static {
             teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.LEFT, new Double[]{Math.toRadians(125), Math.toRadians(55)});
             teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.CENTER, new Double[]{Math.toRadians(35), Math.toRadians(-35)});
@@ -286,8 +287,8 @@ public final class RobotConfig {
         public static final int searchRangePixels = 100;
         public static final int minimumSize = 20;
         public static final Vector2D expectedTargetPosition = new Vector2D();
-        public static final double searchRotation = Math.toRadians(45); // in reference to the center team element position
-        public static final double searchRange = Math.toRadians(20);
+        public static final double searchRotation = Math.toRadians(50); // in reference to the center team element position
+        public static final double searchRange = Math.toRadians(15);
         public static final long timeOut = 200;
     }
 
