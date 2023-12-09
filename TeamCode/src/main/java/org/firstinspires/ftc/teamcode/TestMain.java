@@ -44,7 +44,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        newArmTest();
+        tofDistanceSensorTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);

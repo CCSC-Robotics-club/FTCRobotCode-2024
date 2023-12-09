@@ -111,7 +111,7 @@ public final class RobotConfig {
         public static final int positionDifferenceStartDecelerate = 500;
         public static final int positionTolerance = 40;
         public static final double frictionPower = 0.25;
-        public static final int feedPos = 260, lowPos = 1800, midPos = 2600, highPos = 3400;
+        public static final int feedPos = 260, lowPos = 2100, midPos = 2800, highPos = 3500;
         public static final int positionLimit = 3500;
         public static final Arm.ArmCommand armCommandWhenNoInput = new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0); // null for not needed
 
@@ -247,7 +247,7 @@ public final class RobotConfig {
         public static final double approachReverseSpeedTolerance = 20; // if the robot goes away from the wall in more than 20cm/s, we think the distance sensor failed
 
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -23});
-        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3.5});
+        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -5});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
@@ -277,7 +277,7 @@ public final class RobotConfig {
 
     public static final class TeamElementFinderConfigs {
         public static final Map<TeamElementFinder.TeamElementPosition, Double[]> teamElementPositionSearchRotationRanges = new HashMap<>();
-        public static final double distanceThreshold = 12;
+        public static final double distanceThreshold = 15;
         static {
             teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.LEFT, new Double[]{Math.toRadians(125), Math.toRadians(55)});
             teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.CENTER, new Double[]{Math.toRadians(35), Math.toRadians(-35)});
@@ -287,7 +287,8 @@ public final class RobotConfig {
         public static final int minimumSize = 20;
         public static final Vector2D expectedTargetPosition = new Vector2D();
         public static final double searchRotation = Math.toRadians(45); // in reference to the center team element position
-        public static final long timeOut = 1200;
+        public static final double searchRange = Math.toRadians(10);
+        public static final long timeOut = 200;
     }
 
     public static final class ControlConfigs {

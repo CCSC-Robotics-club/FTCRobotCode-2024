@@ -52,9 +52,13 @@ public class TeamElementFinder {
         );
     }
 
-    public void proceedSearch(TeamElementPosition teamElementPosition) {
-        final boolean flag = getResultWithHuskyLens();
-        if (flag) this.teamElementPosition = teamElementPosition;
+    public void proceedHuskySearch(TeamElementPosition teamElementPosition) {
+        if (getResultWithHuskyLens()) this.teamElementPosition = teamElementPosition;
+    }
+
+    public void proceedTOFSearch(TeamElementPosition teamElementPosition) {
+        if (distanceSensor.getDistance(DistanceUnit.CM) <= TeamElementFinderConfigs.distanceThreshold)
+            this.teamElementPosition = teamElementPosition;
     }
 
     public void stopSearch() {

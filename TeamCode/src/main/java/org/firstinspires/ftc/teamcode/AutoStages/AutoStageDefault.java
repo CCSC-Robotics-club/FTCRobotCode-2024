@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.AutoStages;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
-import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
@@ -22,9 +21,7 @@ import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.TeamElementFinder;
 import org.firstinspires.ftc.teamcode.Utils.Vector2D;
 
-import java.nio.file.ClosedWatchServiceException;
 import java.util.HashMap;
-import java.util.Objects;
 
 public class AutoStageDefault extends AutoStageProgram {
     private final AutoStageConstantsTable constantsTable;
@@ -49,11 +46,11 @@ public class AutoStageDefault extends AutoStageProgram {
                     chassis.setCurrentYaw(constantsTable.startingRobotFacing);
                     arm.gainOwnerShip(commanderMarker);
                     intake.gainOwnerShip(commanderMarker);
-                    arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.lowPos), commanderMarker);
+                    // arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, RobotConfig.ArmConfigs.lowPos), commanderMarker);
                 },
                 () -> {},
                 () -> {
-                    arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0), commanderMarker);
+                    // arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0), commanderMarker);
                 },
                 () -> true,
                 constantsTable.startingRobotFacing,
@@ -68,7 +65,7 @@ public class AutoStageDefault extends AutoStageProgram {
                     teamElementFinder.startSearch();
                 },
                 () -> {
-                    teamElementFinder.proceedSearch(TeamElementFinder.TeamElementPosition.LEFT);
+                    teamElementFinder.proceedTOFSearch(TeamElementFinder.TeamElementPosition.LEFT);
                 },
                 teamElementFinder::stopSearch,
                 () -> System.currentTimeMillis() - teamElementFinderTimer > RobotConfig.TeamElementFinderConfigs.timeOut || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
@@ -94,7 +91,7 @@ public class AutoStageDefault extends AutoStageProgram {
                     teamElementFinder.startSearch();
                 },
                 () -> {
-                    teamElementFinder.proceedSearch(TeamElementFinder.TeamElementPosition.CENTER);
+                    teamElementFinder.proceedTOFSearch(TeamElementFinder.TeamElementPosition.CENTER);
                 },
                 teamElementFinder::stopSearch,
                 () -> System.currentTimeMillis() - teamElementFinderTimer > RobotConfig.TeamElementFinderConfigs.timeOut || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
@@ -120,7 +117,7 @@ public class AutoStageDefault extends AutoStageProgram {
                     teamElementFinder.startSearch();
                 },
                 () -> {
-                    teamElementFinder.proceedSearch(TeamElementFinder.TeamElementPosition.RIGHT);
+                    teamElementFinder.proceedTOFSearch(TeamElementFinder.TeamElementPosition.RIGHT);
                 },
                 teamElementFinder::stopSearch,
                 () -> System.currentTimeMillis() - teamElementFinderTimer > RobotConfig.TeamElementFinderConfigs.timeOut || teamElementFinder.getFindingResult() != TeamElementFinder.TeamElementPosition.UNDETERMINED,
@@ -137,11 +134,11 @@ public class AutoStageDefault extends AutoStageProgram {
                                 constantsTable.scanTeamCenterElementPosition,
                                 constantsTable.getReleasePixelLinePosition(teamElementFinder.getFindingResult())),
                         () -> {
-                            arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, 0), commanderMarker);
+                            // arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_POSITION, 0), commanderMarker);
                         },
                         () -> {},
                         () -> {
-                            arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0), commanderMarker);
+                            // arm.setArmCommand(new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0), commanderMarker);
                             arm.holdPixel(commanderMarker);
                         },
                         () -> chassis.isCurrentRotationalTaskComplete() && chassis.isCurrentTranslationalTaskComplete(), // make sure it is precise
@@ -271,7 +268,7 @@ public class AutoStageDefault extends AutoStageProgram {
                 -Math.PI / 2,
                 Math.toRadians(90),
                 0,
-                new Vector2D(new double[] {48, 0}), new Vector2D(new double[] {65, 0}),
+                new Vector2D(new double[] {66, 0}), new Vector2D(new double[] {75, 0}),
                 new Vector2D(new double[] {85,45}), new Vector2D(new double[] {100, 27}),new Vector2D(new double[] {80,-8}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {70, 70}),
@@ -300,10 +297,10 @@ public class AutoStageDefault extends AutoStageProgram {
                 Math.PI / 2,
                 -Math.toRadians(90),
                 0,
-                new Vector2D(new double[] {-48, 0}), new Vector2D(new double[] {-65, 0}),
+                new Vector2D(new double[] {-66, 0}), new Vector2D(new double[] {-75, 0}),
                 new Vector2D(new double[] {-80,-8}), new Vector2D(new double[] {-100, 27}), new Vector2D(new double[] {-85,45}), // newest
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
-                new Vector2D(new double[] {0,0}),
+                new Vector2D(new double[] {-70,70}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0})
         );
 
