@@ -164,17 +164,24 @@ public class PilotChassisService extends RobotService {
                     Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                     rotationWhenStickPressed
             );
+
+        /* auto facing control*/
+        double pilotDesiredFacing = -1;
         if (driverController.keyOnHold(RobotConfig.KeyBindings.facePilotLeftButton))
-            rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
-                    Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
-                    pilotFacingRotation.getRadian() + Math.PI / 2
-            );
+            pilotDesiredFacing = Math.toRadians(90);
         else if (driverController.keyOnHold(RobotConfig.KeyBindings.facePilotRightButton))
+            pilotDesiredFacing = Math.toRadians(270);
+        else if (driverController.keyOnHold(RobotConfig.KeyBindings.facePilotFrontButton))
+            pilotDesiredFacing = 0;
+        else if (driverController.keyOnHold(RobotConfig.KeyBindings.facePilotBackButton))
+            pilotDesiredFacing = Math.toRadians(180);
+        if (pilotDesiredFacing != -1)
             rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
                     Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
-                    pilotFacingRotation.getRadian() - Math.PI / 2
+                    pilotDesiredFacing
             );
 
+        /* if there is no visual task going, send the pilot's rotation command to chassis module */
         if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
                 &&
                 (pixelAimBot == null || !pixelAimBot.isAimBotBusy()))

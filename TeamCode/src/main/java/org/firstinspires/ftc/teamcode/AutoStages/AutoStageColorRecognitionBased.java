@@ -227,6 +227,8 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
                 )
         );
 
+        if (1==1) return;
+
         commandSegments.add(
                 new SequentialCommandSegment(
                         () -> true,

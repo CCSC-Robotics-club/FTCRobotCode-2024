@@ -171,7 +171,7 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileX = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1,
-                0.11, // for precise wall aiming
+                0.12, // for precise wall aiming
                 40,
                 1.2,
                 0.14,
@@ -201,7 +201,7 @@ public final class RobotConfig {
         public static final double timeToStartDecelerate = 0.5;
 
         /** within how many times the error tolerance of PID should the translational task be counted as complete */
-        public static final double errorToleranceAsTaskFinished = 2;
+        public static final double errorToleranceAsTaskFinished = 2.3;
 
         public static final double errorToleranceAsTaskRoughlyFinished = 8;
 
@@ -327,6 +327,8 @@ public final class RobotConfig {
         public static final XboxControllerKey maintainCurrentRotationButton = XboxControllerKey.LEFT_STICK_BUTTON;
         public static final XboxControllerKey facePilotLeftButton = XboxControllerKey.DPAD_LEFT;
         public static final XboxControllerKey facePilotRightButton = XboxControllerKey.DPAD_RIGHT;
+        public static final XboxControllerKey facePilotFrontButton = XboxControllerKey.DPAD_UP;
+        public static final XboxControllerKey facePilotBackButton = XboxControllerKey.DPAD_DOWN;
         public static final XboxControllerKey toggleChassisDriveModeButton = XboxControllerKey.A;
         public static final XboxControllerKey processVisualApproachButton = XboxControllerKey.LEFT_BUMPER;
         public static final XboxControllerKey setAimPositionLeftButton = XboxControllerKey.X;
