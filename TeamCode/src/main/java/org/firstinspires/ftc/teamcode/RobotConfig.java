@@ -188,10 +188,10 @@ public final class RobotConfig {
         );
 
         /** the maximum chassis speed when using visual navigation */
-        public static final double lowSpeedModeMaximumMotorSpeedConstrain = 0.6;
+        public static final double lowSpeedModeMaximumMotorSpeedConstrain = 0.85;
 
         /** a power constrain to the motors to not push them too hard */
-        public static final double ordinaryModeMaximumMotorSpeedConstrain = 1.2;
+        public static final double ordinaryModeMaximumMotorSpeedConstrain = 1.4;
 
         public static final double xPowerRate = 1.05,
                 yPowerRate = 1;
@@ -272,8 +272,8 @@ public final class RobotConfig {
         public static final double pixelSearchVelocity = 100; // in cm/s
         public static final Vector2D pixelFeedingSweetSpot = new Vector2D(new double[]{0, 15});
         public static final double feedingSpotErrorTolerance = 4;
-        public static final double feedingDistanceForward = -22; // in cm
-        public static final long feedTimeMillis = 2000;
+        public static final double feedingDistanceForward = -25; // in cm
+        public static final long feedTimeMillis = 2500;
     }
 
     public static final class TeamElementFinderConfigs {
@@ -312,7 +312,7 @@ public final class RobotConfig {
 
         public static final double visualNavigationAimingSensitivityCMPS = 30;
         public static final double triggerThreshold = 0.4;
-        public static PilotChassisService.ControlMode defaultControlMode = PilotChassisService.ControlMode.MANUAL;
+        public static PilotChassisService.ControlMode defaultControlMode = PilotChassisService.ControlMode.ENCODER_ASSISTED_FIELD_ORIENTATED;
 
         public static final int pilotControllerKeyUpdatingRate = 60; // times per second
         public static final ControllerStick translationalControllerStick = ControllerStick.RIGHT_HAND;

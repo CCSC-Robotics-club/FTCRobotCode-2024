@@ -135,9 +135,10 @@ public class PilotChassisService extends RobotService {
             final boolean startFacePixelAndFeedTask = driverController.keyOnHold(RobotConfig.KeyBindings.processFaceToPixelAndFeedButton) && !pixelAimBot.isAimBotBusy(),
                     startLineUpWithPixelAndFeedTask = driverController.keyOnHold(RobotConfig.KeyBindings.processLineUpWithPixelAndFeedButton) && !pixelAimBot.isAimBotBusy(),
                     processPixelNavigation = (driverController.keyOnHold(RobotConfig.KeyBindings.processFaceToPixelAndFeedButton) || driverController.keyOnHold(RobotConfig.KeyBindings.processLineUpWithPixelAndFeedButton));
-            if (startFacePixelAndFeedTask)
-                pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.FACE_TO_AND_FEED);
-            else if (startLineUpWithPixelAndFeedTask)
+//            if (startFacePixelAndFeedTask)
+//                pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.FACE_TO_AND_FEED);
+//            else
+            if (startLineUpWithPixelAndFeedTask)
                 pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.LINE_UP_AND_FEED);
             if (!processPixelNavigation) pixelAimBot.cancel();
             pixelAimBot.update();
