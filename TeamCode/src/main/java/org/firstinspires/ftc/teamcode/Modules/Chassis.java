@@ -168,7 +168,8 @@ public class Chassis extends RobotModule {
     /**
      * @return the correction power, in reference to the robot
      * */
-    private Vector2D processEncoderDriveToPositionControl(Vector2D desiredEncoderPosition) {
+    @Deprecated
+    private Vector2D processEncoderDriveToPositionControl_old(Vector2D desiredEncoderPosition) {
         this.translationalControllerEncoder.startNewTask(
                 new EnhancedPIDController2D.Task2D(EnhancedPIDController.Task.TaskType.GO_TO_POSITION, desiredEncoderPosition));
 
@@ -178,6 +179,20 @@ public class Chassis extends RobotModule {
                         .getReversal());
         debugMessages.put("pid control desired position", desiredEncoderPosition);
         // debugMessages.put("correction power to field", correctionPowerToField);
+        final Transformation2D motorPowerRate = new Transformation2D(
+                new Vector2D(new double[] {ChassisConfigs.xPowerRate, 0}),
+                new Vector2D(new double[] {0, ChassisConfigs.yPowerRate}));
+
+        return correctionPowerToRobot.multiplyBy(motorPowerRate);
+    }
+
+    private Vector2D processEncoderDriveToPositionControl(Vector2D desiredEncoderPosition) {
+        final Vector2D positionDifferenceField = desiredEncoderPosition.addBy(getChassisEncoderPosition().multiplyBy(-1)),
+            positionDifferenceRobot  = positionDifferenceField.multiplyBy(new Rotation2D(getYaw()).getReversal());
+        this.translationalControllerEncoder.startNewTask(
+                new EnhancedPIDController2D.Task2D(EnhancedPIDController.Task.TaskType.GO_TO_POSITION, positionDifferenceRobot));
+
+        final Vector2D correctionPowerToRobot = translationalControllerEncoder.getCorrectionPower(new Vector2D(), this.positionEstimator.getCurrentVelocity(OrientationMode.ROBOT_ORIENTATED));
         final Transformation2D motorPowerRate = new Transformation2D(
                 new Vector2D(new double[] {ChassisConfigs.xPowerRate, 0}),
                 new Vector2D(new double[] {0, ChassisConfigs.yPowerRate}));
