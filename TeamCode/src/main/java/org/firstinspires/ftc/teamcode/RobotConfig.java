@@ -129,10 +129,10 @@ public final class RobotConfig {
 
     public static final class LauncherConfigs {
         public static final double launcherZeroPosition = 1,
-                launcherActivatePosition = 0.6,
+                launcherActivatePosition = 0.3,
                 liftZeroPosition = 1,
-                liftActivatePosition = 0.65,
-                servoMovementTime = 0.5;
+                liftActivatePosition = 0.6,
+                servoMovementTime = 0.7;
     }
 
     public static final class ChassisConfigs {
@@ -188,7 +188,8 @@ public final class RobotConfig {
         );
 
         /** the maximum chassis speed when using visual navigation */
-        public static final double lowSpeedModeMaximumMotorSpeedConstrain = 0.85;
+        public static final double lowSpeedModeMaximumMotorSpeedConstrain = 1;
+        public static final double lowSpeedModeStickSensitivity = 0.7;
 
         /** a power constrain to the motors to not push them too hard */
         public static final double ordinaryModeMaximumMotorSpeedConstrain = 1.4;
@@ -247,8 +248,8 @@ public final class RobotConfig {
         public static final double distanceSensorMinDistance = 1.5;
         public static final double approachReverseSpeedTolerance = 20; // if the robot goes away from the wall in more than 20cm/s, we think the distance sensor failed
 
-        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -23});
-        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -5});
+        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -35});
+        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3.5});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;

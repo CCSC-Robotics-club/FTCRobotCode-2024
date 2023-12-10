@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.AutoStages.AutoStageColorRecognitionBased;
 import org.firstinspires.ftc.teamcode.AutoStages.AutoStageDistanceSensorBased;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 
-@Autonomous(name = "[Blue Alliance] Front-Field Auto")
+// @Autonomous(name = "[Blue Alliance] Front-Field Auto")
 public class BlueAllianceFrontFieldAutoStageProgramEntrance extends LinearOpMode {
     @Override
     public void runOpMode() {

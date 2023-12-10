@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.AutoStageRobot;
 import org.firstinspires.ftc.teamcode.AutoStages.AutoStageDistanceSensorBased;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 
-@Autonomous(name="[Red Alliance] Back-Field Auto")
+// @Autonomous(name="[Red Alliance] Back-Field Auto")
 public class RedAllianceBackFieldAutoStageProgramEntrance extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

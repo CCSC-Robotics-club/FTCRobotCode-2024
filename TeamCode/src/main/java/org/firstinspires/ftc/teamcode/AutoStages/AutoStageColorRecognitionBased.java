@@ -339,7 +339,7 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
                 new Vector2D(new double[] {-48, 0}), new Vector2D(new double[] {-65, 0}),
                 new Vector2D(new double[] {-80,-8}), new Vector2D(new double[] {-100, 27}), new Vector2D(new double[] {-85,45}), // newest
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
-                new Vector2D(new double[] {-70,70}),
+                new Vector2D(new double[] {-60,80}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {-10, 120}));
 

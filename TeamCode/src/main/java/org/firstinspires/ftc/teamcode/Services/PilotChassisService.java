@@ -64,6 +64,8 @@ public class PilotChassisService extends RobotService {
         /* <--translation--> */
         final double zeroJudge = 0.001;
         Vector2D pilotTranslationalCommand = driverController.getTranslationStickVector();
+        if (driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton))
+            pilotTranslationalCommand.multiplyBy(RobotConfig.ChassisConfigs.lowSpeedModeStickSensitivity);
         if (controlMode != ControlMode.MANUAL)
             pilotTranslationalCommand = pilotTranslationalCommand.multiplyBy(pilotFacingRotation);
         Chassis.ChassisTranslationalTask translationalTaskByPilotStickControl = new Chassis.ChassisTranslationalTask(
