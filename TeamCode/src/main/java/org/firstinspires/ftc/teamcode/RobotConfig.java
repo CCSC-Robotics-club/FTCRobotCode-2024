@@ -99,7 +99,7 @@ public final class RobotConfig {
         public static final double intakeMotor1Power = -0.75, intakeMotor2Power = 0.75; // competition machine
 //        public static final double intakeMotor1Power = -0.85, intakeMotor2Power = -0.85; // backup machine
 
-        public static final double spewPixelDriveBackDistance = 20;
+        public static final double spewPixelDriveBackDistance = 14;
         public static final long spewPixelTimeMillis = 1000;
     }
 
@@ -273,8 +273,8 @@ public final class RobotConfig {
         public static final double pixelSearchVelocity = 100; // in cm/s
         public static final Vector2D pixelFeedingSweetSpot = new Vector2D(new double[]{0, 15});
         public static final double feedingSpotErrorTolerance = 4;
-        public static final double feedingDistanceForward = -25; // in cm
-        public static final long feedTimeMillis = 2500;
+        public static final double feedingDistanceForward = -35; // in cm
+        public static final long feedTimeMillis = 3000;
     }
 
     public static final class TeamElementFinderConfigs {
@@ -285,12 +285,12 @@ public final class RobotConfig {
             teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.CENTER, new Double[]{Math.toRadians(35), Math.toRadians(-35)});
             teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.RIGHT, new Double[]{Math.toRadians(-55), Math.toRadians(-125)});
         }
-        public static final int searchRangePixels = 100;
-        public static final int minimumSize = 20;
+        public static final int searchRangePixels = 150;
+        public static final int minimumSize = 0;
         public static final Vector2D expectedTargetPosition = new Vector2D();
         public static final double searchRotation = Math.toRadians(50); // in reference to the center team element position
         public static final double searchRange = Math.toRadians(15);
-        public static final long timeOut = 200;
+        public static final long timeOut = 1200; // 1200
     }
 
     public static final class ControlConfigs {

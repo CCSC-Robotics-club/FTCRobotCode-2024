@@ -212,6 +212,8 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
                 () -> 0
         ));
 
+        if (constantsTable.backField) return;
+
         /* aim and place the first pixel */
         commandSegments.add(wallAimBot.createCommandSegment(teamElementFinder, () -> true));
         commandSegments.add(
@@ -308,7 +310,7 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
                 Math.toRadians(90),
                 0,
                 new Vector2D(new double[] {48, 0}), new Vector2D(new double[] {65, 0}),
-                new Vector2D(new double[] {85,45}), new Vector2D(new double[] {100, 27}),new Vector2D(new double[] {80,-8}),
+                new Vector2D(new double[] {85,47}), new Vector2D(new double[] {102.5, 27}),new Vector2D(new double[] {72,-11}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {70, 70}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
@@ -319,10 +321,10 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
                 true,
                 0,
                 -Math.PI / 2,
-                -Math.toRadians(50),
+                -Math.toRadians(90),
                 0,
                 new Vector2D(new double[] {48, 0}), new Vector2D(new double[] {65, 0}),
-                new Vector2D(new double[] {48,-40}), new Vector2D(new double[] {95,-30}), new Vector2D(new double[] {53,14}), // TODO left right should reverse
+                new Vector2D(new double[] {85, -47}), new Vector2D(new double[] {102.5, -27}),new Vector2D(new double[] {72, 11}), // TODO left right should reverse
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
@@ -337,7 +339,7 @@ public class AutoStageColorRecognitionBased extends AutoStageProgram {
                 -Math.toRadians(90),
                 0,
                 new Vector2D(new double[] {-48, 0}), new Vector2D(new double[] {-65, 0}),
-                new Vector2D(new double[] {-80,-8}), new Vector2D(new double[] {-100, 27}), new Vector2D(new double[] {-85,45}), // newest
+                new Vector2D(new double[] {-72,-11}), new Vector2D(new double[] {-100, 27}), new Vector2D(new double[] {-85,47}), // newest
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
                 new Vector2D(new double[] {-60,80}),
                 new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}), new Vector2D(new double[] {0,0}),
