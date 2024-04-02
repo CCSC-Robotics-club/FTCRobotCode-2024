@@ -16,7 +16,7 @@ public class TeleOpMain extends LinearOpMode {
                 hardwareMap,
                 telemetry,
                 () -> opModeIsActive() && !isStopRequested(),
-                RobotConfig.hardwareConfigs_2024Competition,
+                RobotConfig.competitionConfig,
                 gamepad1,
                 gamepad2,
                 this.side,

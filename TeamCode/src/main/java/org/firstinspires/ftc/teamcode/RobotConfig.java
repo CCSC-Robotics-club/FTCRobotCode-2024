@@ -16,6 +16,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class RobotConfig {
+    public static final HardwareConfigs hardwareConfigs_2024OffSeason = new HardwareConfigs( // backup machine
+            new IMU.Parameters(
+                    new RevHubOrientationOnRobot(
+                            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                            RevHubOrientationOnRobot.UsbFacingDirection.UP
+                    )
+            ),
+            null,
+            new TripleIndependentEncoderAndIMUPositionEstimator.TripleIndependentEncoderAndIMUSystemParams(
+                    false,
+                    true,
+                    false, // not known yet
+                    135.812,
+                    -0.385
+            ),
+            new String[] {"frontRight", "backLeft", "frontLeft"},
+            true,
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false
+    );
     public static final HardwareConfigs hardwareConfigs_2024Competition_backup = new HardwareConfigs( // backup machine
             new IMU.Parameters(
                     new RevHubOrientationOnRobot(
@@ -91,6 +116,8 @@ public final class RobotConfig {
             false,
             true
     );
+
+    public static final HardwareConfigs competitionConfig = hardwareConfigs_2024OffSeason;
 
     public static final HardwareConfigs testConfig = hardwareConfigs_2024Competition;
 

@@ -16,7 +16,7 @@ public class BlueAllianceFrontFieldAutoStageProgramEntrance extends LinearOpMode
                 hardwareMap,
                 telemetry,
                 () -> opModeIsActive() && !isStopRequested(),
-                RobotConfig.hardwareConfigs_2024Competition,
+                RobotConfig.competitionConfig,
                 new AutoStageColorRecognitionBased(AutoStageColorRecognitionBased.AutoStageConstantsTables.blueAllianceFrontField));
 
         robot.initializeRobot();

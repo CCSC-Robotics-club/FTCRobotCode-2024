@@ -78,7 +78,8 @@ public abstract class Robot {
         this.telemetry = telemetry;
         this.programRunningStatusChecker = checker;
 
-        this.useMultiThread = !debugModeEnabled;
+        // this.useMultiThread = !debugModeEnabled;
+        this.useMultiThread = false;
 
         telemetrySender = new TelemetrySender(telemetry);
 
@@ -148,48 +149,48 @@ public abstract class Robot {
         robotModules.add(backLeftWheel);
         robotModules.add(backRightWheel);
 
-        aprilTagCamera = new FixedAngleArilTagCamera(
-                new HuskyAprilTagCamera(hardwareMap.get(HuskyLens.class, "husky")),
-                RobotConfig.VisualNavigationConfigs.visualCameraProfile
-        );
-        robotModules.add(aprilTagCamera);
-
-        pixelCamera = new FixedAnglePixelCamera(
-                new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1")),
-                RobotConfig.VisualNavigationConfigs.pixelCameraSetUpProfile,
-                RobotConfig.VisualNavigationConfigs.pixelCameraInstallFacing
-        );
-        robotModules.add(pixelCamera);
-        // pixelCamera = null;
+//        aprilTagCamera = new FixedAngleArilTagCamera(
+//                new HuskyAprilTagCamera(hardwareMap.get(HuskyLens.class, "husky")),
+//                RobotConfig.VisualNavigationConfigs.visualCameraProfile
+//        );
+//        robotModules.add(aprilTagCamera);
+//
+//        pixelCamera = new FixedAnglePixelCamera(
+//                new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1")),
+//                RobotConfig.VisualNavigationConfigs.pixelCameraSetUpProfile,
+//                RobotConfig.VisualNavigationConfigs.pixelCameraInstallFacing
+//        );
+//        robotModules.add(pixelCamera);
+//        // pixelCamera = null;
 
         chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, aprilTagCamera,
                 this.side == Side.RED ? FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL : FixedAngleArilTagCamera.WallTarget.Name.BLUE_ALLIANCE_WALL);
         robotModules.add(chassis);
-
-
-        /* <-- intake --> */
-        final DcMotor intakeMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor1Name),
-                intakeMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor2Name);
-        intake = new Intake(intakeMotor1, intakeMotor2);
-        robotModules.add(intake);
-
-        /* <-- arm --> */
-        SingleServoClaw claw1 = new SingleServoClaw(hardwareMap.get(Servo.class, RobotConfig.ArmConfigs.claw1Name), RobotConfig.ArmConfigs.claw1Profile);
-        Claw claw;
-        if (RobotConfig.ArmConfigs.claw2Name == null) {
-            claw = claw1;
-        } else {
-            SingleServoClaw claw2 = new SingleServoClaw(hardwareMap.get(Servo.class, RobotConfig.ArmConfigs.claw2Name), RobotConfig.ArmConfigs.claw2Profile);
-            claw = new DualServoClaw(claw1, claw2);
-        }
-        final DcMotor armMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armMotor1Name),
-                armMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armMotor2Name),
-                armEncoder = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armEncoderName);
-        final TouchSensor limitSwitch = RobotConfig.ArmConfigs.limitSwitchName != null ? hardwareMap.get(TouchSensor.class, RobotConfig.ArmConfigs.limitSwitchName) : null;
-        final ExtendableClaw extendableClaw = new ExtendableClaw(claw, hardwareMap.get(Servo.class, "extend"));
-        arm = new Arm(armMotor1, armMotor2, armEncoder, extendableClaw, limitSwitch);
-        robotModules.add(arm);
-        robotModules.add(extendableClaw);
+//
+//
+//        /* <-- intake --> */
+//        final DcMotor intakeMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor1Name),
+//                intakeMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor2Name);
+//        intake = new Intake(intakeMotor1, intakeMotor2);
+//        robotModules.add(intake);
+//
+//        /* <-- arm --> */
+//        SingleServoClaw claw1 = new SingleServoClaw(hardwareMap.get(Servo.class, RobotConfig.ArmConfigs.claw1Name), RobotConfig.ArmConfigs.claw1Profile);
+//        Claw claw;
+//        if (RobotConfig.ArmConfigs.claw2Name == null) {
+//            claw = claw1;
+//        } else {
+//            SingleServoClaw claw2 = new SingleServoClaw(hardwareMap.get(Servo.class, RobotConfig.ArmConfigs.claw2Name), RobotConfig.ArmConfigs.claw2Profile);
+//            claw = new DualServoClaw(claw1, claw2);
+//        }
+//        final DcMotor armMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armMotor1Name),
+//                armMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armMotor2Name),
+//                armEncoder = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armEncoderName);
+//        final TouchSensor limitSwitch = RobotConfig.ArmConfigs.limitSwitchName != null ? hardwareMap.get(TouchSensor.class, RobotConfig.ArmConfigs.limitSwitchName) : null;
+//        final ExtendableClaw extendableClaw = new ExtendableClaw(claw, hardwareMap.get(Servo.class, "extend"));
+//        arm = new Arm(armMotor1, armMotor2, armEncoder, extendableClaw, limitSwitch);
+//        robotModules.add(arm);
+//        robotModules.add(extendableClaw);
     }
 
     /**

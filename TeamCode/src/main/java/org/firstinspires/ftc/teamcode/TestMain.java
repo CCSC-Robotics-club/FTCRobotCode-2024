@@ -44,7 +44,7 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        tofDistanceSensorTest();
+        motorsMatch();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -171,6 +171,11 @@ public class TestMain extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested() && opModeIsActive()) {
+            telemetry.addData("mot0 enc", mot0.getVelocity());
+            telemetry.addData("mot1 enc", mot1.getVelocity());
+            telemetry.addData("mot2 enc", mot2.getVelocity());
+            telemetry.addData("mot3 enc", mot3.getVelocity());
+            telemetry.update();
             mot0.setPower(gamepad1.a ? 0.5:0);
             mot1.setPower(gamepad1.b ? 0.5:0);
             mot2.setPower(gamepad1.x ? 0.5:0);

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
-import java.lang.reflect.GenericDeclaration;
-
 public class SequentialCommandSegment {
     public final BezierCurveFeeder chassisMovementPathFeeder;
     public final Runnable beginning, periodic, ending;
