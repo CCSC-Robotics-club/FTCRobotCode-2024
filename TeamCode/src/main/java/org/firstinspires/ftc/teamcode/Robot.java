@@ -50,12 +50,12 @@ public abstract class Robot {
     protected final boolean useMultiThread;
 
     private EncoderMotorWheel frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
-    protected Chassis chassis;
-    protected Intake intake;
-    protected Arm arm;
-    protected FixedAnglePixelCamera pixelCamera;
-    protected PositionEstimator positionEstimator;
-    protected FixedAngleArilTagCamera aprilTagCamera;
+    public Chassis chassis;
+    public Intake intake;
+    public Arm arm;
+    public FixedAnglePixelCamera pixelCamera;
+    public PositionEstimator positionEstimator;
+    public FixedAngleArilTagCamera aprilTagCamera;
     protected DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
     protected final List<RobotModule> robotModules = new ArrayList<>(1);
     protected final List<RobotService> robotServices = new ArrayList<>(1);

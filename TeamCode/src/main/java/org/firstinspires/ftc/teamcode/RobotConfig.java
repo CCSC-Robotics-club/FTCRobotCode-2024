@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.EnhancedPIDController;
 import org.firstinspires.ftc.teamcode.Utils.TeamElementFinder;
-import org.firstinspires.ftc.teamcode.Utils.Vector2D;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -233,9 +233,10 @@ public final class RobotConfig {
 
         public static final double errorToleranceAsTaskRoughlyFinished = 8;
 
-        public static final double autoStageMaxVelocity = 300;
-        public static final double autoStageMaxAcceleration = 350;
-        public static final double autoStageMaxAngularVelocity = Math.PI * 0.7;
+        public static final double autoStageMaxVelocity = 150;
+        public static final double autoStageMaxAcceleration = 200;
+        public static final double autoStageMaxAngularVelocity = Math.toRadians(180);
+        public static final double autoStageInAdvanceTime = 0.2;
     }
 
     public static final class VisualNavigationConfigs {

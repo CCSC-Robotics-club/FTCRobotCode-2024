@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Utils;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.RobotConfig;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 import java.util.HashMap;
 import java.util.Map;

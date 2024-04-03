@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Utils;
+package org.firstinspires.ftc.teamcode.Utils.MathUtils;
 
 public class AngleUtils {
     /**
@@ -7,11 +7,10 @@ public class AngleUtils {
      * @return the simplified angle, in radian and in the range 0 < x < Math.Pi*2
      * */
     public static double simplifyAngle(double radian) {
-        if (radian > 1e5)
-            throw new IllegalArgumentException("radian is infinity"); // if the radian is infinity, the following will lead to a dead loop
-        while (radian > Math.PI * 2)
-            radian -= Math.PI * 2;
-        while (radian < 0)
+        if (Double.isNaN(radian) || Double.isInfinite(radian) || Math.abs(radian) > 10e7)
+            throw new IllegalArgumentException("invalid radian: " + radian);
+        radian = Math.copySign(radian % (Math.PI*2), radian);
+        if (radian < 0)
             radian += Math.PI * 2;
         return radian;
     }
@@ -23,7 +22,7 @@ public class AngleUtils {
      * @return the shortest distance between the two points, in radian and positive is counter-clockwise
      * */
     public static double getActualDifference(double currentRotation, double targetedRotation) {
-        double loopLength = Math.PI * 2;
+        final double loopLength = Math.PI * 2;
         currentRotation = simplifyAngle(currentRotation);
         targetedRotation = simplifyAngle(targetedRotation);
         double difference = targetedRotation - currentRotation;
@@ -39,12 +38,5 @@ public class AngleUtils {
         return simplifyAngle(
                 rotation1 + getActualDifference(rotation1, rotation2)
         );
-    }
-
-    public static boolean isWithInRange(double rotation, double limit1, double limit2) {
-        double range = getActualDifference(limit1, limit2);
-        if (range == 0) return false;
-        final double limit1ToRotation = getActualDifference(limit1, rotation);
-        return limit1ToRotation * rotation >= 0 && Math.abs(limit1ToRotation) < Math.abs(range);
     }
 }

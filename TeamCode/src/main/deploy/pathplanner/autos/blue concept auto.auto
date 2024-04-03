@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "split preloaded"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "score preloaded"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "move back and grab stack"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "grab another stack"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "score stack"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

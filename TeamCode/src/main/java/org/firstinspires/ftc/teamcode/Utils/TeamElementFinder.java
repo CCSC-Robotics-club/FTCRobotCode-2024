@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 import static org.firstinspires.ftc.teamcode.RobotConfig.TeamElementFinderConfigs;
 
@@ -48,7 +50,7 @@ public class TeamElementFinder {
                 },
                 () -> {},
                 () -> getFindingResult() == TeamElementPosition.UNDETERMINED,
-                startingRotation, endingRotation
+                () -> new Rotation2D(startingRotation), () -> new Rotation2D(endingRotation)
         );
     }
 

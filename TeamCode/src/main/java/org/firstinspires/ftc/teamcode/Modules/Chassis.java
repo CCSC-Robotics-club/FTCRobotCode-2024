@@ -1,15 +1,15 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 
-import org.firstinspires.ftc.teamcode.Utils.AngleUtils;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.AngleUtils;
 import org.firstinspires.ftc.teamcode.Utils.EnhancedPIDController;
 import org.firstinspires.ftc.teamcode.Utils.EnhancedPIDController2D;
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
-import org.firstinspires.ftc.teamcode.Utils.Rotation2D;
-import org.firstinspires.ftc.teamcode.Utils.Transformation2D;
-import org.firstinspires.ftc.teamcode.Utils.Vector2D;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Transformation2D;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import static org.firstinspires.ftc.teamcode.RobotConfig.VisualNavigationConfigs;
 import static org.firstinspires.ftc.teamcode.RobotConfig.ChassisConfigs;
 
@@ -466,6 +466,10 @@ public class Chassis extends RobotModule {
      */
     public double getYaw() {
         return this.positionEstimator.getRotation();
+    }
+
+    public Rotation2D getRotation() {
+        return new Rotation2D(getYaw());
     }
 
     public void setCurrentYaw(double yaw) {

@@ -20,7 +20,7 @@ public class AutoStageRobot extends Robot {
             throw new IllegalStateException("auto stage cannot proceed without encoders");
 
         this.autoStageProgram = autoStageProgram;
-        this.autoProgramRunnerService = new AutoProgramRunner(autoStageProgram.commandSegments, super.chassis);
+        this.autoProgramRunnerService = new AutoProgramRunner(super.chassis);
         super.programRunningStatusChecker = () -> checker.isProgramActive() && (!autoProgramRunnerService.isAutoStageComplete());
     }
 
@@ -30,6 +30,8 @@ public class AutoStageRobot extends Robot {
 
         robotServices.add(autoProgramRunnerService);
         super.initializeRobot();
+
+        autoProgramRunnerService.scheduleCommandSegments(autoStageProgram.commandSegments);
     }
 
     @Override

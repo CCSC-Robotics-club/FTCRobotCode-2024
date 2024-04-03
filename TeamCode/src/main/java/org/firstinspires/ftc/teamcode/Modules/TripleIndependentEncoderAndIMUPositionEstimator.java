@@ -8,12 +8,12 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.RobotConfig;
-import org.firstinspires.ftc.teamcode.Utils.AngleUtils;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.AngleUtils;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
-import org.firstinspires.ftc.teamcode.Utils.Rotation2D;
-import org.firstinspires.ftc.teamcode.Utils.StatisticsUtils;
-import org.firstinspires.ftc.teamcode.Utils.Vector2D;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.StatisticsUtils;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 import java.util.ArrayList;
 import java.util.HashMap;

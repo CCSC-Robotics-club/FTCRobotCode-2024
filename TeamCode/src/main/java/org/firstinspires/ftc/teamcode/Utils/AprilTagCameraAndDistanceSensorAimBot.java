@@ -2,16 +2,13 @@ package org.firstinspires.ftc.teamcode.Utils;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryImpl;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 public class AprilTagCameraAndDistanceSensorAimBot {
     private final Chassis chassis;
@@ -34,12 +31,13 @@ public class AprilTagCameraAndDistanceSensorAimBot {
 
     public SequentialCommandSegment createCommandSegment(Vector2D desiredPositionToWall) {
         return new SequentialCommandSegment(
+                () -> true,
                 null,
                 this::init,
                 () -> this.update(desiredPositionToWall),
                 () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker),
                 chassis::isCurrentTranslationalTaskComplete,
-                0, 0
+                () -> new Rotation2D(0), () -> new Rotation2D(0)
         );
     }
 
@@ -51,7 +49,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
                 () -> this.update(getWallPosition(teamElementFinder.getFindingResult())),
                 () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker),
                 chassis::isCurrentTranslationalTaskComplete,
-                0, 0
+                () -> new Rotation2D(0), () -> new Rotation2D(0)
         );
     }
 

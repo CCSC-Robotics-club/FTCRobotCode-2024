@@ -1,8 +1,6 @@
-package org.firstinspires.ftc.teamcode.Utils;
+package org.firstinspires.ftc.teamcode.Utils.MathUtils;
 
 import androidx.annotation.NonNull;
-
-import java.util.Map;
 
 public class Rotation2D extends Transformation2D {
     private final double radian;
@@ -27,4 +25,3 @@ public class Rotation2D extends Transformation2D {
         return "rotation with radian: " + this.getRadian() + "\nand vector value: " +  super.toString();
     }
 }
-

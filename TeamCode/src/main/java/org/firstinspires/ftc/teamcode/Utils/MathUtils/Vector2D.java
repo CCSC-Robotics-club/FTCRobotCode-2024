@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Utils;
+package org.firstinspires.ftc.teamcode.Utils.MathUtils;
 
 /**
  * a math library written myself for the control algorithm of steer wheels

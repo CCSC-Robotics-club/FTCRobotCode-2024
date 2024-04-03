@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
+
 public class EnhancedPIDController2D {
     private final EnhancedPIDController xController, yController;
     private final EnhancedPIDController.PIDProfile xConfig, yConfig;

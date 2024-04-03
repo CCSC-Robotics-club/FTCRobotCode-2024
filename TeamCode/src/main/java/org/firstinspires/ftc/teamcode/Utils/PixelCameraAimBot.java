@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Utils;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.RobotConfig;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 import java.util.Map;
 
@@ -42,12 +44,13 @@ public class PixelCameraAimBot {
 
     public SequentialCommandSegment createAimingCommandSegment(AimMethod aimMethod) {
         return new SequentialCommandSegment(
+                () -> true,
                 null,
                 () -> initiateAim(aimMethod),
                 this::update,
                 () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), commanderMarker),
                 () -> status==Status.UNUSED,
-                chassis.getYaw(), chassis.getYaw()
+                chassis::getRotation, chassis::getRotation
         );
     }
 
@@ -58,12 +61,13 @@ public class PixelCameraAimBot {
      * */
     public SequentialCommandSegment createSearchAndAimCommandSegment(double searchRangeCM, double robotFacingRotation) {
         return new SequentialCommandSegment(
+                () -> true,
                 null,
                 () -> initiateSearch(searchRangeCM, robotFacingRotation),
                 this::update,
                 () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), commanderMarker),
                 () -> status == Status.UNUSED,
-                robotFacingRotation, robotFacingRotation
+                () -> new Rotation2D(robotFacingRotation), () -> new Rotation2D(robotFacingRotation)
         );
     }
 

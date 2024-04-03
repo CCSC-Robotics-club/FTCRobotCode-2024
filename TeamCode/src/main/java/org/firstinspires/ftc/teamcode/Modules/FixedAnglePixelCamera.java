@@ -4,9 +4,8 @@ import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.RawPixelDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
-import org.firstinspires.ftc.teamcode.Utils.Rotation2D;
-import org.firstinspires.ftc.teamcode.Utils.Transformation2D;
-import org.firstinspires.ftc.teamcode.Utils.Vector2D;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 import java.util.ArrayList;
 import java.util.HashMap;

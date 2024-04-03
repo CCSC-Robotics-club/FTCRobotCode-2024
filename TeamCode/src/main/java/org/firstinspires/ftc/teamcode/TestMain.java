@@ -22,11 +22,12 @@ import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.AutoProgramRunner;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
-import org.firstinspires.ftc.teamcode.Utils.BezierCurve;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.DualServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.HuskyAprilTagCamera;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.PixelCameraAimBot;
 import org.firstinspires.ftc.teamcode.Utils.RawPixelDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
@@ -34,7 +35,7 @@ import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.SimpleFeedForwardSpeedController;
 import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.TensorCamera;
-import org.firstinspires.ftc.teamcode.Utils.Vector2D;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -720,7 +721,8 @@ public class TestMain extends LinearOpMode {
         );
         telemetry.addData("time for path cal", System.currentTimeMillis() - t0);
         commandSegments.add(new SequentialCommandSegment(
-                path,
+                () -> true,
+                () -> path,
                 () -> {
                     telemetry.addLine("start at segment");
                 },
@@ -733,9 +735,11 @@ public class TestMain extends LinearOpMode {
                     sleep(1000);
                 },
                 () -> true,
-                0, Math.PI / 2
+                () -> new Rotation2D(0), () -> new Rotation2D(Math.PI / 2)
         ));
-        AutoProgramRunner autoProgramRunner = new AutoProgramRunner(commandSegments, chassis);
+        AutoProgramRunner autoProgramRunner = new AutoProgramRunner(chassis);
+
+        autoProgramRunner.scheduleCommandSegments(commandSegments);
 
         waitForStart();
         t0 = System.currentTimeMillis();
