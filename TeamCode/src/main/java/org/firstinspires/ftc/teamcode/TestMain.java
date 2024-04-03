@@ -45,7 +45,8 @@ import java.util.List;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        motorsMatch();
+//        servoTest();
+        encoderParamsMeasuring();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -281,8 +282,8 @@ public class TestMain extends LinearOpMode {
     }
 
     private void servoTest() {
-        Servo servo1 = hardwareMap.get(Servo.class, "launch");
-        Servo servo2 = hardwareMap.get(Servo.class, "extend");
+        Servo servo1 = hardwareMap.get(Servo.class, "servo0");
+        Servo servo2 = hardwareMap.get(Servo.class, "servo1");
 
         waitForStart();
 
@@ -297,7 +298,7 @@ public class TestMain extends LinearOpMode {
                 servoAngle = 0;
             servoAngle = Math.min(Math.max(0,servoAngle), 1);
             servo1.setPosition(servoAngle);
-            servo2.setPosition(servoAngle);
+            servo2.setPosition(1-servoAngle);
             telemetry.addData("servo angle", servoAngle);
             telemetry.update();
             previousTime = System.currentTimeMillis();
@@ -460,9 +461,9 @@ public class TestMain extends LinearOpMode {
      * measurement for EncoderBiasPerRadian
      */
     private void encoderParamsMeasuring() {
-        DcMotorEx verticalEncoder1 = hardwareMap.get(DcMotorEx.class, "frontLeft"); // vertical 1
-        DcMotorEx verticalEncoder2 = hardwareMap.get(DcMotorEx.class, "frontRight"); // vertical 2
-        DcMotorEx horizontalEncoder = hardwareMap.get(DcMotorEx.class, "backRight"); // horizontal
+        DcMotorEx verticalEncoder1 = hardwareMap.get(DcMotorEx.class, RobotConfig.competitionConfig.encoderNames[1]); // vertical 1
+        DcMotorEx verticalEncoder2 = hardwareMap.get(DcMotorEx.class, RobotConfig.competitionConfig.encoderNames[2]); // vertical 2
+        DcMotorEx horizontalEncoder = hardwareMap.get(DcMotorEx.class, RobotConfig.competitionConfig.encoderNames[0]); // horizontal
 
         DcMotor frontLeftMotor = hardwareMap.get(DcMotor.class, "frontLeft"),
                 frontRightMotor = hardwareMap.get(DcMotor.class, "frontRight"),
@@ -478,13 +479,14 @@ public class TestMain extends LinearOpMode {
                 horizontalEncoder,
                 verticalEncoder1,
                 verticalEncoder2,
-                new boolean[] {true, true, false},
+                new boolean[] {RobotConfig.competitionConfig.encodersParams.horizontalEncoderReversed, RobotConfig.competitionConfig.encodersParams.verticalEncoder1Reversed, RobotConfig.competitionConfig.encodersParams.verticalEncoder2Reversed},
                 frontLeftMotor,
                 frontRightMotor,
                 backLeftMotor,
                 backRightMotor,
                 gamepad1,
-                telemetry
+                telemetry,
+                () -> isStopRequested() || !opModeIsActive()
         );
     }
 
@@ -932,5 +934,13 @@ public class TestMain extends LinearOpMode {
             telemetry.addData("arm2 pow", arm2Power);
             telemetry.update();
         }
+    }
+
+    private void conceptServoBasedArm() {
+
+    }
+
+    private void conceptDualClaw() {
+
     }
 }

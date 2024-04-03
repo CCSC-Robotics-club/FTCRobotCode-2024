@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.StatisticsUtils;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
+import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -305,14 +306,15 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
             DcMotor backLeftMotor,
             DcMotor backRightMotor,
             Gamepad testGamePad,
-            Telemetry telemetry
+            Telemetry telemetry,
+            SequentialCommandSegment.IsCompleteChecker isCompleteChecker
     ) {
         List<Double> horizontalBias = new ArrayList<>(1);
         List<Double> verticalEncoderDifferences = new ArrayList<>(1);
 
         int horizontalEncoderPreviousReading = horizontalEncoder.getCurrentPosition(), verticalEncoder1PreviousReading = verticalEncoder1.getCurrentPosition(), verticalEncoder2PreviousReading = verticalEncoder2.getCurrentPosition();
         long previousTimeMillis = System.currentTimeMillis();
-        for (; ; ) {
+        while(!isCompleteChecker.isComplete()) {
             double motorPower = 0;
             if (testGamePad.a)
                 motorPower = 0.25;
