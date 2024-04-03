@@ -37,6 +37,7 @@ import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.TensorCamera;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +47,8 @@ public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
 //        servoTest();
-        encoderParamsMeasuring();
+//        encoderParamsMeasuring();
+
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -941,6 +943,14 @@ public class TestMain extends LinearOpMode {
     }
 
     private void conceptDualClaw() {
+
+    }
+
+    private void testJsonFile() {
+        waitForStart();
+        int resourceId = hardwareMap.appContext.getResources().getIdentifier("myjsonfile1", "raw", hardwareMap.appContext.getPackageName());
+        InputStream is = hardwareMap.appContext.getResources().openRawResource(resourceId);
+
 
     }
 }

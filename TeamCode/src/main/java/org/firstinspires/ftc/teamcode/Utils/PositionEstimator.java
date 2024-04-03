@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 /**  */
@@ -27,6 +28,10 @@ public interface PositionEstimator {
      * @return in radian, counter-clockwise is positive
      * */
     double getRotation();
+
+    default Rotation2D getRotation2D() {
+        return new Rotation2D(getRotation());
+    }
 
 
     /** get the current rotational velocity of the robot

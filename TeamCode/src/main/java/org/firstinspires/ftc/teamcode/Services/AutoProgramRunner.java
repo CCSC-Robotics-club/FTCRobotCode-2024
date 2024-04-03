@@ -68,8 +68,10 @@ public class AutoProgramRunner extends RobotService {
         }
         currentCommandSegment.periodic.run();
 
-        if (isCurrentSegmentComplete())
+        if (isCurrentSegmentComplete()) {
+            this.commandSegments.get(currentSegmentID).ending.run();
             nextSegment();
+        }
     }
 
     @Override
@@ -86,8 +88,6 @@ public class AutoProgramRunner extends RobotService {
     }
 
     private void nextSegment() {
-        this.commandSegments.get(currentSegmentID).ending.run();
-
         if (currentSegmentID+1 < commandSegments.size())
             initiateSegment(currentSegmentID+1);
     }

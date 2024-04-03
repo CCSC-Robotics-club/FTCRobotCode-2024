@@ -117,7 +117,7 @@ public final class RobotConfig {
             true
     );
 
-    public static final HardwareConfigs competitionConfig = hardwareConfigs_2024OffSeason;
+    public static final HardwareConfigs competitionConfig = hardwareConfigs_2024Competition;
 
     public static final HardwareConfigs testConfig = hardwareConfigs_2024Competition;
 

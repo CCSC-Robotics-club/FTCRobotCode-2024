@@ -85,7 +85,7 @@ public class SequentialCommandSegment {
             t = speedCurve.getScaledT(t) * timeScale;
             if (t<0) t=0;
             else if (t>1) t=1;
-            return AngleUtils.simplifyAngle(startingRotation.getRadian() + AngleUtils.getActualDifference(startingRotation.getRadian(), endingRotation.getRadian())*t);
+            return AngleUtils.simplifyAngle(startingRotation.getRadian() + AngleUtils.getActualDifference(startingRotation.getRadian(), endingRotation.getRadian())*t); // TODO here, t is Nah
         }
     }
 }

@@ -8,31 +8,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "split preloaded"
+            "pathName": "split first"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "score preloaded"
+            "pathName": "score second"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "move back and grab stack"
+            "pathName": "move back and grab third from stack"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "grab another stack"
+            "pathName": "grab fourth from stack"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "score stack"
+            "pathName": "score third and fourth"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "move to stack grab fifth"
           }
         }
       ]
