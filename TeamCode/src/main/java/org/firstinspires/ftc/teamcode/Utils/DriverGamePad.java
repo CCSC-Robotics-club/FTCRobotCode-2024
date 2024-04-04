@@ -90,6 +90,8 @@ public class DriverGamePad {
             xBoxControllerKeyOnHoldMap.put(RobotConfig.XboxControllerKey.RIGHT_TRIGGER, true);
         else
             xBoxControllerKeyOnHoldMap.put(RobotConfig.XboxControllerKey.RIGHT_TRIGGER, false);
+
+        xBoxControllerKeyOnHoldMap.put(RobotConfig.XboxControllerKey.YIELD, false);
     }
 
     private void updateKeyOnPressed() {

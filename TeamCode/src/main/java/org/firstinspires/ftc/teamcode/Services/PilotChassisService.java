@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Services;
 
-import static org.firstinspires.ftc.teamcode.RobotConfig.ChassisConfigs.timeToStartDecelerate;
+import static org.firstinspires.ftc.teamcode.RobotConfig.ChassisConfigs.timeToStartDecelerateTranslation;
 import static org.firstinspires.ftc.teamcode.RobotConfig.ChassisConfigs.targetDistanceAtMaxDesiredSpeed;
 
 import static java.lang.Thread.sleep;
@@ -27,10 +27,10 @@ public class PilotChassisService extends RobotService {
     public final DistanceSensor distanceSensor;
     private final PixelCameraAimBot pixelAimBot;
     public final IntakeService.PixelDetector pixelDetector;
-    private double rotationWhenStickPressed;
+    private double rotationMaintainanceFacing;
     private Vector2D currentDesiredPosition;
     /** time since last translational command sent by pilot */
-    private double pilotLastTranslationalActionTime;
+    private double pilotLastTranslationalActionTime, pilotLastRotationalActionTime;
 
     public enum ControlMode {
         MANUAL,
@@ -79,12 +79,12 @@ public class PilotChassisService extends RobotService {
             pilotLastTranslationalActionTime += dt;
 
         final double currentDesiredPositionX = ((Math.abs(pilotTranslationalCommand.getX()) < zeroJudge && Math.abs(pilotTranslationalCommand.getY()) > zeroJudge) // if the pilot moves the y axis is moving but not the x axis
-                || pilotLastTranslationalActionTime > timeToStartDecelerate) // or, if there haven't been actions for a period of time
+                || pilotLastTranslationalActionTime > timeToStartDecelerateTranslation) // or, if there haven't been actions for a period of time
                 ? currentDesiredPosition.getX() // maintain current x position
                 : chassis.getChassisEncoderPosition().getX(), // otherwise, do speed control only by setting desired position to actual position (ignore proportion part)
 
                 currentDesiredPositionY = ((Math.abs(pilotTranslationalCommand.getY()) < zeroJudge && Math.abs(pilotTranslationalCommand.getX()) > zeroJudge)
-                        || pilotLastTranslationalActionTime > timeToStartDecelerate)
+                        || pilotLastTranslationalActionTime > timeToStartDecelerateTranslation)
                         ? currentDesiredPosition.getY() : chassis.getChassisEncoderPosition().getY(); // same method
 
         currentDesiredPosition = new Vector2D(new double[]{currentDesiredPositionX, currentDesiredPositionY});
@@ -147,24 +147,36 @@ public class PilotChassisService extends RobotService {
         }
 
         /* send pilot command to chassis if both types of visual navigation are unused */
-        if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
+        if (getSlowMotionButtonsMovement().getMagnitude() > 0.05) {
+            chassis.setOrientationMode(Chassis.OrientationMode.ROBOT_ORIENTATED, this);
+            chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
+                            Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY,
+                            getSlowMotionButtonsMovement()),
+                    this);
+            pilotLastTranslationalActionTime = 0;
+        } else
+            if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
             &&
                 (pixelAimBot == null || !pixelAimBot.isAimBotBusy()))
-            chassis.setTranslationalTask(translationalTaskByPilotStickControl, this);
+                chassis.setTranslationalTask(translationalTaskByPilotStickControl, this);
 
         /* <--rotation--> */
         double pilotRotationalCommand = driverController.getRotationStickValue();
+        if (Math.abs(pilotRotationalCommand) > 0.05)
+            pilotLastRotationalActionTime = 0;
+        else pilotLastRotationalActionTime += dt;
+
         Chassis.ChassisRotationalTask rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
                 Chassis.ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED,
                 pilotRotationalCommand
         );
 
-        if (driverController.keyOnPressed(RobotConfig.KeyBindings.maintainCurrentRotationButton))
-            rotationWhenStickPressed = chassis.getYaw();
-        if (driverController.keyOnHold(RobotConfig.KeyBindings.maintainCurrentRotationButton))
+        if (pilotLastRotationalActionTime < RobotConfig.ChassisConfigs.timeToStartDecelerateRotation)
+            rotationMaintainanceFacing = chassis.getYaw();
+        else if (!driverController.keyOnHold(RobotConfig.KeyBindings.turnOffRotationControlButton))
             rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
                     Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
-                    rotationWhenStickPressed
+                    rotationMaintainanceFacing
             );
 
         /* auto facing control*/
@@ -193,6 +205,21 @@ public class PilotChassisService extends RobotService {
             chassis.resetYaw(this);
 
         if (driverController.keyOnPressed(RobotConfig.KeyBindings.toggleChassisDriveModeButton)) nextControlMode();
+    }
+
+    /**
+     *
+     * @return the movement. in robot's orientation
+     * */
+    private Vector2D getSlowMotionButtonsMovement() {
+        Vector2D movementBySlowMotionButtons = new Vector2D();
+
+        movementBySlowMotionButtons = movementBySlowMotionButtons.addBy(driverController.keyOnHold(RobotConfig.KeyBindings.moveLeftSlowlyButton) ? new Vector2D(Math.PI, RobotConfig.KeyBindings.slowMovementButtonSensitivity): new Vector2D());
+        movementBySlowMotionButtons = movementBySlowMotionButtons.addBy(driverController.keyOnHold(RobotConfig.KeyBindings.moveRightSlowlyButton) ? new Vector2D(0, RobotConfig.KeyBindings.slowMovementButtonSensitivity): new Vector2D());
+        movementBySlowMotionButtons = movementBySlowMotionButtons.addBy(driverController.keyOnHold(RobotConfig.KeyBindings.moveBackSlowlyButton) ? new Vector2D(-Math.PI/2, RobotConfig.KeyBindings.slowMovementButtonSensitivity): new Vector2D());
+        movementBySlowMotionButtons = movementBySlowMotionButtons.addBy(driverController.keyOnHold(RobotConfig.KeyBindings.moveForwardSlowlyButton) ? new Vector2D(Math.PI/2, RobotConfig.KeyBindings.slowMovementButtonSensitivity): new Vector2D());
+
+        return movementBySlowMotionButtons;
     }
 
     enum VisualTaskStatus {
@@ -418,8 +445,8 @@ public class PilotChassisService extends RobotService {
     public void reset() {
         this.chassis.gainOwnerShip(this);
         this.currentDesiredPosition = new Vector2D();
-        this.rotationWhenStickPressed = 0;
-        this.pilotLastTranslationalActionTime = 0;
+        this.rotationMaintainanceFacing = 0;
+        this.pilotLastTranslationalActionTime = this.pilotLastRotationalActionTime = 0;
         this.currentDesiredPosition = chassis.getChassisEncoderPosition();
         this.controlMode = RobotConfig.ControlConfigs.defaultControlMode;
         visualTaskStatus = VisualTaskStatus.UNUSED;

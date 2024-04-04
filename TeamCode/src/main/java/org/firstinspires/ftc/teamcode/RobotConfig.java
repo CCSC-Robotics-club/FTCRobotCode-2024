@@ -192,12 +192,12 @@ public final class RobotConfig {
         );
 
         /* position estimator */
-        public static final int positionEstimator_speedEstimationFrequency = 40;
+        public static final int positionEstimator_speedEstimationFrequency = 100;
 
         /* encoder drive-to-position PID */
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileX = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
-                1,
+                1.05,
                 0.12, // for precise wall aiming
                 40,
                 1.2,
@@ -206,7 +206,7 @@ public final class RobotConfig {
         );
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileY = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
-                0.9,
+                1.05,
                 0.05,
                 40,
                 1.2,
@@ -215,8 +215,8 @@ public final class RobotConfig {
         );
 
         /** the maximum chassis speed when using visual navigation */
-        public static final double lowSpeedModeMaximumMotorSpeedConstrain = 1;
-        public static final double lowSpeedModeStickSensitivity = 0.7;
+        public static final double lowSpeedModeMaximumMotorSpeedConstrain = 0.8;
+        public static final double lowSpeedModeStickSensitivity = 0.6;
 
         /** a power constrain to the motors to not push them too hard */
         public static final double ordinaryModeMaximumMotorSpeedConstrain = 1.4;
@@ -224,9 +224,11 @@ public final class RobotConfig {
         public static final double xPowerRate = 1.05,
                 yPowerRate = 1;
         /** the distance to set the position target, when pilot sends a command of full speed  */
-        public static final double targetDistanceAtMaxDesiredSpeed = 50;
+        public static final double targetDistanceAtMaxDesiredSpeed = 75;
         /** the smooth-out time, or the time after the pilot let the chassis stop till it start maintaining its current position */
-        public static final double timeToStartDecelerate = 0.5;
+        public static final double timeToStartDecelerateTranslation = 0.5;
+
+        public static final double timeToStartDecelerateRotation = 0.3;
 
         /** within how many times the error tolerance of PID should the translational task be counted as complete */
         public static final double errorToleranceAsTaskFinished = 2.3;
@@ -281,7 +283,7 @@ public final class RobotConfig {
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
-        public static final double visualApproachSpeed = 100;
+        public static final double visualApproachSpeed = 150;
         public static final boolean faceToTargetWhenApproaching = true;
 
         public static final long maxTimeToWaitForVisualNavigationMS = 800; // after this much milliseconds, if the target still does not occur, the navigation will be considered failed
@@ -344,7 +346,7 @@ public final class RobotConfig {
         public static PilotChassisService.ControlMode defaultControlMode = PilotChassisService.ControlMode.ENCODER_ASSISTED_FIELD_ORIENTATED;
 
         public static final int pilotControllerKeyUpdatingRate = 60; // times per second
-        public static final ControllerStick translationalControllerStick = ControllerStick.RIGHT_HAND;
+        public static final ControllerStick translationalControllerStick = ControllerStick.LEFT_HAND;
         public enum ControllerStick {
             RIGHT_HAND,
             LEFT_HAND
@@ -353,11 +355,18 @@ public final class RobotConfig {
 
     public static final class KeyBindings {
         public static final XboxControllerKey resetIMUKey = XboxControllerKey.Y;
-        public static final XboxControllerKey maintainCurrentRotationButton = XboxControllerKey.LEFT_STICK_BUTTON;
-        public static final XboxControllerKey facePilotLeftButton = XboxControllerKey.DPAD_LEFT;
-        public static final XboxControllerKey facePilotRightButton = XboxControllerKey.DPAD_RIGHT;
-        public static final XboxControllerKey facePilotFrontButton = XboxControllerKey.DPAD_UP;
-        public static final XboxControllerKey facePilotBackButton = XboxControllerKey.DPAD_DOWN;
+        public static final XboxControllerKey turnOffRotationControlButton = XboxControllerKey.YIELD;
+        public static final XboxControllerKey facePilotLeftButton = XboxControllerKey.YIELD;
+        public static final XboxControllerKey facePilotRightButton = XboxControllerKey.YIELD;
+        public static final XboxControllerKey facePilotFrontButton = XboxControllerKey.YIELD;
+        public static final XboxControllerKey facePilotBackButton = XboxControllerKey.YIELD;
+
+        public static final XboxControllerKey moveLeftSlowlyButton = XboxControllerKey.DPAD_LEFT;
+        public static final XboxControllerKey moveRightSlowlyButton = XboxControllerKey.DPAD_RIGHT;
+        public static final XboxControllerKey moveForwardSlowlyButton = XboxControllerKey.DPAD_UP;
+        public static final XboxControllerKey moveBackSlowlyButton = XboxControllerKey.DPAD_DOWN;
+        public static final double slowMovementButtonSensitivity = 1;
+
         public static final XboxControllerKey toggleChassisDriveModeButton = XboxControllerKey.A;
         public static final XboxControllerKey processVisualApproachButton = XboxControllerKey.LEFT_BUMPER;
         public static final XboxControllerKey setAimPositionLeftButton = XboxControllerKey.X;
@@ -372,7 +381,8 @@ public final class RobotConfig {
         DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT,
         LEFT_BUMPER, RIGHT_BUMPER,
         LEFT_TRIGGER, RIGHT_TRIGGER,
-        LEFT_STICK_BUTTON, RIGHT_STICK_BUTTON
+        LEFT_STICK_BUTTON, RIGHT_STICK_BUTTON,
+        YIELD
     }
 
     public static class HardwareConfigs { // config for newer chassis

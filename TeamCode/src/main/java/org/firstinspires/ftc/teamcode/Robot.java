@@ -149,19 +149,19 @@ public abstract class Robot {
         robotModules.add(backLeftWheel);
         robotModules.add(backRightWheel);
 
-//        aprilTagCamera = new FixedAngleArilTagCamera(
-//                new HuskyAprilTagCamera(hardwareMap.get(HuskyLens.class, "husky")),
-//                RobotConfig.VisualNavigationConfigs.visualCameraProfile
-//        );
-//        robotModules.add(aprilTagCamera);
-//
+        aprilTagCamera = new FixedAngleArilTagCamera(
+                new HuskyAprilTagCamera(hardwareMap.get(HuskyLens.class, "husky")),
+                RobotConfig.VisualNavigationConfigs.visualCameraProfile
+        );
+        robotModules.add(aprilTagCamera);
+
 //        pixelCamera = new FixedAnglePixelCamera(
 //                new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1")),
 //                RobotConfig.VisualNavigationConfigs.pixelCameraSetUpProfile,
 //                RobotConfig.VisualNavigationConfigs.pixelCameraInstallFacing
 //        );
 //        robotModules.add(pixelCamera);
-//        // pixelCamera = null;
+         pixelCamera = null;
 
         chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, aprilTagCamera,
                 this.side == Side.RED ? FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL : FixedAngleArilTagCamera.WallTarget.Name.BLUE_ALLIANCE_WALL);
@@ -226,12 +226,12 @@ public abstract class Robot {
         t0 = System.currentTimeMillis();
         for (RobotService robotService: robotServices)
             robotService.periodic();
-        telemetrySender.putSystemMessage("robot service time(ms)", System.currentTimeMillis() - t0);
+        telemetrySender.putSystemMessage("robot service update time(ms)", System.currentTimeMillis() - t0);
 
         for (RobotModule robotModule: robotModules) {
             t0 = System.currentTimeMillis();
             robotModule.periodic();
-            telemetrySender.putSystemMessage(robotModule.toString(), System.currentTimeMillis() - t0);
+            telemetrySender.putSystemMessage("module <" + robotModule + "> update time", System.currentTimeMillis() - t0);
         }
 
         telemetrySender.periodic();
