@@ -62,6 +62,6 @@ public class BezierCurveSchedule {
     }
 
     public static double getTimeNeededToFinishRotationalSchedule(double startingRotation, double endingRotation) {
-        return Math.abs(AngleUtils.getActualDifference(startingRotation, endingRotation)) / RobotConfig.ChassisConfigs.autoStageMaxAngularVelocity;
+        return Math.abs(AngleUtils.getActualDifference(startingRotation, endingRotation)) / RobotConfig.ChassisConfigs.autoStageMaxAngularVelocity + 0.05; // add debug time
     }
 }

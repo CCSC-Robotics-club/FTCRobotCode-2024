@@ -59,6 +59,7 @@ public class AutoProgramRunner extends RobotService {
         if (currentSegmentRotationScheduleETA != -1) {
             rotationT += dt / currentSegmentRotationScheduleETA;
             double rotationTSyncedToTranslationT = rotationT;
+
             if (currentPathSchedule != null)
                 rotationTSyncedToTranslationT = Math.min(currentPathSchedule.getT(), rotationTSyncedToTranslationT);
             robotChassis.setRotationalTask(new Chassis.ChassisRotationalTask(
