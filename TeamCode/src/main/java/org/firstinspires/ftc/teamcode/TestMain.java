@@ -36,17 +36,22 @@ import org.firstinspires.ftc.teamcode.Utils.SimpleFeedForwardSpeedController;
 import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.TensorCamera;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 @TeleOp(name="Test_main")
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        tofDistanceSensorTest();
+        testJsonFile();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -946,9 +951,32 @@ public class TestMain extends LinearOpMode {
 
     private void testJsonFile() {
         waitForStart();
-        int resourceId = hardwareMap.appContext.getResources().getIdentifier("myjsonfile1", "raw", hardwareMap.appContext.getPackageName());
-        InputStream is = hardwareMap.appContext.getResources().openRawResource(resourceId);
+        try {
+            InputStream is = hardwareMap.appContext.getAssets().open("deploy/pathplanner/paths/park.path");
+            Scanner scanner = new Scanner(is).useDelimiter("\\A");
+            String jsonContent = scanner.hasNext() ? scanner.next() : "";
 
+            JSONObject pathJson = new JSONObject(jsonContent);
+            JSONArray waypointsJson = pathJson.getJSONArray("waypoints");
 
+            List<BezierCurve> curves = new ArrayList<>();
+            for (int i = 0; i < waypointsJson.length() - 1; i++) {
+                JSONObject point = (JSONObject) waypointsJson.get(i),
+                        nextPoint = (JSONObject) waypointsJson.get(i+1);
+
+                final JSONObject anchorPointJson = (JSONObject) point.get("anchor"), nextControlPointJson = (JSONObject) point.get("nextControl");
+                telemetry.addData("anchor x", ((Number) anchorPointJson.get("x")).doubleValue());
+                telemetry.addData("anchor y", ((Number) anchorPointJson.get("y")).doubleValue());
+                telemetry.addData("next ctrl x", ((Number) nextControlPointJson.get("x")).doubleValue());
+                telemetry.addData("next ctrl y", ((Number) nextControlPointJson.get("y")).doubleValue());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("error while reading json file");
+        } catch (JSONException e) {
+            throw new RuntimeException("error while parsing json file");
+        }
+
+        telemetry.update();
+        sleep(5000);
     }
 }

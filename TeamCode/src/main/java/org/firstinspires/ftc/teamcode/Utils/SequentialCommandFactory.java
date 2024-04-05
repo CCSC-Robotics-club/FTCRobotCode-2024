@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
@@ -8,34 +10,42 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.SpeedCurves;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 
 public class SequentialCommandFactory {
     private final Chassis chassis;
     private final PositionEstimator positionEstimator;
-    private final Vector2D robotStartingPosition;
+    private Vector2D robotStartingPosition;
     private final Rotation2D robotStartingRotation2D;
     private final Robot.Side side;
+    private final HardwareMap hardwareMap;
 
-    public SequentialCommandFactory(Chassis chassis, PositionEstimator positionEstimator, Robot.Side side) {
-        this(chassis, positionEstimator, new Vector2D(), new Rotation2D(0), side);
+    public SequentialCommandFactory(Chassis chassis, PositionEstimator positionEstimator, Robot.Side side, HardwareMap hardwareMap) {
+        this(chassis, positionEstimator, new Vector2D(), new Rotation2D(0), side, hardwareMap);
     }
 
-    public SequentialCommandFactory(Chassis chassis, PositionEstimator positionEstimator, String firstPathName, Rotation2D robotStartingRotation2D, Robot.Side side) {
-        this(chassis, positionEstimator, getRobotStartingPosition(firstPathName), robotStartingRotation2D, side);
+    public SequentialCommandFactory(Chassis chassis, PositionEstimator positionEstimator, String firstPathName, Rotation2D robotStartingRotation2D, Robot.Side side, HardwareMap hardwareMap) {
+        this(chassis, positionEstimator, new Vector2D(), robotStartingRotation2D, side, hardwareMap);
+        robotStartingPosition = getRobotStartingPosition(firstPathName);
     }
 
-    public SequentialCommandFactory(Chassis chassis, PositionEstimator positionEstimator, Vector2D robotStartingPosition, Rotation2D robotStartingRotation2D, Robot.Side side) {
+    public SequentialCommandFactory(Chassis chassis, PositionEstimator positionEstimator, Vector2D robotStartingPosition, Rotation2D robotStartingRotation2D, Robot.Side side, HardwareMap hardwareMap) {
         this.chassis = chassis;
         this.positionEstimator = positionEstimator;
         this.maintainCurrentRotation = positionEstimator::getRotation2D;
         this.robotStartingPosition = robotStartingPosition;
         this.robotStartingRotation2D = robotStartingRotation2D;
         this.side = side;
+        this.hardwareMap = hardwareMap;
     }
 
     private static final SequentialCommandSegment.InitiateCondition justGo = () -> true;
@@ -235,7 +245,7 @@ public class SequentialCommandFactory {
         );
     }
 
-    public static Vector2D getRobotStartingPosition(String firstPathName) {
+    public Vector2D getRobotStartingPosition(String firstPathName) {
         return getBezierCurvesFromPathFile(firstPathName).get(0).getPositionWithLERP(0);
     }
 
@@ -256,80 +266,103 @@ public class SequentialCommandFactory {
     }
 
     /** all rotations are in red alliance, will be automatically converted if blue */
-    public SequentialCommandSegment[] followPathFacing(String pathName, Rotation2D facingRotation) {
+    public List<SequentialCommandSegment> followPathFacing(String pathName, Rotation2D facingRotation) {
         return followPathFacing(pathName, facingRotation, doNothing, doNothing, doNothing);
     }
-    public SequentialCommandSegment[] followPathFacing(String pathName, Rotation2D facingRotation, Runnable beginning, Runnable periodic, Runnable ending) {
+    public List<SequentialCommandSegment> followPathFacing(String pathName, Rotation2D facingRotation, Runnable beginning, Runnable periodic, Runnable ending) {
         final Rotation2D[] rotationTargets = new Rotation2D[getBezierCurvesFromPathFile(pathName).size()];
         Arrays.fill(rotationTargets, facingRotation);
         return followPath(pathName, rotationTargets, beginning, periodic, ending);
     }
 
-    public SequentialCommandSegment[] followPath(String pathName) {
+    public List<SequentialCommandSegment> followPath(String pathName) {
         return followPath(pathName, doNothing, doNothing, doNothing);
     }
 
 
-    public SequentialCommandSegment[] followPath(String pathName, Runnable beginning, Runnable periodic, Runnable ending) {
+    public List<SequentialCommandSegment> followPath(String pathName, Runnable beginning, Runnable periodic, Runnable ending) {
         return followPath(pathName, new Rotation2D[getBezierCurvesFromPathFile(pathName).size()+1], beginning, periodic, ending);
     }
 
-    public SequentialCommandSegment[] followPath(String pathName, Rotation2D[] robotRotationTargets, Runnable beginning, Runnable periodic, Runnable ending) {
+    public List<SequentialCommandSegment> followPath(String pathName, Rotation2D[] robotRotationTargets, Runnable beginning, Runnable periodic, Runnable ending) {
         final List<BezierCurve> curves = getBezierCurvesFromPathFile(pathName);
-        final SequentialCommandSegment[] commandSegments = new SequentialCommandSegment[curves.size()];
+        final List<SequentialCommandSegment> commandSegments = new ArrayList<>();
         System.out.println("curves.size(): " + curves.size());
         System.out.println("rotation targets size: " + robotRotationTargets.length);
         if (curves.size() != robotRotationTargets.length)
             throw new IllegalStateException("Error While Scheduling Follow Path Command: " + pathName + ". Rotational targets length (" + robotRotationTargets.length + ") do not match pathplanner checkpoints number (" + curves.size() + ")");
 
         if (curves.size() == 1)
-            return new SequentialCommandSegment[] {
-                    new SequentialCommandSegment(
-                            () -> true,
-                            () -> curves.get(0),
-                            beginning, periodic, ending,
-                            chassis::isCurrentTranslationalTaskComplete,
-                            positionEstimator::getRotation2D, () -> toActualRotation(robotRotationTargets[0]),
-                            SpeedCurves.easeInOut,1
-                    )
-            };
+            return Collections.singletonList(new SequentialCommandSegment(
+                    () -> true,
+                    () -> curves.get(0),
+                    beginning, periodic, ending,
+                    chassis::isCurrentTranslationalTaskComplete,
+                    positionEstimator::getRotation2D, () -> toActualRotation(robotRotationTargets[0]),
+                    SpeedCurves.easeInOut, 1
+            ));
 
-        commandSegments[0] = new SequentialCommandSegment(
+        commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> curves.get(0),
                 beginning, periodic, doNothing,
                 () -> true,
                 maintainCurrentRotation, () -> toActualRotation(robotRotationTargets[0]),
                 SpeedCurves.easeIn,1
-        );
+        ));
 
         for (int i = 1; i < curves.size()-1; i++) {
             final BezierCurve curve = curves.get(i);
             final Rotation2D startingRotation = robotRotationTargets[i-1], endingRotation = robotRotationTargets[i];
-            commandSegments[i] = new SequentialCommandSegment(
+            commandSegments.add(new SequentialCommandSegment(
                     () -> true,
                     () -> curve,
                     doNothing, periodic, doNothing,
                     () -> true,
                     () -> toActualRotation(startingRotation), () -> toActualRotation(endingRotation),
                     SpeedCurves.originalSpeed,1
-            );
+            ));
         }
 
-        commandSegments[commandSegments.length-1] = new SequentialCommandSegment(
+        commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> curves.get(curves.size()-1),
                 doNothing, periodic, ending,
                 chassis::isCurrentTranslationalTaskComplete,
                 () -> toActualRotation(robotRotationTargets[robotRotationTargets.length-2]), () -> toActualRotation(robotRotationTargets[robotRotationTargets.length-1]),
                 SpeedCurves.originalSpeed,1
-        );
+        ));
 
         return commandSegments;
     }
 
-    public static List<BezierCurve> getBezierCurvesFromPathFile(String pathName) {
-        return new ArrayList<>(); // TODO
+    public List<BezierCurve> getBezierCurvesFromPathFile(String pathName) {
+        try {
+            InputStream is = hardwareMap.appContext.getAssets().open("deploy/pathplanner/paths/park.path");
+            Scanner scanner = new Scanner(is).useDelimiter("\\A");
+            String jsonContent = scanner.hasNext() ? scanner.next() : "";
+
+            JSONObject pathJson = new JSONObject(jsonContent);
+            JSONArray waypointsJson = pathJson.getJSONArray("waypoints");
+
+            List<BezierCurve> curves = new ArrayList<>();
+            for (int i = 0; i < waypointsJson.length() - 1; i++) {
+                JSONObject point = (JSONObject) waypointsJson.get(i),
+                        nextPoint = (JSONObject) waypointsJson.get(i+1);
+
+                curves.add(new BezierCurve(
+                        pointFromJson((JSONObject) point.get("anchor")),
+                        pointFromJson((JSONObject) point.get("nextControl")),
+                        pointFromJson((JSONObject) nextPoint.get("prevControl")),
+                        pointFromJson((JSONObject) nextPoint.get("anchor"))
+                ));
+            }
+            return curves;
+        } catch (IOException e) {
+            throw new RuntimeException("error while reading json file");
+        } catch (JSONException e) {
+            throw new RuntimeException("error while parsing json file");
+        }
     }
 
     /**
@@ -337,8 +370,11 @@ public class SequentialCommandFactory {
      * pathplanner is always in red alliance
      * converts to red / blue alliance according to driver-station, defaults to red
      * */
-    private static Vector2D pointFromJson(JSONObject pointJson) {
-        return null; // TODO
+    private Vector2D pointFromJson(JSONObject pointJson) throws JSONException {
+        final double x = ((Number) pointJson.get("x")).doubleValue();
+        final double y = ((Number) pointJson.get("y")).doubleValue();
+
+        return toActualPosition(new Vector2D(new double[] {x * 100, y * 100}));
     }
 
     private Rotation2D toActualRotation(Rotation2D rotationOnBlueSide) {

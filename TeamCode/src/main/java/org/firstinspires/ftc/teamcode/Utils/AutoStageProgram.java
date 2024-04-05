@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
@@ -22,5 +23,5 @@ public abstract class AutoStageProgram {
         allianceSide = side;
     }
 
-    public abstract void scheduleCommands(Chassis chassis, PositionEstimator positionEstimator, DistanceSensor distanceSensor, FixedAngleArilTagCamera angleArilTagCamera, Arm arm, Intake intake, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender);
+    public abstract void scheduleCommands(HardwareMap hardwareMap, Chassis chassis, PositionEstimator positionEstimator, DistanceSensor distanceSensor, FixedAngleArilTagCamera angleArilTagCamera, Arm arm, Intake intake, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender);
 }
