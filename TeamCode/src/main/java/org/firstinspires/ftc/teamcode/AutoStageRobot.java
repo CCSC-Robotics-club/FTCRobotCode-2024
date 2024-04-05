@@ -26,7 +26,7 @@ public class AutoStageRobot extends Robot {
 
     @Override
     public void initializeRobot() {
-        autoStageProgram.scheduleCommands(hardwareMap, chassis, positionEstimator, hardwareMap.get(DistanceSensor.class, "distance"), super.aprilTagCamera, super.arm, super.intake, super.pixelCamera, autoProgramRunnerService, telemetrySender);
+        autoStageProgram.scheduleCommands(hardwareMap, chassis, positionEstimator, hardwareMap.get(DistanceSensor.class, "distance"), super.aprilTagCamera, super.pixelCamera, autoProgramRunnerService, telemetrySender);
 
         robotServices.add(autoProgramRunnerService);
         super.initializeRobot();
@@ -40,18 +40,6 @@ public class AutoStageRobot extends Robot {
         telemetrySender.putSystemMessage("chassis thread update count", chassis.updateCount);
         if (autoProgramRunnerService.isAutoStageComplete())
             super.stopRobot();
-    }
-
-    public Chassis getChassisModule() {
-        return super.chassis;
-    }
-
-    public IntakeLegacy getIntakeModule() {
-        return super.intake;
-    }
-
-    public FixedAngleArilTagCamera getAprilTagCamera() {
-        return super.aprilTagCamera;
     }
 
     public HardwareMap getHardwareMap() {

@@ -132,7 +132,7 @@ public final class RobotConfig {
 
     public static final class ArmConfigs {
         /** positive should be scoring */
-        public static final boolean servo1Reversed = false, servo2Reversed = true;
+        public static final boolean servo1Reversed = true, servo2Reversed = false;
 
         public enum Position {
             INTAKE,
@@ -141,15 +141,15 @@ public final class RobotConfig {
 
         public static final Map<Position, Double> encoderPositions = new HashMap<>();
         static {
-            encoderPositions.put(Position.INTAKE, 0.0);
-            encoderPositions.put(Position.SCORE, 1.0);
+            encoderPositions.put(Position.INTAKE, 0.1);
+            encoderPositions.put(Position.SCORE, 0.7);
         }
     }
 
     public static final class FlippableDualClawConfigs {
         public static final double flipperIntakePosition = 0, flipperScoringPosition = 1;
 
-        public static final double leftClawClosePosition = 0.2, leftClawOpenPosition = 0.4, rightClawOpenPosition = 0.8, rightClawClosedPosition = 0.6;
+        public static final double leftClawClosePosition = 0.8, leftClawOpenPosition = 0.6, rightClawOpenPosition = 0.5, rightClawClosedPosition = 0.3;
     }
 
     public static final class ArmConfigsLegacy {

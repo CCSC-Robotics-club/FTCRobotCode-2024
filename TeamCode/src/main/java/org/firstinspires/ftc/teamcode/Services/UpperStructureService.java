@@ -8,6 +8,9 @@ import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class UpperStructureService extends RobotService {
     private final Arm arm;
     private final Elevator elevator;
@@ -40,12 +43,13 @@ public class UpperStructureService extends RobotService {
         keyBindings();
 
         switch (currentStatus) {
-            case YIELD: {
+            case YIELD : {
                 claw.setLeftClawClosed(false, this);
                 claw.setRightClawClosed(false, this);
                 claw.setFlip(false, this);
 
                 arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
+                break;
             }
             case HOLDING: {
                 claw.setLeftClawClosed(true, this);
@@ -53,6 +57,7 @@ public class UpperStructureService extends RobotService {
                 claw.setFlip(false, this);
 
                 arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
+                break;
             }
             case GRABBING: {
                 closeClawOnDemanded();
@@ -61,18 +66,20 @@ public class UpperStructureService extends RobotService {
                 claw.setFlip(true, this);
 
                 arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
+                break;
             }
             case SCORING: {
                 openClawOnDemanded();
+                arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
 
                 if (!claw.isLeftClawClosed() && !claw.isRightClawClosed())
                     this.currentStatus = UpperStructureStatus.YIELD;
+                break;
             }
         }
     }
 
     private void keyBindings() {
-        this.currentStatus = UpperStructureStatus.HOLDING;
         if (copilotGamePad.a)
             this.currentStatus = UpperStructureStatus.GRABBING;
         if (copilotGamePad.y)
@@ -105,5 +112,12 @@ public class UpperStructureService extends RobotService {
         elevator.gainOwnerShip(this);
 
         currentStatus = UpperStructureStatus.YIELD;
+    }
+
+    @Override
+    public Map<String, Object> getDebugMessages() {
+        final Map<String, Object> debugMessages = new HashMap<>();
+        debugMessages.put("upper structure status", currentStatus);
+        return debugMessages;
     }
 }

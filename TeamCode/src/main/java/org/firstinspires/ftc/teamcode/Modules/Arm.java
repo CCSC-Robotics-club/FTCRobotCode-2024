@@ -2,10 +2,14 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 
 import static org.firstinspires.ftc.teamcode.RobotConfig.ArmConfigs;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Arm extends RobotModule {
     private final Servo armServo1, armServo2;
@@ -45,5 +49,13 @@ public class Arm extends RobotModule {
         if (!isOwner(operatorService))
             return;
         this.position = position;
+    }
+
+    @Override
+    public Map<String, Object> getDebugMessages() {
+        final Map<String, Object> debugMessages = new HashMap<>();
+        debugMessages.put("arm current position" ,position);
+        debugMessages.put("arm position servo value", ArmConfigs.encoderPositions.get(position));
+        return debugMessages;
     }
 }

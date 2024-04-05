@@ -52,7 +52,7 @@ public class CameraAutoCalibration extends AutoStageProgram {
     }
 
     @Override
-    public void scheduleCommands(HardwareMap hardwareMap, Chassis chassis, PositionEstimator positionEstimator, DistanceSensor distanceSensor, FixedAngleArilTagCamera angleArilTagCamera, ArmLegacy arm, IntakeLegacy intake, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
+    public void scheduleCommands(HardwareMap hardwareMap, Chassis chassis, PositionEstimator positionEstimator, DistanceSensor distanceSensor, FixedAngleArilTagCamera angleArilTagCamera, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
         final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(chassis, positionEstimator, robotStartingPositionToTarget, new Rotation2D(0), Robot.Side.RED, hardwareMap);
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
 

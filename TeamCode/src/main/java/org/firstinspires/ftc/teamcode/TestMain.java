@@ -287,8 +287,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void servoTest() {
-        Servo servo1 = hardwareMap.get(Servo.class, "clawLeft");
-        Servo servo2 = hardwareMap.get(Servo.class, "clawRight");
+        Servo servo = hardwareMap.get(Servo.class, "claw1");
 
         waitForStart();
 
@@ -302,8 +301,7 @@ public class TestMain extends LinearOpMode {
             if (gamepad1.a)
                 servoAngle = 0;
             servoAngle = Math.min(Math.max(0,servoAngle), 1);
-            servo1.setPosition(servoAngle);
-            servo2.setPosition(servoAngle);
+            servo.setPosition(servoAngle);
             telemetry.addData("servo angle", servoAngle);
             telemetry.update();
             previousTime = System.currentTimeMillis();

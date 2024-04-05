@@ -49,7 +49,7 @@ public class FlippableDualClaw extends RobotModule {
     public void setRightClawClosed(boolean closed, RobotService operatorService) {
         if (!isOwner(operatorService))
             return;
-        this.leftClawClosed = closed;
+        this.rightClawClosed = closed;
     }
 
     public void setFlip(boolean flipOnIntakePosition, RobotService operatorService) {

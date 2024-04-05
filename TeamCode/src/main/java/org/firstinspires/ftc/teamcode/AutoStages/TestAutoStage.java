@@ -22,7 +22,7 @@ public class TestAutoStage extends AutoStageProgram {
     }
 
     @Override
-    public void scheduleCommands(HardwareMap hardwareMap, Chassis chassis, PositionEstimator positionEstimator, DistanceSensor distanceSensor, FixedAngleArilTagCamera angleArilTagCamera, ArmLegacy arm, IntakeLegacy intake, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
+    public void scheduleCommands(HardwareMap hardwareMap, Chassis chassis, PositionEstimator positionEstimator, DistanceSensor distanceSensor, FixedAngleArilTagCamera angleArilTagCamera, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
         final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(chassis, positionEstimator, "split first", new Rotation2D(Math.toRadians(90)), super.allianceSide, hardwareMap);
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
         super.commandSegments.addAll(
