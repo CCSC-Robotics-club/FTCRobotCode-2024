@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.teamcode.Modules.Arm;
+import org.firstinspires.ftc.teamcode.Modules.ArmLegacy;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
 import org.firstinspires.ftc.teamcode.Utils.Claw;
@@ -117,11 +117,11 @@ public final class RobotConfig {
             true
     );
 
-    public static final HardwareConfigs competitionConfig = hardwareConfigs_2024Competition;
+    public static final HardwareConfigs competitionConfig = hardwareConfigs_2024OffSeason;
 
     public static final HardwareConfigs testConfig = hardwareConfigs_2024Competition;
 
-    public static final class IntakeConfigs {
+    public static final class IntakeConfigsLegacy {
         public static final String intakeMotor1Name = "intake1", intakeMotor2Name = "intake2";
         public static final double intakeMotor1Power = -0.75, intakeMotor2Power = 0.75; // competition machine
 //        public static final double intakeMotor1Power = -0.85, intakeMotor2Power = -0.85; // backup machine
@@ -131,6 +131,28 @@ public final class RobotConfig {
     }
 
     public static final class ArmConfigs {
+        /** positive should be scoring */
+        public static final boolean servo1Reversed = false, servo2Reversed = true;
+
+        public enum Position {
+            INTAKE,
+            SCORE
+        }
+
+        public static final Map<Position, Double> encoderPositions = new HashMap<>();
+        static {
+            encoderPositions.put(Position.INTAKE, 0.0);
+            encoderPositions.put(Position.SCORE, 1.0);
+        }
+    }
+
+    public static final class FlippableDualClawConfigs {
+        public static final double flipperIntakePosition = 0, flipperScoringPosition = 1;
+
+        public static final double leftClawClosePosition = 0.2, leftClawOpenPosition = 0.4, rightClawOpenPosition = 0.8, rightClawClosedPosition = 0.6;
+    }
+
+    public static final class ArmConfigsLegacy {
         public static final String armMotor1Name = "arm1", armMotor2Name = "arm2", armEncoderName = "arm1", limitSwitchName = "limit";
         public static final boolean armMotor1Reversed = true, armMotor2Reversed = false, armEncoderReversed = false;
         public static final double armMotorMaximumPower = 1;
@@ -140,7 +162,7 @@ public final class RobotConfig {
         public static final double frictionPower = 0.25;
         public static final int feedPos = 0, lowPos = 2100, midPos = 2300, highPos = 3500;
         public static final int positionLimit = 3500;
-        public static final Arm.ArmCommand armCommandWhenNoInput = new Arm.ArmCommand(Arm.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0); // null for not needed
+        public static final ArmLegacy.ArmCommand armCommandWhenNoInput = new ArmLegacy.ArmCommand(ArmLegacy.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0); // null for not needed
 
 //        public static final String claw1Name = "claw1", claw2Name = "claw2"; // dual servo claw
 //        public static final Claw.ServoProfile claw1Profile = new Claw.ServoProfile(1-0.4, 1-0.16),

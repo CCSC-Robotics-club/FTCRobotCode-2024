@@ -6,12 +6,12 @@ import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 
-import static org.firstinspires.ftc.teamcode.RobotConfig.ArmConfigs;
+import static org.firstinspires.ftc.teamcode.RobotConfig.ArmConfigsLegacy;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExtendableClaw extends RobotModule {
+public class ExtendableClawLegacy extends RobotModule {
     private final Claw claw;
     private final Servo extendControllerServo;
 
@@ -23,7 +23,7 @@ public class ExtendableClaw extends RobotModule {
     }
     private Status status;
     private double timer=0;
-    public ExtendableClaw(Claw claw, Servo extendControllerServo) {
+    public ExtendableClawLegacy(Claw claw, Servo extendControllerServo) {
         super("Extendable-Claw", 20);
         this.claw = claw;
         this.extendControllerServo = extendControllerServo;
@@ -38,10 +38,10 @@ public class ExtendableClaw extends RobotModule {
     protected void periodic(double dt) {
         timer += dt;
 
-        if (status == Status.PLACE_TO_BOARD && timer > ArmConfigs.extendTime) {
+        if (status == Status.PLACE_TO_BOARD && timer > ArmConfigsLegacy.extendTime) {
             status = Status.RELEASE;
             timer = 0;
-        } else if (status == Status.RELEASE && timer > ArmConfigs.extendTime)
+        } else if (status == Status.RELEASE && timer > ArmConfigsLegacy.extendTime)
             status = Status.STANDBY;
 
         if (status == Status.STANDBY || status == Status.RELEASE)
@@ -50,9 +50,9 @@ public class ExtendableClaw extends RobotModule {
             claw.close();
 
         if (status == Status.RELEASE || status == Status.PLACE_TO_BOARD)
-            extendControllerServo.setPosition(ArmConfigs.servoValueExtend);
+            extendControllerServo.setPosition(ArmConfigsLegacy.servoValueExtend);
         else
-            extendControllerServo.setPosition(ArmConfigs.servoValueOrigin);
+            extendControllerServo.setPosition(ArmConfigsLegacy.servoValueOrigin);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ExtendableClaw extends RobotModule {
     public void reset() {
         this.status = Status.STANDBY;
         claw.open();
-        extendControllerServo.setPosition(ArmConfigs.servoValueOrigin);
+        extendControllerServo.setPosition(ArmConfigsLegacy.servoValueOrigin);
     }
 
     public void holdPixel(ModulesCommanderMarker operator) {

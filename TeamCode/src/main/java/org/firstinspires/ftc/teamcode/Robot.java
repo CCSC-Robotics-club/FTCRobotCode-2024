@@ -3,42 +3,32 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
+import org.firstinspires.ftc.teamcode.Modules.ArmLegacy;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
+import org.firstinspires.ftc.teamcode.Modules.Elevator;
 import org.firstinspires.ftc.teamcode.Modules.EncoderMotorWheel;
-import org.firstinspires.ftc.teamcode.Modules.ExtendableClaw;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
-import org.firstinspires.ftc.teamcode.Modules.Intake;
+import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
+import org.firstinspires.ftc.teamcode.Modules.IntakeLegacy;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
-import org.firstinspires.ftc.teamcode.Services.IntakeService;
-import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
-import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
-import org.firstinspires.ftc.teamcode.Utils.DualServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.HuskyAprilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
 import org.firstinspires.ftc.teamcode.Utils.ProgramRunningStatusChecker;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 import org.firstinspires.ftc.teamcode.Utils.SimpleFeedForwardSpeedController;
-import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
-import org.firstinspires.ftc.teamcode.Utils.TensorCamera;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public abstract class Robot {
     protected final HardwareMap hardwareMap;
@@ -51,8 +41,13 @@ public abstract class Robot {
 
     private EncoderMotorWheel frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
     public Chassis chassis;
-    public Intake intake;
+//    public IntakeLegacy intake;
+//    public ArmLegacy arm;
+
     public Arm arm;
+    public FlippableDualClaw claw;
+    public Elevator elevator;
+
     public FixedAnglePixelCamera pixelCamera;
     public PositionEstimator positionEstimator;
     public FixedAngleArilTagCamera aprilTagCamera;
@@ -191,6 +186,18 @@ public abstract class Robot {
 //        arm = new Arm(armMotor1, armMotor2, armEncoder, extendableClaw, limitSwitch);
 //        robotModules.add(arm);
 //        robotModules.add(extendableClaw);
+
+        /* claw */
+        claw = new FlippableDualClaw(hardwareMap.get(Servo.class, "flip"), hardwareMap.get(Servo.class, "clawLeft"), hardwareMap.get(Servo.class, "clawRight"));
+        robotModules.add(claw);
+
+        /* arm */
+        arm = new Arm(hardwareMap.get(Servo.class, "arm1"), hardwareMap.get(Servo.class, "arm2"));
+        robotModules.add(arm);
+
+        /* elevator */
+        elevator = new Elevator();
+        robotModules.add(elevator);
     }
 
     /**

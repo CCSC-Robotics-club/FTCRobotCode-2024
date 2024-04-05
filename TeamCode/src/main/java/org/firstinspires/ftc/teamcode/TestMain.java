@@ -28,7 +28,7 @@ import org.firstinspires.ftc.teamcode.Utils.DualServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.HuskyAprilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
-import org.firstinspires.ftc.teamcode.Utils.PixelCameraAimBot;
+import org.firstinspires.ftc.teamcode.Utils.PixelCameraAimBotLegacy;
 import org.firstinspires.ftc.teamcode.Utils.RawPixelDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
@@ -51,7 +51,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        testJsonFile();
+        servoTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -287,8 +287,8 @@ public class TestMain extends LinearOpMode {
     }
 
     private void servoTest() {
-        Servo servo1 = hardwareMap.get(Servo.class, "servo0");
-        Servo servo2 = hardwareMap.get(Servo.class, "servo1");
+        Servo servo1 = hardwareMap.get(Servo.class, "clawLeft");
+        Servo servo2 = hardwareMap.get(Servo.class, "clawRight");
 
         waitForStart();
 
@@ -303,7 +303,7 @@ public class TestMain extends LinearOpMode {
                 servoAngle = 0;
             servoAngle = Math.min(Math.max(0,servoAngle), 1);
             servo1.setPosition(servoAngle);
-            servo2.setPosition(1-servoAngle);
+            servo2.setPosition(servoAngle);
             telemetry.addData("servo angle", servoAngle);
             telemetry.update();
             previousTime = System.currentTimeMillis();
@@ -901,16 +901,16 @@ public class TestMain extends LinearOpMode {
         Chassis chassis = getChassisModuleWithDefaultConfig();
         FixedAnglePixelCamera pixelCamera = getPixelCameraWithDefaultConfig();
         telemetrySender.addRobotModule(pixelCamera);
-        PixelCameraAimBot aimBot = new PixelCameraAimBot(chassis, pixelCamera, null, new HashMap<>());
+        PixelCameraAimBotLegacy aimBot = new PixelCameraAimBotLegacy(chassis, pixelCamera, null, new HashMap<>());
 
         waitForStart();
 
         while (!isStopRequested() && opModeIsActive()) {
             pixelCamera.periodic();
             if (gamepad1.a)
-                aimBot.initiateAim(PixelCameraAimBot.AimMethod.FACE_TO_AND_FEED);
+                aimBot.initiateAim(PixelCameraAimBotLegacy.AimMethod.FACE_TO_AND_FEED);
             else if (gamepad1.b)
-                aimBot.initiateAim(PixelCameraAimBot.AimMethod.LINE_UP_AND_FEED);
+                aimBot.initiateAim(PixelCameraAimBotLegacy.AimMethod.LINE_UP_AND_FEED);
             if (gamepad1.left_bumper)
                 aimBot.update();
             else {

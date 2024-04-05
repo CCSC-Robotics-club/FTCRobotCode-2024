@@ -1,17 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.icu.text.CaseMap;
+
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Modules.Arm;
-import org.firstinspires.ftc.teamcode.Modules.PlaneLauncher;
-import org.firstinspires.ftc.teamcode.Services.ArmService;
-import org.firstinspires.ftc.teamcode.Services.IntakeService;
 import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
-import org.firstinspires.ftc.teamcode.Services.PlaneLaunchService;
+import org.firstinspires.ftc.teamcode.Services.UpperStructureService;
 import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
 import org.firstinspires.ftc.teamcode.Utils.ProgramRunningStatusChecker;
 
@@ -42,6 +39,9 @@ public class ManualStageRobot extends Robot {
 //        super.robotModules.add(planeLauncher);
 //        final PlaneLaunchService planeLaunchService = new PlaneLaunchService(planeLauncher, copilotGamepad);
 //        super.robotServices.add(planeLaunchService);
+
+        final UpperStructureService upperStructureService = new UpperStructureService(arm, elevator, claw, copilotGamepad);
+        super.robotServices.add(upperStructureService);
 
         super.initializeRobot();
     }

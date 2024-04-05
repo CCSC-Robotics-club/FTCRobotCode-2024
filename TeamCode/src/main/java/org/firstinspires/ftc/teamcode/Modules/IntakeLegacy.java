@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
-import static org.firstinspires.ftc.teamcode.RobotConfig.IntakeConfigs;
+import static org.firstinspires.ftc.teamcode.RobotConfig.IntakeConfigsLegacy;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -11,11 +11,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class Intake extends RobotModule {
+public class IntakeLegacy extends RobotModule {
     // TODO add go-back function, to spew the pixel out of the intake
     private final DcMotor intakeMotor1, intakeMotor2;
     private Motion motion;
-    public Intake(DcMotor intakeMotor1, DcMotor intakeMotor2) {
+    public IntakeLegacy(DcMotor intakeMotor1, DcMotor intakeMotor2) {
         super("Intake");
         this.intakeMotor1 = intakeMotor1;
         this.intakeMotor2 = intakeMotor2;
@@ -32,8 +32,8 @@ public class Intake extends RobotModule {
 
     @Override
     protected void periodic(double dt) {
-        intakeMotor1.setPower(IntakeConfigs.intakeMotor1Power * getMotorPower());
-        intakeMotor2.setPower(IntakeConfigs.intakeMotor2Power * getMotorPower());
+        intakeMotor1.setPower(IntakeConfigsLegacy.intakeMotor1Power * getMotorPower());
+        intakeMotor2.setPower(IntakeConfigsLegacy.intakeMotor2Power * getMotorPower());
     }
 
     private double getMotorPower() {

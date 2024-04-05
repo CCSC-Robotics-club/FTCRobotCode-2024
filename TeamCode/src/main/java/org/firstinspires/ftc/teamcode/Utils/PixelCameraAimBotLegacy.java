@@ -8,7 +8,8 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 import java.util.Map;
 
-public class PixelCameraAimBot {
+@Deprecated
+public class PixelCameraAimBotLegacy {
     private final Chassis chassis;
     private final FixedAnglePixelCamera pixelCamera;
     private final ModulesCommanderMarker commanderMarker;
@@ -33,7 +34,7 @@ public class PixelCameraAimBot {
     private Status status;
 
 
-    public PixelCameraAimBot(Chassis chassis, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, Map<String, Object> debugMessages) {
+    public PixelCameraAimBotLegacy(Chassis chassis, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, Map<String, Object> debugMessages) {
         this.chassis = chassis;
         this.pixelCamera = pixelCamera;
         this.commanderMarker = commanderMarker;

@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
-import org.firstinspires.ftc.teamcode.Utils.PixelCameraAimBot;
+import org.firstinspires.ftc.teamcode.Utils.PixelCameraAimBotLegacy;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
@@ -25,8 +25,8 @@ public class PilotChassisService extends RobotService {
     private final Chassis chassis;
     private final DriverGamePad driverController;
     public final DistanceSensor distanceSensor;
-    private final PixelCameraAimBot pixelAimBot;
-    public final IntakeService.PixelDetector pixelDetector;
+    private final PixelCameraAimBotLegacy pixelAimBot;
+    public final IntakeServiceLegacy.PixelDetector pixelDetector;
     private double rotationMaintainanceFacing;
     private Vector2D currentDesiredPosition;
     /** time since last translational command sent by pilot */
@@ -48,7 +48,7 @@ public class PilotChassisService extends RobotService {
         this.distanceSensor = distanceSensor;
         this.pilotFacingRotation = new Rotation2D(pilotFacing);
         pixelAimBot = pixelCamera != null ?
-                new PixelCameraAimBot(chassis, pixelCamera, this, debugMessages)
+                new PixelCameraAimBotLegacy(chassis, pixelCamera, this, debugMessages)
                 : null;
         pixelDetector = pixelAimBot != null ?
                 pixelAimBot::shouldIntakeStart
@@ -144,7 +144,7 @@ public class PilotChassisService extends RobotService {
 //                pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.FACE_TO_AND_FEED);
 //            else
             if (startLineUpWithPixelAndFeedTask)
-                pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.LINE_UP_AND_FEED);
+                pixelAimBot.initiateAim(PixelCameraAimBotLegacy.AimMethod.LINE_UP_AND_FEED);
             if (!processPixelNavigation) pixelAimBot.cancel();
             pixelAimBot.update();
         }
