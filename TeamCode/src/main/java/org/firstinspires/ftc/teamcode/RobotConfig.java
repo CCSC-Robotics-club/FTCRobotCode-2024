@@ -235,10 +235,10 @@ public final class RobotConfig {
 
         public static final double errorToleranceAsTaskRoughlyFinished = 8;
 
-        public static final double autoStageMaxVelocity = 150;
+        public static final double autoStageMaxVelocity = 135;
         public static final double autoStageMaxAcceleration = 200;
         public static final double autoStageMaxAngularVelocity = Math.toRadians(180);
-        public static final double autoStageInAdvanceTime = 0.2;
+        public static final double autoStageInAdvanceTime = 0.15;
     }
 
     public static final class VisualNavigationConfigs {

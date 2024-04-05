@@ -10,6 +10,6 @@ import org.firstinspires.ftc.teamcode.Robot;
 public class TestAutoStageProgram extends AutoMain {
 
     public TestAutoStageProgram() {
-        super(new TestAutoStage(Robot.Side.RED));
+        super(new TestAutoStage(Robot.Side.BLUE));
     }
 }

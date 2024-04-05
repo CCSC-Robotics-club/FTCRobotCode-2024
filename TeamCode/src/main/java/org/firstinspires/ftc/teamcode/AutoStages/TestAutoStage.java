@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.AutoStageProgram;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
-import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandFactory;
@@ -28,6 +27,34 @@ public class TestAutoStage extends AutoStageProgram {
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
         super.commandSegments.addAll(
                 sequentialCommandFactory.followPathFacing("split first", new Rotation2D(0))
+        );
+
+        super.commandSegments.addAll(
+                sequentialCommandFactory.followPathFacing("score second", new Rotation2D(0))
+        );
+
+        super.commandSegments.addAll(
+                sequentialCommandFactory.followPathFacing("move back and grab third from stack", new Rotation2D(0))
+        );
+
+        super.commandSegments.addAll(
+                sequentialCommandFactory.followPathFacing("grab fourth from stack", new Rotation2D(0))
+        );
+
+        super.commandSegments.addAll(
+                sequentialCommandFactory.followPathFacing("score third and fourth", new Rotation2D(0))
+        );
+
+        super.commandSegments.addAll(
+                sequentialCommandFactory.followPathFacing("move to stack grab fifth", new Rotation2D(0))
+        );
+
+        super.commandSegments.addAll(
+                sequentialCommandFactory.followPathFacing("grab sixth from stack", new Rotation2D(0))
+        );
+
+        super.commandSegments.addAll(
+                sequentialCommandFactory.followPathFacing("score fifth and sixth", new Rotation2D(0))
         );
     }
 }

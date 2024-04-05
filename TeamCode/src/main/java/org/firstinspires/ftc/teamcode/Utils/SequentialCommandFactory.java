@@ -25,7 +25,7 @@ public class SequentialCommandFactory {
     private final Chassis chassis;
     private final PositionEstimator positionEstimator;
     private Vector2D robotStartingPosition;
-    private final Rotation2D robotStartingRotation2D;
+    private Rotation2D robotStartingRotation2D;
     private final Robot.Side side;
     private final HardwareMap hardwareMap;
 
@@ -36,6 +36,7 @@ public class SequentialCommandFactory {
     public SequentialCommandFactory(Chassis chassis, PositionEstimator positionEstimator, String firstPathName, Rotation2D robotStartingRotation2D, Robot.Side side, HardwareMap hardwareMap) {
         this(chassis, positionEstimator, new Vector2D(), robotStartingRotation2D, side, hardwareMap);
         robotStartingPosition = getRobotStartingPosition(firstPathName);
+        this.robotStartingRotation2D = toActualRotation(robotStartingRotation2D);
     }
 
     public SequentialCommandFactory(Chassis chassis, PositionEstimator positionEstimator, Vector2D robotStartingPosition, Rotation2D robotStartingRotation2D, Robot.Side side, HardwareMap hardwareMap) {
@@ -74,7 +75,7 @@ public class SequentialCommandFactory {
                 initiateCondition,
                 () -> new BezierCurve(positionEstimator.getCurrentPosition(), destination),
                 beginning, periodic, ending,
-                chassis::isCurrentTranslationalTaskComplete,
+                chassis::isCurrentTranslationalTaskRoughlyComplete,
                 maintainCurrentRotation, maintainCurrentRotation
         );
     }
@@ -104,7 +105,7 @@ public class SequentialCommandFactory {
                 initiateCondition,
                 () -> new BezierCurve(positionEstimator.getCurrentPosition(), destination),
                 beginning, periodic, ending,
-                chassis::isCurrentTranslationalTaskComplete,
+                chassis::isCurrentTranslationalTaskRoughlyComplete,
                 maintainCurrentRotation, maintainCurrentRotation
         );
     }
@@ -170,7 +171,7 @@ public class SequentialCommandFactory {
                 initiateCondition,
                 () -> new BezierCurve(startingPoint, endingPoint),
                 beginning, periodic, ending,
-                chassis::isCurrentTranslationalTaskComplete,
+                chassis::isCurrentTranslationalTaskRoughlyComplete,
                 startingRotationFeeder, endingRotationFeeder
         );
     }
@@ -192,7 +193,7 @@ public class SequentialCommandFactory {
                 initiateCondition,
                 () -> new BezierCurve(startingPoint, midPoint, endingPoint),
                 beginning, periodic, ending,
-                chassis::isCurrentTranslationalTaskComplete,
+                chassis::isCurrentTranslationalTaskRoughlyComplete,
                 startingRotationFeeder, endingRotationFeeder
         );
     }
@@ -208,7 +209,7 @@ public class SequentialCommandFactory {
                 justGo,
                 () -> null,
                 beginning, periodic, ending,
-                chassis::isCurrentTranslationalTaskComplete,
+                chassis::isCurrentTranslationalTaskRoughlyComplete,
                 positionEstimator::getRotation2D,
                 () -> direction
         );
@@ -287,8 +288,6 @@ public class SequentialCommandFactory {
     public List<SequentialCommandSegment> followPath(String pathName, Rotation2D[] robotRotationTargets, Runnable beginning, Runnable periodic, Runnable ending) {
         final List<BezierCurve> curves = getBezierCurvesFromPathFile(pathName);
         final List<SequentialCommandSegment> commandSegments = new ArrayList<>();
-        System.out.println("curves.size(): " + curves.size());
-        System.out.println("rotation targets size: " + robotRotationTargets.length);
         if (curves.size() != robotRotationTargets.length)
             throw new IllegalStateException("Error While Scheduling Follow Path Command: " + pathName + ". Rotational targets length (" + robotRotationTargets.length + ") do not match pathplanner checkpoints number (" + curves.size() + ")");
 
@@ -297,7 +296,7 @@ public class SequentialCommandFactory {
                     () -> true,
                     () -> curves.get(0),
                     beginning, periodic, ending,
-                    chassis::isCurrentTranslationalTaskComplete,
+                    chassis::isCurrentTranslationalTaskRoughlyComplete,
                     positionEstimator::getRotation2D, () -> toActualRotation(robotRotationTargets[0]),
                     SpeedCurves.easeInOut, 1
             ));
@@ -328,7 +327,7 @@ public class SequentialCommandFactory {
                 () -> true,
                 () -> curves.get(curves.size()-1),
                 doNothing, periodic, ending,
-                chassis::isCurrentTranslationalTaskComplete,
+                chassis::isCurrentTranslationalTaskRoughlyComplete,
                 () -> toActualRotation(robotRotationTargets[robotRotationTargets.length-2]), () -> toActualRotation(robotRotationTargets[robotRotationTargets.length-1]),
                 SpeedCurves.originalSpeed,1
         ));
@@ -338,7 +337,7 @@ public class SequentialCommandFactory {
 
     public List<BezierCurve> getBezierCurvesFromPathFile(String pathName) {
         try {
-            InputStream is = hardwareMap.appContext.getAssets().open("deploy/pathplanner/paths/park.path");
+            InputStream is = hardwareMap.appContext.getAssets().open("deploy/pathplanner/paths/" + pathName + ".path");
             Scanner scanner = new Scanner(is).useDelimiter("\\A");
             String jsonContent = scanner.hasNext() ? scanner.next() : "";
 
