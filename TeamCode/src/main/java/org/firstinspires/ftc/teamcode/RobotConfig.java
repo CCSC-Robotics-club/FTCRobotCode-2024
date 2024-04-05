@@ -368,9 +368,11 @@ public final class RobotConfig {
         public static final double slowMovementButtonSensitivity = 1;
 
         public static final XboxControllerKey toggleChassisDriveModeButton = XboxControllerKey.A;
-        public static final XboxControllerKey processVisualApproachButton = XboxControllerKey.LEFT_BUMPER;
-        public static final XboxControllerKey setAimPositionLeftButton = XboxControllerKey.X;
-        public static final XboxControllerKey setAimPositionRightButton = XboxControllerKey.B;
+        public static final XboxControllerKey processVisualApproachButton = XboxControllerKey.LEFT_TRIGGER;
+        public static final XboxControllerKey setAimPositionLeftButton = XboxControllerKey.YIELD;
+        public static final XboxControllerKey setAimPositionRightButton = XboxControllerKey.YIELD;
+        public static final XboxControllerKey moveAimingPositionLeftManuallyButton = XboxControllerKey.X;
+        public static final XboxControllerKey moveAimingPositionRightManuallyButton = XboxControllerKey.B;
 
         public static final XboxControllerKey processFaceToPixelAndFeedButton = XboxControllerKey.RIGHT_TRIGGER;
         public static final XboxControllerKey processLineUpWithPixelAndFeedButton = XboxControllerKey.RIGHT_BUMPER;

@@ -111,8 +111,11 @@ public class PilotChassisService extends RobotService {
         chassis.setLowSpeedModeEnabled(driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton));
         final boolean processVisualApproach = driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton),
                 initiateVisualApproach = driverController.keyOnPressed(RobotConfig.KeyBindings.processVisualApproachButton);
-        if (driverController.keyOnReleased(RobotConfig.KeyBindings.processVisualApproachButton))
+        if (driverController.keyOnReleased(RobotConfig.KeyBindings.processVisualApproachButton)) {
+            this.currentDesiredPosition = wallFieldPositionForRoughApproach.addBy(new Vector2D(new double[] {0, -40}));
+            this.rotationMaintainanceFacing = 0;
             this.visualTaskStatus = VisualTaskStatus.FINISHED;
+        }
 
         if (driverController.keyOnPressed(RobotConfig.KeyBindings.setAimPositionLeftButton))
             aimCenter--;
@@ -270,14 +273,17 @@ public class PilotChassisService extends RobotService {
             case TOF_PRECISE_APPROACH: {
                 if (!goToWallPrecise(aimCenterCM))
                     aimFail();
-                if (chassis.isCurrentTranslationalTaskComplete() && Math.abs(driverController.getTranslationStickVector().getX()) > 0.1) // if the difference lies with tolerance, and that the chassis reports that current task is finished
+                final boolean stickToWallAdjustmentDemanded = Math.abs(driverController.getTranslationStickVector().getX()) > 0.1
+                        || driverController.keyOnHold(RobotConfig.KeyBindings.moveAimingPositionLeftManuallyButton)
+                        || driverController.keyOnHold(RobotConfig.KeyBindings.moveAimingPositionRightManuallyButton);
+                if (chassis.isCurrentTranslationalTaskComplete() && stickToWallAdjustmentDemanded) // if the difference lies with tolerance, and that the chassis reports that current task is finished
                 {
                     this.visualTaskStatus = VisualTaskStatus.MAINTAIN_AND_AIM; // end of this stage
                 }
                 return;
             }
             case MAINTAIN_AND_AIM:
-                stickToWallAndManualAdjust(dt);
+                stickToWallAndManualAdjust();
         }
     }
 
@@ -337,9 +343,14 @@ public class PilotChassisService extends RobotService {
                         RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance));
     }
 
-    private void stickToWallAndManualAdjust(double dt) {
+    private void stickToWallAndManualAdjust() {
         updateWallPositionTOF(RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance_maintainAndAim);
         double pilotXCommand = driverController.getTranslationStickVector().getX() * RobotConfig.ControlConfigs.pilotController_translationStickXPreciseAimSensitivity;
+
+        if (driverController.keyOnHold(RobotConfig.KeyBindings.moveAimingPositionLeftManuallyButton))
+            pilotXCommand -= RobotConfig.ControlConfigs.pilotController_translationStickXPreciseAimSensitivity;
+        if (driverController.keyOnHold(RobotConfig.KeyBindings.moveAimingPositionRightManuallyButton))
+            pilotXCommand += RobotConfig.ControlConfigs.pilotController_translationStickXPreciseAimSensitivity;
 
         /* do not go beyond the x-bias limit */
         final Vector2D relativeEncoderPositionToWall = previousWallPosition.addBy(chassis.getChassisEncoderPosition().multiplyBy(-1));
