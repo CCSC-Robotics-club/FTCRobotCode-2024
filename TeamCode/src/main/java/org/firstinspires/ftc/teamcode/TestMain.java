@@ -988,6 +988,7 @@ public class TestMain extends LinearOpMode {
 
         while (!isStopRequested() && opModeIsActive()) {
             lift.setPower(-gamepad1.left_stick_y);
+        }
     }
 
     private void tensorFlowAndAprilTagCameraTest() {
