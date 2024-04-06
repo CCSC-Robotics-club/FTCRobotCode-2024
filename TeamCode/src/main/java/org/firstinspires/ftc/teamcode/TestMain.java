@@ -982,6 +982,14 @@ public class TestMain extends LinearOpMode {
         sleep(5000);
     }
 
+    private void testLift() {
+        final DcMotor lift = hardwareMap.get(DcMotor.class, "lift");
+        waitForStart();
+
+        while (!isStopRequested() && opModeIsActive()) {
+            lift.setPower(-gamepad1.left_stick_y);
+    }
+
     private void tensorFlowAndAprilTagCameraTest() {
         final String[] LABELS = {
                 "Pixel",
