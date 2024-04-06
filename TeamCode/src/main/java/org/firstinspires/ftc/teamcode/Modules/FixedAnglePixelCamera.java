@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
-import org.firstinspires.ftc.teamcode.Utils.RawPixelDetectionCamera;
+import org.firstinspires.ftc.teamcode.Utils.RawObjectDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
@@ -13,14 +13,14 @@ import java.util.List;
 import java.util.Map;
 
 public class FixedAnglePixelCamera extends RobotModule {
-    private final RawPixelDetectionCamera camera;
+    private final RawObjectDetectionCamera camera;
     private final FixedAngleCameraProfile cameraProfile;
     private final Rotation2D cameraFacingCalibration;
 
-    private List<RawPixelDetectionCamera.PixelTargetRaw> targetsRaw = new ArrayList<>(1);
+    private List<RawObjectDetectionCamera.PixelTargetRaw> targetsRaw = new ArrayList<>(1);
     private final Map<String, Object> debugMessages = new HashMap<>(1);
     private boolean enabled = true;
-    public FixedAnglePixelCamera(RawPixelDetectionCamera camera, FixedAngleCameraProfile profile, double cameraFacingDirection) {
+    public FixedAnglePixelCamera(RawObjectDetectionCamera camera, FixedAngleCameraProfile profile, double cameraFacingDirection) {
         super("PixelCamera", 24);
         this.camera = camera;
         this.cameraProfile = profile;
@@ -47,7 +47,7 @@ public class FixedAnglePixelCamera extends RobotModule {
      * */
     public Vector2D getNearestPixelPosition() {
         Vector2D pixelPosition = new Vector2D(Math.PI/2, RobotConfig.VisualNavigationConfigs.pixelDetectionMaximumDistance);
-        for (RawPixelDetectionCamera.PixelTargetRaw targetRaw:targetsRaw) {
+        for (RawObjectDetectionCamera.PixelTargetRaw targetRaw:targetsRaw) {
             Vector2D pixelPositionNew = calculatePosition(targetRaw.x, targetRaw.y);
             if (pixelPositionNew.getMagnitude() < pixelPosition.getMagnitude())
                 pixelPosition = pixelPositionNew;

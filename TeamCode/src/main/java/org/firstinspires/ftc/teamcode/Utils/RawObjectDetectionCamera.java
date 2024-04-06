@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-public interface RawPixelDetectionCamera {
+public interface RawObjectDetectionCamera {
     void startRecognizing();
     void stopRecognizing();
     List<PixelTargetRaw> getPixelTargets();

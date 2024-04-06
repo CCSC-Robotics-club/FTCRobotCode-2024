@@ -11,12 +11,11 @@ import static org.firstinspires.ftc.teamcode.RobotConfig.VisualNavigationConfigs
 import java.util.ArrayList;
 import java.util.List;
 
-public class TensorCamera implements RawPixelDetectionCamera {
+public class TensorCamera implements RawObjectDetectionCamera {
     private static final Size defaultCameraResolution = new Size(1280, 720);
     private static final int[] defaultLeftRightCast = new int[] {0, 0}, defaultTopBottomCast = {0, 0};
     private final TfodProcessor tfod;
     private final int[] cameraResolution;
-    private final VisionPortal.Builder visionPortalBuilding;
     private final VisionPortal visionPortal;
     public TensorCamera(WebcamName camera) {
         this(camera, defaultCameraResolution);
@@ -31,7 +30,7 @@ public class TensorCamera implements RawPixelDetectionCamera {
         this.tfod.setClippingMargins(leftRightCast[0], topBottomCast[0], leftRightCast[1], topBottomCast[1]);
         this.tfod.setMinResultConfidence(VisualNavigationConfigs.tensorCameraMinConfident);
 
-        visionPortalBuilding = new VisionPortal.Builder();
+        VisionPortal.Builder visionPortalBuilding = new VisionPortal.Builder();
         visionPortalBuilding.setCamera(camera);
         visionPortalBuilding.setCameraResolution(cameraResolution);
         this.cameraResolution = new int[] {cameraResolution.getWidth(), cameraResolution.getHeight()};

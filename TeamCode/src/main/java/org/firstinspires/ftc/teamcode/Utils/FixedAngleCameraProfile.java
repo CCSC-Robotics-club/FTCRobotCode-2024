@@ -101,7 +101,7 @@ public final class FixedAngleCameraProfile {
      * @param minDistanceToTarget        the minimum distance to tag for the camera to still see the target
      */
     public static void measureCameraVerticalParams(
-            RawPixelDetectionCamera cameraToTest,
+            RawObjectDetectionCamera cameraToTest,
             Telemetry telemetry,
             Gamepad gamepad,
             double cameraInstallationHeightCM,
@@ -203,7 +203,7 @@ public final class FixedAngleCameraProfile {
      * @param maxDistanceToCenter
      */
     public static void measureCameraHorizontalParams(
-            RawPixelDetectionCamera cameraToTest,
+            RawObjectDetectionCamera cameraToTest,
             Telemetry telemetry,
             Gamepad gamepad,
             double[] distancesToTarget,
@@ -307,11 +307,11 @@ public final class FixedAngleCameraProfile {
             };
         }
 
-        static SimpleTargetTrackingCamera fromPixelCamera(RawPixelDetectionCamera pixelCamera) {
+        static SimpleTargetTrackingCamera fromPixelCamera(RawObjectDetectionCamera pixelCamera) {
             return new SimpleTargetTrackingCamera() {
                 @Override
                 public double[] getTargetPosition() {
-                    RawPixelDetectionCamera.PixelTargetRaw targetRaw;
+                    RawObjectDetectionCamera.PixelTargetRaw targetRaw;
                     try {
                         targetRaw = pixelCamera.getPixelTargets().isEmpty() ? null : pixelCamera.getPixelTargets().get(0);
                     } catch (IndexOutOfBoundsException e) {
