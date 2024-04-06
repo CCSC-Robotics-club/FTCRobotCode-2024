@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.AutoStages;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.checkerframework.checker.nullness.qual.Raw;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.ArmLegacy;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
@@ -26,8 +27,6 @@ import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class CameraAutoCalibration extends AutoStageProgram {
-    final RawArilTagRecognitionCamera cameraToTest;
-    final Telemetry telemetry;
     final double cameraInstallationHeightCM;
     final Vector2D robotStartingPositionToTarget;
     final int targetID;
@@ -41,18 +40,15 @@ public class CameraAutoCalibration extends AutoStageProgram {
             pixelYSamples = new double[horizontalAnglesSamples * verticalDistancesSamples],
             pixelXSamples = new double[horizontalAnglesSamples * verticalDistancesSamples];
     int i = 0;
-    public CameraAutoCalibration(
-            RawArilTagRecognitionCamera cameraToTest, Telemetry telemetry, double cameraInstallationHeightCM, Vector2D robotStartingPositionToTarget, int targetID) {
+    public CameraAutoCalibration(double cameraInstallationHeightCM, Vector2D robotStartingPositionToTarget, int targetID) {
         super(Robot.Side.RED);
-        this.cameraToTest = cameraToTest;
-        this.telemetry = telemetry;
         this.cameraInstallationHeightCM = cameraInstallationHeightCM;
         this.robotStartingPositionToTarget = robotStartingPositionToTarget;
         this.targetID = targetID;
     }
 
     @Override
-    public void scheduleCommands(HardwareMap hardwareMap, Chassis chassis, PositionEstimator positionEstimator, DistanceSensor distanceSensor, FixedAngleArilTagCamera angleArilTagCamera, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
+    public void scheduleCommands(HardwareMap hardwareMap, Chassis chassis, PositionEstimator positionEstimator, DistanceSensor distanceSensor, FixedAngleArilTagCamera arilTagCamera, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
         final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(chassis, positionEstimator, robotStartingPositionToTarget, new Rotation2D(0), Robot.Side.RED, hardwareMap);
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
 
@@ -65,14 +61,17 @@ public class CameraAutoCalibration extends AutoStageProgram {
                         -maxHorizontalAngle + currentAngleSample * (maxHorizontalAngle / horizontalAnglesLevels),
                         positionEstimator,
                         chassis,
+                        arilTagCamera.getRawAprilTagCamera(),
                         i++
                 ));
         }
 
-        commandSegments.add(sequentialCommandFactory.justDoIt(this::printResultsToTelemetry));
+        commandSegments.add(sequentialCommandFactory.justDoIt(
+                () -> printResultsToTelemetry(telemetrySender.getTelemetryLegacy())
+        ));
     }
 
-    private SequentialCommandSegment moveToPositionAndMeasure(double distance, double angle, PositionEstimator positionEstimator, Chassis chassis, int i) {
+    private SequentialCommandSegment moveToPositionAndMeasure(double distance, double angle, PositionEstimator positionEstimator, Chassis chassis, RawArilTagRecognitionCamera cameraToTest, int i) {
         final long timeOut = 1000;
         AtomicLong taskStartedTime = new AtomicLong();
         return new SequentialCommandSegment(
@@ -95,7 +94,7 @@ public class CameraAutoCalibration extends AutoStageProgram {
         );
     }
 
-    private void printResultsToTelemetry() {
+    private void printResultsToTelemetry(Telemetry telemetry) {
         final double cameraAngleRadianPerPixelX = StatisticsUtils.getBestFitLineSlope(pixelXSamples, angleXSamples),
                 cameraAngleRadianPerPixelY = StatisticsUtils.getBestFitLineSlope(pixelYSamples, angleYSamples);
 

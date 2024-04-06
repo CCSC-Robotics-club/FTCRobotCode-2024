@@ -80,4 +80,8 @@ public class TelemetrySender extends RobotService{
         robotServices = new ArrayList<>(1);
         this.systemMessages = new HashMap<>(1);
     }
+
+    public Telemetry getTelemetryLegacy() {
+        return telemetry;
+    }
 }
