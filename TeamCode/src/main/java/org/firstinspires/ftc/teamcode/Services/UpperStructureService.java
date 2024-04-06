@@ -19,7 +19,6 @@ public class UpperStructureService extends RobotService {
     private final Gamepad copilotGamePad;
 
     private enum UpperStructureStatus {
-        YIELD,
         GRABBING,
         HOLDING,
         SCORING
@@ -43,14 +42,6 @@ public class UpperStructureService extends RobotService {
         keyBindings();
 
         switch (currentStatus) {
-            case YIELD : {
-                claw.setLeftClawClosed(false, this);
-                claw.setRightClawClosed(false, this);
-                claw.setFlip(false, this);
-
-                arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
-                break;
-            }
             case HOLDING: {
                 claw.setLeftClawClosed(true, this);
                 claw.setRightClawClosed(true, this);
@@ -71,18 +62,20 @@ public class UpperStructureService extends RobotService {
             case SCORING: {
                 openClawOnDemanded();
                 arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
-
-                if (!claw.isLeftClawClosed() && !claw.isRightClawClosed())
-                    this.currentStatus = UpperStructureStatus.YIELD;
                 break;
             }
         }
     }
 
     private void keyBindings() {
-        if (copilotGamePad.a)
-            this.currentStatus = UpperStructureStatus.GRABBING;
         if (copilotGamePad.y)
+            this.currentStatus = UpperStructureStatus.HOLDING;
+        if (copilotGamePad.a) {
+            this.currentStatus = UpperStructureStatus.GRABBING;
+            claw.setLeftClawClosed(false, this);
+            claw.setRightClawClosed(false, this);
+        }
+        if (copilotGamePad.b)
             this.currentStatus = UpperStructureStatus.SCORING;
     }
 
@@ -111,7 +104,7 @@ public class UpperStructureService extends RobotService {
         arm.gainOwnerShip(this);
         elevator.gainOwnerShip(this);
 
-        currentStatus = UpperStructureStatus.YIELD;
+        currentStatus = UpperStructureStatus.HOLDING;
     }
 
     @Override

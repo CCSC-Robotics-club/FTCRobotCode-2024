@@ -2,20 +2,25 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Utils.ProfiledServo;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 
 import static org.firstinspires.ftc.teamcode.RobotConfig.FlippableDualClawConfigs;
 
-public class FlippableDualClaw extends RobotModule {
-    private final Servo flip, leftClaw, rightClaw;
+import java.util.HashMap;
+import java.util.Map;
 
-    private boolean leftClawClosed, rightClawClosed, flipperOnIntake;
+public class FlippableDualClaw extends RobotModule {
+    private final ProfiledServo flip, leftClaw, rightClaw;
+
+    private boolean closeLeftClaw, closeRightClaw, flipperOnIntake;
     public FlippableDualClaw(Servo flip, Servo leftClaw, Servo rightClaw) {
         super("claw");
-        this.flip = flip;
-        this.leftClaw = leftClaw;
-        this.rightClaw = rightClaw;
+        /* TODO: make servo speed in robot config */
+        this.flip = new ProfiledServo(flip, 2);
+        this.leftClaw = new ProfiledServo(leftClaw, 2);
+        this.rightClaw = new ProfiledServo(rightClaw,2);
     }
 
     @Override
@@ -25,9 +30,22 @@ public class FlippableDualClaw extends RobotModule {
 
     @Override
     protected void periodic(double dt) {
-        leftClaw.setPosition(leftClawClosed ? FlippableDualClawConfigs.leftClawClosePosition : FlippableDualClawConfigs.leftClawOpenPosition);
-        rightClaw.setPosition(rightClawClosed ? FlippableDualClawConfigs.rightClawClosedPosition : FlippableDualClawConfigs.rightClawOpenPosition);
-        flip.setPosition(flipperOnIntake ? FlippableDualClawConfigs.flipperIntakePosition : FlippableDualClawConfigs.flipperScoringPosition);
+        if (flipperOnIntake) {
+            flip.setDesiredPosition(FlippableDualClawConfigs.flipperIntakePosition);
+            if (flip.inPosition()) {
+                leftClaw.setDesiredPosition(closeLeftClaw ? FlippableDualClawConfigs.leftClawClosePosition : FlippableDualClawConfigs.leftClawOpenPosition);
+                rightClaw.setDesiredPosition(closeRightClaw ? FlippableDualClawConfigs.rightClawClosedPosition : FlippableDualClawConfigs.rightClawOpenPosition);
+            }
+        } else {
+            leftClaw.setDesiredPosition(FlippableDualClawConfigs.leftClawClosePosition);
+            rightClaw.setDesiredPosition(FlippableDualClawConfigs.rightClawClosedPosition);
+            if (leftClaw.inPosition() && rightClaw.inPosition())
+                flip.setDesiredPosition(FlippableDualClawConfigs.flipperNormalPosition);
+        }
+
+        leftClaw.update(dt);
+        rightClaw.update(dt);
+        flip.update(dt);
     }
 
     @Override
@@ -37,19 +55,26 @@ public class FlippableDualClaw extends RobotModule {
 
     @Override
     public void reset() {
-        leftClawClosed = rightClawClosed = flipperOnIntake = false;
+        closeLeftClaw = closeRightClaw = flipperOnIntake = false;
+
+        flip.setDesiredPosition(FlippableDualClawConfigs.flipperNormalPosition);
+        flip.update(10);
+        leftClaw.setDesiredPosition(FlippableDualClawConfigs.leftClawClosePosition);
+        leftClaw.update(10);
+        rightClaw.setDesiredPosition(FlippableDualClawConfigs.rightClawClosedPosition);
+        rightClaw.update(10);
     }
 
-    public void setLeftClawClosed(boolean closed, RobotService operatorService) {
+    public void setLeftClawClosed(boolean close, RobotService operatorService) {
         if (!isOwner(operatorService))
             return;
-        this.leftClawClosed = closed;
+        this.closeLeftClaw = close;
     }
 
-    public void setRightClawClosed(boolean closed, RobotService operatorService) {
+    public void setRightClawClosed(boolean close, RobotService operatorService) {
         if (!isOwner(operatorService))
             return;
-        this.rightClawClosed = closed;
+        this.closeRightClaw = close;
     }
 
     public void setFlip(boolean flipOnIntakePosition, RobotService operatorService) {
@@ -58,15 +83,10 @@ public class FlippableDualClaw extends RobotModule {
         this.flipperOnIntake = flipOnIntakePosition;
     }
 
-    public boolean isFlipOnIntake() {
-        return flipperOnIntake;
-    }
-
-    public boolean isLeftClawClosed() {
-        return leftClawClosed;
-    }
-
-    public boolean isRightClawClosed() {
-        return rightClawClosed;
+    @Override
+    public Map<String, Object> getDebugMessages() {
+        final Map<String, Object> debugMessages = new HashMap<>();
+        debugMessages.put("flipper on intake", flipperOnIntake);
+        return debugMessages;
     }
 }

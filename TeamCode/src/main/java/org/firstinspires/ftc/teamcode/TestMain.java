@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.EncoderMotorWheel;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
@@ -29,13 +30,17 @@ import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.HuskyAprilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.PixelCameraAimBotLegacy;
-import org.firstinspires.ftc.teamcode.Utils.RawPixelDetectionCamera;
+import org.firstinspires.ftc.teamcode.Utils.RawObjectDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.SimpleFeedForwardSpeedController;
 import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.TensorCamera;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,7 +56,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        servoTest();
+        tensorFlowAndAprilTagCameraTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -287,8 +292,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void servoTest() {
-        Servo servo = hardwareMap.get(Servo.class, "flip");
-
+        Servo servo = hardwareMap.get(Servo.class, "arm1");
         waitForStart();
 
         double servoAngle = 0;
@@ -833,7 +837,7 @@ public class TestMain extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive()) {
             telemetry.addData("FPS", testCamera.getCameraRefreshRate());
             int id = 0;
-            for (RawPixelDetectionCamera.PixelTargetRaw pixelTarget:testCamera.getPixelTargets())
+            for (RawObjectDetectionCamera.PixelTargetRaw pixelTarget:testCamera.getPixelTargets())
                 telemetry.addData("pixel target" + (++id), pixelTarget); // nice and working
 
             telemetry.update();
@@ -976,5 +980,56 @@ public class TestMain extends LinearOpMode {
 
         telemetry.update();
         sleep(5000);
+    }
+
+    private void tensorFlowAndAprilTagCameraTest() {
+        final String[] LABELS = {
+                "Pixel",
+        };
+        final AprilTagProcessor aprilTag = AprilTagProcessor.easyCreateWithDefaults();
+        final TfodProcessor tfod = new TfodProcessor.Builder().setModelAssetName("CenterStage.tflite").setModelLabels(LABELS).build();
+        tfod.setMinResultConfidence(0.75f);
+
+        VisionPortal.Builder builder = new VisionPortal.Builder();
+        builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam1"));
+        builder.enableLiveView(true);
+        builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
+        builder.addProcessor(tfod);
+        builder.addProcessor(aprilTag);
+
+        final VisionPortal visionPortal = builder.build();
+
+        waitForStart();
+
+        visionPortal.setProcessorEnabled(tfod, true);
+        visionPortal.setProcessorEnabled(aprilTag, true);
+
+        while (!isStopRequested() && opModeIsActive()) {
+            List<Recognition> currentRecognitions = tfod.getRecognitions();
+            telemetry.addData("# Objects Detected", currentRecognitions.size());
+
+            // Step through the list of recognitions and display info for each one.
+            for (Recognition recognition : currentRecognitions) {
+                double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+                double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+
+                telemetry.addData(""," ");
+                telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+                telemetry.addData("- Position", "%.0f / %.0f", x, y);
+                telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
+            }
+
+            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+            telemetry.addData("# AprilTags Detected", currentDetections.size());
+
+            // Step through the list of detections and display info for each one.
+            for (AprilTagDetection detection : currentDetections) {
+                telemetry.addData("tag id", detection.id);
+                telemetry.addData("center x", detection.center.x);
+                telemetry.addData("center y", detection.center.y);
+            }
+
+            telemetry.update();
+        }
     }
 }

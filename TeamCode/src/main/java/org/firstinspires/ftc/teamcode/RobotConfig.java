@@ -149,9 +149,9 @@ public final class RobotConfig {
     }
 
     public static final class FlippableDualClawConfigs {
-        public static final double flipperIntakePosition = 0, flipperScoringPosition = 1;
+        public static final double flipperIntakePosition = 0.14, flipperNormalPosition = 1;
 
-        public static final double leftClawClosePosition = 0.8, leftClawOpenPosition = 0.6, rightClawOpenPosition = 0.5, rightClawClosedPosition = 0.3;
+        public static final double leftClawClosePosition = 0.32, leftClawOpenPosition = 0.55, rightClawClosedPosition = 0.75, rightClawOpenPosition = 0.55;
     }
 
     public static final class ArmConfigsLegacy {

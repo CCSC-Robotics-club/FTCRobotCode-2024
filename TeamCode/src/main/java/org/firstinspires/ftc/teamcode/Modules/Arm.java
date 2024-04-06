@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Utils.ProfiledServo;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 
@@ -11,34 +12,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Arm extends RobotModule {
-    private final Servo armServo1, armServo2;
+    private final ProfiledServo armServo1, armServo2;
 
     private ArmConfigs.Position desiredPosition;
     private double servoCurrentPosition;
     public Arm(Servo armServo1, Servo armServo2) {
         super("arm");
-        this.armServo1 = armServo1;
-        this.armServo2 = armServo2;
+        armServo1.setDirection(ArmConfigs.servo1Reversed ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
+        armServo2.setDirection(ArmConfigs.servo2Reversed ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
+        this.armServo1 = new ProfiledServo(armServo1, ArmConfigs.servoSpeed);
+        this.armServo2 = new ProfiledServo(armServo2, ArmConfigs.servoSpeed);
     }
 
     @Override
     public void init() {
-        armServo1.setDirection(ArmConfigs.servo1Reversed ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
-        armServo2.setDirection(ArmConfigs.servo2Reversed ? Servo.Direction.REVERSE : Servo.Direction.FORWARD);
-
         reset();
     }
 
     @Override
     protected void periodic(double dt) {
         final double servoDemandedPosition = ArmConfigs.servoPositions.get(desiredPosition);
-        if (Math.abs(servoCurrentPosition - servoDemandedPosition) < dt * ArmConfigs.servoSpeed)
-            servoCurrentPosition = servoDemandedPosition;
-        else
-            servoCurrentPosition += dt * ArmConfigs.servoSpeed * (servoCurrentPosition < servoDemandedPosition ? 1:-1);
+        armServo1.setDesiredPosition(servoDemandedPosition);
+        armServo2.setDesiredPosition(servoDemandedPosition);
 
-        armServo1.setPosition(servoCurrentPosition);
-        armServo2.setPosition(servoCurrentPosition);
+        armServo1.update(dt);
+        armServo2.update(dt);
     }
 
     @Override
@@ -49,7 +47,8 @@ public class Arm extends RobotModule {
     @Override
     public void reset() {
         this.desiredPosition = ArmConfigs.Position.INTAKE;
-        servoCurrentPosition = ArmConfigs.servoPositions.get(ArmConfigs.Position.INTAKE);
+        armServo1.setDesiredPosition(ArmConfigs.servoPositions.get(desiredPosition));
+        armServo2.setDesiredPosition(ArmConfigs.servoPositions.get(desiredPosition));
     }
 
     public void setPosition(ArmConfigs.Position position, RobotService operatorService) {
