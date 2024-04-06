@@ -287,7 +287,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void servoTest() {
-        Servo servo = hardwareMap.get(Servo.class, "claw1");
+        Servo servo = hardwareMap.get(Servo.class, "flip");
 
         waitForStart();
 

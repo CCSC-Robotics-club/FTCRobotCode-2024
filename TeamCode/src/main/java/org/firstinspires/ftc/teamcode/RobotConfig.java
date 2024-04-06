@@ -139,11 +139,13 @@ public final class RobotConfig {
             SCORE
         }
 
-        public static final Map<Position, Double> encoderPositions = new HashMap<>();
+        public static final Map<Position, Double> servoPositions = new HashMap<>();
         static {
-            encoderPositions.put(Position.INTAKE, 0.1);
-            encoderPositions.put(Position.SCORE, 0.7);
+            servoPositions.put(Position.INTAKE, 0.1);
+            servoPositions.put(Position.SCORE, 0.7);
         }
+
+        public static final double servoSpeed = 2;
     }
 
     public static final class FlippableDualClawConfigs {

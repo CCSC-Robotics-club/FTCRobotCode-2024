@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 
@@ -14,7 +13,8 @@ import java.util.Map;
 public class Arm extends RobotModule {
     private final Servo armServo1, armServo2;
 
-    private ArmConfigs.Position position;
+    private ArmConfigs.Position desiredPosition;
+    private double servoCurrentPosition;
     public Arm(Servo armServo1, Servo armServo2) {
         super("arm");
         this.armServo1 = armServo1;
@@ -31,31 +31,38 @@ public class Arm extends RobotModule {
 
     @Override
     protected void periodic(double dt) {
-        armServo1.setPosition(ArmConfigs.encoderPositions.get(position));
-        armServo2.setPosition(ArmConfigs.encoderPositions.get(position));
+        final double servoDemandedPosition = ArmConfigs.servoPositions.get(desiredPosition);
+        if (Math.abs(servoCurrentPosition - servoDemandedPosition) < dt * ArmConfigs.servoSpeed)
+            servoCurrentPosition = servoDemandedPosition;
+        else
+            servoCurrentPosition += dt * ArmConfigs.servoSpeed * (servoCurrentPosition < servoDemandedPosition ? 1:-1);
+
+        armServo1.setPosition(servoCurrentPosition);
+        armServo2.setPosition(servoCurrentPosition);
     }
 
     @Override
     protected void onDestroy() {
-
+        
     }
 
     @Override
     public void reset() {
-        this.position = ArmConfigs.Position.INTAKE;
+        this.desiredPosition = ArmConfigs.Position.INTAKE;
+        servoCurrentPosition = ArmConfigs.servoPositions.get(ArmConfigs.Position.INTAKE);
     }
 
     public void setPosition(ArmConfigs.Position position, RobotService operatorService) {
         if (!isOwner(operatorService))
             return;
-        this.position = position;
+        this.desiredPosition = position;
     }
 
     @Override
     public Map<String, Object> getDebugMessages() {
         final Map<String, Object> debugMessages = new HashMap<>();
-        debugMessages.put("arm current position" ,position);
-        debugMessages.put("arm position servo value", ArmConfigs.encoderPositions.get(position));
+        debugMessages.put("arm current position" , desiredPosition);
+        debugMessages.put("arm position servo value", ArmConfigs.servoPositions.get(desiredPosition));
         return debugMessages;
     }
 }
