@@ -118,7 +118,7 @@ public final class RobotConfig {
             true
     );
 
-    public static final HardwareConfigs competitionConfig = hardwareConfigs_2024Competition;
+    public static final HardwareConfigs competitionConfig = hardwareConfigs_2024OffSeason;
 
     public static final HardwareConfigs testConfig = hardwareConfigs_2024Competition;
 
@@ -133,20 +133,25 @@ public final class RobotConfig {
 
     public static final class ArmConfigs {
         /** positive should be scoring */
-        public static final boolean servo1Reversed = true, servo2Reversed = false;
+        public static final boolean motorReversed = false, encoderReversed = false;
+        public static final double
+                maxPowerWhenMovingUp = 1,
+                maxPowerWhenMovingDown = 0.6,
+                errorStartDecelerate = 1000,
+                powerNeededToMoveUp = 0.4,
+                powerNeededToMoveDown = 0.3,
+                errorTolerance = 100;
 
         public enum Position {
             INTAKE,
             SCORE
         }
 
-        public static final Map<Position, Double> servoPositions = new HashMap<>();
+        public static final Map<Position, Double> encoderPositions = new HashMap<>(); // in reference to zero position (limit switch)
         static {
-            servoPositions.put(Position.INTAKE, 0.1);
-            servoPositions.put(Position.SCORE, 0.7);
+            encoderPositions.put(Position.INTAKE, -100.0);
+            encoderPositions.put(Position.SCORE, 5000.0);
         }
-
-        public static final double servoSpeed = 2;
     }
 
     public static final class FlippableDualClawConfigs {

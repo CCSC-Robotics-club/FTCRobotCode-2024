@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
@@ -160,7 +161,7 @@ public abstract class Robot {
         robotModules.add(claw);
 
         /* arm */
-        arm = new Arm(hardwareMap.get(Servo.class, "arm1"), hardwareMap.get(Servo.class, "arm2"));
+        arm = new Arm(hardwareMap.get(DcMotor.class, "arm"), hardwareMap.get(DcMotor.class, "arm"), hardwareMap.get(TouchSensor.class, "armLimit"));
         robotModules.add(arm);
 
         /* elevator */
@@ -178,6 +179,7 @@ public abstract class Robot {
         if (useMultiThread)
             scheduleThreads();
 
+        hardwareMap.get(DcMotor.class, "servoModule").setPower(1);
         telemetry.addLine("startup complete...");
         telemetry.update();
     }

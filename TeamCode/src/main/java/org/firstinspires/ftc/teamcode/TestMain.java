@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -55,7 +56,8 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        tensorFlowAndAprilTagCameraTest();
+        armTest();
+        // tensorFlowAndAprilTagCameraTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -343,29 +345,9 @@ public class TestMain extends LinearOpMode {
             double power = -gamepad1.left_stick_y;
             if (Math.abs(power) < 0.05) power = 0;
 
-            servo360.setPosition(power*0.5 + 0.5);
+            servo360.setPosition(power * 0.5 + 0.5);
 
             telemetry.addData("pow", power);
-            telemetry.update();
-            sleep(50);
-        }
-    }
-
-    private void armTest() {
-        DcMotor armMotor = hardwareMap.get(DcMotor.class, "arm");
-
-        waitForStart();
-
-        final double powerRate = 0.75;
-        final int startingPos = armMotor.getCurrentPosition();
-        while (!isStopRequested() && opModeIsActive()) {
-            double power = gamepad1.left_stick_y * powerRate;
-            if (Math.abs(power) < 0.05)
-                power = 0;
-
-            armMotor.setPower(power);
-
-            telemetry.addData("arm encoder reading", armMotor.getCurrentPosition() - startingPos);
             telemetry.update();
             sleep(50);
         }
@@ -920,6 +902,7 @@ public class TestMain extends LinearOpMode {
 
     private void testLift() {
         final DcMotor lift = hardwareMap.get(DcMotor.class, "lift");
+        hardwareMap.get(DigitalChannel.class, "dio1").setMode(DigitalChannel.Mode.INPUT);
         waitForStart();
 
         while (!isStopRequested() && opModeIsActive()) {
@@ -977,4 +960,30 @@ public class TestMain extends LinearOpMode {
             telemetry.update();
         }
     }
+
+    private void armTest() {
+        DcMotor armMotor = hardwareMap.get(DcMotor.class, "arm");
+        TouchSensor limitSwitch = hardwareMap.get(TouchSensor.class, "armLimit");
+
+        waitForStart();
+
+        final double powerRate = -1;
+        int startingPos = armMotor.getCurrentPosition();
+        while (!isStopRequested() && opModeIsActive()) {
+            double power = gamepad1.left_stick_y * powerRate;
+            if (Math.abs(power) < 0.05)
+                power = 0;
+
+            armMotor.setPower(power);
+
+            telemetry.addData("arm encoder reading", armMotor.getCurrentPosition() - startingPos);
+            telemetry.addData("limit switch", limitSwitch.isPressed());
+
+            if (limitSwitch.isPressed())
+                startingPos = armMotor.getCurrentPosition();
+            telemetry.update();
+            sleep(50);
+        }
+    }
+
 }

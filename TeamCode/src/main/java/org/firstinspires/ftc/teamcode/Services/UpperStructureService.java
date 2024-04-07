@@ -45,52 +45,79 @@ public class UpperStructureService extends RobotService {
             case HOLDING: {
                 claw.setLeftClawClosed(true, this);
                 claw.setRightClawClosed(true, this);
-                claw.setFlip(false, this);
+                if (claw.rightClawInPosition() && claw.leftClawInPosition())
+                    claw.setFlip(false, this);
 
                 arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
                 break;
             }
             case GRABBING: {
+                arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
+                claw.setFlip(true, this);
                 closeClawOnDemanded();
                 openClawOnDemanded();
 
-                claw.setFlip(true, this);
-
-                arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
+                // auto open claw the moment when arm got in position
+                if (!clawRequestedDuringCurrentGrabbingProcess && arm.isArmInPosition() && claw.flipInPosition()) {
+                    claw.setLeftClawClosed(false, this);
+                    claw.setRightClawClosed(false, this);
+                }
                 break;
             }
             case SCORING: {
-                openClawOnDemanded();
-                arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
+                /* firstly we close the claw */
+                if (!clawRequestedDuringCurrentScoringProcess){
+                    claw.setLeftClawClosed(true, this);
+                    claw.setRightClawClosed(true, this);
+                }
+                /* when the claw is closed, we flip the claw and raise the arm */
+                if (claw.leftClawInPosition() && claw.rightClawInPosition() && claw.flipInPosition()) {
+                    claw.setFlip(false, this);
+                    arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
+                }
+                /* when arm reaches position, we can close/open claw on pilot demand */
+                if (arm.isArmInPosition())
+                    openClawOnDemanded();
+
                 break;
             }
         }
     }
 
+    private boolean clawRequestedDuringCurrentGrabbingProcess = false, clawRequestedDuringCurrentScoringProcess = false;
     private void keyBindings() {
         if (copilotGamePad.y)
             this.currentStatus = UpperStructureStatus.HOLDING;
         if (copilotGamePad.a) {
             this.currentStatus = UpperStructureStatus.GRABBING;
-            claw.setLeftClawClosed(false, this);
-            claw.setRightClawClosed(false, this);
+            clawRequestedDuringCurrentGrabbingProcess = false;
         }
-        if (copilotGamePad.b)
+        if (copilotGamePad.b) {
             this.currentStatus = UpperStructureStatus.SCORING;
+            clawRequestedDuringCurrentScoringProcess = false;
+        }
     }
 
     private void closeClawOnDemanded() {
-        if (copilotGamePad.left_trigger > RobotConfig.ControlConfigs.triggerThreshold)
+        if (copilotGamePad.left_trigger > RobotConfig.ControlConfigs.triggerThreshold) {
+            clawRequestedDuringCurrentGrabbingProcess = true;
             claw.setLeftClawClosed(true, this);
-        if (copilotGamePad.right_trigger > RobotConfig.ControlConfigs.triggerThreshold)
+        }
+        if (copilotGamePad.right_trigger > RobotConfig.ControlConfigs.triggerThreshold) {
+            clawRequestedDuringCurrentGrabbingProcess = true;
             claw.setRightClawClosed(true, this);
+        }
     }
 
     private void openClawOnDemanded() {
-        if (copilotGamePad.left_bumper)
+        if (copilotGamePad.left_bumper) {
+            clawRequestedDuringCurrentScoringProcess = true;
             claw.setLeftClawClosed(false, this);
-        if (copilotGamePad.right_bumper)
+        }
+        if (copilotGamePad.right_bumper) {
+            clawRequestedDuringCurrentScoringProcess = true;
             claw.setRightClawClosed(false, this);
+        }
     }
 
     @Override

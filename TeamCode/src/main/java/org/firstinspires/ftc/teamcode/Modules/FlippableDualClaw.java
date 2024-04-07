@@ -30,18 +30,9 @@ public class FlippableDualClaw extends RobotModule {
 
     @Override
     protected void periodic(double dt) {
-        if (flipperOnIntake) {
-            flip.setDesiredPosition(FlippableDualClawConfigs.flipperIntakePosition);
-            if (flip.inPosition()) {
-                leftClaw.setDesiredPosition(closeLeftClaw ? FlippableDualClawConfigs.leftClawClosePosition : FlippableDualClawConfigs.leftClawOpenPosition);
-                rightClaw.setDesiredPosition(closeRightClaw ? FlippableDualClawConfigs.rightClawClosedPosition : FlippableDualClawConfigs.rightClawOpenPosition);
-            }
-        } else {
-            leftClaw.setDesiredPosition(FlippableDualClawConfigs.leftClawClosePosition);
-            rightClaw.setDesiredPosition(FlippableDualClawConfigs.rightClawClosedPosition);
-            if (leftClaw.inPosition() && rightClaw.inPosition())
-                flip.setDesiredPosition(FlippableDualClawConfigs.flipperNormalPosition);
-        }
+        leftClaw.setDesiredPosition(closeLeftClaw ? FlippableDualClawConfigs.leftClawClosePosition : FlippableDualClawConfigs.leftClawOpenPosition);
+        rightClaw.setDesiredPosition(closeRightClaw ? FlippableDualClawConfigs.rightClawClosedPosition : FlippableDualClawConfigs.rightClawOpenPosition);
+        flip.setDesiredPosition(flipperOnIntake ? FlippableDualClawConfigs.flipperIntakePosition : FlippableDualClawConfigs.flipperNormalPosition);
 
         leftClaw.update(dt);
         rightClaw.update(dt);
@@ -69,18 +60,33 @@ public class FlippableDualClaw extends RobotModule {
         if (!isOwner(operatorService))
             return;
         this.closeLeftClaw = close;
+        periodic(0); // flush claw status
     }
 
     public void setRightClawClosed(boolean close, RobotService operatorService) {
         if (!isOwner(operatorService))
             return;
         this.closeRightClaw = close;
+        periodic(0); // flush claw status
     }
 
     public void setFlip(boolean flipOnIntakePosition, RobotService operatorService) {
         if (!isOwner(operatorService))
             return;
         this.flipperOnIntake = flipOnIntakePosition;
+        periodic(0); // flush claw status
+    }
+
+    public boolean leftClawInPosition() {
+        return leftClaw.inPosition();
+    }
+
+    public boolean rightClawInPosition() {
+        return rightClaw.inPosition();
+    }
+
+    public boolean flipInPosition() {
+        return flip.inPosition();
     }
 
     @Override

@@ -34,6 +34,6 @@ public class SimpleArmController implements MechanismController {
             correctionPower = -LookUpTable.linearInterpretation(errorTolerance, powerNeededToMoveUp, errorStartDecelerate, maxPowerWhenMovingUp, Math.abs(error));
         } else
             correctionPower = LookUpTable.linearInterpretation(errorTolerance, powerNeededToMoveDown, errorStartDecelerate, maxPowerWhenMovingDown, Math.abs(error));
-        return Math.min(Math.max(correctionPower, -maxPowerWhenMovingUp), maxPowerWhenMovingDown);
+        return Math.max(Math.min(correctionPower, maxPowerWhenMovingUp), -maxPowerWhenMovingDown);
     }
 }
