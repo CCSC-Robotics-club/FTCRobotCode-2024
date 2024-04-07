@@ -12,7 +12,7 @@ public class CameraCalibrationAutoProgram extends AutoMain {
         super(new CameraAutoCalibration(
                 22,
                 new Vector2D(new double[] {0, -5}),
-                4
+                2
         ));
     }
 }

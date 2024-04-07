@@ -9,23 +9,20 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
-import org.firstinspires.ftc.teamcode.Modules.ArmLegacy;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.Elevator;
-import org.firstinspires.ftc.teamcode.Modules.EncoderMotorWheel;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
-import org.firstinspires.ftc.teamcode.Modules.IntakeLegacy;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
 import org.firstinspires.ftc.teamcode.Utils.HuskyAprilTagCamera;
+import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EncoderMotorMechanism;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
 import org.firstinspires.ftc.teamcode.Utils.ProgramRunningStatusChecker;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
-import org.firstinspires.ftc.teamcode.Utils.SimpleFeedForwardSpeedController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +36,7 @@ public abstract class Robot {
 
     protected final boolean useMultiThread;
 
-    private EncoderMotorWheel frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
+    private EncoderMotorMechanism frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
     public Chassis chassis;
 //    public IntakeLegacy intake;
 //    public ArmLegacy arm;
@@ -94,36 +91,11 @@ public abstract class Robot {
             this.alternativeIMU = null;
 
 
-        SimpleFeedForwardSpeedController.SpeedControllerProfile wheelSpeedControllerProfile =
-                new SimpleFeedForwardSpeedController.SpeedControllerProfile(
-                        RobotConfig.ChassisConfigs.wheel_proportionGain, RobotConfig.ChassisConfigs.wheel_feedForwardGain, RobotConfig.ChassisConfigs.wheel_feedForwardDelay);
-
         configureChassisMotors();
-        frontLeftWheel = new EncoderMotorWheel(
-                frontLeftMotor,
-                frontLeftMotor,
-                new SimpleFeedForwardSpeedController(wheelSpeedControllerProfile),
-                RobotConfig.ChassisConfigs.wheel_maxVelocity
-        );
-        frontRightWheel = new EncoderMotorWheel(
-                frontRightMotor,
-                frontRightMotor,
-                new SimpleFeedForwardSpeedController(wheelSpeedControllerProfile),
-                RobotConfig.ChassisConfigs.wheel_maxVelocity
-        );
-        backLeftWheel = new EncoderMotorWheel(
-                backLeftMotor,
-                backLeftMotor,
-                new SimpleFeedForwardSpeedController(wheelSpeedControllerProfile),
-                RobotConfig.ChassisConfigs.wheel_maxVelocity
-        );
-
-        backRightWheel = new EncoderMotorWheel(
-                backRightMotor,
-                backRightMotor,
-                new SimpleFeedForwardSpeedController(wheelSpeedControllerProfile),
-                RobotConfig.ChassisConfigs.wheel_maxVelocity
-        );
+        frontLeftWheel = new EncoderMotorMechanism(frontLeftMotor);
+        frontRightWheel = new EncoderMotorMechanism(frontRightMotor);
+        backLeftWheel = new EncoderMotorMechanism(backLeftMotor);
+        backRightWheel = new EncoderMotorMechanism(backRightMotor);
 
         String[] encoderNames = this.hardwareConfigs.encoderNames == null ?
                 new String[] {"frontLeft", "frontRight", "backLeft"} :
@@ -139,10 +111,6 @@ public abstract class Robot {
         robotModules.add((RobotModule) positionEstimator);
 
         configureChassisWheels();
-        robotModules.add(frontLeftWheel);
-        robotModules.add(frontRightWheel);
-        robotModules.add(backLeftWheel);
-        robotModules.add(backRightWheel);
 
         aprilTagCamera = new FixedAngleArilTagCamera(
                 new HuskyAprilTagCamera(hardwareMap.get(HuskyLens.class, "husky")),

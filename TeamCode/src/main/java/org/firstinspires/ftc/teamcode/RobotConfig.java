@@ -8,7 +8,8 @@ import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPosi
 import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
 import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
-import org.firstinspires.ftc.teamcode.Utils.EnhancedPIDController;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.LookUpTable;
+import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EnhancedPIDController;
 import org.firstinspires.ftc.teamcode.Utils.TeamElementFinder;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
@@ -117,7 +118,7 @@ public final class RobotConfig {
             true
     );
 
-    public static final HardwareConfigs competitionConfig = hardwareConfigs_2024OffSeason;
+    public static final HardwareConfigs competitionConfig = hardwareConfigs_2024Competition;
 
     public static final HardwareConfigs testConfig = hardwareConfigs_2024Competition;
 
@@ -187,20 +188,15 @@ public final class RobotConfig {
     }
 
     public static final class ChassisConfigs {
-        /*
-         * to tune the pid of these wheels:
-         * 1. find the wheel speed (in encoder units per second) of the wheel when running at full speed as "max_speed" (2500)
-         * 2. find the wheel speed (in encoder units per second) of the wheel when running at 65% full speed as "speed_65" (2000)
-         */
-        public static final boolean wheelSpeedControlEnabledDefault = false;
-        public static final double wheel_proportionGain = 0.8;
-        public static final double wheel_feedForwardGain = 0.55;
-        public static final double wheel_feedForwardDelay = 0;
+        public static final LookUpTable wheelPowerLookUpTable = new LookUpTable(
+                new double[] {0, 0.02, 0.5, 0.9, 1}, // encoder velocity / max velocity
+                new double[] {0, 0.06, 0.4, 0.8, 1} // motor power
+        );
         public static final double wheel_maxVelocity = 2500;
 
 
         public static final double chassisRotation_maximumCorrectionPower = 0.65;
-        public static final double chassisRotation_minimumCorrectionPower = 0.06;
+        public static final double chassisRotation_minimumCorrectionPower = 0.02;
         public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(45);
         public static final double chassisRotation_errorTolerance = Math.toRadians(1);
         public static final double chassisRotationErrorAsFinished = Math.toRadians(6);
@@ -222,7 +218,7 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileX = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.12, // for precise wall aiming
+                0.02, // for precise wall aiming
                 40,
                 1.2,
                 0.14,
@@ -231,7 +227,7 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileY = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.05,
+                0.02,
                 40,
                 1.2,
                 0.13,

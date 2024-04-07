@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 
+import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.AngleUtils;
-import org.firstinspires.ftc.teamcode.Utils.EnhancedPIDController;
-import org.firstinspires.ftc.teamcode.Utils.EnhancedPIDController2D;
+import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EncoderMotorMechanism;
+import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EnhancedPIDController;
+import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EnhancedPIDController2D;
+import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.MechanismController;
+import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.SimpleFeedForwardController;
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
@@ -17,7 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Chassis extends RobotModule {
-    private final EncoderMotorWheel frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
+    private final EncoderMotorMechanism frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
+    private final SimpleFeedForwardController frontLeftController, frontRightController, backLeftController, backRightController;
     private final PositionEstimator positionEstimator;
     private final FixedAngleArilTagCamera aprilTagCamera;
 
@@ -31,7 +36,6 @@ public class Chassis extends RobotModule {
     private ChassisTranslationalTask translationalTask;
     private ChassisRotationalTask rotationalTask;
     private OrientationMode orientationMode;
-    private boolean wheelSpeedControlEnabled;
 
     /** null for never seen */
     private Vector2D wallAbsoluteEncoderPositionField;
@@ -41,7 +45,10 @@ public class Chassis extends RobotModule {
 
     private boolean lowSpeedModeEnabled = false;
 
-    public Chassis(EncoderMotorWheel frontLeftWheel, EncoderMotorWheel frontRightWheel, EncoderMotorWheel backLeftWheel, EncoderMotorWheel backRightWheel, PositionEstimator positionEstimator, FixedAngleArilTagCamera aprilTagCamera, FixedAngleArilTagCamera.WallTarget.Name allianceWall) {
+    public Chassis(
+            EncoderMotorMechanism frontLeftWheel, EncoderMotorMechanism frontRightWheel, EncoderMotorMechanism backLeftWheel, EncoderMotorMechanism backRightWheel,
+            PositionEstimator positionEstimator, FixedAngleArilTagCamera aprilTagCamera, FixedAngleArilTagCamera.WallTarget.Name allianceWall
+    ) {
         super("chassis module", 100);
 
         this.frontLeftWheel = frontLeftWheel;
@@ -55,6 +62,16 @@ public class Chassis extends RobotModule {
 
         this.rotationController = new EnhancedPIDController(ChassisConfigs.chassisRotationControllerProfile);
         this.translationalControllerEncoder = new EnhancedPIDController2D(ChassisConfigs.encoderTranslationalControllerProfileX, ChassisConfigs.encoderTranslationalControllerProfileY);
+
+        this.frontLeftController = new SimpleFeedForwardController(ChassisConfigs.wheelPowerLookUpTable);
+        this.frontRightController = new SimpleFeedForwardController(ChassisConfigs.wheelPowerLookUpTable);
+        this.backLeftController = new SimpleFeedForwardController(ChassisConfigs.wheelPowerLookUpTable);
+        this.backRightController = new SimpleFeedForwardController(ChassisConfigs.wheelPowerLookUpTable);
+
+        frontLeftWheel.setController(frontLeftController);
+        frontRightWheel.setController(frontRightController);
+        backLeftWheel.setController(backLeftController);
+        backRightWheel.setController(backRightController);
     }
 
     @Override
@@ -100,10 +117,15 @@ public class Chassis extends RobotModule {
             backRightWheelMotorPower *= (powerConstrain / greatestPower);
         }
 
-        frontLeftWheel.setVelocity(frontLeftWheelMotorPower);
-        frontRightWheel.setVelocity(frontRightWheelMotorPower);
-        backLeftWheel.setVelocity(backLeftWheelMotorPower);
-        backRightWheel.setVelocity(backRightWheelMotorPower);
+        frontLeftController.setDesiredSpeed(frontLeftWheelMotorPower);
+        frontRightController.setDesiredSpeed(frontRightWheelMotorPower);
+        backLeftController.setDesiredSpeed(backLeftWheelMotorPower);
+        backRightController.setDesiredSpeed(backRightWheelMotorPower);
+
+        frontLeftWheel.updateWithController();
+        frontRightWheel.updateWithController();
+        backLeftWheel.updateWithController();
+        backRightWheel.updateWithController();
     }
 
     private Vector2D calculateTranslationalSpeedWithProperMethod(ChassisTranslationalTask task) {
@@ -258,10 +280,10 @@ public class Chassis extends RobotModule {
     public void forceUpdateWheels(ModulesCommanderMarker operator) {
         if (!isOwner(operator))
             return;
-        frontLeftWheel.periodic();
-        frontRightWheel.periodic();
-        backLeftWheel.periodic();
-        backRightWheel.periodic();
+        frontLeftWheel.updateWithController();
+        frontRightWheel.updateWithController();
+        backLeftWheel.updateWithController();
+        backRightWheel.updateWithController();
     }
 
     private void updateVisualTargetAndEncoderReference() {
@@ -318,7 +340,6 @@ public class Chassis extends RobotModule {
     @Override
     public void reset() {
         setOrientationMode(OrientationMode.ROBOT_ORIENTATED, null);
-        setWheelSpeedControlEnabled(ChassisConfigs.wheelSpeedControlEnabledDefault, null);
         this.translationalTask = new ChassisTranslationalTask(ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D());
         this.rotationalTask = new ChassisRotationalTask(ChassisRotationalTask.ChassisRotationalTaskType.SET_ROTATIONAL_SPEED, 0);
         resetYaw(null);
@@ -326,6 +347,8 @@ public class Chassis extends RobotModule {
         this.wallAbsoluteEncoderPositionField = null;
 
         this.lowSpeedModeEnabled = false;
+
+        driveMecanumWheels(new Vector2D(), 0);
     }
 
     public void setOrientationMode(OrientationMode orientationMode, ModulesCommanderMarker operator) {
@@ -337,21 +360,6 @@ public class Chassis extends RobotModule {
 
     public OrientationMode getOrientationMode() {
         return this.orientationMode;
-    }
-
-    public void setWheelSpeedControlEnabled(boolean activateSpeedControl, ModulesCommanderMarker operator) {
-        if (!isOwner(operator))
-            return;
-
-        this.frontLeftWheel.setEncoderEnabled(activateSpeedControl);
-        this.frontRightWheel.setEncoderEnabled(activateSpeedControl);
-        this.backLeftWheel.setEncoderEnabled(activateSpeedControl);
-        this.backRightWheel.setEncoderEnabled(activateSpeedControl);
-        this.wheelSpeedControlEnabled = activateSpeedControl;
-    }
-
-    public boolean isWheelSpeedControlEnabled() {
-        return this.wheelSpeedControlEnabled;
     }
 
     public void setTranslationalTask(ChassisTranslationalTask translationalTask, ModulesCommanderMarker operator) {

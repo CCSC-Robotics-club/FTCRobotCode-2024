@@ -12,7 +12,7 @@ public class AutoMain extends LinearOpMode {
     }
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         AutoStageRobot robot = new AutoStageRobot(
             hardwareMap,
             telemetry,

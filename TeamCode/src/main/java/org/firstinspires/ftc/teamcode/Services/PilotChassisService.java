@@ -461,7 +461,6 @@ public class PilotChassisService extends RobotService {
         this.currentDesiredPosition = chassis.getChassisEncoderPosition();
         this.controlMode = RobotConfig.ControlConfigs.defaultControlMode;
         visualTaskStatus = VisualTaskStatus.UNUSED;
-        chassis.setWheelSpeedControlEnabled(false, this);
         aimCenter = 0;
     }
 

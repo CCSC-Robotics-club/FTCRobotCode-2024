@@ -1,4 +1,5 @@
-package org.firstinspires.ftc.teamcode.Utils;
+package org.firstinspires.ftc.teamcode.Utils.MechanismControllers;
+
 
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 

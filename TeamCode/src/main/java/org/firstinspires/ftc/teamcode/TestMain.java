@@ -17,7 +17,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
-import org.firstinspires.ftc.teamcode.Modules.EncoderMotorWheel;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
@@ -29,11 +28,11 @@ import org.firstinspires.ftc.teamcode.Utils.DualServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.HuskyAprilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
+import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EncoderMotorMechanism;
 import org.firstinspires.ftc.teamcode.Utils.PixelCameraAimBotLegacy;
 import org.firstinspires.ftc.teamcode.Utils.RawObjectDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
-import org.firstinspires.ftc.teamcode.Utils.SimpleFeedForwardSpeedController;
 import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.TensorCamera;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
@@ -71,9 +70,7 @@ public class TestMain extends LinearOpMode {
         DcMotorEx backRightMotor = hardwareMap.get(DcMotorEx.class, "backRight");
         IMU imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(RobotConfig.testConfig.imuParameter);
-        SimpleFeedForwardSpeedController.SpeedControllerProfile wheelSpeedControllerProfile =
-                new SimpleFeedForwardSpeedController.SpeedControllerProfile(
-                        RobotConfig.ChassisConfigs.wheel_proportionGain, RobotConfig.ChassisConfigs.wheel_feedForwardGain, RobotConfig.ChassisConfigs.wheel_feedForwardDelay);
+
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -83,30 +80,13 @@ public class TestMain extends LinearOpMode {
         frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        EncoderMotorWheel frontLeftWheel = new EncoderMotorWheel(
-                frontLeftMotor,
-                frontLeftMotor,
-                new SimpleFeedForwardSpeedController(wheelSpeedControllerProfile),
-                RobotConfig.ChassisConfigs.wheel_maxVelocity
-        );
-        EncoderMotorWheel frontRightWheel = new EncoderMotorWheel(
-                frontRightMotor,
-                frontRightMotor,
-                new SimpleFeedForwardSpeedController(wheelSpeedControllerProfile),
-                RobotConfig.ChassisConfigs.wheel_maxVelocity
-        );
-        EncoderMotorWheel backLeftWheel = new EncoderMotorWheel(
-                backLeftMotor,
-                backLeftMotor,
-                new SimpleFeedForwardSpeedController(wheelSpeedControllerProfile),
-                RobotConfig.ChassisConfigs.wheel_maxVelocity
-        );
-        EncoderMotorWheel backRightWheel = new EncoderMotorWheel(
-                backRightMotor,
-                backRightMotor,
-                new SimpleFeedForwardSpeedController(wheelSpeedControllerProfile),
-                RobotConfig.ChassisConfigs.wheel_maxVelocity
-        );
+
+        EncoderMotorMechanism frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
+        frontLeftWheel = new EncoderMotorMechanism(frontLeftMotor);
+        frontRightWheel = new EncoderMotorMechanism(frontRightMotor);
+        backLeftWheel = new EncoderMotorMechanism(backLeftMotor);
+        backRightWheel = new EncoderMotorMechanism(backRightMotor);
+
         frontLeftWheel.setEncoderReversed(RobotConfig.testConfig.frontLeftWheel_encoderReversed);
         frontRightWheel.setEncoderReversed(RobotConfig.testConfig.frontRightWheel_encoderReversed);
         backLeftWheel.setEncoderReversed(RobotConfig.testConfig.backLeftWheel_encoderReversed);
@@ -131,18 +111,10 @@ public class TestMain extends LinearOpMode {
         Chassis chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, null, FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL);
 
         // camera.init();
-        frontRightWheel.init();
-        frontLeftWheel.init();
-        backRightWheel.init();
-        backLeftWheel.init();
         chassis.init();
 
 
         // robotModules.add(camera);
-        robotModules.add(frontLeftWheel);
-        robotModules.add(frontRightWheel);
-        robotModules.add(backLeftWheel);
-        robotModules.add(backRightWheel);
         robotModules.add(chassis);
 
         this.telemetrySender = new TelemetrySender(telemetry);
@@ -254,40 +226,6 @@ public class TestMain extends LinearOpMode {
             telemetry.update();
 
             sleep(50);
-        }
-    }
-
-    public void singleWheelPIDTest() {
-        SimpleFeedForwardSpeedController.SpeedControllerProfile wheelSpeedControllerProfile =
-                new SimpleFeedForwardSpeedController.SpeedControllerProfile(
-                        RobotConfig.ChassisConfigs.wheel_proportionGain, RobotConfig.ChassisConfigs.wheel_feedForwardGain, RobotConfig.ChassisConfigs.wheel_feedForwardDelay);
-        DcMotorEx motor = hardwareMap.get(DcMotorEx.class, "frontLeft");
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        EncoderMotorWheel testWheel = new EncoderMotorWheel(
-                motor,
-                motor,
-                new SimpleFeedForwardSpeedController(wheelSpeedControllerProfile),
-                RobotConfig.ChassisConfigs.wheel_maxVelocity
-        );
-
-        testWheel.reset();
-        testWheel.setEncoderReversed(true);
-        testWheel.setEncoderEnabled(true);
-
-        waitForStart();
-        long previousTime = System.currentTimeMillis();
-
-        while (!isStopRequested() && opModeIsActive()) {
-            if (Math.abs(gamepad1.right_stick_y) > 0.05) {
-                testWheel.setEnabled(true);
-                testWheel.setVelocity(gamepad1.right_stick_y * -1);
-            } else
-                testWheel.setEnabled(false);
-
-            testWheel.periodic((System.currentTimeMillis() - previousTime) / 1000.0f);
-
-            previousTime = System.currentTimeMillis();
         }
     }
 
@@ -558,7 +496,6 @@ public class TestMain extends LinearOpMode {
 
         waitForStart();
 
-        chassis.setWheelSpeedControlEnabled(false, null);
         while (!isStopRequested() && opModeIsActive()) {
             updateRobot();
 
@@ -687,7 +624,6 @@ public class TestMain extends LinearOpMode {
 
         waitForStart();
 
-        chassis.setWheelSpeedControlEnabled(false, null);
         while (!isStopRequested() && opModeIsActive()) {
             Chassis.ChassisTranslationalTask translationalTask;
             if (gamepad1.y)
@@ -993,10 +929,10 @@ public class TestMain extends LinearOpMode {
 
     private void tensorFlowAndAprilTagCameraTest() {
         final String[] LABELS = {
-                "Pixel",
+                "team-prop-red",
         };
         final AprilTagProcessor aprilTag = AprilTagProcessor.easyCreateWithDefaults();
-        final TfodProcessor tfod = new TfodProcessor.Builder().setModelAssetName("CenterStage.tflite").setModelLabels(LABELS).build();
+        final TfodProcessor tfod = new TfodProcessor.Builder().setModelAssetName("Team Prop Red.tflite").setModelLabels(LABELS).build();
         tfod.setMinResultConfidence(0.75f);
 
         VisionPortal.Builder builder = new VisionPortal.Builder();

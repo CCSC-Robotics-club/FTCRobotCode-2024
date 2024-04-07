@@ -23,7 +23,7 @@ public class LookUpTable {
         if (x < xValues[0])
             return yValues[0];
         for (int i = 0; i < n-1; i++)
-            if (xValues[i] < x && x < xValues[i+1])
+            if (xValues[i] <= x && x <= xValues[i+1])
                 return linearInterpretation(xValues[i], yValues[i], xValues[i+1], yValues[i+1], x);
         return yValues[yValues.length-1];
     }

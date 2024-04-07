@@ -56,5 +56,9 @@ public class TestAutoStage extends AutoStageProgram {
         super.commandSegments.addAll(
                 sequentialCommandFactory.followPathFacing("score fifth and sixth", new Rotation2D(0))
         );
+
+        super.commandSegments.addAll(
+                sequentialCommandFactory.followPathFacing("park", new Rotation2D(0))
+        );
     }
 }

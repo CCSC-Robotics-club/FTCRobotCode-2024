@@ -54,7 +54,7 @@ public class CameraAutoCalibration extends AutoStageProgram {
 
         i = 0;
         for (int currentDistanceSample = 0; currentDistanceSample < verticalDistancesSamples; currentDistanceSample++) {
-            final double distance = minDistanceToTarget + currentDistanceSample * (maxDistanceToTarget - minDistanceToTarget);
+            final double distance = minDistanceToTarget + currentDistanceSample * (maxDistanceToTarget - minDistanceToTarget) / verticalDistancesSamples;
             for (int currentAngleSample = 0; currentAngleSample < horizontalAnglesSamples; currentAngleSample++)
                 super.commandSegments.add(moveToPositionAndMeasure(
                         distance,
@@ -78,6 +78,7 @@ public class CameraAutoCalibration extends AutoStageProgram {
                 () -> true,
                 () -> new BezierCurve(positionEstimator.getCurrentPosition(), new Vector2D(new double[] {0,-distance})),
                 () -> taskStartedTime.set(System.currentTimeMillis()),
+                cameraToTest::update,
                 () -> {
                     if (System.currentTimeMillis() - taskStartedTime.get() > timeOut)
                         return;
@@ -86,7 +87,6 @@ public class CameraAutoCalibration extends AutoStageProgram {
                     pixelXSamples[i] = cameraToTest.getRawAprilTagByID(targetID).x;
                     pixelYSamples[i] = cameraToTest.getRawAprilTagByID(targetID).y;
                 },
-                cameraToTest::update,
                 () -> System.currentTimeMillis() - taskStartedTime.get() > timeOut ||
                         (chassis.isCurrentTranslationalTaskComplete() && chassis.isCurrentRotationalTaskComplete() && cameraToTest.getRawAprilTagByID(targetID) != null),
                 positionEstimator::getRotation2D, () -> new Rotation2D(-angle),
