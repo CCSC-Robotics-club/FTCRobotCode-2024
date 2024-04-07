@@ -317,9 +317,10 @@ public class Chassis extends RobotModule {
      * @return the relative field position of the robot to the wall, in cm. null for unseen
      * */
     public Vector2D getRelativeFieldPositionToWall() {
-        if (!isVisualNavigationAvailable())
+        final FixedAngleArilTagCamera.WallTarget wallInFront = aprilTagCamera.getWallInFront();
+        if (wallInFront == null || wallInFront.getRelativePositionToRobot(getYaw()) == null)
             return null;
-        return aprilTagCamera.getWallInFront().getRelativePositionToRobot(getYaw()).multiplyBy(-1);
+        return wallInFront.getRelativePositionToRobot(getYaw()).multiplyBy(-1);
     }
 
     private void initiateVisualNavigationTask(ChassisTranslationalTask newVisualTranslationalTask) {
