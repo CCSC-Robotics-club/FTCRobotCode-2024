@@ -196,7 +196,7 @@ public final class RobotConfig {
 
 
         public static final double chassisRotation_maximumCorrectionPower = 0.65;
-        public static final double chassisRotation_minimumCorrectionPower = 0.02;
+        public static final double chassisRotation_minimumCorrectionPower = 0.05;
         public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(45);
         public static final double chassisRotation_errorTolerance = Math.toRadians(1);
         public static final double chassisRotationErrorAsFinished = Math.toRadians(6);
@@ -218,7 +218,7 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileX = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.02, // for precise wall aiming
+                0.03, // for precise wall aiming
                 40,
                 1.2,
                 0.14,
@@ -227,7 +227,7 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileY = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.02,
+                0.03,
                 40,
                 1.2,
                 0.13,

@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.AutoMain;
 import org.firstinspires.ftc.teamcode.AutoStages.CameraAutoCalibration;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 @Autonomous(name = "<Auto> [Camera Calibration]")
@@ -12,7 +13,8 @@ public class CameraCalibrationAutoProgram extends AutoMain {
         super(new CameraAutoCalibration(
                 22,
                 new Vector2D(new double[] {0, -5}),
-                2
+                2,
+                new Rotation2D(Math.toRadians(90)) // facing front
         ));
     }
 }

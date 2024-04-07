@@ -936,7 +936,7 @@ public class TestMain extends LinearOpMode {
         tfod.setMinResultConfidence(0.75f);
 
         VisionPortal.Builder builder = new VisionPortal.Builder();
-        builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam1"));
+        builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
         builder.enableLiveView(true);
         builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
         builder.addProcessor(tfod);

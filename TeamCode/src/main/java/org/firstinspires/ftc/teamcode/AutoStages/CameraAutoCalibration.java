@@ -30,9 +30,10 @@ public class CameraAutoCalibration extends AutoStageProgram {
     final double cameraInstallationHeightCM;
     final Vector2D robotStartingPositionToTarget;
     final int targetID;
+    final Rotation2D cameraFacingRotation;
 
 
-    private static final double minDistanceToTarget = 10, maxDistanceToTarget = 50, maxHorizontalAngle = Math.toRadians(30);
+    private static final double minDistanceToTarget = 10, maxDistanceToTarget = 50, maxHorizontalAngle = Math.toRadians(60);
     private static final int horizontalAnglesLevels = 3, verticalDistancesSamples = 5, horizontalAnglesSamples = horizontalAnglesLevels * 2 + 1;
     final double[]
             angleYSamples = new double[horizontalAnglesSamples * verticalDistancesSamples],
@@ -40,11 +41,12 @@ public class CameraAutoCalibration extends AutoStageProgram {
             pixelYSamples = new double[horizontalAnglesSamples * verticalDistancesSamples],
             pixelXSamples = new double[horizontalAnglesSamples * verticalDistancesSamples];
     int i = 0;
-    public CameraAutoCalibration(double cameraInstallationHeightCM, Vector2D robotStartingPositionToTarget, int targetID) {
+    public CameraAutoCalibration(double cameraInstallationHeightCM, Vector2D robotStartingPositionToTarget, int targetID, Rotation2D cameraFacing) {
         super(Robot.Side.RED);
         this.cameraInstallationHeightCM = cameraInstallationHeightCM;
         this.robotStartingPositionToTarget = robotStartingPositionToTarget;
         this.targetID = targetID;
+        this.cameraFacingRotation = cameraFacing;
     }
 
     @Override
@@ -72,7 +74,7 @@ public class CameraAutoCalibration extends AutoStageProgram {
     }
 
     private SequentialCommandSegment moveToPositionAndMeasure(double distance, double angle, PositionEstimator positionEstimator, Chassis chassis, RawArilTagRecognitionCamera cameraToTest, int i) {
-        final long timeOut = 1000;
+        final long timeOut = 2000;
         AtomicLong taskStartedTime = new AtomicLong();
         return new SequentialCommandSegment(
                 () -> true,
@@ -83,7 +85,7 @@ public class CameraAutoCalibration extends AutoStageProgram {
                     if (System.currentTimeMillis() - taskStartedTime.get() > timeOut)
                         return;
                     angleYSamples[i] = Math.atan(positionEstimator.getCurrentPosition().getY() / cameraInstallationHeightCM);
-                    angleXSamples[i] = -positionEstimator.getRotation();
+                    angleXSamples[i] = -positionEstimator.getRotation() - cameraFacingRotation.getRadian();
                     pixelXSamples[i] = cameraToTest.getRawAprilTagByID(targetID).x;
                     pixelYSamples[i] = cameraToTest.getRawAprilTagByID(targetID).y;
                 },
@@ -96,13 +98,17 @@ public class CameraAutoCalibration extends AutoStageProgram {
 
     private void printResultsToTelemetry(Telemetry telemetry) {
         final double cameraAngleRadianPerPixelX = StatisticsUtils.getBestFitLineSlope(pixelXSamples, angleXSamples),
-                cameraAngleRadianPerPixelY = StatisticsUtils.getBestFitLineSlope(pixelYSamples, angleYSamples);
+                cameraAngleBiasX = StatisticsUtils.getBestFitLineIntersect(pixelXSamples, angleXSamples),
+                cameraAngleRadianPerPixelY = StatisticsUtils.getBestFitLineSlope(pixelYSamples, angleYSamples),
+                cameraInstallationAngleY = StatisticsUtils.getBestFitLineIntersect(pixelYSamples, angleYSamples);
 
         telemetry.update();
         telemetry.addData("camera angle radian per pixel (x)", cameraAngleRadianPerPixelX);
+        telemetry.addData("camera angle x bias", cameraAngleBiasX);
         telemetry.addData("(x-direction) data correlation squared", Math.pow(StatisticsUtils.getCorrelationCoefficient(pixelXSamples, angleXSamples), 2));
 
         telemetry.addData("camera angle radian per pixel (y)", cameraAngleRadianPerPixelY);
+        telemetry.addData("'camera installation angle (pitch)", cameraInstallationAngleY);
         telemetry.addData("(y-direction) data correlation squared", Math.pow(StatisticsUtils.getCorrelationCoefficient(pixelYSamples, angleYSamples), 2));
 
         telemetry.addLine("press X to continue");
