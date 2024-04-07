@@ -133,10 +133,10 @@ public final class RobotConfig {
 
     public static final class ArmConfigs {
         /** positive should be scoring */
-        public static final boolean motorReversed = false, encoderReversed = false;
+        public static final boolean motorReversed = true, encoderReversed = true;
         public static final double
                 maxPowerWhenMovingUp = 1,
-                maxPowerWhenMovingDown = 0.6,
+                maxPowerWhenMovingDown = 0.8,
                 errorStartDecelerate = 1000,
                 powerNeededToMoveUp = 0.4,
                 powerNeededToMoveDown = 0.3,
@@ -150,7 +150,7 @@ public final class RobotConfig {
         public static final Map<Position, Double> encoderPositions = new HashMap<>(); // in reference to zero position (limit switch)
         static {
             encoderPositions.put(Position.INTAKE, -100.0);
-            encoderPositions.put(Position.SCORE, 5000.0);
+            encoderPositions.put(Position.SCORE, 5600.0);
         }
     }
 
@@ -201,9 +201,9 @@ public final class RobotConfig {
 
 
         public static final double chassisRotation_maximumCorrectionPower = 0.65;
-        public static final double chassisRotation_minimumCorrectionPower = 0.05;
+        public static final double chassisRotation_minimumCorrectionPower = 0.03;
         public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(45);
-        public static final double chassisRotation_errorTolerance = Math.toRadians(1);
+        public static final double chassisRotation_errorTolerance = Math.toRadians(1.5);
         public static final double chassisRotationErrorAsFinished = Math.toRadians(6);
         public static final double chassisRotation_feedForwardDelay = 0.15; // in seconds
         public static final EnhancedPIDController.StaticPIDProfile chassisRotationControllerProfile = new EnhancedPIDController.StaticPIDProfile(

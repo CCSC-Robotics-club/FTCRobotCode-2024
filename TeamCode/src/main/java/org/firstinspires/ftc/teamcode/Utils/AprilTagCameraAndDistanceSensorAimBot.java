@@ -41,17 +41,18 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         );
     }
 
-    public SequentialCommandSegment createCommandSegment(TeamElementFinder teamElementFinder, SequentialCommandSegment.InitiateCondition initiateCondition) {
-        return new SequentialCommandSegment(
-                initiateCondition,
-                null,
-                this::init,
-                () -> this.update(getWallPosition(teamElementFinder.getFindingResult())),
-                () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker),
-                chassis::isCurrentTranslationalTaskComplete,
-                () -> new Rotation2D(0), () -> new Rotation2D(0)
-        );
-    }
+    // TODO
+//    public SequentialCommandSegment createCommandSegment(TeamElementFinder teamElementFinder, SequentialCommandSegment.InitiateCondition initiateCondition) {
+//        return new SequentialCommandSegment(
+//                initiateCondition,
+//                null,
+//                this::init,
+//                () -> this.update(getWallPosition(teamElementFinder.getFindingResult())),
+//                () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker),
+//                chassis::isCurrentTranslationalTaskComplete,
+//                () -> new Rotation2D(0), () -> new Rotation2D(0)
+//        );
+//    }
 
     private Vector2D getWallPosition(TeamElementFinder.TeamElementPosition teamElementPosition) {
         switch (teamElementPosition) {

@@ -35,6 +35,7 @@ import org.firstinspires.ftc.teamcode.Utils.RawObjectDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
+import org.firstinspires.ftc.teamcode.Utils.TeamElementFinder;
 import org.firstinspires.ftc.teamcode.Utils.TensorCamera;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -56,8 +57,8 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        armTest();
-        // tensorFlowAndAprilTagCameraTest();
+        // armTest();
+        tensorFlowAndAprilTagCameraTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -983,6 +984,23 @@ public class TestMain extends LinearOpMode {
                 startingPos = armMotor.getCurrentPosition();
             telemetry.update();
             sleep(50);
+        }
+    }
+
+    private void teamElementFinderTest() {
+        final TeamElementFinder teamElementFinder = new TeamElementFinder(hardwareMap.get(WebcamName.class, "Webcam 1"));
+
+        waitForStart();
+
+        teamElementFinder.findTeamElement();
+        telemetry.addData("team element finder result: ", teamElementFinder.getTeamElementPosition());
+        telemetry.update();
+        while (opModeIsActive() && !isStopRequested()) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

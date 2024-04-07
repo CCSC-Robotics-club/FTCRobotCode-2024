@@ -1,19 +1,20 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
-import com.qualcomm.robotcore.hardware.DistanceSensor;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Modules.Chassis;
-import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
-import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
-import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
-
-import static org.firstinspires.ftc.teamcode.RobotConfig.TeamElementFinderConfigs;
-
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 public class TeamElementFinder {
+    final String[] LABELS = {
+            "team-prop-red",
+    };
+    final TfodProcessor tfod = new TfodProcessor.Builder().setModelAssetName("Team Prop Red.tflite").setModelLabels(LABELS).build();
+    final VisionPortal visionPortal;
     public enum TeamElementPosition {
         LEFT,
         CENTER,
@@ -21,66 +22,48 @@ public class TeamElementFinder {
         UNDETERMINED
     }
 
-    private final Chassis chassis;
-    private final DistanceSensor distanceSensor;
-    private TeamElementPosition teamElementPosition;
-    private final HuskyAprilTagCamera huskyCamera;
-    public TeamElementFinder(Chassis chassis, DistanceSensor distanceSensor, HuskyAprilTagCamera huskyCamera) {
-        this.chassis = chassis;
-        this.distanceSensor = distanceSensor;
-        this.huskyCamera = huskyCamera;
+    private static final Map<TeamElementPosition, Double> teamElementPositionsPixel = new HashMap<>();
+    static {
+        teamElementPositionsPixel.put(TeamElementPosition.LEFT, 0.0);
+        teamElementPositionsPixel.put(TeamElementPosition.CENTER, 0.0);
+        teamElementPositionsPixel.put(TeamElementPosition.RIGHT, 0.0);
+    }
 
+    private TeamElementPosition teamElementPosition;
+    public TeamElementFinder(WebcamName webcamName) {
+        tfod.setMinResultConfidence(0.75f);
+
+        VisionPortal.Builder builder = new VisionPortal.Builder();
+        builder.setCamera(webcamName);
+        builder.enableLiveView(true);
+        builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
+        builder.addProcessor(tfod);
+
+        visionPortal = builder.build();
+        visionPortal.setProcessorEnabled(tfod, true);
         this.teamElementPosition = TeamElementPosition.UNDETERMINED;
     }
 
-    @Deprecated
-    public SequentialCommandSegment getDistanceSensorFindingCommand(TeamElementPosition positionToSearch, double centerTeamElementRotation, TelemetrySender telemetrySender) {
-        final double startingRotation = Objects.requireNonNull(TeamElementFinderConfigs.teamElementPositionSearchRotationRanges.get(positionToSearch))[0] + centerTeamElementRotation,
-                endingRotation = Objects.requireNonNull(TeamElementFinderConfigs.teamElementPositionSearchRotationRanges.get(positionToSearch))[1] + centerTeamElementRotation;
-        return new SequentialCommandSegment(
-                () -> getFindingResult() == TeamElementPosition.UNDETERMINED,
-                null,
-                () -> {},
-                () -> {
-//                    if (!AngleUtils.isWithInRange(chassis.getYaw(), startingRotation, endingRotation))
-//                        return;
-                    if (distanceSensor.getDistance(DistanceUnit.CM) < TeamElementFinderConfigs.distanceThreshold)
-                        this.teamElementPosition = positionToSearch;
-                    telemetrySender.putSystemMessage("distance at element position", distanceSensor.getDistance(DistanceUnit.CM));
-                },
-                () -> {},
-                () -> getFindingResult() == TeamElementPosition.UNDETERMINED,
-                () -> new Rotation2D(startingRotation), () -> new Rotation2D(endingRotation)
-        );
+    public void findTeamElement() {
+        List<Recognition> currentRecognitions = tfod.getRecognitions();
+        if (!(currentRecognitions.size() == 1 && currentRecognitions.get(0).getLabel().contains("team-prop")))
+            return;
+
+        double minDistance = 99999, targetPosition = (currentRecognitions.get(0).getLeft() + currentRecognitions.get(0).getRight())/2;
+        for (TeamElementPosition position:teamElementPositionsPixel.keySet()) {
+            if (Math.abs(targetPosition - teamElementPositionsPixel.get(position)) < minDistance) {
+                teamElementPosition = position;
+                minDistance = Math.abs(targetPosition - teamElementPositionsPixel.get(position));
+            }
+        }
     }
 
-    public void proceedHuskySearch(TeamElementPosition teamElementPosition) {
-        if (getResultWithHuskyLens()) this.teamElementPosition = teamElementPosition;
+    public void shutDown() {
+        visionPortal.setProcessorEnabled(tfod, false);
+        tfod.shutdown();
     }
 
-    public void proceedTOFSearch(TeamElementPosition teamElementPosition) {
-        if (distanceSensor.getDistance(DistanceUnit.CM) <= TeamElementFinderConfigs.distanceThreshold)
-            this.teamElementPosition = teamElementPosition;
-    }
-
-    public void stopSearch() {
-        huskyCamera.setToDefaultMode();
-    }
-
-    public void startSearch() {
-        huskyCamera.setToColorMode();
-    }
-    private boolean getResultWithHuskyLens(){
-        final List<RawArilTagRecognitionCamera.AprilTagTargetRaw> results = huskyCamera.getRawArilTagTargets();
-        if (results.isEmpty())
-            return false;
-        final RawArilTagRecognitionCamera.AprilTagTargetRaw targetRaw = results.get(0);
-        final Vector2D targetPosition = new Vector2D(new double[] {targetRaw.x, targetRaw.y}).addBy(TeamElementFinderConfigs.expectedTargetPosition.multiplyBy(-1));
-
-        return targetPosition.getMagnitude() < TeamElementFinderConfigs.searchRangePixels;
-    }
-
-    public TeamElementPosition getFindingResult() {
+    public TeamElementPosition getTeamElementPosition() {
         return teamElementPosition;
     }
 }
