@@ -20,13 +20,19 @@ public class EncoderMotorMechanism {
     }
 
     public double updateWithController() {
+        final double encoderReadingFactor = encoderReversed ? -1:1;
+        return updateWithController(encoderReadingFactor * dcMotorEx.getVelocity(), encoderReadingFactor * dcMotorEx.getCurrentPosition());
+    }
+
+    public double updateWithController(double mechanismVelocity, double mechanismPosition) {
         if (controller == null) {
             dcMotorEx.setPower(0);
             return 0;
         }
-        final double motorPowerFactor = motorReversed ? -1:1, encoderReadingFactor = encoderReversed ? -1:1,
-                power = controller.getMotorPower(encoderReadingFactor * dcMotorEx.getVelocity(), encoderReadingFactor * dcMotorEx.getCurrentPosition());
-        setPower(power * motorPowerFactor);
+        final double motorPowerFactor = motorReversed ? -1:1,
+                power = controller.getMotorPower(mechanismVelocity, mechanismPosition);
+
+        dcMotorEx.setPower(power * motorPowerFactor);
         return power * motorPowerFactor;
     }
 

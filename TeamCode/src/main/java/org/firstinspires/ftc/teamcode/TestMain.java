@@ -58,7 +58,8 @@ public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
         // armTest();
-        tensorFlowAndAprilTagCameraTest();
+        imuReadTimeTest();
+        // tensorFlowAndAprilTagCameraTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -1004,4 +1005,15 @@ public class TestMain extends LinearOpMode {
         }
     }
 
+    private void imuReadTimeTest() {
+        IMU imu = hardwareMap.get(IMU.class, "imu");
+        waitForStart();
+        while (!isStopRequested() && opModeIsActive()) {
+            final long t = System.currentTimeMillis();
+            final double reading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+            telemetry.addData("reading", reading);
+            telemetry.addData("read time", System.currentTimeMillis() - t);
+            telemetry.update();
+        }
+    }
 }

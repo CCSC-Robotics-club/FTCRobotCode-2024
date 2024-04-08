@@ -144,13 +144,15 @@ public final class RobotConfig {
 
         public enum Position {
             INTAKE,
+            GRAB_STACK,
             SCORE
         }
 
         public static final Map<Position, Double> encoderPositions = new HashMap<>(); // in reference to zero position (limit switch)
         static {
             encoderPositions.put(Position.INTAKE, -100.0);
-            encoderPositions.put(Position.SCORE, 5600.0);
+            encoderPositions.put(Position.GRAB_STACK, 500.0);
+            encoderPositions.put(Position.SCORE, 4000.0);
         }
     }
 

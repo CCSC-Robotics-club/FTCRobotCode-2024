@@ -81,7 +81,6 @@ public class Chassis extends RobotModule {
 
     @Override
     public void periodic(double dt) {
-        // TODO chassis isn't updating at auto stage if running at multi-thread
         Vector2D calculatedTranslationalSpeed = calculateTranslationalSpeedWithProperMethod(translationalTask);
         double calculatedRotationalSpeed = calculateRotationalMotorSpeedWithProperMethod(rotationalTask, dt);
 
@@ -89,7 +88,9 @@ public class Chassis extends RobotModule {
             calculatedTranslationalSpeed = calculatedTranslationalSpeed.multiplyBy(
                     new Rotation2D(getYaw()).getReversal());
 
+        final long t = System.currentTimeMillis();
         driveMecanumWheels(calculatedTranslationalSpeed, calculatedRotationalSpeed);
+        debugMessages.put("drive wheels time", System.currentTimeMillis() - t);
     }
 
     private void driveMecanumWheels(Vector2D translationalMotion, double rotationalMotion) {
@@ -122,10 +123,10 @@ public class Chassis extends RobotModule {
         backLeftController.setDesiredSpeed(backLeftWheelMotorPower);
         backRightController.setDesiredSpeed(backRightWheelMotorPower);
 
-        frontLeftWheel.updateWithController();
-        frontRightWheel.updateWithController();
-        backLeftWheel.updateWithController();
-        backRightWheel.updateWithController();
+        frontLeftWheel.updateWithController(0, 0);
+        frontRightWheel.updateWithController(0, 0);
+        backLeftWheel.updateWithController(0, 0);
+        backRightWheel.updateWithController(0, 0);
     }
 
     private Vector2D calculateTranslationalSpeedWithProperMethod(ChassisTranslationalTask task) {
