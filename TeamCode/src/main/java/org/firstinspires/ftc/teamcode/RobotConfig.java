@@ -138,8 +138,8 @@ public final class RobotConfig {
                 maxPowerWhenMovingUp = 1,
                 maxPowerWhenMovingDown = 0.8,
                 errorStartDecelerate = 1000,
-                powerNeededToMoveUp = 0.4,
-                powerNeededToMoveDown = 0.3,
+                powerNeededToMoveUp = 0.5,
+                powerNeededToMoveDown = 0.4,
                 errorTolerance = 100;
 
         public enum Position {

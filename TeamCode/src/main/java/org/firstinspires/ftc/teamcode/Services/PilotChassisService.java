@@ -319,12 +319,13 @@ public class PilotChassisService extends RobotService {
 
 
     private void initiateWallApproach() {
-        final Vector2D wallRelativePositionToChassis;
-        if ((wallRelativePositionToChassis = chassis.getRelativeFieldPositionToWall().multiplyBy(-1)) == null) {
+        final Vector2D relativePositionToWall;
+        if ((relativePositionToWall = chassis.getRelativeFieldPositionToWall()) == null) {
             this.visualTaskStatus = VisualTaskStatus.UNUSED;
             return;
         }
-        wallFieldPositionForRoughApproach = chassis.getChassisEncoderPosition().addBy(wallRelativePositionToChassis);
+        final Vector2D wallRelativePositionToRobot = relativePositionToWall.multiplyBy(-1);
+        wallFieldPositionForRoughApproach = chassis.getChassisEncoderPosition().addBy(wallRelativePositionToRobot);
         this.visualTaskStatus = VisualTaskStatus.VISUAL_ROUGH_APPROACH;
         this.lastAimSucceeded = true;
     }
