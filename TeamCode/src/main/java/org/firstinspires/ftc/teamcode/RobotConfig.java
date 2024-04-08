@@ -152,12 +152,12 @@ public final class RobotConfig {
         static {
             encoderPositions.put(Position.INTAKE, -100.0);
             encoderPositions.put(Position.GRAB_STACK, 500.0);
-            encoderPositions.put(Position.SCORE, 4000.0);
+            encoderPositions.put(Position.SCORE, 4400.0);
         }
     }
 
     public static final class FlippableDualClawConfigs {
-        public static final double flipperIntakePosition = 0.14, flipperNormalPosition = 1;
+        public static final double flipperIntakePosition = 0.14, flipperNormalPosition = 0.8;
 
         public static final double leftClawClosePosition = 0.32, leftClawOpenPosition = 0.55, rightClawClosedPosition = 0.75, rightClawOpenPosition = 0.55;
     }
@@ -302,11 +302,11 @@ public final class RobotConfig {
 
         public static final double distanceSensorMaxDistance = 40;
         public static final double distanceSensorMaxDistance_maintainAndAim = 15;
-        public static final double distanceSensorMinDistance = 1.5;
+        public static final double distanceSensorMinDistance = 1;
         public static final double approachReverseSpeedTolerance = 20; // if the robot goes away from the wall in more than 20cm/s, we think the distance sensor failed
 
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -35});
-        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3.5});
+        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -2});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;

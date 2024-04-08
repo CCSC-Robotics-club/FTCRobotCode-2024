@@ -110,9 +110,10 @@ public class PilotChassisService extends RobotService {
         /* visual navigation: wall */
         chassis.setLowSpeedModeEnabled(driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton));
         final boolean processVisualApproach = driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton),
-                initiateVisualApproach = driverController.keyOnPressed(RobotConfig.KeyBindings.processVisualApproachButton);
+                initiateVisualApproach = driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton) && this.visualTaskStatus == VisualTaskStatus.UNUSED;
         if (driverController.keyOnReleased(RobotConfig.KeyBindings.processVisualApproachButton)) {
-            this.currentDesiredPosition = wallFieldPositionForRoughApproach.addBy(new Vector2D(new double[] {0, -40}));
+            if (previousWallPosition != null)
+                this.currentDesiredPosition = previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach);
             this.rotationMaintainanceFacing = 0;
             this.visualTaskStatus = VisualTaskStatus.FINISHED;
         }

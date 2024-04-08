@@ -57,8 +57,8 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        armTest();
-        // tensorFlowAndAprilTagCameraTest();
+        // armTest();
+        tensorFlowAndAprilTagCameraTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
