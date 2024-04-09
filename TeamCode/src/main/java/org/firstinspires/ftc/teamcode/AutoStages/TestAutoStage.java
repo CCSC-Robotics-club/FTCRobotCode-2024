@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.AutoStages;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Modules.ArmLegacy;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandFactory;
+import org.firstinspires.ftc.teamcode.Utils.TeamElementFinder;
 
 public class TestAutoStage extends AutoStageProgram {
     public TestAutoStage(Robot.Side side) {
@@ -22,11 +24,12 @@ public class TestAutoStage extends AutoStageProgram {
     }
 
     @Override
-    public void scheduleCommands(HardwareMap hardwareMap, Chassis chassis, PositionEstimator positionEstimator, DistanceSensor distanceSensor, FixedAngleArilTagCamera angleArilTagCamera, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
-        final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(chassis, positionEstimator, "split first", new Rotation2D(Math.toRadians(90)), super.allianceSide, hardwareMap);
+    public void scheduleCommands(Robot robot, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
+        final TeamElementFinder teamElementFinder = new TeamElementFinder(robot.hardwareMap.get(WebcamName.class, "Webcam 1"));
+        final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(Math.toRadians(90)), super.allianceSide, robot.hardwareMap);
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
         super.commandSegments.addAll(
-                sequentialCommandFactory.followPathFacing("split first", new Rotation2D(0))
+                sequentialCommandFactory.followPathFacing("split first(left)", new Rotation2D(0))
         );
 
         super.commandSegments.addAll(

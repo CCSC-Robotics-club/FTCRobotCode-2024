@@ -50,8 +50,8 @@ public class CameraAutoCalibration extends AutoStageProgram {
     }
 
     @Override
-    public void scheduleCommands(HardwareMap hardwareMap, Chassis chassis, PositionEstimator positionEstimator, DistanceSensor distanceSensor, FixedAngleArilTagCamera arilTagCamera, FixedAnglePixelCamera pixelCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
-        final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(chassis, positionEstimator, robotStartingPositionToTarget, new Rotation2D(0), Robot.Side.RED, hardwareMap);
+    public void scheduleCommands(Robot robot, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
+        final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, robotStartingPositionToTarget, new Rotation2D(0), Robot.Side.RED, robot.hardwareMap);
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
 
         i = 0;
@@ -61,9 +61,9 @@ public class CameraAutoCalibration extends AutoStageProgram {
                 super.commandSegments.add(moveToPositionAndMeasure(
                         distance,
                         -maxHorizontalAngle + currentAngleSample * (maxHorizontalAngle / horizontalAnglesLevels),
-                        positionEstimator,
-                        chassis,
-                        arilTagCamera.getRawAprilTagCamera(),
+                        robot.positionEstimator,
+                        robot.chassis,
+                        robot.aprilTagCamera.getRawAprilTagCamera(),
                         i++
                 ));
         }

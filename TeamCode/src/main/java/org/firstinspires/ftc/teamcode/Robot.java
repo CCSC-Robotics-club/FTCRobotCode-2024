@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -29,15 +30,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Robot {
-    protected final HardwareMap hardwareMap;
+    public final HardwareMap hardwareMap;
     protected final RobotConfig.HardwareConfigs hardwareConfigs;
-    protected final Telemetry telemetry;
+    public final Telemetry telemetry;
     public ProgramRunningStatusChecker programRunningStatusChecker;
     protected DriverGamePad driverGamePad = null;
 
     protected final boolean useMultiThread;
 
-    private EncoderMotorMechanism frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
+    private final EncoderMotorMechanism frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
+    public DistanceSensor distanceSensor;
     public Chassis chassis;
 //    public IntakeLegacy intake;
 //    public ArmLegacy arm;
@@ -52,7 +54,7 @@ public abstract class Robot {
     protected DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
     protected final List<RobotModule> robotModules = new ArrayList<>(1);
     protected final List<RobotService> robotServices = new ArrayList<>(1);
-    protected TelemetrySender telemetrySender;
+    public TelemetrySender telemetrySender;
     protected IMU imu, alternativeIMU;
 
     public enum Side {
@@ -83,6 +85,7 @@ public abstract class Robot {
         this.backRightMotor = hardwareMap.get(DcMotorEx.class, "backRight");
 
         this.imu = hardwareMap.get(IMU.class, "imu");
+        this.distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
         imu.initialize(this.hardwareConfigs.imuParameter);
         if (hardwareConfigs.alternativeIMUParameter != null) {
             this.alternativeIMU = hardwareMap.get(IMU.class, "alternativeIMU");

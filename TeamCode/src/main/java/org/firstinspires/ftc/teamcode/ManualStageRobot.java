@@ -26,7 +26,7 @@ public class ManualStageRobot extends Robot {
     @Override
     public void initializeRobot() {
         final double pilotFacing = side == Side.RED ? Math.PI / 2 : -Math.PI / 2;
-        PilotChassisService chassisService = new PilotChassisService(chassis, driverGamePad, hardwareMap.get(DistanceSensor.class, "distance"), pixelCamera, pilotFacing);
+        PilotChassisService chassisService = new PilotChassisService(chassis, driverGamePad, super.distanceSensor, pixelCamera, pilotFacing);
         super.robotServices.add(chassisService);
 
 //        final IntakeService intakeService = new IntakeService(intake, chassisService.pixelDetector, copilotGamepad);
