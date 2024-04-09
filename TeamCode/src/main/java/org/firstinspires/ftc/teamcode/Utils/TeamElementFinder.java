@@ -22,11 +22,11 @@ public class TeamElementFinder {
         UNDETERMINED
     }
 
-    private static final Map<TeamElementPosition, Double> teamElementPositionsPixel = new HashMap<>();
+    private static final Map<TeamElementPosition, Integer> teamElementPositionsPixel = new HashMap<>();
     static {
-        teamElementPositionsPixel.put(TeamElementPosition.LEFT, 0.0);
-        teamElementPositionsPixel.put(TeamElementPosition.CENTER, 0.0);
-        teamElementPositionsPixel.put(TeamElementPosition.RIGHT, 0.0);
+        teamElementPositionsPixel.put(TeamElementPosition.LEFT, 60);
+        teamElementPositionsPixel.put(TeamElementPosition.CENTER, 340);
+        teamElementPositionsPixel.put(TeamElementPosition.RIGHT, 580);
     }
 
     private TeamElementPosition teamElementPosition;
@@ -44,7 +44,7 @@ public class TeamElementFinder {
         this.teamElementPosition = TeamElementPosition.UNDETERMINED;
     }
 
-    public void findTeamElement() {
+    public void findTeamElementOnce() {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         if (!(currentRecognitions.size() == 1 && currentRecognitions.get(0).getLabel().contains("team-prop")))
             return;
@@ -58,9 +58,23 @@ public class TeamElementFinder {
         }
     }
 
+    public void findTeamElement() {
+        findTeamElement(5000);
+    }
+
+    public void findTeamElement(long timeOut) {
+        final long startTime = System.currentTimeMillis();
+
+        while (teamElementPosition == TeamElementPosition.UNDETERMINED && System.currentTimeMillis() - startTime < timeOut)
+            findTeamElementOnce();
+
+        shutDown();
+    }
+
     public void shutDown() {
         visionPortal.setProcessorEnabled(tfod, false);
         tfod.shutdown();
+        visionPortal.close();
     }
 
     public TeamElementPosition getTeamElementPosition() {

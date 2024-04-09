@@ -87,8 +87,8 @@ public class CameraAutoCalibration extends AutoStageProgram {
                     final Vector2D targetRelativePositionToRobotFieldOriented = positionEstimator.getCurrentPosition().multiplyBy(-1),
                             targetRelativePositionToRobotInCameraView = targetRelativePositionToRobotFieldOriented.multiplyBy(cameraFacingRotation.getReversal()).multiplyBy(positionEstimator.getRotation2D().getReversal());
 
-                    angleYSamples[i] = Math.atan(targetRelativePositionToRobotInCameraView.getY() / cameraInstallationHeightCM);
                     angleXSamples[i] = targetRelativePositionToRobotInCameraView.getHeading();
+                    angleYSamples[i] = Math.atan(targetRelativePositionToRobotInCameraView.getY() / cameraInstallationHeightCM);
                     pixelXSamples[i] = cameraToTest.getRawAprilTagByID(targetID).x;
                     pixelYSamples[i] = cameraToTest.getRawAprilTagByID(targetID).y;
                 },

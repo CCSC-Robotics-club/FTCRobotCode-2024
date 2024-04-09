@@ -58,7 +58,7 @@ public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
         // armTest();
-        tensorFlowAndAprilTagCameraTest();
+        teamElementFinderTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -927,11 +927,10 @@ public class TestMain extends LinearOpMode {
         builder.addProcessor(aprilTag);
 
         final VisionPortal visionPortal = builder.build();
+        visionPortal.setProcessorEnabled(tfod, true);
+        visionPortal.setProcessorEnabled(aprilTag, false);
 
         waitForStart();
-
-        visionPortal.setProcessorEnabled(tfod, true);
-        visionPortal.setProcessorEnabled(aprilTag, true);
 
         while (!isStopRequested() && opModeIsActive()) {
             List<Recognition> currentRecognitions = tfod.getRecognitions();
@@ -960,6 +959,7 @@ public class TestMain extends LinearOpMode {
 
             telemetry.update();
         }
+        tfod.shutdown();
     }
 
     private void armTest() {
@@ -992,7 +992,7 @@ public class TestMain extends LinearOpMode {
 
         waitForStart();
 
-        teamElementFinder.findTeamElement();
+        teamElementFinder.findTeamElement(5000);
         telemetry.addData("team element finder result: ", teamElementFinder.getTeamElementPosition());
         telemetry.update();
         while (opModeIsActive() && !isStopRequested()) {
