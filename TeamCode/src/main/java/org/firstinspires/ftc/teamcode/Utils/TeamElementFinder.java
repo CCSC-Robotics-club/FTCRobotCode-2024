@@ -58,16 +58,17 @@ public class TeamElementFinder {
         }
     }
 
-    public void findTeamElementAndShutDown() {
-        findTeamElementAndShutDown(5000);
-        shutDown();
-    }
-
-    public void findTeamElementAndShutDown(long timeOut) {
-        final long startTime = System.currentTimeMillis();
-
-        while (teamElementPosition == TeamElementPosition.UNDETERMINED && System.currentTimeMillis() - startTime < timeOut)
-            findTeamElementOnce();
+    public SequentialCommandSegment findTeamElementAndShutDown(long timeOut) {
+        final long[] startTime = new long[1];
+        return new SequentialCommandSegment(
+                () -> true,
+                () -> null,
+                () -> startTime[0] = System.currentTimeMillis(),
+                this::findTeamElementOnce,
+                this::shutDown,
+                () -> teamElementPosition == TeamElementPosition.UNDETERMINED,
+                () -> null, () -> null
+        );
     }
 
     public void shutDown() {

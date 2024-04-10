@@ -42,7 +42,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
 
 
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
-        super.commandSegments.add(sequentialCommandFactory.justDoIt(teamElementFinder::findTeamElementAndShutDown));
+        super.commandSegments.add(teamElementFinder.findTeamElementAndShutDown(5000));
         super.commandSegments.add(
                 new SequentialCommandSegment(
                         () -> true,
@@ -61,7 +61,12 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                 )
         );
 
-        super.commandSegments.add(sequentialCommandFactory.waitFor(100));
+        super.commandSegments.add(sequentialCommandFactory.waitFor(300));
+
+        super.commandSegments.add(sequentialCommandFactory.justDoIt(() ->
+                robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null)));
+
+        super.commandSegments.add(sequentialCommandFactory.waitFor(200));
 
         super.commandSegments.add(sequentialCommandFactory.moveToPoint(
                 sequentialCommandFactory.getBezierCurvesFromPathFile("score second").get(0).getPositionWithLERP(1),
