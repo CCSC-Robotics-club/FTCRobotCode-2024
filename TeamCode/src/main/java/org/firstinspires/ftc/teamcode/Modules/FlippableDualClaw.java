@@ -13,14 +13,16 @@ import java.util.Map;
 
 public class FlippableDualClaw extends RobotModule {
     private final ProfiledServo flip, leftClaw, rightClaw;
+    private final Arm arm;
 
     private boolean closeLeftClaw, closeRightClaw, flipperOnIntake;
-    public FlippableDualClaw(Servo flip, Servo leftClaw, Servo rightClaw) {
+    public FlippableDualClaw(Servo flip, Servo leftClaw, Servo rightClaw, Arm arm) {
         super("claw");
         /* TODO: make servo speed in robot config */
         this.flip = new ProfiledServo(flip, 2);
         this.leftClaw = new ProfiledServo(leftClaw, 2);
         this.rightClaw = new ProfiledServo(rightClaw,2);
+        this.arm = arm;
     }
 
     @Override
@@ -32,7 +34,9 @@ public class FlippableDualClaw extends RobotModule {
     protected void periodic(double dt) {
         leftClaw.setDesiredPosition(closeLeftClaw ? FlippableDualClawConfigs.leftClawClosePosition : FlippableDualClawConfigs.leftClawOpenPosition);
         rightClaw.setDesiredPosition(closeRightClaw ? FlippableDualClawConfigs.rightClawClosedPosition : FlippableDualClawConfigs.rightClawOpenPosition);
-        flip.setDesiredPosition(flipperOnIntake ? FlippableDualClawConfigs.flipperIntakePosition : FlippableDualClawConfigs.flipperNormalPosition);
+        flip.setDesiredPosition(
+                flipperOnIntake ? FlippableDualClawConfigs.flipperIntakePosition
+                : arm.getScoringOrHoldingClawAngle(FlippableDualClawConfigs.flipperHoldPosition));
 
         leftClaw.update(dt);
         rightClaw.update(dt);
@@ -48,7 +52,7 @@ public class FlippableDualClaw extends RobotModule {
     public void reset() {
         closeLeftClaw = closeRightClaw = flipperOnIntake = false;
 
-        flip.setDesiredPosition(FlippableDualClawConfigs.flipperNormalPosition);
+        flip.setDesiredPosition(FlippableDualClawConfigs.flipperHoldPosition);
         flip.update(10);
         leftClaw.setDesiredPosition(FlippableDualClawConfigs.leftClawClosePosition);
         leftClaw.update(10);

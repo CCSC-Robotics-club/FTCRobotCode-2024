@@ -19,6 +19,7 @@ public class Arm extends RobotModule {
     private final DcMotor armMotor, armEncoder;
     private final TouchSensor limitSwitch;
     private int armEncoderZeroPosition = -114514;
+    private double scoringHeight;
     private final SimpleArmController armController = new SimpleArmController(
             ArmConfigs.maxPowerWhenMovingUp,
             ArmConfigs.maxPowerWhenMovingDown,
@@ -54,6 +55,8 @@ public class Arm extends RobotModule {
         }
 
         armController.desiredPosition = ArmConfigs.encoderPositions.get(desiredPosition);
+        if (desiredPosition == ArmConfigs.Position.SCORE)
+            armController.desiredPosition = ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight);
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         final double currentPosition = getArmEncoderPosition(),
@@ -72,6 +75,7 @@ public class Arm extends RobotModule {
     @Override
     public void reset() {
         this.desiredPosition = ArmConfigs.Position.INTAKE;
+        this.scoringHeight = 0;
     }
 
     public void setPosition(ArmConfigs.Position position, RobotService operatorService) {
@@ -86,6 +90,22 @@ public class Arm extends RobotModule {
 
     public int getArmEncoderPosition() {
         return (armEncoder.getCurrentPosition() - armEncoderZeroPosition) * (ArmConfigs.encoderReversed ? -1: 1);
+    }
+
+    public double getScoringOrHoldingClawAngle(double holdingPosition) {
+        return desiredPosition == ArmConfigs.Position.SCORE
+                ? ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(scoringHeight)
+                : holdingPosition;
+    }
+
+    public double getScoringDistanceToWall() {
+        return ArmConfigs.distancesToWallAccordingToScoringHeight.getYPrediction(scoringHeight);
+    }
+
+    public void setScoringHeight(double scoringHeight, RobotService operatorService) {
+        if (!isOwner(operatorService))
+            return;
+        this.scoringHeight = scoringHeight;
     }
 
     @Override

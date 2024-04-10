@@ -142,6 +142,16 @@ public final class RobotConfig {
                 powerNeededToMoveDown = 0.4,
                 errorTolerance = 100;
 
+        private static final double[]
+                scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
+                correspondingArmEncoderValues = new double[] {5000, 4000, 3000, 2000},
+                correspondingServoPositions = new double[] {0.7, 0.75, 0.8, 0.85},
+                correspondingDistanceToWall = new double[] {5, 4, 3, 2}; // in cm
+        public static final LookUpTable
+                armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
+                flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions),
+                distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall);
+
         public enum Position {
             INTAKE,
             GRAB_STACK,
@@ -157,7 +167,7 @@ public final class RobotConfig {
     }
 
     public static final class FlippableDualClawConfigs {
-        public static final double flipperIntakePosition = 0.2, flipperNormalPosition = 0.8;
+        public static final double flipperIntakePosition = 0.2, flipperHoldPosition = 0.8;
 
         public static final double leftClawClosePosition = 0.32, leftClawOpenPosition = 0.55, rightClawClosedPosition = 0.75, rightClawOpenPosition = 0.55;
     }

@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Services;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Modules.Arm;
-import org.firstinspires.ftc.teamcode.Modules.Elevator;
 import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
@@ -13,10 +12,11 @@ import java.util.Map;
 
 public class UpperStructureService extends RobotService {
     private final Arm arm;
-    private final Elevator elevator;
     private final FlippableDualClaw claw;
 
     private final Gamepad copilotGamePad;
+
+    private double scoringHeight;
 
     private enum UpperStructureStatus {
         GRABBING,
@@ -26,9 +26,8 @@ public class UpperStructureService extends RobotService {
 
     private UpperStructureStatus currentStatus;
 
-    public UpperStructureService(Arm arm, Elevator elevator, FlippableDualClaw claw, Gamepad copilotGamePad) {
+    public UpperStructureService(Arm arm, FlippableDualClaw claw, Gamepad copilotGamePad) {
         this.arm = arm;
-        this.elevator = elevator;
         this.claw = claw;
         this.copilotGamePad = copilotGamePad;
     }
@@ -65,6 +64,9 @@ public class UpperStructureService extends RobotService {
                 break;
             }
             case SCORING: {
+                arm.setScoringHeight(scoringHeight, this);
+                if (Math.abs(copilotGamePad.left_stick_y) > 0.05)
+                    scoringHeight += -1 * dt * copilotGamePad.left_stick_y;
                 /* firstly we close the claw */
                 if (!clawRequestedDuringCurrentScoringProcess){
                     claw.setLeftClawClosed(true, this);
@@ -129,9 +131,9 @@ public class UpperStructureService extends RobotService {
     public void reset() {
         claw.gainOwnerShip(this);
         arm.gainOwnerShip(this);
-        elevator.gainOwnerShip(this);
 
         currentStatus = UpperStructureStatus.HOLDING;
+        scoringHeight = 0.5;
     }
 
     @Override

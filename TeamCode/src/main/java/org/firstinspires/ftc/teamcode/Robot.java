@@ -12,7 +12,6 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
-import org.firstinspires.ftc.teamcode.Modules.Elevator;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
@@ -46,7 +45,6 @@ public abstract class Robot {
 
     public Arm arm;
     public FlippableDualClaw claw;
-    public Elevator elevator;
 
     public FixedAnglePixelCamera pixelCamera;
     public PositionEstimator positionEstimator;
@@ -159,17 +157,14 @@ public abstract class Robot {
 //        robotModules.add(arm);
 //        robotModules.add(extendableClaw);
 
-        /* claw */
-        claw = new FlippableDualClaw(hardwareMap.get(Servo.class, "flip"), hardwareMap.get(Servo.class, "clawLeft"), hardwareMap.get(Servo.class, "clawRight"));
-        robotModules.add(claw);
+
 
         /* arm */
         arm = new Arm(hardwareMap.get(DcMotor.class, "arm"), hardwareMap.get(DcMotor.class, "arm"), hardwareMap.get(TouchSensor.class, "armLimit"));
         robotModules.add(arm);
-
-        /* elevator */
-        elevator = new Elevator();
-        robotModules.add(elevator);
+        /* claw */
+        claw = new FlippableDualClaw(hardwareMap.get(Servo.class, "flip"), hardwareMap.get(Servo.class, "clawLeft"), hardwareMap.get(Servo.class, "clawRight"), arm);
+        robotModules.add(claw);
     }
 
     /**

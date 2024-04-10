@@ -8,6 +8,7 @@ import static java.lang.Thread.sleep;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.RobotConfig;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.DoubleSupplier;
 
 public class PilotChassisService extends RobotService {
     private final Chassis chassis;
@@ -27,6 +29,7 @@ public class PilotChassisService extends RobotService {
     public final DistanceSensor distanceSensor;
     private final PixelCameraAimBotLegacy pixelAimBot;
     public final IntakeServiceLegacy.PixelDetector pixelDetector;
+    private final DoubleSupplier distanceToWallTargetSupplier;
     private double rotationMaintainanceFacing;
     private Vector2D currentDesiredPosition;
     /** time since last translational command sent by pilot */
@@ -42,7 +45,7 @@ public class PilotChassisService extends RobotService {
     private Map<String, Object> debugMessages = new HashMap<>(1);
     private int aimCenter = 0;
     private final Rotation2D pilotFacingRotation;
-    public PilotChassisService(Chassis chassis, DriverGamePad driverController, DistanceSensor distanceSensor, FixedAnglePixelCamera pixelCamera, double pilotFacing) {
+    public PilotChassisService(Chassis chassis, DriverGamePad driverController, DistanceSensor distanceSensor, FixedAnglePixelCamera pixelCamera, Arm arm, double pilotFacing) {
         this.chassis = chassis;
         this.driverController = driverController;
         this.distanceSensor = distanceSensor;
@@ -53,6 +56,10 @@ public class PilotChassisService extends RobotService {
         pixelDetector = pixelAimBot != null ?
                 pixelAimBot::shouldIntakeStart
                 : () -> false;
+
+        distanceToWallTargetSupplier =
+                arm != null ?
+                arm::getScoringDistanceToWall : RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach::getY;
     }
     @Override
     public void init() {
@@ -331,10 +338,9 @@ public class PilotChassisService extends RobotService {
         this.lastAimSucceeded = true;
     }
 
-    private boolean goToWallPrecise(double aimCenterCM) {
-        final Vector2D targetedRelativePositionToWall = RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.addBy(
-                new Vector2D(new double[] {aimCenterCM, 0})
-        );
+    private boolean goToWallPrecise(double horizontalAimingTargetFromCenter) {
+        final Vector2D targetedRelativePositionToWall = getDesiredPreciseWallAimPosition()
+                .addBy(new Vector2D(new double[] {horizontalAimingTargetFromCenter, 0}));
 
         targetSeen |= chassis.isVisualNavigationAvailable();
         final boolean noSignOfWall = !targetSeen && System.currentTimeMillis() - timeTOFStageInitiated > RobotConfig.VisualNavigationConfigs.maxTimeToWaitForVisualNavigationMS; // if still no sign of the wall after 500ms
@@ -363,7 +369,7 @@ public class PilotChassisService extends RobotService {
         /* send pilot's x command, and the maintain distance y command by tof sensor, to the chassis */
         final Vector2D aimTargetEncoder = new Vector2D(new double[] {
                 pilotXCommand * targetDistanceAtMaxDesiredSpeed + chassis.getChassisEncoderPosition().getX(),
-                previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach).getY()
+                previousWallPosition.getY() + distanceToWallTargetSupplier.getAsDouble()
         });
         chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                 aimTargetEncoder), this);
@@ -371,6 +377,10 @@ public class PilotChassisService extends RobotService {
         /* keep on maintaining rotation */
         chassis.setRotationalTask(new Chassis.ChassisRotationalTask(Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                 0), this);
+    }
+
+    private Vector2D getDesiredPreciseWallAimPosition() {
+        return new Vector2D(new double[] {RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.getX(), distanceToWallTargetSupplier.getAsDouble()});
     }
 
     private void aimFail() {

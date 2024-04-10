@@ -57,8 +57,8 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        // armTest();
-        teamElementFinderTest();
+        armAndClawSync();
+        // teamElementFinderTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -962,23 +962,30 @@ public class TestMain extends LinearOpMode {
         tfod.shutdown();
     }
 
-    private void armTest() {
+    private void armAndClawSync() {
         DcMotor armMotor = hardwareMap.get(DcMotor.class, "arm");
+        Servo flip = hardwareMap.get(Servo.class, "flip");
         TouchSensor limitSwitch = hardwareMap.get(TouchSensor.class, "armLimit");
 
         waitForStart();
 
         final double powerRate = -1;
+        double servoCurrentDesiredPosition = RobotConfig.FlippableDualClawConfigs.flipperHoldPosition;
         int startingPos = armMotor.getCurrentPosition();
         while (!isStopRequested() && opModeIsActive()) {
             double power = gamepad1.left_stick_y * powerRate;
+
+            servoCurrentDesiredPosition += gamepad1.left_stick_y * -0.05;
+            servoCurrentDesiredPosition = Math.min(Math.max(0, servoCurrentDesiredPosition), 1);
             if (Math.abs(power) < 0.05)
                 power = 0;
 
             armMotor.setPower(power);
+            flip.setPosition(servoCurrentDesiredPosition);
 
             telemetry.addData("arm encoder reading", armMotor.getCurrentPosition() - startingPos);
             telemetry.addData("limit switch", limitSwitch.isPressed());
+            telemetry.addData("flip servo position", servoCurrentDesiredPosition);
 
             if (limitSwitch.isPressed())
                 startingPos = armMotor.getCurrentPosition();
