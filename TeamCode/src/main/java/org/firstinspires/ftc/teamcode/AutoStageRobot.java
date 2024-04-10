@@ -31,6 +31,8 @@ public class AutoStageRobot extends Robot {
         robotServices.add(autoProgramRunnerService);
         super.initializeRobot();
 
+        claw.setFlip(true, null);
+
         autoProgramRunnerService.scheduleCommandSegments(autoStageProgram.commandSegments);
     }
 

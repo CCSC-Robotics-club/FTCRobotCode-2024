@@ -58,23 +58,21 @@ public class TeamElementFinder {
         }
     }
 
-    public void findTeamElement() {
-        findTeamElement(5000);
+    public void findTeamElementAndShutDown() {
+        findTeamElementAndShutDown(5000);
+        shutDown();
     }
 
-    public void findTeamElement(long timeOut) {
+    public void findTeamElementAndShutDown(long timeOut) {
         final long startTime = System.currentTimeMillis();
 
         while (teamElementPosition == TeamElementPosition.UNDETERMINED && System.currentTimeMillis() - startTime < timeOut)
             findTeamElementOnce();
-
-        shutDown();
     }
 
     public void shutDown() {
         visionPortal.setProcessorEnabled(tfod, false);
         tfod.shutdown();
-        visionPortal.close();
     }
 
     public TeamElementPosition getTeamElementPosition() {

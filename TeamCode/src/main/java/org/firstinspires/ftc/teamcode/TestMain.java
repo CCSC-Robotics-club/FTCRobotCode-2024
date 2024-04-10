@@ -992,7 +992,7 @@ public class TestMain extends LinearOpMode {
 
         waitForStart();
 
-        teamElementFinder.findTeamElement(5000);
+        teamElementFinder.findTeamElementAndShutDown(5000);
         telemetry.addData("team element finder result: ", teamElementFinder.getTeamElementPosition());
         telemetry.update();
         while (opModeIsActive() && !isStopRequested()) {

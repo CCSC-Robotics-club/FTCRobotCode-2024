@@ -246,6 +246,18 @@ public class SequentialCommandFactory {
         );
     }
 
+    public SequentialCommandSegment waitFor(long timeMillis) {
+        final long[] t0 = new long[1];
+        return new SequentialCommandSegment(
+                justGo,
+                () -> null,
+                () -> t0[0] = System.currentTimeMillis(),
+                doNothing, doNothing,
+                () -> System.currentTimeMillis() - t0[0] > timeMillis,
+                weDoNotCareAboutRotation, weDoNotCareAboutRotation
+        );
+    }
+
     public Vector2D getRobotStartingPosition(String firstPathName) {
         return getBezierCurvesFromPathFile(firstPathName).get(0).getPositionWithLERP(0);
     }

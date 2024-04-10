@@ -144,6 +144,8 @@ public class AutoProgramRunner extends RobotService {
     public Map<String, Object> getDebugMessages() {
         final Map<String, Object> debugMessages = new HashMap<>();
         debugMessages.put("auto segment ID", currentSegmentID);
+        if (currentPathSchedule == null)
+            return debugMessages;
         debugMessages.put("auto translational scaled T", translationalScaledT);
         debugMessages.put("auto position (x)", currentPathSchedule.getPositionWithLERP().getX());
         debugMessages.put("auto position (y)", currentPathSchedule.getPositionWithLERP().getY());

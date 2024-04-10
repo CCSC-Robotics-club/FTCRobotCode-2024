@@ -29,7 +29,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         this.telemetrySender = telemetrySender;
     }
 
-    public SequentialCommandSegment createCommandSegment(Vector2D desiredPositionToWall) {
+    public SequentialCommandSegment stickToWall(Vector2D desiredPositionToWall) {
         return new SequentialCommandSegment(
                 () -> true,
                 null,
@@ -41,30 +41,37 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         );
     }
 
-    // TODO
-//    public SequentialCommandSegment createCommandSegment(TeamElementFinder teamElementFinder, SequentialCommandSegment.InitiateCondition initiateCondition) {
-//        return new SequentialCommandSegment(
-//                initiateCondition,
-//                null,
-//                this::init,
-//                () -> this.update(getWallPosition(teamElementFinder.getFindingResult())),
-//                () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker),
-//                chassis::isCurrentTranslationalTaskComplete,
-//                () -> new Rotation2D(0), () -> new Rotation2D(0)
-//        );
-//    }
+    public SequentialCommandSegment stickToWall(TeamElementFinder teamElementFinder, SequentialCommandSegment.InitiateCondition initiateCondition) {
+        return new SequentialCommandSegment(
+                initiateCondition,
+                null,
+                this::init,
+                () -> this.update(getWallPosition(teamElementFinder.getTeamElementPosition())),
+                () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker),
+                chassis::isCurrentTranslationalTaskComplete,
+                () -> new Rotation2D(0), () -> new Rotation2D(0)
+        );
+    }
 
     private Vector2D getWallPosition(TeamElementFinder.TeamElementPosition teamElementPosition) {
+        final double deviationFromCenter;
         switch (teamElementPosition) {
-            case UNDETERMINED:
-            case CENTER:
-                return RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach;
-            case LEFT:
-                return new Vector2D(new double[]{-RobotConfig.VisualNavigationConfigs.aimHorizontalPositions[3], RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach.getY()});
-            case RIGHT:
-                return new Vector2D(new double[]{RobotConfig.VisualNavigationConfigs.aimHorizontalPositions[3], RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach.getY()});
+            case UNDETERMINED: case LEFT: {
+                deviationFromCenter = -RobotConfig.VisualNavigationConfigs.aimHorizontalPositions[3];
+                break;
+            }
+            case RIGHT: {
+                deviationFromCenter = RobotConfig.VisualNavigationConfigs.aimHorizontalPositions[3];
+                break;
+            }
+            case CENTER: {
+                deviationFromCenter = 0;
+                break;
+            }
+            default: throw new IllegalStateException("unknown team element result: " + teamElementPosition);
         }
-        return new Vector2D();
+        return RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.addBy(
+                new Vector2D(new double[] {deviationFromCenter, 0}));
     }
 
     boolean distanceSensorTrustable = true;
