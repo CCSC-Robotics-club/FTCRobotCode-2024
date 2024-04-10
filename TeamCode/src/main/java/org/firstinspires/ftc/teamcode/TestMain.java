@@ -667,7 +667,7 @@ public class TestMain extends LinearOpMode {
         ));
         AutoProgramRunner autoProgramRunner = new AutoProgramRunner(chassis);
 
-        autoProgramRunner.scheduleCommandSegments(commandSegments);
+        autoProgramRunner.setCommandSegments(commandSegments);
 
         waitForStart();
         t0 = System.currentTimeMillis();

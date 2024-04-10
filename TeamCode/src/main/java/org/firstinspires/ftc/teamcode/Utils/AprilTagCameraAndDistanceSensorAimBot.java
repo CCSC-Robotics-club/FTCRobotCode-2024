@@ -44,7 +44,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
     public SequentialCommandSegment stickToWall(TeamElementFinder teamElementFinder, SequentialCommandSegment.InitiateCondition initiateCondition) {
         return new SequentialCommandSegment(
                 initiateCondition,
-                null,
+                () -> null,
                 this::init,
                 () -> this.update(getWallPosition(teamElementFinder.getTeamElementPosition())),
                 () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker),
@@ -57,11 +57,11 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         final double deviationFromCenter;
         switch (teamElementPosition) {
             case UNDETERMINED: case LEFT: {
-                deviationFromCenter = -RobotConfig.VisualNavigationConfigs.aimHorizontalPositions[3];
+                deviationFromCenter = -RobotConfig.VisualNavigationConfigs.autoStageScoringHorizontalDeviation;
                 break;
             }
             case RIGHT: {
-                deviationFromCenter = RobotConfig.VisualNavigationConfigs.aimHorizontalPositions[3];
+                deviationFromCenter = RobotConfig.VisualNavigationConfigs.autoStageScoringHorizontalDeviation;
                 break;
             }
             case CENTER: {

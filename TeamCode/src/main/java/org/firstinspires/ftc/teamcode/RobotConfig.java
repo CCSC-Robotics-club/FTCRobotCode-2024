@@ -157,7 +157,7 @@ public final class RobotConfig {
     }
 
     public static final class FlippableDualClawConfigs {
-        public static final double flipperIntakePosition = 0.14, flipperNormalPosition = 0.8;
+        public static final double flipperIntakePosition = 0.2, flipperNormalPosition = 0.8;
 
         public static final double leftClawClosePosition = 0.32, leftClawOpenPosition = 0.55, rightClawClosedPosition = 0.75, rightClawOpenPosition = 0.55;
     }
@@ -306,8 +306,9 @@ public final class RobotConfig {
         public static final double approachReverseSpeedTolerance = 20; // if the robot goes away from the wall in more than 20cm/s, we think the distance sensor failed
 
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -35});
-        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -2});
+        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
+        public static final double autoStageScoringHorizontalDeviation = 12;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 150;

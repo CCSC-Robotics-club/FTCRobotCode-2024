@@ -1,12 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Modules.Chassis;
-import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
-import org.firstinspires.ftc.teamcode.Modules.IntakeLegacy;
 import org.firstinspires.ftc.teamcode.Services.AutoProgramRunner;
 import org.firstinspires.ftc.teamcode.Utils.AutoStageProgram;
 import org.firstinspires.ftc.teamcode.Utils.ProgramRunningStatusChecker;
@@ -26,14 +22,11 @@ public class AutoStageRobot extends Robot {
 
     @Override
     public void initializeRobot() {
-        autoStageProgram.scheduleCommands(this, autoProgramRunnerService, telemetrySender);
-
         robotServices.add(autoProgramRunnerService);
         super.initializeRobot();
 
-        claw.setFlip(true, null);
-
-        autoProgramRunnerService.scheduleCommandSegments(autoStageProgram.commandSegments);
+        autoStageProgram.scheduleCommands(this, autoProgramRunnerService, telemetrySender);
+        autoProgramRunnerService.setCommandSegments(autoStageProgram.commandSegments);
     }
 
     @Override

@@ -15,6 +15,7 @@ import java.util.Map;
 
 
 public class Arm extends RobotModule {
+    // TODO make the height of scoring change-able using lookup table, and update the visual navigation approaching distance as well
     private final DcMotor armMotor, armEncoder;
     private final TouchSensor limitSwitch;
     private int armEncoderZeroPosition = -114514;

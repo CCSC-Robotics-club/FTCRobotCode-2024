@@ -12,8 +12,8 @@ import org.firstinspires.ftc.teamcode.Utils.SequentialCommandFactory;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.TeamElementFinder;
 
-public class FormalAutoStage extends AutoStageProgram {
-    public FormalAutoStage(Robot.Side side) {
+public class FrontFieldAutoTwoPieces extends AutoStageProgram {
+    public FrontFieldAutoTwoPieces(Robot.Side side) {
         super(side);
     }
 
@@ -34,8 +34,11 @@ public class FormalAutoStage extends AutoStageProgram {
                         robot.claw.setLeftClawClosed(false, null);
                     else
                         robot.claw.setRightClawClosed(false, null);
-                }
-        ;
+                };
+
+        robot.claw.setFlip(true, null);
+        robot.claw.setLeftClawClosed(true, null);
+        robot.claw.setRightClawClosed(true, null);
 
 
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
@@ -51,23 +54,20 @@ public class FormalAutoStage extends AutoStageProgram {
                                 default: throw new IllegalStateException("unknown team element position: " + teamElementFinder.getTeamElementPosition());
                             }
                         },
+                        () -> {}, () -> {},
                         splitPreload,
-                        () -> {},
-                        () -> {
-                            if (super.allianceSide == Robot.Side.BLUE)
-                                robot.claw.setRightClawClosed(false, null);
-                            else robot.claw.setLeftClawClosed(false, null);
-                        },
                         robot.chassis::isCurrentTranslationalTaskComplete,
                         robot.positionEstimator::getRotation2D, () -> new Rotation2D(0)
                 )
         );
 
-        super.commandSegments.add(sequentialCommandFactory.waitFor(500));
+        super.commandSegments.add(sequentialCommandFactory.waitFor(100));
 
         super.commandSegments.add(sequentialCommandFactory.moveToPoint(
                 sequentialCommandFactory.getBezierCurvesFromPathFile("score second").get(0).getPositionWithLERP(1),
                 () -> {
+                    robot.claw.setLeftClawClosed(true, null);
+                    robot.claw.setRightClawClosed(true, null);
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
                     robot.claw.setFlip(false, null);
                 },

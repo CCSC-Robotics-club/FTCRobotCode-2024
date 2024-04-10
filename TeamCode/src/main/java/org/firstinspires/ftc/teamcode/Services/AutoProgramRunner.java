@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
 
 /**
  * runs a sequence of command segment
@@ -115,7 +114,7 @@ public class AutoProgramRunner extends RobotService {
         robotChassis.gainOwnerShip(this);
     }
 
-    public void scheduleCommandSegments(List<SequentialCommandSegment> commandSegments) {
+    public void setCommandSegments(List<SequentialCommandSegment> commandSegments) {
         this.commandSegments = commandSegments;
     }
 
