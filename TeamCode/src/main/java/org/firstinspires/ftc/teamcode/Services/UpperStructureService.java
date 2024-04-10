@@ -134,7 +134,7 @@ public class UpperStructureService extends RobotService {
         arm.gainOwnerShip(this);
 
         currentStatus = UpperStructureStatus.HOLDING;
-        scoringHeight = 0.5;
+        scoringHeight = 1;
     }
 
     @Override

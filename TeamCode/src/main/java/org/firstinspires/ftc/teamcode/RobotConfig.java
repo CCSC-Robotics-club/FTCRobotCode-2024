@@ -143,10 +143,10 @@ public final class RobotConfig {
                 errorTolerance = 100;
 
         private static final double[]
-                scoringHeight = new double[] {0, 0.4, 0.8, 1},
-                correspondingArmEncoderValues = new double[] {5100, 4700, 4300, 4100},
-                correspondingServoPositions = new double[] {0.75, 0.85, 0.9, 0.95},
-                correspondingDistanceToWall = new double[] {27, 18, 6, 2}; // in cm
+                scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
+                correspondingArmEncoderValues = new double[] {5300 ,5100, 4700, 4300, 4100},
+                correspondingServoPositions = new double[] {0.7, 0.8, 0.88, 0.95, 1},
+                correspondingDistanceToWall = new double[] {35, 27, 18, 6, 2}; // in cm
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions),

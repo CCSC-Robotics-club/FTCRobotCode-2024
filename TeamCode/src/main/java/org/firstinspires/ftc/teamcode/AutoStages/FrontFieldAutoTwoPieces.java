@@ -66,6 +66,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
         super.commandSegments.add(sequentialCommandFactory.moveToPoint(
                 sequentialCommandFactory.getBezierCurvesFromPathFile("score second").get(0).getPositionWithLERP(1),
                 () -> {
+                    robot.arm.setScoringHeight(0.1, null);
                     robot.claw.setLeftClawClosed(true, null);
                     robot.claw.setRightClawClosed(true, null);
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);

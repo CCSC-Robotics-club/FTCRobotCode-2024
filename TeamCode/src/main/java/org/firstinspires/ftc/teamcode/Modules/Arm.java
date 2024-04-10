@@ -75,7 +75,7 @@ public class Arm extends RobotModule {
     @Override
     public void reset() {
         this.desiredPosition = ArmConfigs.Position.INTAKE;
-        this.scoringHeight = 0;
+        this.scoringHeight = 1;
     }
 
     public void setPosition(ArmConfigs.Position position, RobotService operatorService) {
