@@ -975,7 +975,7 @@ public class TestMain extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive()) {
             double power = gamepad1.left_stick_y * powerRate;
 
-            servoCurrentDesiredPosition += gamepad1.left_stick_y * -0.05;
+            servoCurrentDesiredPosition += gamepad1.right_stick_y * -0.05;
             servoCurrentDesiredPosition = Math.min(Math.max(0, servoCurrentDesiredPosition), 1);
             if (Math.abs(power) < 0.05)
                 power = 0;

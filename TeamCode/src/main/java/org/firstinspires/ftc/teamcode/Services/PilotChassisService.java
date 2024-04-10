@@ -59,7 +59,7 @@ public class PilotChassisService extends RobotService {
 
         distanceToWallTargetSupplier =
                 arm != null ?
-                arm::getScoringDistanceToWall : RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach::getY;
+                () -> -arm.getScoringDistanceToWall() : RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach::getY;
     }
     @Override
     public void init() {
