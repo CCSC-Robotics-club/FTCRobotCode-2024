@@ -435,7 +435,8 @@ public class Chassis extends RobotModule {
             case SET_VELOCITY:
                 return translationalTask.translationalValue.getMagnitude() < zeroJudge; // set velocity is a continuous command, it is only finished if the pilot idles the controller
             case DRIVE_TO_POSITION_ENCODER:
-                return isCloseEnough(getChassisEncoderPosition(), translationalTask.translationalValue, errorTolerance);
+                return isCloseEnough(getChassisEncoderPosition(), translationalTask.translationalValue, errorTolerance)
+                        && positionEstimator.getCurrentVelocity(OrientationMode.ROBOT_ORIENTATED).getMagnitude() < ChassisConfigs.chassisSpeedAsRobotStoppedCMPerSec;
             case DRIVE_TO_POSITION_VISUAL:
                 return isCloseEnough(getChassisEncoderPosition(), wallAbsoluteEncoderPositionField.addBy(translationalTask.translationalValue), errorTolerance);
             default:
@@ -447,8 +448,9 @@ public class Chassis extends RobotModule {
             case SET_ROTATIONAL_SPEED:
                 return Math.abs(rotationalTask.rotationalValue) < zeroJudge;
             case GO_TO_ROTATION:
-                return Math.abs(AngleUtils.getActualDifference(positionEstimator.getRotation(), rotationalTask.rotationalValue))
-                        < ChassisConfigs.chassisRotationErrorAsFinished;
+                return
+                        Math.abs(AngleUtils.getActualDifference(positionEstimator.getRotation(), rotationalTask.rotationalValue)) < ChassisConfigs.chassisRotationErrorAsFinished
+                        && Math.abs(positionEstimator.getAngularVelocity()) < ChassisConfigs.chassisRotationSpeedAsStopped;
             default:
                 throw new IllegalArgumentException("unknown rotational task" + rotationalTask.taskType.name());
         }

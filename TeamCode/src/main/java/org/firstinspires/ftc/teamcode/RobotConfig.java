@@ -216,6 +216,7 @@ public final class RobotConfig {
         public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(45);
         public static final double chassisRotation_errorTolerance = Math.toRadians(1.5);
         public static final double chassisRotationErrorAsFinished = Math.toRadians(6);
+        public static final double chassisRotationSpeedAsStopped = Math.toRadians(15); // rad/sec
         public static final double chassisRotation_feedForwardDelay = 0.15; // in seconds
         public static final EnhancedPIDController.StaticPIDProfile chassisRotationControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Math.PI * 2,
@@ -268,6 +269,7 @@ public final class RobotConfig {
 
         /** within how many times the error tolerance of PID should the translational task be counted as complete */
         public static final double errorAsTaskFinishedCM = 1.5;
+        public static final double chassisSpeedAsRobotStoppedCMPerSec = 5;
 
         public static final double errorAsTaskRoughlyFinished = 4;
 
@@ -289,7 +291,7 @@ public final class RobotConfig {
         // 2024 competition chassis
         public static final FixedAngleCameraProfile visualCameraProfile = new FixedAngleCameraProfile(
                 22,
-                0.955,
+                Math.toRadians(60),
                 -0.00315,
                 -0.003432,
                 new double[2], new double[2]);
@@ -314,7 +316,7 @@ public final class RobotConfig {
         public static final double distanceSensorMinDistance = 1;
         public static final double approachReverseSpeedTolerance = 20; // if the robot goes away from the wall in more than 20cm/s, we think the distance sensor failed
 
-        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -35});
+        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -45});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
         public static final double autoStageScoringHorizontalDeviation = 12;
