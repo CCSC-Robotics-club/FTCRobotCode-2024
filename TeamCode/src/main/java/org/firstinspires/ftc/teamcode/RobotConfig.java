@@ -146,7 +146,7 @@ public final class RobotConfig {
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
                 correspondingArmEncoderValues = new double[] {5300 ,5100, 4700, 4300, 4100},
                 correspondingServoPositions = new double[] {0.7, 0.8, 0.88, 0.95, 1},
-                correspondingDistanceToWall = new double[] {32, 24, 18, 6, 2}; // in cm
+                correspondingDistanceToWall = new double[] {32, 24, 16, 7, 2}; // in cm
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions),

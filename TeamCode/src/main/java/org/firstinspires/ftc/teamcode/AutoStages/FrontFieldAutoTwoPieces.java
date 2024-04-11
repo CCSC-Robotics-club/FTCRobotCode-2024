@@ -142,9 +142,12 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
         ));
 
         super.commandSegments.add(sequentialCommandFactory.followSingleCurve(
-                "score third and fourth", 0,
+                "score third and fourth", 1,
                 new Rotation2D(0),
-                () -> robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null), () -> {}, () -> {},
+                () -> {
+                    robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
+                    robot.arm.setScoringHeight(0.5, null);
+                }, () -> {}, () -> {},
                 SpeedCurves.slowDown, 0.5
         ));
 
