@@ -146,7 +146,7 @@ public final class RobotConfig {
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
                 correspondingArmEncoderValues = new double[] {5300 ,5100, 4700, 4300, 4100},
                 correspondingServoPositions = new double[] {0.7, 0.76, 0.85, 0.92, 0.95},
-                correspondingDistanceToWall = new double[] {30, 25, 16, 7, 2}; // in cm
+                correspondingDistanceToWall = new double[] {30, 24, 15, 7, 2}; // in cm
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions),
@@ -161,7 +161,7 @@ public final class RobotConfig {
         public static final Map<Position, Double> encoderPositions = new HashMap<>(); // in reference to zero position (limit switch)
         static {
             encoderPositions.put(Position.INTAKE, -100.0);
-            encoderPositions.put(Position.GRAB_STACK, 500.0);
+            encoderPositions.put(Position.GRAB_STACK, 350.0);
             encoderPositions.put(Position.SCORE, 4400.0);
         }
     }

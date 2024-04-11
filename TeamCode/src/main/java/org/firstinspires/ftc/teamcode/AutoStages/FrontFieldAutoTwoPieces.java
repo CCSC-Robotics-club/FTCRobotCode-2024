@@ -102,6 +102,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                 () -> true
         ));
 
+        super.commandSegments.add(sequentialCommandFactory.waitFor(500));
         super.commandSegments.add(sequentialCommandFactory.justDoIt(scorePreload));
 
         super.commandSegments.add(sequentialCommandFactory.waitFor(500));
@@ -113,16 +114,20 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                     robot.claw.setFlip(false, null);
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.GRAB_STACK, null);
                 },
-                () -> {},
-                () -> robot.claw.setFlip(true, null),
+                () -> {}, () -> {},
                 robot.arm::isArmInPosition,
                 () -> new Rotation2D(0), () -> new Rotation2D(0),
                 SpeedCurves.originalSpeed, speedConstrainWhenArmRaised
         ));
 
-        super.commandSegments.add(sequentialCommandFactory.followSingleCurveAndStop(
-                "move back and grab third from stack", 1,
-                new Rotation2D(0)
+        // TODO: problems here
+        super.commandSegments.add(new SequentialCommandSegment(
+                () -> true,
+                () -> sequentialCommandFactory.getBezierCurvesFromPathFile("move back and grab third from stack").get(1),
+                () -> {}, () -> {}, () -> robot.claw.setFlip(true, null),
+                robot.chassis::isCurrentTranslationalTaskComplete,
+                () -> new Rotation2D(0), () -> new Rotation2D(0),
+                SpeedCurves.easeOut, 0.6
         ));
 
         super.commandSegments.add(grabFromStackOuter);

@@ -38,27 +38,29 @@ public class AprilTagCameraAndDistanceSensorAimBot {
     }
 
     public SequentialCommandSegment stickToWall() {
-        return stickToWall(getWallPosition(TeamElementFinder.TeamElementPosition.CENTER));
-    }
-
-    public SequentialCommandSegment stickToWall(Vector2D desiredPositionToWall) {
-        return new SequentialCommandSegment(
-                () -> true,
-                null,
-                this::init,
-                () -> this.update(desiredPositionToWall),
-                () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker),
-                chassis::isCurrentTranslationalTaskComplete,
-                () -> new Rotation2D(0), () -> new Rotation2D(0)
+        return stickToWall(
+                () -> update(getWallPosition(TeamElementFinder.TeamElementPosition.CENTER)),
+                () -> true
         );
     }
 
+    public SequentialCommandSegment stickToWall(Vector2D desiredPositionToWall) {
+        return stickToWall(() -> this.update(desiredPositionToWall), () -> true);
+    }
+
     public SequentialCommandSegment stickToWall(TeamElementFinder teamElementFinder, SequentialCommandSegment.InitiateCondition initiateCondition) {
+        return stickToWall(
+                () -> this.update(getWallPosition(teamElementFinder.getTeamElementPosition())),
+                initiateCondition
+        );
+    }
+
+    private SequentialCommandSegment stickToWall(Runnable updateCommand, SequentialCommandSegment.InitiateCondition initiateCondition) {
         return new SequentialCommandSegment(
                 initiateCondition,
                 () -> null,
                 this::init,
-                () -> this.update(getWallPosition(teamElementFinder.getTeamElementPosition())),
+                updateCommand,
                 () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker),
                 chassis::isCurrentTranslationalTaskComplete,
                 () -> new Rotation2D(0), () -> new Rotation2D(0)
