@@ -30,7 +30,7 @@ public class PilotChassisService extends RobotService {
     private final PixelCameraAimBotLegacy pixelAimBot;
     public final IntakeServiceLegacy.PixelDetector pixelDetector;
     private final DoubleSupplier distanceToWallTargetSupplier;
-    private double rotationMaintainanceFacing;
+    private double rotationMaintenanceFacing;
     private Vector2D currentDesiredPosition;
     /** time since last translational command sent by pilot */
     private double pilotLastTranslationalActionTime, pilotLastRotationalActionTime;
@@ -59,7 +59,7 @@ public class PilotChassisService extends RobotService {
 
         distanceToWallTargetSupplier =
                 arm != null ?
-                () -> -arm.getScoringDistanceToWall() : RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach::getY;
+                arm::getScoringDistanceToWall : RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach::getY;
     }
     @Override
     public void init() {
@@ -121,7 +121,7 @@ public class PilotChassisService extends RobotService {
         if (driverController.keyOnReleased(RobotConfig.KeyBindings.processVisualApproachButton)) {
             if (previousWallPosition != null)
                 this.currentDesiredPosition = previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach);
-            this.rotationMaintainanceFacing = 0;
+            this.rotationMaintenanceFacing = 0;
             this.visualTaskStatus = VisualTaskStatus.FINISHED;
         }
 
@@ -183,11 +183,11 @@ public class PilotChassisService extends RobotService {
         );
 
         if (pilotLastRotationalActionTime < RobotConfig.ChassisConfigs.timeToStartDecelerateRotation)
-            rotationMaintainanceFacing = chassis.getYaw();
+            rotationMaintenanceFacing = chassis.getYaw();
         else if (!driverController.keyOnHold(RobotConfig.KeyBindings.turnOffRotationControlButton))
             rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
                     Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
-                    rotationMaintainanceFacing
+                    rotationMaintenanceFacing
             );
 
         /* auto facing control*/
@@ -467,7 +467,7 @@ public class PilotChassisService extends RobotService {
     public void reset() {
         this.chassis.gainOwnerShip(this);
         this.currentDesiredPosition = new Vector2D();
-        this.rotationMaintainanceFacing = 0;
+        this.rotationMaintenanceFacing = 0;
         this.pilotLastTranslationalActionTime = this.pilotLastRotationalActionTime = 0;
         this.currentDesiredPosition = chassis.getChassisEncoderPosition();
         this.controlMode = RobotConfig.ControlConfigs.defaultControlMode;

@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 
-import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.AngleUtils;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EncoderMotorMechanism;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EnhancedPIDController;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EnhancedPIDController2D;
-import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.MechanismController;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.SimpleFeedForwardController;
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
@@ -427,21 +425,19 @@ public class Chassis extends RobotModule {
 
     static final double zeroJudge = 0.01;
     public boolean isCurrentTranslationalTaskRoughlyComplete() {
-        return isCurrentTranslationalTaskComplete(ChassisConfigs.errorToleranceAsTaskRoughlyFinished);
+        return isCurrentTranslationalTaskComplete(ChassisConfigs.errorAsTaskRoughlyFinished);
     }
     public boolean isCurrentTranslationalTaskComplete() {
-        return isCurrentTranslationalTaskComplete(ChassisConfigs.errorToleranceAsTaskFinished);
+        return isCurrentTranslationalTaskComplete(ChassisConfigs.errorAsTaskFinishedCM);
     }
-    private boolean isCurrentTranslationalTaskComplete(double errorToleranceAsProgramFinished) {
+    private boolean isCurrentTranslationalTaskComplete(double errorTolerance) {
         switch (translationalTask.taskType) {
             case SET_VELOCITY:
                 return translationalTask.translationalValue.getMagnitude() < zeroJudge; // set velocity is a continuous command, it is only finished if the pilot idles the controller
             case DRIVE_TO_POSITION_ENCODER:
-                return isCloseEnough(getChassisEncoderPosition(), translationalTask.translationalValue,
-                        ChassisConfigs.encoderTranslationalControllerProfileX.getErrorTolerance() * errorToleranceAsProgramFinished);
+                return isCloseEnough(getChassisEncoderPosition(), translationalTask.translationalValue, errorTolerance);
             case DRIVE_TO_POSITION_VISUAL:
-                return isCloseEnough(getChassisEncoderPosition(), wallAbsoluteEncoderPositionField.addBy(translationalTask.translationalValue),
-                        ChassisConfigs.encoderTranslationalControllerProfileX.getErrorTolerance() * errorToleranceAsProgramFinished);
+                return isCloseEnough(getChassisEncoderPosition(), wallAbsoluteEncoderPositionField.addBy(translationalTask.translationalValue), errorTolerance);
             default:
                 throw new IllegalArgumentException("unknown translational task" + translationalTask.taskType.name());
         }

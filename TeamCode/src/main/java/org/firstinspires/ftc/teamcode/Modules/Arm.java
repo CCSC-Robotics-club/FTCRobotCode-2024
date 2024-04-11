@@ -99,7 +99,7 @@ public class Arm extends RobotModule {
     }
 
     public double getScoringDistanceToWall() {
-        return ArmConfigs.distancesToWallAccordingToScoringHeight.getYPrediction(scoringHeight);
+        return -ArmConfigs.distancesToWallAccordingToScoringHeight.getYPrediction(scoringHeight);
     }
 
     public void setScoringHeight(double scoringHeight, RobotService operatorService) {

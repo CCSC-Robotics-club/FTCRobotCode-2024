@@ -22,5 +22,5 @@ public abstract class AutoStageProgram {
         allianceSide = side;
     }
 
-    public abstract void scheduleCommands(Robot robot, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender);
+    public abstract void scheduleCommands(Robot robot, TelemetrySender telemetrySender);
 }

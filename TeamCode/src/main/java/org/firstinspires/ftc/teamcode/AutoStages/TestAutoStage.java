@@ -24,7 +24,7 @@ public class TestAutoStage extends AutoStageProgram {
     }
 
     @Override
-    public void scheduleCommands(Robot robot, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
+    public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
         final TeamElementFinder teamElementFinder = new TeamElementFinder(robot.hardwareMap.get(WebcamName.class, "Webcam 1"));
         final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(Math.toRadians(90)), super.allianceSide, robot.hardwareMap);
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());

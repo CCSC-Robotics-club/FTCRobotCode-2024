@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Utils;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.checkerframework.checker.units.qual.Speed;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
@@ -267,12 +268,32 @@ public class SequentialCommandFactory {
     }
 
     public SequentialCommandSegment followSingleCurve(String pathName, int index, Rotation2D facingRotation, Runnable beginning, Runnable periodic, Runnable ending) {
+        return followSingleCurve(pathName, index, facingRotation, beginning, periodic, ending, SpeedCurves.originalSpeed, 1);
+    }
+
+    public SequentialCommandSegment followSingleCurve(String pathName, int index, Rotation2D facingRotation, Runnable beginning, Runnable periodic, Runnable ending, SpeedCurves.SpeedCurve speedCurve, double timeScale) {
         final List<BezierCurve> curves = getBezierCurvesFromPathFile(pathName);
         return new SequentialCommandSegment(
                 () -> true,
                 () -> curves.get(index),
                 beginning, periodic, ending,
                 () -> true,
+                maintainCurrentRotation, () -> toActualRotation(facingRotation),
+                speedCurve, timeScale
+        );
+    }
+
+    public SequentialCommandSegment followSingleCurveAndStop(String pathName, int index, Rotation2D facingRotation) {
+        return followSingleCurveAndStop(pathName, index, facingRotation, doNothing, doNothing, doNothing);
+    }
+
+    public SequentialCommandSegment followSingleCurveAndStop(String pathName, int index, Rotation2D facingRotation, Runnable beginning, Runnable periodic, Runnable ending) {
+        final List<BezierCurve> curves = getBezierCurvesFromPathFile(pathName);
+        return new SequentialCommandSegment(
+                () -> true,
+                () -> curves.get(index),
+                beginning, periodic, ending,
+                chassis::isCurrentTranslationalTaskRoughlyComplete,
                 maintainCurrentRotation, () -> toActualRotation(facingRotation),
                 SpeedCurves.originalSpeed,1
         );

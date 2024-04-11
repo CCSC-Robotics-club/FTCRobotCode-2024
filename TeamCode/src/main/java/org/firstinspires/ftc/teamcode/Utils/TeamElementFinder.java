@@ -66,7 +66,7 @@ public class TeamElementFinder {
                 () -> startTime[0] = System.currentTimeMillis(),
                 this::findTeamElementOnce,
                 this::shutDown,
-                () -> teamElementPosition == TeamElementPosition.UNDETERMINED,
+                () -> teamElementPosition != TeamElementPosition.UNDETERMINED || System.currentTimeMillis() - startTime[0] > timeOut,
                 () -> null, () -> null
         );
     }

@@ -25,7 +25,7 @@ public class AutoStageRobot extends Robot {
         robotServices.add(autoProgramRunnerService);
         super.initializeRobot();
 
-        autoStageProgram.scheduleCommands(this, autoProgramRunnerService, telemetrySender);
+        autoStageProgram.scheduleCommands(this, telemetrySender);
         autoProgramRunnerService.setCommandSegments(autoStageProgram.commandSegments);
     }
 

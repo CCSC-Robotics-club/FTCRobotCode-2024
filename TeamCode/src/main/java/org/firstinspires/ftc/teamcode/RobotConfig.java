@@ -146,7 +146,7 @@ public final class RobotConfig {
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
                 correspondingArmEncoderValues = new double[] {5300 ,5100, 4700, 4300, 4100},
                 correspondingServoPositions = new double[] {0.7, 0.8, 0.88, 0.95, 1},
-                correspondingDistanceToWall = new double[] {35, 27, 18, 6, 2}; // in cm
+                correspondingDistanceToWall = new double[] {32, 24, 18, 6, 2}; // in cm
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions),
@@ -167,7 +167,7 @@ public final class RobotConfig {
     }
 
     public static final class FlippableDualClawConfigs {
-        public static final double flipperIntakePosition = 0.2, flipperHoldPosition = 0.8;
+        public static final double flipperIntakePosition = 0.15, flipperHoldPosition = 0.8;
 
         public static final double leftClawClosePosition = 0.32, leftClawOpenPosition = 0.55, rightClawClosedPosition = 0.75, rightClawOpenPosition = 0.55;
     }
@@ -206,10 +206,9 @@ public final class RobotConfig {
 
     public static final class ChassisConfigs {
         public static final LookUpTable wheelPowerLookUpTable = new LookUpTable(
-                new double[] {0, 0.02, 0.5, 0.9, 1}, // encoder velocity / max velocity
-                new double[] {0, 0.06, 0.4, 0.8, 1} // motor power
+                new double[] {0, 0.03, 0.5, 0.9, 1}, // encoder velocity / max velocity
+                new double[] {0, 0.08, 0.4, 0.8, 1} // motor power
         );
-        public static final double wheel_maxVelocity = 2500;
 
 
         public static final double chassisRotation_maximumCorrectionPower = 0.65;
@@ -235,18 +234,18 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileX = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.03, // for precise wall aiming
+                0.06, // for precise wall aiming
                 40,
-                1.2,
+                1,
                 0.14,
                 0, 0
         );
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileY = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.03,
+                0.05,
                 40,
-                1.2,
+                1,
                 0.13,
                 0, 0
         );
@@ -268,9 +267,9 @@ public final class RobotConfig {
         public static final double timeToStartDecelerateRotation = 0.3;
 
         /** within how many times the error tolerance of PID should the translational task be counted as complete */
-        public static final double errorToleranceAsTaskFinished = 2.3;
+        public static final double errorAsTaskFinishedCM = 1.5;
 
-        public static final double errorToleranceAsTaskRoughlyFinished = 8;
+        public static final double errorAsTaskRoughlyFinished = 4;
 
         public static final double autoStageMaxVelocity = 135;
         public static final double autoStageMaxAcceleration = 200;

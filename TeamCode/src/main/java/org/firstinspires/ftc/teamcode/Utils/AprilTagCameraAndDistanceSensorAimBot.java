@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Utils;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.RobotConfig;
@@ -10,8 +11,13 @@ import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
+import java.util.function.DoubleSupplier;
+
+// TODO: re-write the whole program as status machine
+
 public class AprilTagCameraAndDistanceSensorAimBot {
     private final Chassis chassis;
+    private final DoubleSupplier desiredDistanceToWallSuplier;
     private final DistanceSensor distanceSensor;
     private final FixedAngleArilTagCamera aprilTagCamera;
     private final ModulesCommanderMarker modulesCommanderMarker;
@@ -19,14 +25,20 @@ public class AprilTagCameraAndDistanceSensorAimBot {
     private Vector2D previousWallPosition = new Vector2D(new double[]{0, 0});
     private double previousWallDistance = Double.POSITIVE_INFINITY;
     public AprilTagCameraAndDistanceSensorAimBot(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, ModulesCommanderMarker commanderMarker) {
-        this(chassis, distanceSensor, aprilTagCamera, commanderMarker, null);
+        this(chassis, distanceSensor, aprilTagCamera, null, commanderMarker, null);
     }
-    public AprilTagCameraAndDistanceSensorAimBot(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
+    public AprilTagCameraAndDistanceSensorAimBot(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, Arm arm, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
         this.chassis = chassis;
         this.distanceSensor = distanceSensor;
         this.aprilTagCamera = aprilTagCamera;
         this.modulesCommanderMarker = commanderMarker;
         this.telemetrySender = telemetrySender;
+        this.desiredDistanceToWallSuplier = arm != null ?
+                arm::getScoringDistanceToWall : RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach::getY;
+    }
+
+    public SequentialCommandSegment stickToWall() {
+        return stickToWall(getWallPosition(TeamElementFinder.TeamElementPosition.CENTER));
     }
 
     public SequentialCommandSegment stickToWall(Vector2D desiredPositionToWall) {
@@ -53,7 +65,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         );
     }
 
-    private Vector2D getWallPosition(TeamElementFinder.TeamElementPosition teamElementPosition) {
+    public Vector2D getWallPosition(TeamElementFinder.TeamElementPosition teamElementPosition) {
         final double deviationFromCenter;
         switch (teamElementPosition) {
             case UNDETERMINED: case LEFT: {
@@ -70,8 +82,10 @@ public class AprilTagCameraAndDistanceSensorAimBot {
             }
             default: throw new IllegalStateException("unknown team element result: " + teamElementPosition);
         }
-        return RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.addBy(
-                new Vector2D(new double[] {deviationFromCenter, 0}));
+        return new Vector2D(new double[] {
+                RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.getX() + deviationFromCenter,
+                desiredDistanceToWallSuplier.getAsDouble()
+        });
     }
 
     boolean distanceSensorTrustable = true;
@@ -85,11 +99,11 @@ public class AprilTagCameraAndDistanceSensorAimBot {
             chassis.forceUpdateEncoders(modulesCommanderMarker);
             chassis.forceUpdateWheels(modulesCommanderMarker);
             try { Thread.sleep(50); } catch (InterruptedException ignored) {}
-            // throw new IllegalStateException("waiting for target");
         }
         if (!chassis.isVisualNavigationAvailable()) return;
         final double distanceSensorReading = distanceSensor.getDistance(DistanceUnit.CM);
-        if (distanceSensorReading > RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance) throw new IllegalStateException("target too far");
+        if (distanceSensorReading > RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance)
+            System.out.println("<-- warning: target might be too far -->");
         resetAimBot();
         updateWallPositionTOF();
     }
