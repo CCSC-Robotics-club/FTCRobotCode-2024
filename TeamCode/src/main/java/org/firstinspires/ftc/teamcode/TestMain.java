@@ -57,7 +57,8 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        armAndClawSync();
+        fixedAngleAprilTagCameraVerticalParameterMeasuring();
+        // armAndClawSync();
         // teamElementFinderTest();
     }
 
@@ -575,10 +576,10 @@ public class TestMain extends LinearOpMode {
                 new HuskyAprilTagCamera(hardwareMap.get(HuskyLens.class, "husky")),
                 telemetry,
                 gamepad1,
-                24,
+                21,
                 60,
                 20,
-                5
+                2
         );
 
         // results:

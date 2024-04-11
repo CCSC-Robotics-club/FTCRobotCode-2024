@@ -269,7 +269,7 @@ public class PilotChassisService extends RobotService {
                         0
                 ), this);
 
-                if (chassis.isCurrentTranslationalTaskRoughlyComplete() && chassis.isCurrentRotationalTaskComplete()) {
+                if (chassis.isCurrentTranslationalTaskRoughlyComplete() && chassis.isCurrentRotationalTaskRoughlyComplete()) {
                     this.timeTOFStageInitiated = System.currentTimeMillis();
                     this.targetSeen = false;
                     this.visualTaskStatus = VisualTaskStatus.TOF_PRECISE_APPROACH;

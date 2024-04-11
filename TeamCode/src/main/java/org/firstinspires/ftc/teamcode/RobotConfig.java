@@ -145,8 +145,8 @@ public final class RobotConfig {
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
                 correspondingArmEncoderValues = new double[] {5300 ,5100, 4700, 4300, 4100},
-                correspondingServoPositions = new double[] {0.7, 0.8, 0.88, 0.95, 1},
-                correspondingDistanceToWall = new double[] {32, 24, 16, 7, 2}; // in cm
+                correspondingServoPositions = new double[] {0.7, 0.76, 0.85, 0.92, 0.95},
+                correspondingDistanceToWall = new double[] {30, 25, 16, 7, 2}; // in cm
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions),
@@ -215,7 +215,8 @@ public final class RobotConfig {
         public static final double chassisRotation_minimumCorrectionPower = 0.03;
         public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(45);
         public static final double chassisRotation_errorTolerance = Math.toRadians(1.5);
-        public static final double chassisRotationErrorAsFinished = Math.toRadians(6);
+        public static final double chassisRotationErrorAsFinished = Math.toRadians(4);
+        public static final double chassisRotationErrorAsRoughlyFinished = Math.toRadians(12);
         public static final double chassisRotationSpeedAsStopped = Math.toRadians(15); // rad/sec
         public static final double chassisRotation_feedForwardDelay = 0.15; // in seconds
         public static final EnhancedPIDController.StaticPIDProfile chassisRotationControllerProfile = new EnhancedPIDController.StaticPIDProfile(
@@ -271,7 +272,7 @@ public final class RobotConfig {
         public static final double errorAsTaskFinishedCM = 1.5;
         public static final double chassisSpeedAsRobotStoppedCMPerSec = 5;
 
-        public static final double errorAsTaskRoughlyFinished = 4;
+        public static final double errorAsTaskRoughlyFinished = 12;
 
         public static final double autoStageMaxVelocity = 135;
         public static final double autoStageMaxAcceleration = 200;
@@ -291,9 +292,9 @@ public final class RobotConfig {
         // 2024 competition chassis
         public static final FixedAngleCameraProfile visualCameraProfile = new FixedAngleCameraProfile(
                 22,
-                Math.toRadians(60),
+                0.70,
                 -0.00315,
-                -0.003432,
+                -0.00483,
                 new double[2], new double[2]);
         public static final double visualModuleUpdateRate = 5;
         public static final long timeKeepTrackingAfterTagLostMillis = (long) 10e9;
@@ -311,12 +312,12 @@ public final class RobotConfig {
          * */
         public static final double errorTolerance = 1.5;
 
-        public static final double distanceSensorMaxDistance = 40;
+        public static final double distanceSensorMaxDistance = 45;
         public static final double distanceSensorMaxDistance_maintainAndAim = 15;
         public static final double distanceSensorMinDistance = 1;
         public static final double approachReverseSpeedTolerance = 20; // if the robot goes away from the wall in more than 20cm/s, we think the distance sensor failed
 
-        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -45});
+        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -40});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
         public static final double autoStageScoringHorizontalDeviation = 12;

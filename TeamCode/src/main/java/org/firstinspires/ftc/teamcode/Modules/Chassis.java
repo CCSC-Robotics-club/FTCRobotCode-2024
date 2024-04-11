@@ -428,29 +428,37 @@ public class Chassis extends RobotModule {
         return isCurrentTranslationalTaskComplete(ChassisConfigs.errorAsTaskRoughlyFinished);
     }
     public boolean isCurrentTranslationalTaskComplete() {
-        return isCurrentTranslationalTaskComplete(ChassisConfigs.errorAsTaskFinishedCM);
+        return isCurrentTranslationalTaskComplete(ChassisConfigs.errorAsTaskFinishedCM) && positionEstimator.getCurrentVelocity(OrientationMode.ROBOT_ORIENTATED).getMagnitude() < ChassisConfigs.chassisSpeedAsRobotStoppedCMPerSec;
     }
     private boolean isCurrentTranslationalTaskComplete(double errorTolerance) {
         switch (translationalTask.taskType) {
             case SET_VELOCITY:
                 return translationalTask.translationalValue.getMagnitude() < zeroJudge; // set velocity is a continuous command, it is only finished if the pilot idles the controller
             case DRIVE_TO_POSITION_ENCODER:
-                return isCloseEnough(getChassisEncoderPosition(), translationalTask.translationalValue, errorTolerance)
-                        && positionEstimator.getCurrentVelocity(OrientationMode.ROBOT_ORIENTATED).getMagnitude() < ChassisConfigs.chassisSpeedAsRobotStoppedCMPerSec;
+                return isCloseEnough(getChassisEncoderPosition(), translationalTask.translationalValue, errorTolerance);
             case DRIVE_TO_POSITION_VISUAL:
                 return isCloseEnough(getChassisEncoderPosition(), wallAbsoluteEncoderPositionField.addBy(translationalTask.translationalValue), errorTolerance);
             default:
                 throw new IllegalArgumentException("unknown translational task" + translationalTask.taskType.name());
         }
     }
+
+    public boolean isCurrentRotationalTaskRoughlyComplete() {
+        return isCurrentRotationalTaskComplete(ChassisConfigs.chassisRotationErrorAsRoughlyFinished);
+    }
+
     public boolean isCurrentRotationalTaskComplete() {
+        return isCurrentRotationalTaskComplete(ChassisConfigs.chassisRotationErrorAsFinished)
+                && Math.abs(positionEstimator.getAngularVelocity()) < ChassisConfigs.chassisRotationSpeedAsStopped;
+    }
+
+    private boolean isCurrentRotationalTaskComplete(double errorTolerance) {
         switch (rotationalTask.taskType) {
             case SET_ROTATIONAL_SPEED:
                 return Math.abs(rotationalTask.rotationalValue) < zeroJudge;
             case GO_TO_ROTATION:
-                return
-                        Math.abs(AngleUtils.getActualDifference(positionEstimator.getRotation(), rotationalTask.rotationalValue)) < ChassisConfigs.chassisRotationErrorAsFinished
-                        && Math.abs(positionEstimator.getAngularVelocity()) < ChassisConfigs.chassisRotationSpeedAsStopped;
+                return Math.abs(AngleUtils.getActualDifference(positionEstimator.getRotation(), rotationalTask.rotationalValue))
+                        < errorTolerance;
             default:
                 throw new IllegalArgumentException("unknown rotational task" + rotationalTask.taskType.name());
         }
