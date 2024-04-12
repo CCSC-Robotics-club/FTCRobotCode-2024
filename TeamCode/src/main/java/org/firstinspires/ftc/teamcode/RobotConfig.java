@@ -268,9 +268,9 @@ public final class RobotConfig {
 
         public static final double timeToStartDecelerateRotation = 0.3;
 
-        /** within how many times the error tolerance of PID should the translational task be counted as complete */
+        /** within how much distance should the translational task be counted as complete */
         public static final double errorAsTaskFinishedCM = 1.5;
-        public static final double chassisSpeedAsRobotStoppedCMPerSec = 5;
+        public static final double chassisSpeedAsRobotStoppedCMPerSec = 3;
 
         public static final double errorAsTaskRoughlyFinished = 12;
 

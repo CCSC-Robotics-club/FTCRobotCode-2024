@@ -73,7 +73,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                         },
                         () -> {}, () -> {},
                         splitPreload,
-                        robot.chassis::isCurrentTranslationalTaskRoughlyComplete,
+                        robot.chassis::isCurrentTranslationalTaskComplete,
                         robot.positionEstimator::getRotation2D, () -> new Rotation2D(0)
                 )
         );
@@ -129,7 +129,11 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                 SpeedCurves.easeOut, 0.8
         ));
 
-        super.commandSegments.add(sequentialCommandFactory.moveToPointAndStop(sequentialCommandFactory.getBezierCurvesFromPathFile("move back and grab third from stack").get(1).getPositionWithLERP(1)));
+        super.commandSegments.add(
+                sequentialCommandFactory.moveToPointAndStop(sequentialCommandFactory.getBezierCurvesFromPathFile("move back and grab third from stack").get(1).getPositionWithLERP(1))
+        );
+
+        if (true) return;
 
 //        super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
         super.commandSegments.add(grabFromStackOuter);

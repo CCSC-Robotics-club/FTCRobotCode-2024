@@ -112,7 +112,7 @@ public class Arm extends RobotModule {
     public Map<String, Object> getDebugMessages() {
         final Map<String, Object> debugMessages = new HashMap<>();
 
-        debugMessages.put("arm desired position (enc)", ArmConfigs.encoderPositions.get(desiredPosition));
+        debugMessages.put("arm desired position (enc)", armController.desiredPosition);
         debugMessages.put("arm current position (enc)" , getArmEncoderPosition());
         debugMessages.put("arm in position", isArmInPosition());
         return debugMessages;

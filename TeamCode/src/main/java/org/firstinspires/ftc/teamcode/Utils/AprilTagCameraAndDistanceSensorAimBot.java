@@ -62,7 +62,8 @@ public class AprilTagCameraAndDistanceSensorAimBot {
                 this::init,
                 updateCommand,
                 () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker),
-                () -> chassis.isCurrentTranslationalTaskRoughlyComplete() && additionalCompleteChecker.isComplete(),
+                () -> !initSucceeded ||
+                        (chassis.isCurrentTranslationalTaskRoughlyComplete() && chassis.isCurrentRotationalTaskRoughlyComplete() && additionalCompleteChecker.isComplete()),
                 () -> new Rotation2D(0), () -> new Rotation2D(0)
         );
     }
@@ -91,10 +92,11 @@ public class AprilTagCameraAndDistanceSensorAimBot {
     }
 
     boolean distanceSensorTrustable = true;
+    boolean initSucceeded = false;
 
     private void init() {
         final long t0 = System.currentTimeMillis();
-        while (!chassis.isVisualNavigationAvailable() && System.currentTimeMillis() - t0 < RobotConfig.VisualNavigationConfigs.maxTimeToWaitForVisualNavigationMS * 10) {
+        while (!chassis.isVisualNavigationAvailable() && System.currentTimeMillis() - t0 < RobotConfig.VisualNavigationConfigs.maxTimeToWaitForVisualNavigationMS) {
             chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker);
             chassis.periodic();
             aprilTagCamera.periodic();
@@ -103,14 +105,19 @@ public class AprilTagCameraAndDistanceSensorAimBot {
             try { Thread.sleep(50); } catch (InterruptedException ignored) {}
         }
         if (!chassis.isVisualNavigationAvailable()) {
-            System.out.println("<-- warning: target not visible -->");return;
+            System.out.println("<-- warning: target not visible -->");
+            initSucceeded = false;
+            return;
         }
         final double distanceSensorReading = distanceSensor.getDistance(DistanceUnit.CM);
         if (distanceSensorReading > RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance) {
-            System.out.println("<-- warning: target might be too far -->");return;
+            System.out.println("<-- warning: target might be too far -->");
+            initSucceeded = false;
+            return;
         }
         resetAimBot();
         updateWallPositionTOF();
+        initSucceeded = true;
     }
 
     private void update(Vector2D desiredPositionToWall) {
