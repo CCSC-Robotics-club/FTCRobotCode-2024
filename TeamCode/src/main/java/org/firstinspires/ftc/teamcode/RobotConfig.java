@@ -161,7 +161,7 @@ public final class RobotConfig {
         public static final Map<Position, Double> encoderPositions = new HashMap<>(); // in reference to zero position (limit switch)
         static {
             encoderPositions.put(Position.INTAKE, -100.0);
-            encoderPositions.put(Position.GRAB_STACK, 350.0);
+            encoderPositions.put(Position.GRAB_STACK, 250.0);
             encoderPositions.put(Position.SCORE, 4400.0);
         }
     }
@@ -269,7 +269,7 @@ public final class RobotConfig {
         public static final double timeToStartDecelerateRotation = 0.3;
 
         /** within how much distance should the translational task be counted as complete */
-        public static final double errorAsTaskFinishedCM = 1.5;
+        public static final double errorAsTaskFinishedCM = 2;
         public static final double chassisSpeedAsRobotStoppedCMPerSec = 3;
 
         public static final double errorAsTaskRoughlyFinished = 12;

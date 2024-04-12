@@ -57,9 +57,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        fixedAngleAprilTagCameraVerticalParameterMeasuring();
-        // armAndClawSync();
-        // teamElementFinderTest();
+        imuReadTimeTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);

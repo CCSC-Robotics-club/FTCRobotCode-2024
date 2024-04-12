@@ -61,6 +61,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
                 () -> null,
                 this::init,
                 updateCommand,
+                // () -> {},
                 () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker),
                 () -> !initSucceeded ||
                         (chassis.isCurrentTranslationalTaskRoughlyComplete() && chassis.isCurrentRotationalTaskRoughlyComplete() && additionalCompleteChecker.isComplete()),

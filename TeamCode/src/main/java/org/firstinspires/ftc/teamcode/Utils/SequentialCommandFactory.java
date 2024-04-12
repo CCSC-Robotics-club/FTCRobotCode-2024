@@ -84,7 +84,7 @@ public class SequentialCommandFactory {
                             , null);
                 },
                 ending,
-                () -> true,
+                chassis::isCurrentTranslationalTaskRoughlyComplete,
                 maintainCurrentRotation, maintainCurrentRotation
         );
     }

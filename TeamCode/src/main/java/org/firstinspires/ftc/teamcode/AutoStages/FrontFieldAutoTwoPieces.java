@@ -102,7 +102,8 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                 robot.arm::isArmInPosition
         ));
 
-        // super.commandSegments.add(sequentialCommandFactory.waitFor(500));
+        super.commandSegments.add(sequentialCommandFactory.waitFor(500));
+
         super.commandSegments.add(sequentialCommandFactory.justDoIt(scorePreload));
 
         super.commandSegments.add(sequentialCommandFactory.waitFor(500));
@@ -128,34 +129,37 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                 () -> new Rotation2D(0), () -> new Rotation2D(0),
                 SpeedCurves.easeOut, 0.8
         ));
+        super.commandSegments.add(sequentialCommandFactory.moveToPointAndStop(
+                sequentialCommandFactory.getBezierCurvesFromPathFile("move back and grab third from stack").get(1).getPositionWithLERP(1),
+                new Rotation2D(0)
+        ));
 
-        super.commandSegments.add(
-                sequentialCommandFactory.moveToPointAndStop(sequentialCommandFactory.getBezierCurvesFromPathFile("move back and grab third from stack").get(1).getPositionWithLERP(1))
-        );
-
-        if (true) return;
-
-//        super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
+        super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
         super.commandSegments.add(grabFromStackOuter);
         super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
+        super.commandSegments.add(sequentialCommandFactory.justDoIt(() -> robot.claw.setFlip(false, null)));
 
-        super.commandSegments.addAll(sequentialCommandFactory.followPathFacing(
-                "grab fourth from stack",
-                new Rotation2D(0),
-                () -> {}, () -> {}, () -> robot.claw.setFlip(true, null)
+        super.commandSegments.add(new SequentialCommandSegment(
+                () -> true,
+                () -> sequentialCommandFactory.getBezierCurvesFromPathFile("grab fourth from stack").get(0),
+                () -> {}, () -> {}, () -> robot.claw.setFlip(true, null),
+                robot.chassis::isCurrentTranslationalTaskComplete,
+                () -> new Rotation2D(0), () -> new Rotation2D(0),
+                SpeedCurves.easeOut, 0.8
         ));
         super.commandSegments.add(sequentialCommandFactory.moveToPointAndStop(
                 sequentialCommandFactory.getBezierCurvesFromPathFile("grab fourth from stack").get(0).getPositionWithLERP(1),
                 new Rotation2D(0)
         ));
-//        super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
+
+        super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
         super.commandSegments.add(grabFromStackInner);
         super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
 
         super.commandSegments.add(sequentialCommandFactory.followSingleCurve(
                 "score third and fourth", 0,
                 new Rotation2D(0),
-                () -> {}, () -> {}, () -> {},
+                () -> robot.claw.setFlip(false, null), () -> {}, () -> {},
                 SpeedCurves.easeOut, 0.5
         ));
 

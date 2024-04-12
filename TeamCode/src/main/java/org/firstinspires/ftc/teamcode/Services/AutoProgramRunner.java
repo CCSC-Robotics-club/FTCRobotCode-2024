@@ -48,13 +48,14 @@ public class AutoProgramRunner extends RobotService {
                     distanceLeft = Vector2D.displacementToTarget(currentPathSchedule.getPositionWithLERP(), currentPathSchedule.getPositionWithLERP(1)),
                     inAdvanceSpaceWithConstrain = new Vector2D(inAdvanceSpaceWithoutConstrain.getHeading(), Math.min(inAdvanceSpaceWithoutConstrain.getMagnitude(), distanceLeft.getMagnitude()));
             robotChassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
-                            Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+                    Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                             currentPathSchedule.getPositionWithLERP().addBy(
                                     (
                                             currentSegmentID == commandSegments.size()-1
                                                     || commandSegments.get(currentSegmentID+1).chassisMovementPathFeeder.getBezierCurve() == null
                                     ) ? inAdvanceSpaceWithConstrain : inAdvanceSpaceWithoutConstrain)),
                     this);
+
         }
         if (currentSegmentRotationScheduleETA != -1) {
             rotationT += dt / currentSegmentRotationScheduleETA;
@@ -110,7 +111,10 @@ public class AutoProgramRunner extends RobotService {
                 : -1;
         rotationT = 0;
 
-        if (currentCommandSegment.chassisMovementPath == null) return;
+        if (currentCommandSegment.chassisMovementPath == null) {
+            this.currentPathSchedule = null;
+            return;
+        }
         this.currentPathSchedule = BezierCurveSchedule.generateTranslationalSchedule(currentCommandSegment.chassisMovementPath);
         robotChassis.gainOwnerShip(this);
     }
