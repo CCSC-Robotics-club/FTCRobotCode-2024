@@ -58,6 +58,7 @@ public class SequentialCommandFactory {
 
     public SequentialCommandSegment calibratePositionEstimator() {
         return justDoIt(() -> {
+            ((RobotModule) positionEstimator).reset();
             positionEstimator.setRotation(robotStartingRotation2D.getRadian());
             positionEstimator.setCurrentPosition(robotStartingPosition);
         });
@@ -74,9 +75,16 @@ public class SequentialCommandFactory {
     public SequentialCommandSegment moveToPointIf(SequentialCommandSegment.InitiateCondition initiateCondition, Vector2D destination, Runnable beginning, Runnable periodic, Runnable ending) {
         return new SequentialCommandSegment(
                 initiateCondition,
-                () -> new BezierCurve(positionEstimator.getCurrentPosition(), destination),
-                beginning, periodic, ending,
-                chassis::isCurrentTranslationalTaskRoughlyComplete,
+                () -> null,
+                beginning,
+                () -> {
+                    periodic.run();
+                    chassis.setTranslationalTask(
+                            new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER, destination)
+                            , null);
+                },
+                ending,
+                () -> true,
                 maintainCurrentRotation, maintainCurrentRotation
         );
     }
@@ -84,9 +92,16 @@ public class SequentialCommandFactory {
     public SequentialCommandSegment moveToPointIf(SequentialCommandSegment.InitiateCondition initiateCondition, Vector2D destination, Runnable beginning, Runnable periodic, Runnable ending, Rotation2D endingRotation) {
         return new SequentialCommandSegment(
                 initiateCondition,
-                () -> new BezierCurve(positionEstimator.getCurrentPosition(), destination),
-                beginning, periodic, ending,
-                chassis::isCurrentTranslationalTaskRoughlyComplete,
+                () -> null,
+                beginning,
+                () -> {
+                    periodic.run();
+                    chassis.setTranslationalTask(
+                            new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER, destination)
+                            , null);
+                },
+                ending,
+                () -> true,
                 maintainCurrentRotation, () -> endingRotation
         );
     }
@@ -94,8 +109,17 @@ public class SequentialCommandFactory {
     public SequentialCommandSegment moveToPointAndStop(Vector2D destination) {
         return moveToPointAndStopIf(justGo, destination);
     }
+
+    public SequentialCommandSegment moveToPointAndStop(Vector2D destination, Rotation2D rotationTarget) {
+        return moveToPointAndStopIf(justGo, destination, rotationTarget);
+    }
+
     public SequentialCommandSegment moveToPointAndStop(Vector2D destination, Runnable beginning, Runnable periodic, Runnable ending) {
         return moveToPointAndStopIf(justGo, destination, beginning, periodic, ending);
+    }
+
+    public SequentialCommandSegment moveToPointAndStopIf(SequentialCommandSegment.InitiateCondition initiateCondition, Vector2D destination, Rotation2D rotationTarget) {
+        return moveToPointAndStopIf(initiateCondition, destination, doNothing, doNothing, doNothing, rotationTarget);
     }
 
     public SequentialCommandSegment moveToPointAndStopIf(SequentialCommandSegment.InitiateCondition initiateCondition, Vector2D destination) {
@@ -104,10 +128,34 @@ public class SequentialCommandFactory {
     public SequentialCommandSegment moveToPointAndStopIf(SequentialCommandSegment.InitiateCondition initiateCondition, Vector2D destination, Runnable beginning, Runnable periodic, Runnable ending) {
         return new SequentialCommandSegment(
                 initiateCondition,
-                () -> new BezierCurve(positionEstimator.getCurrentPosition(), destination),
-                beginning, periodic, ending,
-                chassis::isCurrentTranslationalTaskRoughlyComplete,
+                () -> null,
+                beginning,
+                () -> {
+                    periodic.run();
+                    chassis.setTranslationalTask(
+                            new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER, destination)
+                            , null);
+                    },
+                ending,
+                chassis::isCurrentTranslationalTaskComplete,
                 maintainCurrentRotation, maintainCurrentRotation
+        );
+    }
+
+    public SequentialCommandSegment moveToPointAndStopIf(SequentialCommandSegment.InitiateCondition initiateCondition, Vector2D destination, Runnable beginning, Runnable periodic, Runnable ending, Rotation2D rotationTarget) {
+        return new SequentialCommandSegment(
+                initiateCondition,
+                () -> null,
+                beginning,
+                () -> {
+                    periodic.run();
+                    chassis.setTranslationalTask(
+                            new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER, destination)
+                            , null);
+                },
+                ending,
+                chassis::isCurrentTranslationalTaskComplete,
+                maintainCurrentRotation, () -> rotationTarget
         );
     }
 

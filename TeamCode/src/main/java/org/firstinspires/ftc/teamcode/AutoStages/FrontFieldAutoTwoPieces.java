@@ -23,7 +23,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
         final TeamElementFinder teamElementFinder = new TeamElementFinder(robot.hardwareMap.get(WebcamName.class, "Webcam 1"));
         final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(Math.toRadians(90)), super.allianceSide, robot.hardwareMap);
         final AprilTagCameraAndDistanceSensorAimBot wallAimBot = new AprilTagCameraAndDistanceSensorAimBot(robot.chassis, robot.distanceSensor, robot.aprilTagCamera, robot.arm, null, robot.telemetrySender);
-        final double speedConstrainWhenArmRaised = 0.5;
+        final double speedConstrainWhenArmRaised = 0.6;
         final Runnable
                 splitPreload = () -> {
                     if (super.allianceSide == Robot.Side.BLUE)
@@ -99,10 +99,10 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
 
         super.commandSegments.add(wallAimBot.stickToWall(
                 teamElementFinder,
-                () -> true
+                robot.arm::isArmInPosition
         ));
 
-        super.commandSegments.add(sequentialCommandFactory.waitFor(500));
+        // super.commandSegments.add(sequentialCommandFactory.waitFor(500));
         super.commandSegments.add(sequentialCommandFactory.justDoIt(scorePreload));
 
         super.commandSegments.add(sequentialCommandFactory.waitFor(500));
@@ -120,30 +120,39 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                 SpeedCurves.originalSpeed, speedConstrainWhenArmRaised
         ));
 
-        // TODO: problems here
         super.commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> sequentialCommandFactory.getBezierCurvesFromPathFile("move back and grab third from stack").get(1),
                 () -> {}, () -> {}, () -> robot.claw.setFlip(true, null),
                 robot.chassis::isCurrentTranslationalTaskComplete,
                 () -> new Rotation2D(0), () -> new Rotation2D(0),
-                SpeedCurves.easeOut, 0.6
+                SpeedCurves.easeOut, 0.8
         ));
 
+        super.commandSegments.add(sequentialCommandFactory.moveToPointAndStop(sequentialCommandFactory.getBezierCurvesFromPathFile("move back and grab third from stack").get(1).getPositionWithLERP(1)));
+
+//        super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
         super.commandSegments.add(grabFromStackOuter);
-        super.commandSegments.add(sequentialCommandFactory.waitFor(200)); // wait for servo
+        super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
 
         super.commandSegments.addAll(sequentialCommandFactory.followPathFacing(
                 "grab fourth from stack",
                 new Rotation2D(0),
                 () -> {}, () -> {}, () -> robot.claw.setFlip(true, null)
         ));
-        super.commandSegments.add(sequentialCommandFactory.waitFor(300)); // wait for servo
+        super.commandSegments.add(sequentialCommandFactory.moveToPointAndStop(
+                sequentialCommandFactory.getBezierCurvesFromPathFile("grab fourth from stack").get(0).getPositionWithLERP(1),
+                new Rotation2D(0)
+        ));
+//        super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
         super.commandSegments.add(grabFromStackInner);
+        super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
 
         super.commandSegments.add(sequentialCommandFactory.followSingleCurve(
                 "score third and fourth", 0,
-                new Rotation2D(0)
+                new Rotation2D(0),
+                () -> {}, () -> {}, () -> {},
+                SpeedCurves.easeOut, 0.5
         ));
 
         super.commandSegments.add(sequentialCommandFactory.followSingleCurve(
@@ -153,17 +162,22 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
                     robot.arm.setScoringHeight(0.5, null);
                 }, () -> {}, () -> {},
-                SpeedCurves.slowDown, 0.5
+                SpeedCurves.easeOut, speedConstrainWhenArmRaised
         ));
 
-        super.commandSegments.add(wallAimBot.stickToWall());
+        super.commandSegments.add(wallAimBot.stickToWall(robot.arm::isArmInPosition));
         super.commandSegments.add(sequentialCommandFactory.justDoIt(() -> {
             robot.claw.setLeftClawClosed(false, null);
             robot.claw.setRightClawClosed(false, null);
         }));
 
-        if (1==1)
-            return;
+        // end early
+        super.commandSegments.addAll(sequentialCommandFactory.followPathFacing(
+                "park",
+                new Rotation2D(0),
+                () -> robot.arm.setPosition(RobotConfig.ArmConfigs.Position.GRAB_STACK, null),
+                ()->{}, ()->{}
+        ));if (1==1) return;
 
         super.commandSegments.addAll(
                 sequentialCommandFactory.followPathFacing("move to stack grab fifth", new Rotation2D(0))
@@ -177,8 +191,11 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                 sequentialCommandFactory.followPathFacing("score fifth and sixth", new Rotation2D(0))
         );
 
-        super.commandSegments.addAll(
-                sequentialCommandFactory.followPathFacing("park", new Rotation2D(0))
-        );
+        super.commandSegments.addAll(sequentialCommandFactory.followPathFacing(
+                "park",
+                new Rotation2D(0),
+                () -> robot.arm.setPosition(RobotConfig.ArmConfigs.Position.GRAB_STACK, null),
+                ()->{}, ()->{}
+        ));
     }
 }

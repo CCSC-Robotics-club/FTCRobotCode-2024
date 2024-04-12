@@ -50,11 +50,12 @@ public class AutoProgramRunner extends RobotService {
             robotChassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
                             Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                             currentPathSchedule.getPositionWithLERP().addBy(
-                                    currentSegmentID == commandSegments.size()-1 ?
-                                            inAdvanceSpaceWithConstrain : inAdvanceSpaceWithoutConstrain)),
+                                    (
+                                            currentSegmentID == commandSegments.size()-1
+                                                    || commandSegments.get(currentSegmentID+1).chassisMovementPathFeeder.getBezierCurve() == null
+                                    ) ? inAdvanceSpaceWithConstrain : inAdvanceSpaceWithoutConstrain)),
                     this);
         }
-
         if (currentSegmentRotationScheduleETA != -1) {
             rotationT += dt / currentSegmentRotationScheduleETA;
             double rotationTSyncedToTranslationT = rotationT;

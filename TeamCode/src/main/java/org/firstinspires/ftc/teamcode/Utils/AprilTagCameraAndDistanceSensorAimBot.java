@@ -37,32 +37,32 @@ public class AprilTagCameraAndDistanceSensorAimBot {
                 arm::getScoringDistanceToWall : RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach::getY;
     }
 
-    public SequentialCommandSegment stickToWall() {
+    public SequentialCommandSegment stickToWall(SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
         return stickToWall(
                 () -> update(getWallPosition(TeamElementFinder.TeamElementPosition.CENTER)),
-                () -> true
+                additionalCompleteChecker
         );
     }
 
-    public SequentialCommandSegment stickToWall(Vector2D desiredPositionToWall) {
-        return stickToWall(() -> this.update(desiredPositionToWall), () -> true);
+    public SequentialCommandSegment stickToWall(Vector2D desiredPositionToWall, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
+        return stickToWall(() -> this.update(desiredPositionToWall), additionalCompleteChecker);
     }
 
-    public SequentialCommandSegment stickToWall(TeamElementFinder teamElementFinder, SequentialCommandSegment.InitiateCondition initiateCondition) {
+    public SequentialCommandSegment stickToWall(TeamElementFinder teamElementFinder, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
         return stickToWall(
                 () -> this.update(getWallPosition(teamElementFinder.getTeamElementPosition())),
-                initiateCondition
+                additionalCompleteChecker
         );
     }
 
-    private SequentialCommandSegment stickToWall(Runnable updateCommand, SequentialCommandSegment.InitiateCondition initiateCondition) {
+    private SequentialCommandSegment stickToWall(Runnable updateCommand, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
         return new SequentialCommandSegment(
-                initiateCondition,
+                () -> true,
                 () -> null,
                 this::init,
                 updateCommand,
                 () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker),
-                chassis::isCurrentTranslationalTaskComplete,
+                () -> chassis.isCurrentTranslationalTaskRoughlyComplete() && additionalCompleteChecker.isComplete(),
                 () -> new Rotation2D(0), () -> new Rotation2D(0)
         );
     }
@@ -102,10 +102,13 @@ public class AprilTagCameraAndDistanceSensorAimBot {
             chassis.forceUpdateWheels(modulesCommanderMarker);
             try { Thread.sleep(50); } catch (InterruptedException ignored) {}
         }
-        if (!chassis.isVisualNavigationAvailable()) return;
+        if (!chassis.isVisualNavigationAvailable()) {
+            System.out.println("<-- warning: target not visible -->");return;
+        }
         final double distanceSensorReading = distanceSensor.getDistance(DistanceUnit.CM);
-        if (distanceSensorReading > RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance)
-            System.out.println("<-- warning: target might be too far -->");
+        if (distanceSensorReading > RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance) {
+            System.out.println("<-- warning: target might be too far -->");return;
+        }
         resetAimBot();
         updateWallPositionTOF();
     }
