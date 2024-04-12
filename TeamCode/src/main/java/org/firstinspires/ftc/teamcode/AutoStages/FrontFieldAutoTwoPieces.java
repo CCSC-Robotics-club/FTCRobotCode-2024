@@ -102,7 +102,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                 robot.arm::isArmInPosition
         ));
 
-        super.commandSegments.add(sequentialCommandFactory.waitFor(500));
+        super.commandSegments.add(sequentialCommandFactory.waitFor(300));
 
         super.commandSegments.add(sequentialCommandFactory.justDoIt(scorePreload));
 
@@ -159,8 +159,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
         super.commandSegments.add(sequentialCommandFactory.followSingleCurve(
                 "score third and fourth", 0,
                 new Rotation2D(0),
-                () -> robot.claw.setFlip(false, null), () -> {}, () -> {},
-                SpeedCurves.easeOut, 0.5
+                () -> robot.claw.setFlip(false, null), () -> {}, () -> {}
         ));
 
         super.commandSegments.add(sequentialCommandFactory.followSingleCurve(
@@ -174,6 +173,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
         ));
 
         super.commandSegments.add(wallAimBot.stickToWall(robot.arm::isArmInPosition));
+        super.commandSegments.add(sequentialCommandFactory.waitFor(600));
         super.commandSegments.add(sequentialCommandFactory.justDoIt(() -> {
             robot.claw.setLeftClawClosed(false, null);
             robot.claw.setRightClawClosed(false, null);
