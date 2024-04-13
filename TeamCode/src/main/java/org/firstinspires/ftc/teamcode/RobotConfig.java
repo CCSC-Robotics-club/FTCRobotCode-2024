@@ -155,19 +155,21 @@ public final class RobotConfig {
         public enum Position {
             INTAKE,
             GRAB_STACK,
+            GRAB_STACK_SECOND,
             SCORE
         }
 
         public static final Map<Position, Double> encoderPositions = new HashMap<>(); // in reference to zero position (limit switch)
         static {
             encoderPositions.put(Position.INTAKE, -100.0);
-            encoderPositions.put(Position.GRAB_STACK, 250.0);
+            encoderPositions.put(Position.GRAB_STACK, 240.0);
+            encoderPositions.put(Position.GRAB_STACK_SECOND, 180.0);
             encoderPositions.put(Position.SCORE, 4400.0);
         }
     }
 
     public static final class FlippableDualClawConfigs {
-        public static final double flipperIntakePosition = 0.15, flipperHoldPosition = 0.8;
+        public static final double flipperIntakePosition = 0.15, flipperHoldPosition = 0.9;
 
         public static final double leftClawClosePosition = 0.32, leftClawOpenPosition = 0.55, rightClawClosedPosition = 0.75, rightClawOpenPosition = 0.55;
     }
