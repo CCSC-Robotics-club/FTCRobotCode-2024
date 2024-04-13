@@ -140,7 +140,7 @@ public final class RobotConfig {
                 errorStartDecelerate = 1000,
                 powerNeededToMoveUp = 0.5,
                 powerNeededToMoveDown = 0.4,
-                errorTolerance = 100;
+                errorTolerance = 50;
 
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
@@ -155,15 +155,15 @@ public final class RobotConfig {
         public enum Position {
             INTAKE,
             GRAB_STACK,
-            GRAB_STACK_SECOND,
+            GRAB_STACK_LOW,
             SCORE
         }
 
         public static final Map<Position, Double> encoderPositions = new HashMap<>(); // in reference to zero position (limit switch)
         static {
             encoderPositions.put(Position.INTAKE, -100.0);
-            encoderPositions.put(Position.GRAB_STACK, 240.0);
-            encoderPositions.put(Position.GRAB_STACK_SECOND, 180.0);
+            encoderPositions.put(Position.GRAB_STACK, 300.0);
+            encoderPositions.put(Position.GRAB_STACK_LOW, 240.0);
             encoderPositions.put(Position.SCORE, 4400.0);
         }
     }

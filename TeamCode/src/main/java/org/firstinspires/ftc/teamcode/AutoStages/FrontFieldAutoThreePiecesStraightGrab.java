@@ -160,7 +160,7 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
         super.commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> null,
-                () -> robot.arm.setPosition(RobotConfig.ArmConfigs.Position.GRAB_STACK_SECOND, null),
+                () -> robot.arm.setPosition(RobotConfig.ArmConfigs.Position.GRAB_STACK_LOW, null),
                 () -> robot.chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
                         Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         new Vector2D(new double[] {
