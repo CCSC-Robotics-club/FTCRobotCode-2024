@@ -57,7 +57,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        imuReadTimeTest();
+        tofDistanceSensorTest();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -683,7 +683,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void tofDistanceSensorTest() {
-        DistanceSensor distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
+        DistanceSensor distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceBack");
 
         waitForStart();
 

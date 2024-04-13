@@ -38,7 +38,7 @@ public abstract class Robot {
     protected final boolean useMultiThread;
 
     private final EncoderMotorMechanism frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
-    public DistanceSensor distanceSensor;
+    public DistanceSensor distanceSensor, distanceSensorBack;
     public Chassis chassis;
 //    public IntakeLegacy intake;
 //    public ArmLegacy arm;
@@ -84,6 +84,7 @@ public abstract class Robot {
 
         this.imu = hardwareMap.get(IMU.class, "imu");
         this.distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
+        this.distanceSensorBack = hardwareMap.get(DistanceSensor.class, "distanceBack");
         imu.initialize(this.hardwareConfigs.imuParameter);
         if (hardwareConfigs.alternativeIMUParameter != null) {
             this.alternativeIMU = hardwareMap.get(IMU.class, "alternativeIMU");
