@@ -209,7 +209,7 @@ public final class RobotConfig {
     public static final class ChassisConfigs {
         public static final LookUpTable wheelPowerLookUpTable = new LookUpTable(
                 new double[] {0, 0.03, 0.5, 0.9, 1}, // encoder velocity / max velocity
-                new double[] {0, 0.08, 0.4, 0.8, 1} // motor power
+                new double[] {0, 0.1, 0.4, 0.8, 1} // motor power
         );
 
 
