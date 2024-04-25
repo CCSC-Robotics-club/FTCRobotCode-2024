@@ -386,27 +386,27 @@ public final class RobotConfig {
         public static final double visualNavigationAimingSensitivityCMPS = 30;
         public static final double triggerThreshold = 0.4;
         public static PilotChassisService.ControlMode defaultControlMode = PilotChassisService.ControlMode.ENCODER_ASSISTED_FIELD_ORIENTATED;
-
         public static final int pilotControllerKeyUpdatingRate = 60; // times per second
-        public static final ControllerStick translationalControllerStick = ControllerStick.LEFT_HAND;
+
         public enum ControllerStick {
             RIGHT_HAND,
             LEFT_HAND
         }
+        public static final ControlConfigs.ControllerStick translationalControllerStick = ControllerStick.RIGHT_HAND;
     }
 
     public static final class KeyBindings {
         public static final XboxControllerKey resetIMUKey = XboxControllerKey.Y;
         public static final XboxControllerKey turnOffRotationControlButton = XboxControllerKey.YIELD;
-        public static final XboxControllerKey facePilotLeftButton = XboxControllerKey.YIELD;
-        public static final XboxControllerKey facePilotRightButton = XboxControllerKey.YIELD;
-        public static final XboxControllerKey facePilotFrontButton = XboxControllerKey.YIELD;
-        public static final XboxControllerKey facePilotBackButton = XboxControllerKey.YIELD;
+        public static final XboxControllerKey facePilotLeftButton = XboxControllerKey.DPAD_LEFT;
+        public static final XboxControllerKey facePilotRightButton = XboxControllerKey.DPAD_RIGHT;
+        public static final XboxControllerKey facePilotFrontButton = XboxControllerKey.DPAD_UP;
+        public static final XboxControllerKey facePilotBackButton = XboxControllerKey.DPAD_DOWN;
 
-        public static final XboxControllerKey moveLeftSlowlyButton = XboxControllerKey.DPAD_LEFT;
-        public static final XboxControllerKey moveRightSlowlyButton = XboxControllerKey.DPAD_RIGHT;
-        public static final XboxControllerKey moveForwardSlowlyButton = XboxControllerKey.DPAD_UP;
-        public static final XboxControllerKey moveBackSlowlyButton = XboxControllerKey.DPAD_DOWN;
+        public static final XboxControllerKey moveLeftSlowlyButton = XboxControllerKey.YIELD;
+        public static final XboxControllerKey moveRightSlowlyButton = XboxControllerKey.YIELD;
+        public static final XboxControllerKey moveForwardSlowlyButton = XboxControllerKey.YIELD;
+        public static final XboxControllerKey moveBackSlowlyButton = XboxControllerKey.YIELD;
         public static final double slowMovementButtonSensitivity = 1;
 
         public static final XboxControllerKey toggleChassisDriveModeButton = XboxControllerKey.A;

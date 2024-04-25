@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
+import org.firstinspires.ftc.teamcode.Modules.Climb;
 import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
@@ -45,6 +46,8 @@ public abstract class Robot {
 
     public Arm arm;
     public FlippableDualClaw claw;
+
+    public Climb climb;
 
     public FixedAnglePixelCamera pixelCamera;
     public PositionEstimator positionEstimator;
@@ -166,6 +169,8 @@ public abstract class Robot {
         /* claw */
         claw = new FlippableDualClaw(hardwareMap.get(Servo.class, "flip"), hardwareMap.get(Servo.class, "clawLeft"), hardwareMap.get(Servo.class, "clawRight"), arm);
         robotModules.add(claw);
+
+        climb = new Climb(hardwareMap.get(Servo.class, "climb0"), hardwareMap.get(Servo.class, "climb1"));
     }
 
     /**
