@@ -49,12 +49,17 @@ public class Arm extends RobotModule {
 
         if (limitSwitch.isPressed())
             this.armEncoderZeroPosition = armEncoder.getCurrentPosition();
-        else if (armEncoderZeroPosition == -114514) {
-            this.armMotor.setPower(-ArmConfigs.powerNeededToMoveDown * motorPowerFactor);
+
+        if (armEncoderZeroPosition == -114514) {
+            armMotor.setPower(-0.8 * motorPowerFactor);
             return;
         }
 
         armController.desiredPosition = ArmConfigs.encoderPositions.get(desiredPosition);
+        if (desiredPosition == ArmConfigs.Position.INTAKE) {
+            armMotor.setPower(limitSwitch.isPressed() ? 0 : motorPowerFactor * armController.getMotorPower(0, getArmEncoderPosition() + 100));
+            return;
+        }
         if (desiredPosition == ArmConfigs.Position.SCORE)
             armController.desiredPosition = ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight);
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

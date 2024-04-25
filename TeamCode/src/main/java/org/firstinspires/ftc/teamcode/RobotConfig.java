@@ -136,7 +136,7 @@ public final class RobotConfig {
         public static final boolean motorReversed = true, encoderReversed = true;
         public static final double
                 maxPowerWhenMovingUp = 1,
-                maxPowerWhenMovingDown = 0.8,
+                maxPowerWhenMovingDown = 0.9,
                 errorStartDecelerate = 1000,
                 powerNeededToMoveUp = 0.5,
                 powerNeededToMoveDown = 0.4,
@@ -319,7 +319,7 @@ public final class RobotConfig {
         public static final double distanceSensorMinDistance = 1;
         public static final double approachReverseSpeedTolerance = 20; // if the robot goes away from the wall in more than 20cm/s, we think the distance sensor failed
 
-        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -30});
+        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -25});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
         public static final double autoStageScoringHorizontalDeviation = 12;

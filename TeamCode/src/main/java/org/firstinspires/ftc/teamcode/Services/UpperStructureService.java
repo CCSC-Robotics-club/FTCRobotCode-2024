@@ -98,7 +98,7 @@ public class UpperStructureService extends RobotService {
         if (copilotGamePad.b) {
             this.currentStatus = UpperStructureStatus.SCORING;
             clawRequestedDuringCurrentScoringProcess = false;
-            this.scoringHeight = 1;
+            this.scoringHeight = 0.85;
         }
     }
 
