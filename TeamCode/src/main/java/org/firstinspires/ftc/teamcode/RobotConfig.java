@@ -144,9 +144,9 @@ public final class RobotConfig {
 
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {5300 ,5100, 4700, 4300, 4100},
-                correspondingServoPositions = new double[] {0.7, 0.76, 0.85, 0.92, 0.95},
-                correspondingDistanceToWall = new double[] {30, 22, 11, 7, 2}; // in cm
+                correspondingArmEncoderValues = new double[] {5100, 4900, 4700, 4300, 4100},
+                correspondingServoPositions = new double[] {0.72, 0.76, 0.8, 0.88, 0.9},
+                correspondingDistanceToWall = new double[] {24, 22, 17, 7, 2}; // in cm
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions),
@@ -161,7 +161,7 @@ public final class RobotConfig {
 
         public static final Map<Position, Double> encoderPositions = new HashMap<>(); // in reference to zero position (limit switch)
         static {
-            encoderPositions.put(Position.INTAKE, -100.0);
+            encoderPositions.put(Position.INTAKE, -20.0);
             encoderPositions.put(Position.GRAB_STACK, 300.0);
             encoderPositions.put(Position.GRAB_STACK_LOW, 240.0);
             encoderPositions.put(Position.SCORE, 4400.0);
@@ -319,7 +319,7 @@ public final class RobotConfig {
         public static final double distanceSensorMinDistance = 1;
         public static final double approachReverseSpeedTolerance = 20; // if the robot goes away from the wall in more than 20cm/s, we think the distance sensor failed
 
-        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -40});
+        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -30});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
         public static final double autoStageScoringHorizontalDeviation = 12;
