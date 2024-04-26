@@ -20,6 +20,10 @@ public class Arm extends RobotModule {
     private final TouchSensor limitSwitch;
     private int armEncoderZeroPosition = -114514;
     private double scoringHeight;
+    private long intakeStatusStartTime;
+    private boolean sensorPressed;
+
+    private double desiredPower = 0;
     private final SimpleArmController armController = new SimpleArmController(
             ArmConfigs.maxPowerWhenMovingUp,
             ArmConfigs.maxPowerWhenMovingDown,
@@ -47,9 +51,13 @@ public class Arm extends RobotModule {
     protected void periodic(double dt) {
         final double motorPowerFactor = ArmConfigs.motorReversed ? -1:1;
 
-        if (limitSwitch.isPressed())
+        if (sensorPressed = limitSwitch.isPressed())
             this.armEncoderZeroPosition = armEncoder.getCurrentPosition();
 
+        if (armStuck() || Math.abs(desiredPower) > 0.05) {
+            armMotor.setPower(motorPowerFactor * desiredPower);
+            return;
+        }
         if (armEncoderZeroPosition == -114514) {
             armMotor.setPower(-0.8 * motorPowerFactor);
             return;
@@ -81,11 +89,15 @@ public class Arm extends RobotModule {
     public void reset() {
         this.desiredPosition = ArmConfigs.Position.INTAKE;
         this.scoringHeight = 1;
+
+        intakeStatusStartTime = System.currentTimeMillis();
     }
 
     public void setPosition(ArmConfigs.Position position, RobotService operatorService) {
         if (!isOwner(operatorService))
             return;
+        if (this.desiredPosition != ArmConfigs.Position.INTAKE && position == ArmConfigs.Position.INTAKE)
+            this.intakeStatusStartTime = System.currentTimeMillis();
         this.desiredPosition = position;
     }
 
@@ -111,6 +123,16 @@ public class Arm extends RobotModule {
         if (!isOwner(operatorService))
             return;
         this.scoringHeight = scoringHeight;
+    }
+
+    public boolean armStuck() {
+        return !sensorPressed && System.currentTimeMillis() - intakeStatusStartTime > 5000 && this.desiredPosition == ArmConfigs.Position.INTAKE;
+    }
+
+    public void forceSetPower(double desiredPower, RobotService operatorService) {
+        if (!isOwner(operatorService))
+            return;
+        this.desiredPower = desiredPower;
     }
 
     @Override

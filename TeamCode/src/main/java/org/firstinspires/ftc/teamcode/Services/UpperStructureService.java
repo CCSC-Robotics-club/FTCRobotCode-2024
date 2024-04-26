@@ -39,7 +39,6 @@ public class UpperStructureService extends RobotService {
     @Override
     public void periodic(double dt) {
         keyBindings();
-
         switch (currentStatus) {
             case HOLDING: {
                 claw.setAutoClosing(false, this);
@@ -88,6 +87,11 @@ public class UpperStructureService extends RobotService {
                 break;
             }
         }
+
+        if (arm.armStuck())
+            copilotGamePad.rumble(100);
+
+        arm.forceSetPower(-copilotGamePad.right_stick_y, this);
     }
 
     private boolean clawRequestedDuringCurrentGrabbingProcess = false, clawRequestedDuringCurrentScoringProcess = false;

@@ -78,8 +78,8 @@ public abstract class Robot {
         this.telemetry = telemetry;
         this.programRunningStatusChecker = checker;
 
-        // this.useMultiThread = !debugModeEnabled;
-        this.useMultiThread = false;
+        this.useMultiThread = !debugModeEnabled;
+//        this.useMultiThread = false;
 
         telemetrySender = new TelemetrySender(telemetry);
 
