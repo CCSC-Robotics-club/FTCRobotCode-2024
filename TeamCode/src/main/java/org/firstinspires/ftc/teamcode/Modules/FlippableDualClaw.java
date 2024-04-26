@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -18,10 +19,10 @@ public class FlippableDualClaw extends RobotModule {
     private final ProfiledServo flip, leftClaw, rightClaw;
     private final Arm arm;
     private final ColorSensor detectorLeft, detectorRight;
-    private final DigitalChannel leftIndicatorLight, rightIndicatorLight;
+    private final DcMotor leftIndicatorLight, rightIndicatorLight;
 
     private boolean closeLeftClaw, closeRightClaw, flipperOnIntake, autoClosing;
-    public FlippableDualClaw(Servo flip, Servo leftClaw, Servo rightClaw, Arm arm, ColorSensor detectorLeft, ColorSensor detectorRight, DigitalChannel leftIndicatorLight, DigitalChannel rightIndicatorLight) {
+    public FlippableDualClaw(Servo flip, Servo leftClaw, Servo rightClaw, Arm arm, ColorSensor detectorLeft, ColorSensor detectorRight, DcMotor leftIndicatorLight, DcMotor rightIndicatorLight) {
         super("claw");
         /* TODO: make servo speed in robot config */
         this.flip = new ProfiledServo(flip, 2);
@@ -42,10 +43,11 @@ public class FlippableDualClaw extends RobotModule {
 
     @Override
     protected void periodic(double dt) {
-        if (autoClosing) {
-            closeLeftClaw |= detectorLeft.alpha() > FlippableDualClawConfigs.colorDetectorThreshold;
-            closeRightClaw |= detectorRight.alpha() > FlippableDualClawConfigs.colorDetectorThreshold;
-        }
+        final boolean leftClawDetected = detectorLeft.alpha() > FlippableDualClawConfigs.colorDetectorThreshold,
+                rightClawDetected = detectorRight.alpha() > FlippableDualClawConfigs.colorDetectorThreshold;
+
+        closeLeftClaw |= autoClosing && leftClawDetected;
+        closeRightClaw |= autoClosing && rightClawDetected;
 
         leftClaw.setDesiredPosition(closeLeftClaw ? FlippableDualClawConfigs.leftClawClosePosition : FlippableDualClawConfigs.leftClawOpenPosition);
         rightClaw.setDesiredPosition(closeRightClaw ? FlippableDualClawConfigs.rightClawClosedPosition : FlippableDualClawConfigs.rightClawOpenPosition);
@@ -57,8 +59,9 @@ public class FlippableDualClaw extends RobotModule {
         rightClaw.update(dt);
         flip.update(dt);
 
-        leftIndicatorLight.setState(detectorLeft.alpha() > FlippableDualClawConfigs.colorDetectorThreshold);
-        rightIndicatorLight.setState(detectorRight.alpha() > FlippableDualClawConfigs.colorDetectorThreshold);
+        final double blink = 0.5+0.5*Math.sin(System.currentTimeMillis() / 1000.0f * 2);
+        leftIndicatorLight.setPower(autoClosing ? (leftClawDetected ? 1 : blink) : 0);
+        rightIndicatorLight.setPower(autoClosing ? (rightClawDetected ? 1 : blink) : 0);
     }
 
     @Override
@@ -73,8 +76,8 @@ public class FlippableDualClaw extends RobotModule {
         detectorRight.enableLed(true);
         detectorLeft.enableLed(true);
 
-        leftIndicatorLight.setMode(DigitalChannel.Mode.OUTPUT);
-        rightIndicatorLight.setMode(DigitalChannel.Mode.OUTPUT);
+        leftIndicatorLight.setPower(0);
+        rightIndicatorLight.setPower(0);
 
         flip.setDesiredPosition(FlippableDualClawConfigs.flipperHoldPosition);
         flip.update(10);

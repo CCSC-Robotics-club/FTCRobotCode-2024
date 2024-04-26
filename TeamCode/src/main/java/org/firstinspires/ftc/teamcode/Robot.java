@@ -181,11 +181,14 @@ public abstract class Robot {
                 arm,
                 hardwareMap.get(ColorSensor.class, "colorLeft"),
                 hardwareMap.get(ColorSensor.class, "colorRight"),
-                hardwareMap.get(DigitalChannel.class, "indicatorLightLeft"),
-                hardwareMap.get(DigitalChannel.class, "indicatorLightRight") // TODO: bugs over here
+                hardwareMap.get(DcMotor.class, "indicatorLightLeft"),
+                hardwareMap.get(DcMotor.class, "indicatorLightRight")
         ); robotModules.add(claw);
 
-        climb = new Climb(hardwareMap.get(Servo.class, "climb0"), hardwareMap.get(Servo.class, "climb1"));
+        climb = new Climb(
+                hardwareMap.get(Servo.class, "climb0"),
+                hardwareMap.get(Servo.class, "climb1")
+        ); robotModules.add(climb);
     }
 
     /**
@@ -198,7 +201,6 @@ public abstract class Robot {
         if (useMultiThread)
             scheduleThreads();
 
-        hardwareMap.get(DcMotor.class, "servoModule").setPower(1);
         telemetry.addLine("startup complete...");
         telemetry.update();
     }

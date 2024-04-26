@@ -22,7 +22,7 @@ public class Climb extends RobotModule {
     protected void periodic(double dt) {
         final double power = System.currentTimeMillis() - climbTaskStart < 500 ? 1 : 0.5;
         climb0.setPosition(power);
-        climb1.setPosition(power);
+        climb1.setPosition(1-power);
     }
 
     @Override
