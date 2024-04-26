@@ -172,6 +172,8 @@ public final class RobotConfig {
         public static final double flipperIntakePosition = 0.15, flipperHoldPosition = 0.9;
 
         public static final double leftClawClosePosition = 0.32, leftClawOpenPosition = 0.55, rightClawClosedPosition = 0.75, rightClawOpenPosition = 0.55;
+
+        public static final int colorDetectorThreshold = 1000;
     }
 
     public static final class ArmConfigsLegacy {

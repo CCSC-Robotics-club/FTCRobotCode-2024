@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -164,11 +166,22 @@ public abstract class Robot {
 
 
         /* arm */
-        arm = new Arm(hardwareMap.get(DcMotor.class, "arm"), hardwareMap.get(DcMotor.class, "arm"), hardwareMap.get(TouchSensor.class, "armLimit"));
-        robotModules.add(arm);
+        arm = new Arm(
+                hardwareMap.get(DcMotor.class, "arm"),
+                hardwareMap.get(DcMotor.class, "arm"),
+                hardwareMap.get(TouchSensor.class, "armLimit")
+        ); robotModules.add(arm);
         /* claw */
-        claw = new FlippableDualClaw(hardwareMap.get(Servo.class, "flip"), hardwareMap.get(Servo.class, "clawLeft"), hardwareMap.get(Servo.class, "clawRight"), arm);
-        robotModules.add(claw);
+        claw = new FlippableDualClaw(
+                hardwareMap.get(Servo.class, "flip"),
+                hardwareMap.get(Servo.class, "clawLeft"),
+                hardwareMap.get(Servo.class, "clawRight"),
+                arm,
+                hardwareMap.get(ColorSensor.class, "colorLeft"),
+                hardwareMap.get(ColorSensor.class, "colorRight"),
+                hardwareMap.get(DigitalChannel.class, "indicatorLightLeft"),
+                hardwareMap.get(DigitalChannel.class, "indicatorLightRight")
+        ); robotModules.add(claw);
 
         climb = new Climb(hardwareMap.get(Servo.class, "climb0"), hardwareMap.get(Servo.class, "climb1"));
     }

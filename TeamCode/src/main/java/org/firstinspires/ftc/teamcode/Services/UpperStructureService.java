@@ -42,6 +42,7 @@ public class UpperStructureService extends RobotService {
 
         switch (currentStatus) {
             case HOLDING: {
+                claw.setAutoClosing(false, this);
                 claw.setLeftClawClosed(true, this);
                 claw.setRightClawClosed(true, this);
                 if (claw.rightClawInPosition() && claw.leftClawInPosition())
@@ -51,6 +52,7 @@ public class UpperStructureService extends RobotService {
                 break;
             }
             case GRABBING: {
+                claw.setAutoClosing(copilotGamePad.x, this);
                 arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
                 claw.setFlip(true, this);
                 closeClawOnDemanded();
@@ -64,6 +66,7 @@ public class UpperStructureService extends RobotService {
                 break;
             }
             case SCORING: {
+                claw.setAutoClosing(false, this);
                 arm.setScoringHeight(scoringHeight, this);
                 if (Math.abs(copilotGamePad.left_stick_y) > 0.05)
                     scoringHeight += -1 * dt * copilotGamePad.left_stick_y;

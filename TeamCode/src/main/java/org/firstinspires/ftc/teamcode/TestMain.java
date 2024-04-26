@@ -4,6 +4,7 @@ import com.qualcomm.hardware.adafruit.AdafruitBNO055IMUNew;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -57,7 +58,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        tofDistanceSensorTest();
+        conceptColorSensorDetection();
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -337,7 +338,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void concept360Servo() {
-        Servo servo360 = hardwareMap.get(Servo.class, "servo360");
+        Servo servo0 = hardwareMap.get(Servo.class, "climb0"), servo1 = hardwareMap.get(Servo.class, "climb1");
 
         waitForStart();
 
@@ -345,7 +346,8 @@ public class TestMain extends LinearOpMode {
             double power = -gamepad1.left_stick_y;
             if (Math.abs(power) < 0.05) power = 0;
 
-            servo360.setPosition(power * 0.5 + 0.5);
+            servo0.setPosition(-power * 0.5 + 0.5);
+            servo1.setPosition(power * 0.5 + 0.5);
 
             telemetry.addData("pow", power);
             telemetry.update();
@@ -1010,15 +1012,31 @@ public class TestMain extends LinearOpMode {
         }
     }
 
-    private void imuReadTimeTest() {
-        IMU imu = hardwareMap.get(IMU.class, "imu");
+    private void conceptColorSensorDetection() {
+        ColorSensor colorSensor = hardwareMap.get(ColorSensor.class, "color");
+
+        waitForStart();
+
+        while (!isStopRequested() && opModeIsActive()) {
+            colorSensor.enableLed(gamepad1.a);
+            /*
+             * reading when facing ground: 350
+             * reading when pixel detected: > 3500
+             * reading when sensor disconnected: 0
+             *  */
+            telemetry.addData("alpha", colorSensor.alpha());
+            telemetry.update();
+            sleep(50);
+        }
+    }
+
+    private void conceptDigitalLight() {
+        DigitalChannel light = hardwareMap.get(DigitalChannel.class, "light");
+        light.setMode(DigitalChannel.Mode.OUTPUT);
+
         waitForStart();
         while (!isStopRequested() && opModeIsActive()) {
-            final long t = System.currentTimeMillis();
-            final double reading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-            telemetry.addData("reading", reading);
-            telemetry.addData("read time", System.currentTimeMillis() - t);
-            telemetry.update();
+            light.setState(gamepad1.a);
         }
     }
 }
