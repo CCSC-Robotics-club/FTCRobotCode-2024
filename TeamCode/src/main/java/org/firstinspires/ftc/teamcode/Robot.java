@@ -5,9 +5,11 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -180,7 +182,7 @@ public abstract class Robot {
                 hardwareMap.get(ColorSensor.class, "colorLeft"),
                 hardwareMap.get(ColorSensor.class, "colorRight"),
                 hardwareMap.get(DigitalChannel.class, "indicatorLightLeft"),
-                hardwareMap.get(DigitalChannel.class, "indicatorLightRight")
+                hardwareMap.get(DigitalChannel.class, "indicatorLightRight") // TODO: bugs over here
         ); robotModules.add(claw);
 
         climb = new Climb(hardwareMap.get(Servo.class, "climb0"), hardwareMap.get(Servo.class, "climb1"));
