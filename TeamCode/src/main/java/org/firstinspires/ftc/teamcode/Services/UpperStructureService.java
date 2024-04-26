@@ -70,7 +70,7 @@ public class UpperStructureService extends RobotService {
                 arm.setScoringHeight(scoringHeight, this);
                 if (Math.abs(copilotGamePad.left_stick_y) > 0.05)
                     scoringHeight += -1 * dt * copilotGamePad.left_stick_y;
-                scoringHeight = Math.max(Math.min(scoringHeight, 1), 0.25);
+                scoringHeight = Math.max(Math.min(scoringHeight, 0.85), 0.25);
                 /* firstly we close the claw */
                 if (!clawRequestedDuringCurrentScoringProcess){
                     claw.setLeftClawClosed(true, this);
