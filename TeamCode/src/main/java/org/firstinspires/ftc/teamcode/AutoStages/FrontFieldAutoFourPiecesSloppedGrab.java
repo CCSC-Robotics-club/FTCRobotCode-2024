@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.AutoStages;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConfig;
@@ -10,10 +9,9 @@ import org.firstinspires.ftc.teamcode.Utils.AprilTagCameraAndDistanceSensorAimBo
 import org.firstinspires.ftc.teamcode.Utils.AutoStageProgram;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.SpeedCurves;
-import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandFactory;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
-import org.firstinspires.ftc.teamcode.Utils.TeamElementFinder;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinder;
 
 public class FrontFieldAutoFourPiecesSloppedGrab extends AutoStageProgram  {
     public FrontFieldAutoFourPiecesSloppedGrab(Robot.Side side) {

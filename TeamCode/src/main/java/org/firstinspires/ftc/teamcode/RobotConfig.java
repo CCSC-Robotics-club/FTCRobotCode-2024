@@ -7,10 +7,10 @@ import org.firstinspires.ftc.teamcode.Modules.ArmLegacy;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
 import org.firstinspires.ftc.teamcode.Utils.Claw;
-import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.LookUpTable;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EnhancedPIDController;
-import org.firstinspires.ftc.teamcode.Utils.TeamElementFinder;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinder;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 import java.util.HashMap;

@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.StatisticsUtils;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
+import org.firstinspires.ftc.teamcode.Utils.SimpleSensor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule implements PositionEstimator {
-    private final DcMotor horizontalEncoder, verticalEncoder1, verticalEncoder2;
-    private final IMU primaryIMU;
-    private boolean imuNeedsReset;
+    private final SimpleSensor horizontalEncoder, verticalEncoder1, verticalEncoder2;
+    private final IMU imuInstance;
+    private final SimpleSensor primaryIMU;
     private final double horizontalEncoderFactor, verticalEncoder1Factor, verticalEncoder2Factor, verticalDifferenceToHorizontalBias;
     private Vector2D previousPosition;
     private double horizontalEncoderPreviousReading, verticalEncoder1PreviousReading, verticalEncoder2PreviousReading, imuReading, imuVelocity;
@@ -42,16 +43,18 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     private final boolean positionEncodersAvailable;
 
     public TripleIndependentEncoderAndIMUPositionEstimator(
-            DcMotor horizontalEncoder,
-            DcMotor verticalEncoder1,
-            DcMotor verticalEncoder2,
-            IMU imu,
+            SimpleSensor horizontalEncoder,
+            SimpleSensor verticalEncoder1,
+            SimpleSensor verticalEncoder2,
+            SimpleSensor imu,
+            IMU imuInstance,
             TripleIndependentEncoderAndIMUSystemParams params
     ) {
         super("position estimator", RobotConfig.ChassisConfigs.positionEstimator_speedEstimationFrequency);
         this.horizontalEncoder = horizontalEncoder;
         this.verticalEncoder1 = verticalEncoder1;
         this.verticalEncoder2 = verticalEncoder2;
+        this.imuInstance = imuInstance;
         this.primaryIMU = imu;
 
         this.positionEncodersAvailable = params!= null && horizontalEncoder!=null && verticalEncoder1!=null && verticalEncoder2!=null;
@@ -82,9 +85,8 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     }
 
     private void updateRotation(double dt) {
-        if (imuNeedsReset) resetIMU();
         final long t1 = System.currentTimeMillis();
-        final double imuNewReading = primaryIMU.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        final double imuNewReading = primaryIMU.getSensorReading();
 //        this.imuVelocity = primaryIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
         if (dt > 1e-4)
             this.imuVelocity = AngleUtils.getActualDifference(imuReading, imuNewReading) / dt; // if dt is too small, we abandon the action since this will make velocity infinity
@@ -93,9 +95,9 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     }
 
     private void estimatePositions() {
-        final double horizontalEncoderReading = horizontalEncoder.getCurrentPosition() * horizontalEncoderFactor,
-                verticalEncoder1Reading =  verticalEncoder1.getCurrentPosition() * verticalEncoder1Factor,
-                verticalEncoder2Reading = verticalEncoder2.getCurrentPosition() * verticalEncoder2Factor,
+        final double horizontalEncoderReading = horizontalEncoder.getSensorReading() * horizontalEncoderFactor,
+                verticalEncoder1Reading =  verticalEncoder1.getSensorReading() * verticalEncoder1Factor,
+                verticalEncoder2Reading = verticalEncoder2.getSensorReading() * verticalEncoder2Factor,
                 verticalEncoder1Difference = verticalEncoder1Reading - verticalEncoder1PreviousReading,
                 verticalEncoder2Difference = verticalEncoder2Reading - verticalEncoder2PreviousReading,
                 verticalEncoderMovement = (verticalEncoder1Difference + verticalEncoder2Difference) / 2,
@@ -136,12 +138,11 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
 
     @Override
     public void reset() {
-        this.horizontalEncoderPreviousReading = horizontalEncoder.getCurrentPosition() * horizontalEncoderFactor;
-        this.verticalEncoder1PreviousReading = verticalEncoder1.getCurrentPosition() * verticalEncoder1Factor;
-        this.verticalEncoder2PreviousReading = verticalEncoder2.getCurrentPosition() * verticalEncoder2Factor;
+        this.horizontalEncoderPreviousReading = horizontalEncoder.getSensorReading() * horizontalEncoderFactor;
+        this.verticalEncoder1PreviousReading = verticalEncoder1.getSensorReading() * verticalEncoder1Factor;
+        this.verticalEncoder2PreviousReading = verticalEncoder2.getSensorReading() * verticalEncoder2Factor;
         this.imuRotationBias = 0;
 
-        imuNeedsReset = true;
         calibratePosition();
         calibrateRotation();
 
@@ -149,7 +150,6 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
         this.imuVelocity = 0;
     }
 
-    int count = 0;
     @Override
     public Map<String, Object> getDebugMessages() {
         debugMessages.put("vel (robot)", getCurrentVelocity(Chassis.OrientationMode.ROBOT_ORIENTATED));
@@ -196,13 +196,12 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
      * */
     @Override
     public void setRotation(double givenRotation) {
-        imuNeedsReset = true;
+        resetIMU();
         this.imuRotationBias = givenRotation;
     }
 
     private void resetIMU() {
-        this.primaryIMU.resetYaw();
-        imuNeedsReset = false;
+        this.imuInstance.resetYaw();
     }
 
     @Override

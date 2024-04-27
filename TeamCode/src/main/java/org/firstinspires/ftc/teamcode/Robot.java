@@ -4,31 +4,30 @@ import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.Climb;
-import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
-import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleArilTagCamera;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
-import org.firstinspires.ftc.teamcode.Utils.HuskyAprilTagCamera;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.HuskyAprilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EncoderMotorMechanism;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
 import org.firstinspires.ftc.teamcode.Utils.ProgramRunningStatusChecker;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
+import org.firstinspires.ftc.teamcode.Utils.SimpleSensor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +60,7 @@ public abstract class Robot {
     protected final List<RobotService> robotServices = new ArrayList<>(1);
     public TelemetrySender telemetrySender;
     protected IMU imu, alternativeIMU;
+    private final List<SimpleSensor> sensors = new ArrayList<>();
 
     public enum Side {
         RED,
@@ -110,10 +110,18 @@ public abstract class Robot {
         String[] encoderNames = this.hardwareConfigs.encoderNames == null ?
                 new String[] {"frontLeft", "frontRight", "backLeft"} :
                 this.hardwareConfigs.encoderNames;
+
+        final SimpleSensor horizontalEncoder = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, encoderNames[0]).getCurrentPosition()),
+                verticalEncoder1 = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, encoderNames[1]).getCurrentPosition()),
+                verticalEncoder2 = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, encoderNames[2]).getCurrentPosition()),
+                imuSensor = new SimpleSensor(() -> imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+
+
         this.positionEstimator = new TripleIndependentEncoderAndIMUPositionEstimator(
-                hardwareMap.get(DcMotor.class, encoderNames[0]),
-                hardwareMap.get(DcMotor.class, encoderNames[1]),
-                hardwareMap.get(DcMotor.class, encoderNames[2]),
+                horizontalEncoder,
+                verticalEncoder1,
+                verticalEncoder2,
+                imuSensor,
                 imu,
                 this.hardwareConfigs.encodersParams
         );
@@ -126,15 +134,8 @@ public abstract class Robot {
                 new HuskyAprilTagCamera(hardwareMap.get(HuskyLens.class, "husky")),
                 RobotConfig.VisualNavigationConfigs.visualCameraProfile
         );
-        robotModules.add(aprilTagCamera);
 
-//        pixelCamera = new FixedAnglePixelCamera(
-//                new TensorCamera(hardwareMap.get(WebcamName.class, "Webcam 1")),
-//                RobotConfig.VisualNavigationConfigs.pixelCameraSetUpProfile,
-//                RobotConfig.VisualNavigationConfigs.pixelCameraInstallFacing
-//        );
-//        robotModules.add(pixelCamera);
-         pixelCamera = null;
+        pixelCamera = null;
 
         chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, aprilTagCamera,
                 this.side == Side.RED ? FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL : FixedAngleArilTagCamera.WallTarget.Name.BLUE_ALLIANCE_WALL);
@@ -194,34 +195,27 @@ public abstract class Robot {
     /**
      * initializes the robot
      */
+    Thread updateSensorsThread;
     public void initializeRobot() {
         /* <-- start of program --> */
         initModulesAndService();
 
         if (useMultiThread)
-            scheduleThreads();
+            updateSensorsThread = new Thread(this::updateSensorsForever);
 
         telemetry.addLine("startup complete...");
         telemetry.update();
     }
 
     public void startRobot() {
-        if (this.useMultiThread) runThreads();
+        if (this.useMultiThread) updateSensorsThread.start();
     }
 
     public void updateRobot() {
-        if (useMultiThread) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException ignored) {}
-            return;
-        }
+        if (!useMultiThread)
+            updateSensors();
 
         long t0 = System.currentTimeMillis();
-        if (driverGamePad != null) driverGamePad.update();
-        telemetrySender.putSystemMessage("controller update time(ms)", System.currentTimeMillis() - t0);
-
-        t0 = System.currentTimeMillis();
         for (RobotService robotService: robotServices)
             robotService.periodic();
         telemetrySender.putSystemMessage("robot service update time(ms)", System.currentTimeMillis() - t0);
@@ -233,6 +227,24 @@ public abstract class Robot {
         }
 
         telemetrySender.periodic();
+    }
+
+    public void updateSensors() {
+        aprilTagCamera.updateCamera();
+
+        long t0 = System.currentTimeMillis();
+        for (SimpleSensor sensor: sensors)
+            sensor.update(); // TODO detailed timings
+        telemetrySender.putSystemMessage("sensors update time(ms)", System.currentTimeMillis() - t0);
+
+        t0 = System.currentTimeMillis();
+        if (driverGamePad != null) driverGamePad.update();
+        telemetrySender.putSystemMessage("controller update time(ms)", System.currentTimeMillis() - t0);
+    }
+
+    public void updateSensorsForever() {
+        while (programRunningStatusChecker.isProgramActive())
+            updateSensors();
     }
 
     public void stopRobot() {
@@ -250,49 +262,6 @@ public abstract class Robot {
             robotService.init();
             telemetrySender.addRobotService(robotService);
         }
-    }
-
-    Thread updateServicesThread;
-    List<Thread> updateModulesThreads = new ArrayList<>(1);
-    private Thread chassisThread;
-    private void scheduleThreads() {
-        updateServicesThread = new Thread(new Runnable() {
-            private double previousTimeMillis = System.currentTimeMillis();
-            @Override
-            public void run() {
-                while (programRunningStatusChecker.isProgramActive()) {
-                    if (driverGamePad != null) driverGamePad.update();
-                    for (RobotService robotService : robotServices)
-                        robotService.periodic();
-                    telemetrySender.periodic();
-
-                    while (System.currentTimeMillis() - previousTimeMillis + 3 < 1000f / RobotConfig.ControlConfigs.pilotControllerKeyUpdatingRate) {
-                        try {
-                            Thread.sleep(3);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-
-                    telemetrySender.putSystemMessage("services update rate", 1000 / (System.currentTimeMillis() - previousTimeMillis));
-                    telemetrySender.putSystemMessage("chassis thread status", chassisThread.getState());
-                    previousTimeMillis = System.currentTimeMillis();
-                }
-            }
-        });
-
-        for (RobotModule module : robotModules) {
-            Runnable moduleUpdateRunnable = module.getRunnable(programRunningStatusChecker);
-            updateModulesThreads.add(new Thread(moduleUpdateRunnable));
-            if (module == chassis)
-                chassisThread = updateModulesThreads.get(updateModulesThreads.size()-1);
-        }
-    }
-
-    private void runThreads() {
-        updateServicesThread.start();
-        for (Thread moduleThread:updateModulesThreads)
-            moduleThread.start();
     }
 
     private void configureChassisMotors() {

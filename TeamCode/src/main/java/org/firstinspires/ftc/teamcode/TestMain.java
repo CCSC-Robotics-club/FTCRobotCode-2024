@@ -19,25 +19,26 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
-import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
-import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleArilTagCamera;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.AutoProgramRunner;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.DualServoClaw;
-import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
-import org.firstinspires.ftc.teamcode.Utils.HuskyAprilTagCamera;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleCameraProfile;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.HuskyAprilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EncoderMotorMechanism;
-import org.firstinspires.ftc.teamcode.Utils.PixelCameraAimBotLegacy;
-import org.firstinspires.ftc.teamcode.Utils.RawObjectDetectionCamera;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.PixelCameraAimBotLegacy;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.RawObjectDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
+import org.firstinspires.ftc.teamcode.Utils.SimpleSensor;
 import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
-import org.firstinspires.ftc.teamcode.Utils.TeamElementFinder;
-import org.firstinspires.ftc.teamcode.Utils.TensorCamera;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinder;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TensorCamera;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -100,11 +101,21 @@ public class TestMain extends LinearOpMode {
         backLeftWheel.setMotorReversed(RobotConfig.testConfig.backLeftWheel_motorReversed);
         backRightWheel.setMotorReversed(RobotConfig.testConfig.backRightWheel_motorReversed);
 
-        final RobotConfig.HardwareConfigs hardwareConfigs = RobotConfig.hardwareConfigs_2024Competition;
+        RobotConfig.HardwareConfigs hardwareConfigs = RobotConfig.testConfig;
+        String[] encoderNames =hardwareConfigs.encoderNames == null ?
+                new String[] {"frontLeft", "frontRight", "backLeft"} :
+                hardwareConfigs.encoderNames;
+        final SimpleSensor horizontalEncoder = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, encoderNames[0]).getCurrentPosition()),
+                verticalEncoder1 = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, encoderNames[1]).getCurrentPosition()),
+                verticalEncoder2 = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, encoderNames[2]).getCurrentPosition()),
+                imuSensor = new SimpleSensor(() -> imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+
+
         TripleIndependentEncoderAndIMUPositionEstimator positionEstimator = new TripleIndependentEncoderAndIMUPositionEstimator(
-                hardwareMap.get(DcMotor.class, hardwareConfigs.encoderNames[0]),
-                hardwareMap.get(DcMotor.class, hardwareConfigs.encoderNames[1]),
-                hardwareMap.get(DcMotor.class, hardwareConfigs.encoderNames[2]),
+                horizontalEncoder,
+                verticalEncoder1,
+                verticalEncoder2,
+                imuSensor,
                 imu,
                 hardwareConfigs.encodersParams
         );
@@ -446,10 +457,10 @@ public class TestMain extends LinearOpMode {
         FixedAngleArilTagCamera camera = getHuskyWithDefaultConfig();
 
         waitForStart();
-        camera.init();
+        camera.restCamera();
 
         while (!isStopRequested() && opModeIsActive()) {
-            camera.periodic(0);
+            camera.updateCamera();
             for (FixedAngleArilTagCamera.AprilTagTarget target: camera.getArilTagTargets()) {
                 telemetry.addData("id", target.id);
                 telemetry.addData("position", target.getRelativePositionToRobot());
@@ -464,10 +475,10 @@ public class TestMain extends LinearOpMode {
         FixedAngleArilTagCamera camera = getHuskyWithDefaultConfig();
 
         waitForStart();
-        camera.init();
+        camera.restCamera();
 
         while (!isStopRequested() && opModeIsActive()) {
-            camera.periodic();
+            camera.updateCamera();
             for (String messageKey:camera.getDebugMessages().keySet())
                 telemetry.addData(messageKey, camera.getDebugMessages().get(messageKey));
             telemetry.update();

@@ -1,12 +1,10 @@
-package org.firstinspires.ftc.teamcode.Modules;
+package org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils;
 
 import androidx.annotation.NonNull;
 
-import org.firstinspires.ftc.teamcode.Utils.FixedAngleCameraProfile;
-import org.firstinspires.ftc.teamcode.Utils.RawArilTagRecognitionCamera;
-import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
+import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +15,7 @@ import java.util.Map;
 /**
  * TODO: add a param, the rotation of the pointing of the camera
  * */
-public class FixedAngleArilTagCamera extends RobotModule {
+public class FixedAngleArilTagCamera{
     public static final double aprilTagMargin_CM = 16;
 
     private final RawArilTagRecognitionCamera camera;
@@ -33,8 +31,6 @@ public class FixedAngleArilTagCamera extends RobotModule {
     static final HashMap<String, Object> debugMessages = new HashMap<>();
 
     public FixedAngleArilTagCamera(RawArilTagRecognitionCamera camera, FixedAngleCameraProfile cameraProfile) {
-        super("AprilTagCamera");
-
         this.camera = camera;
         this.profile = cameraProfile;
         this.blueAllianceWall = new WallTarget(WallTarget.Name.BLUE_ALLIANCE_WALL);
@@ -45,14 +41,12 @@ public class FixedAngleArilTagCamera extends RobotModule {
         Collections.addAll(this.aprilTagTargets, redAllianceWall.aprilTagReferenceTargets);
     }
 
-    @Override
-    public void init() {
+    public void restCamera() {
         camera.startRecognizing();
-        reset();
+        this.wallInFront = null;
     }
 
-    @Override
-    public void periodic(double dt) {
+    public void updateCamera() {
         camera.update();
         updateAprilTagTargets();
         updateWallInFront();
@@ -76,17 +70,10 @@ public class FixedAngleArilTagCamera extends RobotModule {
             this.wallInFront = blueAllianceWall;
     }
 
-    @Override
-    protected void onDestroy() {
+    protected void stopCamera() {
         camera.stopRecognizing();
     }
 
-    @Override
-    public void reset() {
-        this.wallInFront = null;
-    }
-
-    @Override
     public Map<String, Object> getDebugMessages() {
         debugMessages.put("wall in front", wallInFront);
         if (wallInFront == null)

@@ -1,26 +1,16 @@
 package org.firstinspires.ftc.teamcode.AutoStages;
 
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import org.checkerframework.checker.nullness.qual.Raw;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Modules.ArmLegacy;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
-import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
-import org.firstinspires.ftc.teamcode.Modules.FixedAnglePixelCamera;
-import org.firstinspires.ftc.teamcode.Modules.IntakeLegacy;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.AutoStageProgram;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
-import org.firstinspires.ftc.teamcode.Utils.MathUtils.SpeedCurves;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.StatisticsUtils;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
-import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
-import org.firstinspires.ftc.teamcode.Utils.RawArilTagRecognitionCamera;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.RawArilTagRecognitionCamera;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandFactory;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.AngleUtils;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EncoderMotorMechanism;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EnhancedPIDController;
@@ -267,7 +268,7 @@ public class Chassis extends RobotModule {
     public void forceUpdateCamera(ModulesCommanderMarker operator) {
         if (!isOwner(operator))
             return;
-        aprilTagCamera.periodic();
+        aprilTagCamera.updateCamera();
     }
 
     public void forceUpdateEncoders(ModulesCommanderMarker operator) {
