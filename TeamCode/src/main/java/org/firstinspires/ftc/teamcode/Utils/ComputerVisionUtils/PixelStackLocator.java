@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Utils;
+package org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.SpeedCurves;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
+import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 
 import java.util.ArrayList;
 import java.util.List;

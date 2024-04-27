@@ -5,9 +5,10 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
-import org.firstinspires.ftc.teamcode.Modules.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleArilTagCamera;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinder;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
@@ -100,7 +101,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         while (!chassis.isVisualNavigationAvailable() && System.currentTimeMillis() - t0 < RobotConfig.VisualNavigationConfigs.maxTimeToWaitForVisualNavigationMS) {
             chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker);
             chassis.periodic();
-            aprilTagCamera.periodic();
+            aprilTagCamera.updateCamera();
             chassis.forceUpdateEncoders(modulesCommanderMarker);
             chassis.forceUpdateWheels(modulesCommanderMarker);
             try { Thread.sleep(50); } catch (InterruptedException ignored) {}

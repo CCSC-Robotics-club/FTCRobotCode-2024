@@ -4,8 +4,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.SimpleArmController;
+import org.firstinspires.ftc.teamcode.Utils.MotorThreaded;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
+import org.firstinspires.ftc.teamcode.Utils.SimpleSensor;
 
 import static org.firstinspires.ftc.teamcode.RobotConfig.ArmConfigs;
 
@@ -15,13 +17,12 @@ import java.util.Map;
 
 
 public class Arm extends RobotModule {
-    // TODO make the height of scoring change-able using lookup table, and update the visual navigation approaching distance as well
-    private final DcMotor armMotor, armEncoder;
-    private final TouchSensor limitSwitch;
+    private final MotorThreaded armMotor;
+    private final SimpleSensor armEncoder;
+    private final SimpleSensor limitSwitch;
     private int armEncoderZeroPosition = -114514;
     private double scoringHeight;
     private long intakeStatusStartTime;
-    private boolean sensorPressed;
 
     private double desiredPower = 0;
     private final SimpleArmController armController = new SimpleArmController(
@@ -35,7 +36,7 @@ public class Arm extends RobotModule {
     );
 
     private ArmConfigs.Position desiredPosition;
-    public Arm(DcMotor armMotor, DcMotor armEncoder, TouchSensor limitSwitch) {
+    public Arm(MotorThreaded armMotor, SimpleSensor armEncoder, SimpleSensor limitSwitch) {
         super("arm");
         this.armMotor = armMotor;
         this.armEncoder = armEncoder;
@@ -51,8 +52,8 @@ public class Arm extends RobotModule {
     protected void periodic(double dt) {
         final double motorPowerFactor = ArmConfigs.motorReversed ? -1:1;
 
-        if (sensorPressed = limitSwitch.isPressed())
-            this.armEncoderZeroPosition = armEncoder.getCurrentPosition();
+        if (limitSwitch.getSensorReading() != 0)
+            this.armEncoderZeroPosition = (int) armEncoder.getSensorReading();
 
         if (armStuck() || Math.abs(desiredPower) > 0.05) {
             armMotor.setPower(motorPowerFactor * desiredPower);
@@ -65,12 +66,11 @@ public class Arm extends RobotModule {
 
         armController.desiredPosition = ArmConfigs.encoderPositions.get(desiredPosition);
         if (desiredPosition == ArmConfigs.Position.INTAKE) {
-            armMotor.setPower(limitSwitch.isPressed() ? 0 : motorPowerFactor * armController.getMotorPower(0, getArmEncoderPosition() + 100));
+            armMotor.setPower(limitSwitch.getSensorReading() != 0 ? 0 : motorPowerFactor * armController.getMotorPower(0, getArmEncoderPosition() + 100));
             return;
         }
         if (desiredPosition == ArmConfigs.Position.SCORE)
             armController.desiredPosition = ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight);
-        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         final double currentPosition = getArmEncoderPosition(),
                 correctionPower = armController.getMotorPower(0, currentPosition);
@@ -91,6 +91,7 @@ public class Arm extends RobotModule {
         this.scoringHeight = 1;
 
         intakeStatusStartTime = System.currentTimeMillis();
+        this.armMotor.getMotorInstance().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void setPosition(ArmConfigs.Position position, RobotService operatorService) {
@@ -106,7 +107,7 @@ public class Arm extends RobotModule {
     }
 
     public int getArmEncoderPosition() {
-        return (armEncoder.getCurrentPosition() - armEncoderZeroPosition) * (ArmConfigs.encoderReversed ? -1: 1);
+        return (int) ((armEncoder.getSensorReading() - armEncoderZeroPosition) * (ArmConfigs.encoderReversed ? -1: 1));
     }
 
     public double getScoringOrHoldingClawAngle(double holdingPosition) {
@@ -126,7 +127,7 @@ public class Arm extends RobotModule {
     }
 
     public boolean armStuck() {
-        return !sensorPressed && System.currentTimeMillis() - intakeStatusStartTime > 5000 && this.desiredPosition == ArmConfigs.Position.INTAKE;
+        return limitSwitch.getSensorReading() == 0 && System.currentTimeMillis() - intakeStatusStartTime > 5000 && this.desiredPosition == ArmConfigs.Position.INTAKE;
     }
 
     public void forceSetPower(double desiredPower, RobotService operatorService) {

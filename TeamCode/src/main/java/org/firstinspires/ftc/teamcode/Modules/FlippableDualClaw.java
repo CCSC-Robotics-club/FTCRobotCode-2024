@@ -6,9 +6,11 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
+import org.firstinspires.ftc.teamcode.Utils.MotorThreaded;
 import org.firstinspires.ftc.teamcode.Utils.ProfiledServo;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
+import org.firstinspires.ftc.teamcode.Utils.SimpleSensor;
 
 import static org.firstinspires.ftc.teamcode.RobotConfig.FlippableDualClawConfigs;
 
@@ -18,16 +20,15 @@ import java.util.Map;
 public class FlippableDualClaw extends RobotModule {
     private final ProfiledServo flip, leftClaw, rightClaw;
     private final Arm arm;
-    private final ColorSensor detectorLeft, detectorRight;
-    private final DcMotor leftIndicatorLight, rightIndicatorLight;
+    private final SimpleSensor detectorLeft, detectorRight;
+    private final MotorThreaded leftIndicatorLight, rightIndicatorLight;
 
     private boolean closeLeftClaw, closeRightClaw, flipperOnIntake, autoClosing;
-    public FlippableDualClaw(Servo flip, Servo leftClaw, Servo rightClaw, Arm arm, ColorSensor detectorLeft, ColorSensor detectorRight, DcMotor leftIndicatorLight, DcMotor rightIndicatorLight) {
+    public FlippableDualClaw(ProfiledServo flip, ProfiledServo leftClaw, ProfiledServo rightClaw, Arm arm, SimpleSensor detectorLeft, SimpleSensor detectorRight, MotorThreaded leftIndicatorLight, MotorThreaded rightIndicatorLight) {
         super("claw");
-        /* TODO: make servo speed in robot config */
-        this.flip = new ProfiledServo(flip, 2);
-        this.leftClaw = new ProfiledServo(leftClaw, 2);
-        this.rightClaw = new ProfiledServo(rightClaw,2);
+        this.flip = flip;
+        this.leftClaw = leftClaw;
+        this.rightClaw = rightClaw;
 
         this.detectorLeft = detectorLeft;
         this.detectorRight = detectorRight;
@@ -43,8 +44,8 @@ public class FlippableDualClaw extends RobotModule {
 
     @Override
     protected void periodic(double dt) {
-        final boolean leftClawDetected = detectorLeft.alpha() > FlippableDualClawConfigs.colorDetectorThreshold,
-                rightClawDetected = detectorRight.alpha() > FlippableDualClawConfigs.colorDetectorThreshold;
+        final boolean leftClawDetected = detectorLeft.getSensorReading() > FlippableDualClawConfigs.colorDetectorThreshold,
+                rightClawDetected = detectorRight.getSensorReading() > FlippableDualClawConfigs.colorDetectorThreshold;
 
         closeLeftClaw |= autoClosing && leftClawDetected;
         closeRightClaw |= autoClosing && rightClawDetected;
@@ -72,9 +73,6 @@ public class FlippableDualClaw extends RobotModule {
     @Override
     public void reset() {
         closeLeftClaw = closeRightClaw = flipperOnIntake = autoClosing = false;
-
-        detectorRight.enableLed(true);
-        detectorLeft.enableLed(true);
 
         leftIndicatorLight.setPower(0);
         rightIndicatorLight.setPower(0);

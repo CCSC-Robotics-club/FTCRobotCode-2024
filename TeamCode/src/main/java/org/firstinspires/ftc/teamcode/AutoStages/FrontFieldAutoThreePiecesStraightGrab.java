@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.SpeedCurves;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandFactory;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
-import org.firstinspires.ftc.teamcode.Utils.TeamElementFinder;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinder;
 
 public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
     public FrontFieldAutoThreePiecesStraightGrab(Robot.Side side) {

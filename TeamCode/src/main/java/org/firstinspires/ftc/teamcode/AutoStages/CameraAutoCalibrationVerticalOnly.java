@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.StatisticsUtils;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
-import org.firstinspires.ftc.teamcode.Utils.RawArilTagRecognitionCamera;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.RawArilTagRecognitionCamera;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandFactory;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 
