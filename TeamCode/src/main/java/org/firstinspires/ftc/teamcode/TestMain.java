@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAnglePixelC
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.AutoProgramRunner;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedIMU;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.DualServoClaw;
@@ -35,7 +36,7 @@ import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.PixelCameraAimBo
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.RawObjectDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
-import org.firstinspires.ftc.teamcode.Utils.SimpleSensor;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.SimpleSensor;
 import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinder;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TensorCamera;
@@ -115,8 +116,7 @@ public class TestMain extends LinearOpMode {
                 horizontalEncoder,
                 verticalEncoder1,
                 verticalEncoder2,
-                imuSensor,
-                imu,
+                new ThreadedIMU(imu),
                 hardwareConfigs.encodersParams
         );
         positionEstimator.init();

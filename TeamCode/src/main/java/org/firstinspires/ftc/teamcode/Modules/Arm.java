@@ -3,10 +3,10 @@ package org.firstinspires.ftc.teamcode.Modules;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.SimpleArmController;
-import org.firstinspires.ftc.teamcode.Utils.MotorThreaded;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.MotorThreaded;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
-import org.firstinspires.ftc.teamcode.Utils.SimpleSensor;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.SimpleSensor;
 
 import static org.firstinspires.ftc.teamcode.RobotConfig.ArmConfigs;
 

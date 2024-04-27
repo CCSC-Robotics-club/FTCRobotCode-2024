@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Utils;
+package org.firstinspires.ftc.teamcode.Utils.HardwareUtils;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -7,7 +7,7 @@ import java.util.function.DoubleSupplier;
 public class SimpleSensor {
     private final DoubleSupplier sensorReader;
     private double sensorReading;
-    private final Lock lock;
+    protected final Lock lock;
 
     public SimpleSensor(DoubleSupplier sensorReader) {
         this(sensorReader, 0);

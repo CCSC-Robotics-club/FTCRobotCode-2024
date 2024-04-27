@@ -22,14 +22,15 @@ import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPosi
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.HuskyAprilTagCamera;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedIMU;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EncoderMotorMechanism;
-import org.firstinspires.ftc.teamcode.Utils.MotorThreaded;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.MotorThreaded;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
-import org.firstinspires.ftc.teamcode.Utils.ProfiledServo;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ProfiledServo;
 import org.firstinspires.ftc.teamcode.Utils.ProgramRunningStatusChecker;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
-import org.firstinspires.ftc.teamcode.Utils.SimpleSensor;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.SimpleSensor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,8 +130,7 @@ public abstract class Robot {
                 horizontalEncoder,
                 verticalEncoder1,
                 verticalEncoder2,
-                imuSensor,
-                imu,
+                new ThreadedIMU(imu),
                 this.hardwareConfigs.encodersParams
         );
         ((RobotModule) positionEstimator).init();
@@ -277,7 +277,7 @@ public abstract class Robot {
 
         long t0 = System.currentTimeMillis();
         for (SimpleSensor sensor: sensors)
-            sensor.update(); // TODO detailed timings
+            sensor.update();
         telemetrySender.putSystemMessage("sensors update time(ms)", System.currentTimeMillis() - t0);
     }
 

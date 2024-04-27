@@ -1,8 +1,6 @@
-package org.firstinspires.ftc.teamcode.Utils;
+package org.firstinspires.ftc.teamcode.Utils.HardwareUtils;
 
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.RobotConfig;
 
 public class ProfiledServo {
     private final Servo servo;
