@@ -296,7 +296,7 @@ public abstract class Robot {
 
         t0 = System.currentTimeMillis();
         for (ProfiledServo servo:servos)
-            servo.update(System.currentTimeMillis() - previousTimeMillis);
+            servo.update((System.currentTimeMillis() - previousTimeMillis) / 1000.0f);
         previousTimeMillis = System.currentTimeMillis();
         telemetrySender.putSystemMessage("servos update time (ms)", System.currentTimeMillis() - t0);
     }

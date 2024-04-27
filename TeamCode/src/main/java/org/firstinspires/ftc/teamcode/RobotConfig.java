@@ -136,7 +136,7 @@ public final class RobotConfig {
         public static final boolean motorReversed = true, encoderReversed = true;
         public static final double
                 maxPowerWhenMovingUp = 1,
-                maxPowerWhenMovingDown = 0.9,
+                maxPowerWhenMovingDown = 0.95,
                 errorStartDecelerate = 1000,
                 powerNeededToMoveUp = 0.5,
                 powerNeededToMoveDown = 0.4,

@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.SimpleArmController;
 import org.firstinspires.ftc.teamcode.Utils.MotorThreaded;
@@ -22,7 +21,7 @@ public class Arm extends RobotModule {
     private final SimpleSensor limitSwitch;
     private int armEncoderZeroPosition = -114514;
     private double scoringHeight;
-    private long intakeStatusStartTime;
+    private long lastLimitSwitchActivationTime;
 
     private double desiredPower = 0;
     private final SimpleArmController armController = new SimpleArmController(
@@ -52,15 +51,17 @@ public class Arm extends RobotModule {
     protected void periodic(double dt) {
         final double motorPowerFactor = ArmConfigs.motorReversed ? -1:1;
 
-        if (limitSwitch.getSensorReading() != 0)
+        if (limitSwitch.getSensorReading() != 0) {
+            this.lastLimitSwitchActivationTime = System.currentTimeMillis();
             this.armEncoderZeroPosition = (int) armEncoder.getSensorReading();
+        }
 
         if (armStuck() || Math.abs(desiredPower) > 0.05) {
             armMotor.setPower(motorPowerFactor * desiredPower);
             return;
         }
         if (armEncoderZeroPosition == -114514) {
-            armMotor.setPower(-0.8 * motorPowerFactor);
+            armMotor.setPower(-0.6 * motorPowerFactor);
             return;
         }
 
@@ -90,7 +91,7 @@ public class Arm extends RobotModule {
         this.desiredPosition = ArmConfigs.Position.INTAKE;
         this.scoringHeight = 1;
 
-        intakeStatusStartTime = System.currentTimeMillis();
+        lastLimitSwitchActivationTime = System.currentTimeMillis();
         this.armMotor.getMotorInstance().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
@@ -98,7 +99,7 @@ public class Arm extends RobotModule {
         if (!isOwner(operatorService))
             return;
         if (this.desiredPosition != ArmConfigs.Position.INTAKE && position == ArmConfigs.Position.INTAKE)
-            this.intakeStatusStartTime = System.currentTimeMillis();
+            this.lastLimitSwitchActivationTime = System.currentTimeMillis();
         this.desiredPosition = position;
     }
 
@@ -127,7 +128,7 @@ public class Arm extends RobotModule {
     }
 
     public boolean armStuck() {
-        return limitSwitch.getSensorReading() == 0 && System.currentTimeMillis() - intakeStatusStartTime > 5000 && this.desiredPosition == ArmConfigs.Position.INTAKE;
+        return limitSwitch.getSensorReading() == 0 && System.currentTimeMillis() - lastLimitSwitchActivationTime > 5000 && this.desiredPosition == ArmConfigs.Position.INTAKE;
     }
 
     public void forceSetPower(double desiredPower, RobotService operatorService) {
