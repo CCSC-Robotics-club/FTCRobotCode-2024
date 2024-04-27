@@ -6,12 +6,17 @@ import java.util.function.DoubleSupplier;
 
 public class SimpleSensor {
     private final DoubleSupplier sensorReader;
-    private double sensorReading = Double.NaN;
+    private double sensorReading;
     private final Lock lock;
 
     public SimpleSensor(DoubleSupplier sensorReader) {
+        this(sensorReader, 0);
+    }
+
+    public SimpleSensor(DoubleSupplier sensorReader, double startingReading) {
         this.sensorReader = sensorReader;
         this.lock = new ReentrantLock();
+        this.sensorReading = startingReading;
     }
 
     public void update() {

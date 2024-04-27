@@ -121,11 +121,6 @@ public class Chassis extends RobotModule {
         frontRightController.setDesiredSpeed(frontRightWheelMotorPower);
         backLeftController.setDesiredSpeed(backLeftWheelMotorPower);
         backRightController.setDesiredSpeed(backRightWheelMotorPower);
-
-        frontLeftWheel.updateWithController(0, 0);
-        frontRightWheel.updateWithController(0, 0);
-        backLeftWheel.updateWithController(0, 0);
-        backRightWheel.updateWithController(0, 0);
     }
 
     private Vector2D calculateTranslationalSpeedWithProperMethod(ChassisTranslationalTask task) {

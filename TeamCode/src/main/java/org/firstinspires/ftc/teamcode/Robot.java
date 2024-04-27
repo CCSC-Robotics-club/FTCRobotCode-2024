@@ -23,7 +23,9 @@ import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.HuskyAprilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EncoderMotorMechanism;
+import org.firstinspires.ftc.teamcode.Utils.MotorThreaded;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
+import org.firstinspires.ftc.teamcode.Utils.ProfiledServo;
 import org.firstinspires.ftc.teamcode.Utils.ProgramRunningStatusChecker;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
@@ -61,6 +63,8 @@ public abstract class Robot {
     public TelemetrySender telemetrySender;
     protected IMU imu, alternativeIMU;
     private final List<SimpleSensor> sensors = new ArrayList<>();
+    private final List<MotorThreaded> motors = new ArrayList<>();
+    private final List<ProfiledServo> servos = new ArrayList<>();
 
     public enum Side {
         RED,
@@ -79,7 +83,7 @@ public abstract class Robot {
         this.programRunningStatusChecker = checker;
 
         this.useMultiThread = !debugModeEnabled;
-//        this.useMultiThread = false;
+        // this.useMultiThread = false;
 
         telemetrySender = new TelemetrySender(telemetry);
 
@@ -115,6 +119,10 @@ public abstract class Robot {
                 verticalEncoder1 = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, encoderNames[1]).getCurrentPosition()),
                 verticalEncoder2 = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, encoderNames[2]).getCurrentPosition()),
                 imuSensor = new SimpleSensor(() -> imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+        sensors.add(horizontalEncoder);
+        sensors.add(verticalEncoder1);
+        sensors.add(verticalEncoder2);
+        sensors.add(imuSensor);
 
 
         this.positionEstimator = new TripleIndependentEncoderAndIMUPositionEstimator(
@@ -169,53 +177,80 @@ public abstract class Robot {
 
 
         /* arm */
-        arm = new Arm(
-                hardwareMap.get(DcMotor.class, "arm"),
-                hardwareMap.get(DcMotor.class, "arm"),
-                hardwareMap.get(TouchSensor.class, "armLimit")
-        ); robotModules.add(arm);
-        /* claw */
-        claw = new FlippableDualClaw(
-                hardwareMap.get(Servo.class, "flip"),
-                hardwareMap.get(Servo.class, "clawLeft"),
-                hardwareMap.get(Servo.class, "clawRight"),
-                arm,
-                hardwareMap.get(ColorSensor.class, "colorLeft"),
-                hardwareMap.get(ColorSensor.class, "colorRight"),
-                hardwareMap.get(DcMotor.class, "indicatorLightLeft"),
-                hardwareMap.get(DcMotor.class, "indicatorLightRight")
-        ); robotModules.add(claw);
+        final MotorThreaded armMotor = new MotorThreaded(hardwareMap.get(DcMotor.class, "arm"));
+        final SimpleSensor armEncoder = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, "arm").getCurrentPosition()),
+                armLimit = new SimpleSensor(() -> hardwareMap.get(TouchSensor.class, "armLimit").isPressed() ? 1:0);
+        motors.add(armMotor);
+        sensors.add(armEncoder);
+        sensors.add(armLimit);
+        arm = new Arm(armMotor, armEncoder, armLimit);
+        robotModules.add(arm);
 
+
+        /* claw */
+        final ProfiledServo flip = new ProfiledServo(hardwareMap.get(Servo.class, "flip"), 2),
+                clawLeft = new ProfiledServo(hardwareMap.get(Servo.class, "clawLeft"), 2),
+                clawRight = new ProfiledServo(hardwareMap.get(Servo.class, "clawRight"), 2);
+        final MotorThreaded indicatorLightLeft = new MotorThreaded(hardwareMap.get(DcMotor.class, "indicatorLightLeft")),
+                indicatorLightRight = new MotorThreaded(hardwareMap.get(DcMotor.class, "indicatorLightRight"));
+        final SimpleSensor colorLeft = new SimpleSensor(() -> hardwareMap.get(ColorSensor.class, "colorLeft").alpha()),
+                colorRight = new SimpleSensor(() -> hardwareMap.get(ColorSensor.class, "colorRight").alpha());
+        servos.add(flip);
+        servos.add(clawLeft);
+        servos.add(clawRight);
+        sensors.add(colorLeft);
+        sensors.add(colorRight);
+        motors.add(indicatorLightLeft);
+        motors.add(indicatorLightRight);
+        claw = new FlippableDualClaw(
+                flip, clawLeft, clawRight,
+                arm, colorLeft, colorRight,
+                indicatorLightLeft, indicatorLightRight
+        );
+        robotModules.add(claw);
+
+        /* climb */
         climb = new Climb(
                 hardwareMap.get(Servo.class, "climb0"),
                 hardwareMap.get(Servo.class, "climb1")
-        ); robotModules.add(climb);
+        );
+        robotModules.add(climb);
     }
 
     /**
      * initializes the robot
      */
-    Thread updateSensorsThread;
+    Thread updateSensorsThread, updateMotorsThread;
     public void initializeRobot() {
         /* <-- start of program --> */
         initModulesAndService();
 
-        if (useMultiThread)
-            updateSensorsThread = new Thread(this::updateSensorsForever);
+        updateSensorsThread = new Thread(this::updateSensorsForever);
+        updateMotorsThread = new Thread(this::updateMotorsForever);
 
         telemetry.addLine("startup complete...");
         telemetry.update();
     }
 
     public void startRobot() {
-        if (this.useMultiThread) updateSensorsThread.start();
+        if (!this.useMultiThread) return;
+
+        updateSensorsThread.start();
+        updateMotorsThread.start();
     }
 
+    private long previousUpdateTimeMillis = System.currentTimeMillis();
     public void updateRobot() {
-        if (!useMultiThread)
-            updateSensors();
+        if (!useMultiThread) {
+            flushMotorsAndServos();
+            flushSensorsAndControllers();
+        }
 
         long t0 = System.currentTimeMillis();
+        if (driverGamePad != null) driverGamePad.update();
+        telemetrySender.putSystemMessage("controller update time(ms)", System.currentTimeMillis() - t0);
+
+        t0 = System.currentTimeMillis();
         for (RobotService robotService: robotServices)
             robotService.periodic();
         telemetrySender.putSystemMessage("robot service update time(ms)", System.currentTimeMillis() - t0);
@@ -227,24 +262,53 @@ public abstract class Robot {
         }
 
         telemetrySender.periodic();
+
+        while (System.currentTimeMillis() - previousUpdateTimeMillis < 9) {
+            try {Thread.sleep(2);} catch (InterruptedException e) {throw new RuntimeException(e);}
+        }
+
+        previousUpdateTimeMillis = System.currentTimeMillis();
     }
 
-    public void updateSensors() {
+    private long previousTimeMillis = System.currentTimeMillis();
+
+    public void flushSensorsAndControllers() {
         aprilTagCamera.updateCamera();
 
         long t0 = System.currentTimeMillis();
         for (SimpleSensor sensor: sensors)
             sensor.update(); // TODO detailed timings
         telemetrySender.putSystemMessage("sensors update time(ms)", System.currentTimeMillis() - t0);
+    }
+
+    private void flushMotorsAndServos() {
+        long t0 = System.currentTimeMillis();
+        for (MotorThreaded motor:motors)
+            motor.update();
+        telemetrySender.putSystemMessage("motors update time (ms)", System.currentTimeMillis() - t0);
 
         t0 = System.currentTimeMillis();
-        if (driverGamePad != null) driverGamePad.update();
-        telemetrySender.putSystemMessage("controller update time(ms)", System.currentTimeMillis() - t0);
+        frontLeftWheel.updateWithController(0, 0);
+        frontRightWheel.updateWithController(0, 0);
+        backLeftWheel.updateWithController(0, 0);
+        backRightWheel.updateWithController(0, 0);
+        telemetrySender.putSystemMessage("drive wheels time (ms)", System.currentTimeMillis() - t0);
+
+        t0 = System.currentTimeMillis();
+        for (ProfiledServo servo:servos)
+            servo.update(System.currentTimeMillis() - previousTimeMillis);
+        previousTimeMillis = System.currentTimeMillis();
+        telemetrySender.putSystemMessage("servos update time (ms)", System.currentTimeMillis() - t0);
     }
 
     public void updateSensorsForever() {
         while (programRunningStatusChecker.isProgramActive())
-            updateSensors();
+            flushSensorsAndControllers();
+    }
+
+    public void updateMotorsForever() {
+        while (programRunningStatusChecker.isProgramActive())
+            flushMotorsAndServos();
     }
 
     public void stopRobot() {
