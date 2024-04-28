@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAnglePixelC
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.AutoProgramRunner;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedEncoder;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedIMU;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.Claw;
@@ -106,10 +107,10 @@ public class TestMain extends LinearOpMode {
         String[] encoderNames =hardwareConfigs.encoderNames == null ?
                 new String[] {"frontLeft", "frontRight", "backLeft"} :
                 hardwareConfigs.encoderNames;
-        final SimpleSensor horizontalEncoder = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, encoderNames[0]).getCurrentPosition()),
-                verticalEncoder1 = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, encoderNames[1]).getCurrentPosition()),
-                verticalEncoder2 = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, encoderNames[2]).getCurrentPosition()),
-                imuSensor = new SimpleSensor(() -> imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+        final ThreadedEncoder horizontalEncoder = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[0])),
+                verticalEncoder1 = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[1])),
+                verticalEncoder2 = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[2]));
+        final ThreadedIMU imuSensor = new ThreadedIMU(imu);
 
 
         TripleIndependentEncoderAndIMUPositionEstimator positionEstimator = new TripleIndependentEncoderAndIMUPositionEstimator(

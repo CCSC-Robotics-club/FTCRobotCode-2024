@@ -27,13 +27,16 @@ public class ThreadedIMU extends SimpleSensor {
         super.update();
         final double yaw = super.getSensorReading();
         super.lock.lock();
-        yawVelocity = AngleUtils.getActualDifference(previousYaw, yaw) / (System.currentTimeMillis() - previousTimeMillis);
+        yawVelocity = AngleUtils.getActualDifference(previousYaw, yaw) / (System.currentTimeMillis() - previousTimeMillis) * 1000.0;
         super.lock.unlock();
         previousTimeMillis = System.currentTimeMillis();
         previousYaw = yaw;
     }
 
     public double getYawVelocity() {
-        return this.yawVelocity;
+        super.lock.lock();
+        final double yawVelocity = this.yawVelocity;
+        super.lock.unlock();
+        return yawVelocity;
     }
 }

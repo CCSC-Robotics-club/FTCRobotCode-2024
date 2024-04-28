@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPosi
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.HuskyAprilTagCamera;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedEncoder;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedIMU;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EncoderMotorMechanism;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.MotorThreaded;
@@ -116,10 +117,10 @@ public abstract class Robot {
                 new String[] {"frontLeft", "frontRight", "backLeft"} :
                 this.hardwareConfigs.encoderNames;
 
-        final SimpleSensor horizontalEncoder = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, encoderNames[0]).getCurrentPosition()),
-                verticalEncoder1 = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, encoderNames[1]).getCurrentPosition()),
-                verticalEncoder2 = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, encoderNames[2]).getCurrentPosition()),
-                imuSensor = new SimpleSensor(() -> imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+        final ThreadedEncoder horizontalEncoder = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[0])),
+                verticalEncoder1 = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[1])),
+                verticalEncoder2 = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[2]));
+        final ThreadedIMU imuSensor = new ThreadedIMU(imu);
         sensors.add(horizontalEncoder);
         sensors.add(verticalEncoder1);
         sensors.add(verticalEncoder2);
@@ -130,7 +131,7 @@ public abstract class Robot {
                 horizontalEncoder,
                 verticalEncoder1,
                 verticalEncoder2,
-                new ThreadedIMU(imu),
+                imuSensor,
                 this.hardwareConfigs.encodersParams
         );
         ((RobotModule) positionEstimator).init();

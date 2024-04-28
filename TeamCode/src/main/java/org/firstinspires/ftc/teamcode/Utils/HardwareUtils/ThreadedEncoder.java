@@ -23,13 +23,16 @@ public class ThreadedEncoder extends SimpleSensor {
         super.update();
         final double reading = super.getSensorReading();
         super.lock.lock();
-        velocity = (reading - previousReading) / (System.currentTimeMillis() - previousTimeMillis);
+        velocity = (reading - previousReading) / (System.currentTimeMillis() - previousTimeMillis) * 1000.0;
         super.lock.unlock();
         previousTimeMillis = System.currentTimeMillis();
         previousReading = reading;
     }
 
     public double getVelocity() {
-        return this.velocity;
+        super.lock.lock();
+        final double velocity = this.velocity;
+        super.lock.unlock();
+        return velocity;
     }
 }

@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.RobotConfig;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedEncoder;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedIMU;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.AngleUtils;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
@@ -16,7 +17,6 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.StatisticsUtils;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
-import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.SimpleSensor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,15 +24,14 @@ import java.util.List;
 import java.util.Map;
 
 public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule implements PositionEstimator {
-    private final SimpleSensor horizontalEncoder, verticalEncoder1, verticalEncoder2;
+    private final ThreadedEncoder horizontalEncoder, verticalEncoder1, verticalEncoder2;
     private final ThreadedIMU imu;
     private final double horizontalEncoderFactor, verticalEncoder1Factor, verticalEncoder2Factor, verticalDifferenceToHorizontalBias;
-    private Vector2D previousPosition;
-    private double horizontalEncoderPreviousReading, verticalEncoder1PreviousReading, verticalEncoder2PreviousReading, imuReading, imuVelocity;
+    private double horizontalEncoderPreviousReading, verticalEncoder1PreviousReading, verticalEncoder2PreviousReading;
 
     private Vector2D currentPosition2D;
-    /** to the field */
-    private Vector2D currentVelocity2D;
+    /** to the robot */
+    private Vector2D currentRobotVelocity2D;
 
     /**
      * the bias between the imu reading to the actual rotation
@@ -43,9 +42,9 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     private final boolean positionEncodersAvailable;
 
     public TripleIndependentEncoderAndIMUPositionEstimator(
-            SimpleSensor horizontalEncoder,
-            SimpleSensor verticalEncoder1,
-            SimpleSensor verticalEncoder2,
+            ThreadedEncoder horizontalEncoder,
+            ThreadedEncoder verticalEncoder1,
+            ThreadedEncoder verticalEncoder2,
             ThreadedIMU imu,
             TripleIndependentEncoderAndIMUSystemParams params
     ) {
@@ -65,8 +64,7 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
         } else
             this.horizontalEncoderFactor = this.verticalEncoder1Factor = this.verticalEncoder2Factor = this.verticalDifferenceToHorizontalBias = 0;
 
-        this.currentVelocity2D = new Vector2D();
-        this.previousPosition = new Vector2D();
+        this.currentRobotVelocity2D = new Vector2D();
         this.currentPosition2D = new Vector2D();
     }
 
@@ -77,19 +75,8 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     @Override
     public void periodic(double dt) {
         if (!positionEncodersAvailable) return;
-        updateRotation(dt);
         estimatePositions();
-        estimateVelocity(dt);
-    }
-
-    private void updateRotation(double dt) {
-        final long t1 = System.currentTimeMillis();
-        final double imuNewReading = imu.getSensorReading();
-//        this.imuVelocity = primaryIMU.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
-        if (dt > 1.0/1000)
-            this.imuVelocity = AngleUtils.getActualDifference(imuReading, imuNewReading) / dt; // if dt is too small, we abandon the action since this will make velocity infinity
-        this.imuReading = imuNewReading;
-        debugMessages.put("imu reading time", System.currentTimeMillis() - t1);
+        estimateVelocity();
     }
 
     private void estimatePositions() {
@@ -121,12 +108,16 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
         verticalEncoder2PreviousReading = verticalEncoder2Reading;
     }
 
-    private void estimateVelocity(double dt) {
-        if (dt < 1e-4) return;
-        Vector2D positionDifference = currentPosition2D.addBy(previousPosition.multiplyBy(-1));
-        this.currentVelocity2D = positionDifference.multiplyBy(1/dt);
+    private void estimateVelocity() {
+        final double
+                verticalEncoder1Velocity =  verticalEncoder1.getVelocity() * verticalEncoder1Factor,
+                verticalEncoder2Velocity = verticalEncoder2.getVelocity() * verticalEncoder2Factor,
+                verticalVelocity = (verticalEncoder1Velocity + verticalEncoder2Velocity) / 2,
+                verticalEncodersVelocityDifference = (verticalEncoder1Velocity - verticalEncoder2Velocity),
+                horizontalEncoderVelocity = horizontalEncoder.getVelocity() * horizontalEncoderFactor,
+                horizontalVelocity =  horizontalEncoderVelocity - verticalEncodersVelocityDifference * verticalDifferenceToHorizontalBias;
 
-        previousPosition = currentPosition2D;
+        this.currentRobotVelocity2D = new Vector2D(new double[] {horizontalVelocity, verticalVelocity});
     }
 
     @Override
@@ -143,9 +134,6 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
 
         calibratePosition();
         calibrateRotation();
-
-        this.imuReading = 0;
-        this.imuVelocity = 0;
     }
 
     @Override
@@ -168,11 +156,11 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
     public Vector2D getCurrentVelocity(Chassis.OrientationMode orientationMode) {
         switch (orientationMode) {
             case FIELD_ORIENTATED:
-                return currentVelocity2D;
-            case ROBOT_ORIENTATED:
                 return getCurrentVelocity(Chassis.OrientationMode.FIELD_ORIENTATED).multiplyBy(
-                        new Rotation2D(getRotation()).getReversal()
+                        new Rotation2D(getRotation())
                 );
+            case ROBOT_ORIENTATED:
+                return currentRobotVelocity2D;
             default:
                 throw new IllegalArgumentException("unknown orientation mode" + orientationMode.name());
         }
@@ -180,12 +168,12 @@ public class TripleIndependentEncoderAndIMUPositionEstimator extends RobotModule
 
     @Override
     public double getRotation() {
-        return AngleUtils.simplifyAngle(imuReading + imuRotationBias);
+        return AngleUtils.simplifyAngle(imu.getSensorReading() + imuRotationBias);
     }
 
     @Override
     public double getAngularVelocity() {
-        return imuVelocity;
+        return imu.getYawVelocity();
     }
 
     /**
