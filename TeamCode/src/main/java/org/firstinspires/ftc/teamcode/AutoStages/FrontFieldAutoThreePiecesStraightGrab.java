@@ -137,10 +137,10 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
                         Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         new Vector2D(new double[] {
                                 sequentialCommandFactory.getBezierCurvesFromPathFile("move back and grab third from stack").get(1).getPositionWithLERP(1).getX(),
-                                robot.positionEstimator.getCurrentPosition().getY() + stackDistanceToBackWall - robot.distanceSensorBack.getDistance(DistanceUnit.CM) - 1
+                                robot.positionEstimator.getCurrentPosition().getY() + stackDistanceToBackWall - robot.distanceSensorBack.getSensorReading() - 1
                         })), null),
                 () -> robot.claw.setFlip(true, null),
-                () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.distanceSensorBack.getDistance(DistanceUnit.CM) < stackDistanceToBackWall + 1,
+                () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.distanceSensorBack.getSensorReading() < stackDistanceToBackWall + 1,
                 () -> new Rotation2D(0), () -> new Rotation2D(0)
         ));
 
@@ -165,10 +165,10 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
                         Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         new Vector2D(new double[] {
                                 sequentialCommandFactory.getBezierCurvesFromPathFile("grab fourth from stack").get(0).getPositionWithLERP(1).getX(),
-                                robot.positionEstimator.getCurrentPosition().getY() + stackDistanceToBackWall - robot.distanceSensorBack.getDistance(DistanceUnit.CM) - 1
+                                robot.positionEstimator.getCurrentPosition().getY() + stackDistanceToBackWall - robot.distanceSensorBack.getSensorReading() - 1
                         })), null),
                 () -> robot.claw.setFlip(true, null),
-                () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.distanceSensorBack.getDistance(DistanceUnit.CM) < stackDistanceToBackWall + 1,
+                () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.distanceSensorBack.getSensorReading() < stackDistanceToBackWall + 1,
                 () -> new Rotation2D(0), () -> new Rotation2D(0)
         ));
 

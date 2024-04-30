@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinder;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.SimpleSensor;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
@@ -18,24 +19,23 @@ import java.util.function.DoubleSupplier;
 
 public class AprilTagCameraAndDistanceSensorAimBot {
     private final Chassis chassis;
-    private final DoubleSupplier desiredDistanceToWallSuplier;
-    private final DistanceSensor distanceSensor;
+    private final DoubleSupplier desiredDistanceToWallSupplier;
+    private final SimpleSensor distanceSensor;
     private final FixedAngleArilTagCamera aprilTagCamera;
     private final ModulesCommanderMarker modulesCommanderMarker;
     private final TelemetrySender telemetrySender;
     private Vector2D previousWallPosition = new Vector2D(new double[]{0, 0});
     private double previousWallDistance = Double.POSITIVE_INFINITY;
-    public AprilTagCameraAndDistanceSensorAimBot(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, ModulesCommanderMarker commanderMarker) {
+    public AprilTagCameraAndDistanceSensorAimBot(Chassis chassis, SimpleSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, ModulesCommanderMarker commanderMarker) {
         this(chassis, distanceSensor, aprilTagCamera, null, commanderMarker, null);
     }
-    public AprilTagCameraAndDistanceSensorAimBot(Chassis chassis, DistanceSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, Arm arm, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
+    public AprilTagCameraAndDistanceSensorAimBot(Chassis chassis, SimpleSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, Arm arm, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
         this.chassis = chassis;
         this.distanceSensor = distanceSensor;
         this.aprilTagCamera = aprilTagCamera;
         this.modulesCommanderMarker = commanderMarker;
         this.telemetrySender = telemetrySender;
-        this.desiredDistanceToWallSuplier = arm != null ?
-                arm::getScoringDistanceToWall : RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach::getY;
+        this.desiredDistanceToWallSupplier = () -> RobotConfig.ArmConfigs.distancesToWallAccordingToScoringHeight.getYPrediction(arm.getArmScoringHeight());
     }
 
     public SequentialCommandSegment stickToWall(SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
@@ -89,7 +89,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         }
         return new Vector2D(new double[] {
                 RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.getX() + deviationFromCenter,
-                desiredDistanceToWallSuplier.getAsDouble()
+                desiredDistanceToWallSupplier.getAsDouble()
         });
     }
 
@@ -111,7 +111,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
             initSucceeded = false;
             return;
         }
-        final double distanceSensorReading = distanceSensor.getDistance(DistanceUnit.CM);
+        final double distanceSensorReading = distanceSensor.getSensorReading();
         if (distanceSensorReading > RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance) {
             System.out.println("<-- warning: target might be too far -->");
             initSucceeded = false;
@@ -131,7 +131,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
     }
 
     private void updateWallPositionTOF() {
-        final double distanceSensorReading = distanceSensor.getDistance(DistanceUnit.CM),
+        final double distanceSensorReading = distanceSensor.getSensorReading(),
                 newWallPositionX = chassis.isVisualNavigationAvailable() ?
                         chassis.getChassisEncoderPosition().getX() - chassis.getRelativeFieldPositionToWall().getX():
                         previousWallPosition.getX(),

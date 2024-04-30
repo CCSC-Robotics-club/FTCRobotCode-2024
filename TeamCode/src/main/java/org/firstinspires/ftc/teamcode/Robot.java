@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.Climb;
@@ -46,7 +47,7 @@ public abstract class Robot {
     protected final boolean useMultiThread;
 
     private final EncoderMotorMechanism frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
-    public DistanceSensor distanceSensor, distanceSensorBack;
+    public SimpleSensor distanceSensor, distanceSensorBack;
     public Chassis chassis;
 //    public IntakeLegacy intake;
 //    public ArmLegacy arm;
@@ -96,8 +97,11 @@ public abstract class Robot {
         this.backRightMotor = hardwareMap.get(DcMotorEx.class, "backRight");
 
         this.imu = hardwareMap.get(IMU.class, "imu");
-        this.distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
-        this.distanceSensorBack = hardwareMap.get(DistanceSensor.class, "distanceBack");
+        this.distanceSensor = new SimpleSensor(() -> hardwareMap.get(DistanceSensor.class, "distance").getDistance(DistanceUnit.CM));
+        this.sensors.add(distanceSensor);
+        this.distanceSensorBack = new SimpleSensor(() -> hardwareMap.get(DistanceSensor.class, "distanceBack").getDistance(DistanceUnit.CM));
+        // this.sensors.add(distanceSensorBack);
+
         imu.initialize(this.hardwareConfigs.imuParameter);
         if (hardwareConfigs.alternativeIMUParameter != null) {
             this.alternativeIMU = hardwareMap.get(IMU.class, "alternativeIMU");
@@ -175,19 +179,6 @@ public abstract class Robot {
 //        robotModules.add(arm);
 //        robotModules.add(extendableClaw);
 
-
-
-        /* arm */
-        final MotorThreaded armMotor = new MotorThreaded(hardwareMap.get(DcMotor.class, "arm"));
-        final SimpleSensor armEncoder = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, "arm").getCurrentPosition()),
-                armLimit = new SimpleSensor(() -> hardwareMap.get(TouchSensor.class, "armLimit").isPressed() ? 1:0);
-        motors.add(armMotor);
-        sensors.add(armEncoder);
-        sensors.add(armLimit);
-        arm = new Arm(armMotor, armEncoder, armLimit);
-        robotModules.add(arm);
-
-
         /* claw */
         final ProfiledServo flip = new ProfiledServo(hardwareMap.get(Servo.class, "flip"), 2),
                 clawLeft = new ProfiledServo(hardwareMap.get(Servo.class, "clawLeft"), 2),
@@ -199,16 +190,26 @@ public abstract class Robot {
         servos.add(flip);
         servos.add(clawLeft);
         servos.add(clawRight);
-        sensors.add(colorLeft);
-        sensors.add(colorRight);
+        // sensors.add(colorLeft);
+        // sensors.add(colorRight);
         motors.add(indicatorLightLeft);
         motors.add(indicatorLightRight);
         claw = new FlippableDualClaw(
                 flip, clawLeft, clawRight,
-                arm, colorLeft, colorRight,
+                colorLeft, colorRight,
                 indicatorLightLeft, indicatorLightRight
         );
         robotModules.add(claw);
+
+        /* arm */
+        final MotorThreaded armMotor = new MotorThreaded(hardwareMap.get(DcMotor.class, "arm"));
+        final SimpleSensor armEncoder = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, "arm").getCurrentPosition()),
+                armLimit = new SimpleSensor(() -> hardwareMap.get(TouchSensor.class, "armLimit").isPressed() ? 1:0);
+        motors.add(armMotor);
+        sensors.add(armEncoder);
+        sensors.add(armLimit);
+        arm = new Arm(armMotor, armEncoder, armLimit);
+        robotModules.add(arm);
 
         /* climb */
         climb = new Climb(

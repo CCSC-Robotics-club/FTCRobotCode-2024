@@ -7,7 +7,6 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.AngleUtils;
 import java.util.function.DoubleSupplier;
 
 public class ThreadedEncoder extends SimpleSensor {
-    private final DcMotor encoder;
     private double previousReading, velocity;
     private long previousTimeMillis;
     public ThreadedEncoder(DcMotor encoder) {
@@ -15,7 +14,6 @@ public class ThreadedEncoder extends SimpleSensor {
         this.previousReading = encoder.getCurrentPosition();
         this.velocity = 0;
         this.previousTimeMillis = System.currentTimeMillis();
-        this.encoder = encoder;
     }
 
     @Override

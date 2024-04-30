@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.RobotConfig;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.SimpleSensor;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.PixelCameraAimBotLegacy;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
@@ -21,15 +22,13 @@ import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.DoubleSupplier;
 
 public class PilotChassisService extends RobotService {
     private final Chassis chassis;
     private final DriverGamePad driverController;
-    public final DistanceSensor distanceSensor;
+    public final SimpleSensor distanceSensor;
     private final PixelCameraAimBotLegacy pixelAimBot;
     public final IntakeServiceLegacy.PixelDetector pixelDetector;
-    private final DoubleSupplier distanceToWallTargetSupplier;
     private double rotationMaintenanceFacing;
     private Vector2D currentDesiredPosition;
     /** time since last translational command sent by pilot */
@@ -45,7 +44,9 @@ public class PilotChassisService extends RobotService {
     private Map<String, Object> debugMessages = new HashMap<>(1);
     private int aimCenter = 0;
     private final Rotation2D pilotFacingRotation;
-    public PilotChassisService(Chassis chassis, DriverGamePad driverController, DistanceSensor distanceSensor, FixedAnglePixelCamera pixelCamera, Arm arm, double pilotFacing) {
+
+    private double desiredScoringHeight;
+    public PilotChassisService(Chassis chassis, DriverGamePad driverController, SimpleSensor distanceSensor, FixedAnglePixelCamera pixelCamera, double pilotFacing) {
         this.chassis = chassis;
         this.driverController = driverController;
         this.distanceSensor = distanceSensor;
@@ -56,14 +57,23 @@ public class PilotChassisService extends RobotService {
         pixelDetector = pixelAimBot != null ?
                 pixelAimBot::shouldIntakeStart
                 : () -> false;
-
-        distanceToWallTargetSupplier =
-                arm != null ?
-                arm::getScoringDistanceToWall : RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach::getY;
     }
     @Override
     public void init() {
         this.reset();
+    }
+
+    @Override
+    public void reset() {
+        this.chassis.gainOwnerShip(this);
+        this.currentDesiredPosition = new Vector2D();
+        this.rotationMaintenanceFacing = 0;
+        this.pilotLastTranslationalActionTime = this.pilotLastRotationalActionTime = 0;
+        this.currentDesiredPosition = chassis.getChassisEncoderPosition();
+        this.controlMode = RobotConfig.ControlConfigs.defaultControlMode;
+        visualTaskStatus = VisualTaskStatus.UNUSED;
+        aimCenter = 0;
+        this.desiredScoringHeight = 1;
     }
 
     @Override
@@ -309,7 +319,7 @@ public class PilotChassisService extends RobotService {
     }
 
     private boolean updateWallPositionTOF(double distanceSensorMaxDistance) {
-        final double distanceSensorReading = distanceSensor.getDistance(DistanceUnit.CM),
+        final double distanceSensorReading = distanceSensor.getSensorReading(),
                 newWallPositionX = chassis.isVisualNavigationAvailable() ?
                         chassis.getChassisEncoderPosition().getX() - chassis.getRelativeFieldPositionToWall().getX():
                         previousWallPosition.getX();
@@ -369,7 +379,7 @@ public class PilotChassisService extends RobotService {
         /* send pilot's x command, and the maintain distance y command by tof sensor, to the chassis */
         final Vector2D aimTargetEncoder = new Vector2D(new double[] {
                 pilotXCommand * targetDistanceAtMaxDesiredSpeed + chassis.getChassisEncoderPosition().getX(),
-                previousWallPosition.getY() + distanceToWallTargetSupplier.getAsDouble()
+                previousWallPosition.getY() + getDesiredScoringDistanceToWall()
         });
         chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                 aimTargetEncoder), this);
@@ -380,7 +390,14 @@ public class PilotChassisService extends RobotService {
     }
 
     private Vector2D getDesiredPreciseWallAimPosition() {
-        return new Vector2D(new double[] {RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.getX(), distanceToWallTargetSupplier.getAsDouble()});
+        return new Vector2D(new double[] {
+                RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.getX(),
+                getDesiredScoringDistanceToWall()
+        });
+    }
+
+    private double getDesiredScoringDistanceToWall() {
+        return RobotConfig.ArmConfigs.distancesToWallAccordingToScoringHeight.getYPrediction(desiredScoringHeight);
     }
 
     private void aimFail() {
@@ -458,21 +475,19 @@ public class PilotChassisService extends RobotService {
             chassis.setRotationalTask(new Chassis.ChassisRotationalTask(Chassis.ChassisRotationalTask.ChassisRotationalTaskType.FACE_NAVIGATION_REFERENCES, 0), this);
     }
 
-    @Override
-    public void onDestroy() {
+    /** called by upper structure service */
+    public void setDesiredScoringHeight(double desiredScoringHeight) {
+        this.desiredScoringHeight = desiredScoringHeight;
+    }
 
+    public double getActualScoringHeightAccordingToDistanceToWall(double defaultScoringHeight) {
+        if (this.visualTaskStatus != VisualTaskStatus.TOF_PRECISE_APPROACH) return defaultScoringHeight;
+        return RobotConfig.ArmConfigs.scoringHeightAccordingToActualDistanceToWall.getYPrediction(distanceSensor.getSensorReading());
     }
 
     @Override
-    public void reset() {
-        this.chassis.gainOwnerShip(this);
-        this.currentDesiredPosition = new Vector2D();
-        this.rotationMaintenanceFacing = 0;
-        this.pilotLastTranslationalActionTime = this.pilotLastRotationalActionTime = 0;
-        this.currentDesiredPosition = chassis.getChassisEncoderPosition();
-        this.controlMode = RobotConfig.ControlConfigs.defaultControlMode;
-        visualTaskStatus = VisualTaskStatus.UNUSED;
-        aimCenter = 0;
+    public void onDestroy() {
+
     }
 
     @Override

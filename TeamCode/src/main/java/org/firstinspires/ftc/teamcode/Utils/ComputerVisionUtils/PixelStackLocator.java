@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.SimpleSensor;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.SpeedCurves;
@@ -16,9 +18,9 @@ import java.util.List;
 public class PixelStackLocator {
     private static final double distanceTolerance = 4.0;
 
-    private final DistanceSensor distanceSensorBack;
+    private final SimpleSensor distanceSensorBack;
     private final Chassis chassis;
-    public PixelStackLocator(DistanceSensor distanceSensorBack, Chassis chassis) {
+    public PixelStackLocator(SimpleSensor distanceSensorBack, Chassis chassis) {
         this.distanceSensorBack = distanceSensorBack;
         this.chassis = chassis;
     }
@@ -32,9 +34,9 @@ public class PixelStackLocator {
                 () -> movementPath,
                 recordedPositions::clear,
                 () -> {
-                    final double distanceSensorBackReading = distanceSensorBack.getDistance(DistanceUnit.CM);
+                    final double distanceSensorBackReading = distanceSensorBack.getSensorReading();
                     if (2 < distanceSensorBackReading && distanceSensorBackReading < 30)
-                        recordedPositions.add(chassis.getChassisEncoderPosition().addBy(new Vector2D(new double[] {0, -distanceSensorBack.getDistance(DistanceUnit.CM)})));
+                        recordedPositions.add(chassis.getChassisEncoderPosition().addBy(new Vector2D(new double[] {0, -distanceSensorBack.getSensorReading()})));
                 },
                 () -> this.analyzeResults(recordedPositions),
                 chassis::isCurrentTranslationalTaskComplete,

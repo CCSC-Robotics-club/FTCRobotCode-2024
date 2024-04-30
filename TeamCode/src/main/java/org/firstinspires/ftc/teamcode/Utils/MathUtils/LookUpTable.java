@@ -8,24 +8,24 @@ public class LookUpTable {
     public LookUpTable(double[] xValues, double[] yValues) {
         if (xValues.length != yValues.length)
             throw new IllegalArgumentException("look up table length not match");
-        double prev_x = -Double.POSITIVE_INFINITY;
-        for (double x:xValues) {
-            if (x < prev_x)
-                throw new IllegalArgumentException("look up table X must be in increasing order");
-            prev_x = x;
-        }
+
         this.xValues = xValues;
         this.yValues = yValues;
         this.n = xValues.length;
     }
 
     public double getYPrediction(double x) {
-        if (x < xValues[0])
-            return yValues[0];
+        final double
+                xLowerBound = Math.min(xValues[xValues.length-1], xValues[0]),
+                xUpperBound = Math.max(xValues[xValues.length-1], xValues[1]);
+        x = Math.min(xUpperBound, x);
+        x = Math.max(xLowerBound, x);
+
         for (int i = 0; i < n-1; i++)
             if (xValues[i] <= x && x <= xValues[i+1])
                 return linearInterpretation(xValues[i], yValues[i], xValues[i+1], yValues[i+1], x);
-        return yValues[yValues.length-1];
+
+        return 0;
     }
 
     public static double linearInterpretation(double x1, double y1, double x2, double y2, double x) {

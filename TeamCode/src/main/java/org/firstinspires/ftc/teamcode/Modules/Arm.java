@@ -111,20 +111,14 @@ public class Arm extends RobotModule {
         return (int) ((armEncoder.getSensorReading() - armEncoderZeroPosition) * (ArmConfigs.encoderReversed ? -1: 1));
     }
 
-    public double getScoringOrHoldingClawAngle(double holdingPosition) {
-        return desiredPosition == ArmConfigs.Position.SCORE
-                ? ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(scoringHeight)
-                : holdingPosition;
-    }
-
-    public double getScoringDistanceToWall() {
-        return -ArmConfigs.distancesToWallAccordingToScoringHeight.getYPrediction(scoringHeight);
-    }
-
     public void setScoringHeight(double scoringHeight, RobotService operatorService) {
         if (!isOwner(operatorService))
             return;
         this.scoringHeight = scoringHeight;
+    }
+
+    public double getArmScoringHeight() {
+        return this.scoringHeight;
     }
 
     public boolean armStuck() {

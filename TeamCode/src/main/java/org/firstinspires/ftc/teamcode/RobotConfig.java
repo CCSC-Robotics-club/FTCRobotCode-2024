@@ -150,7 +150,8 @@ public final class RobotConfig {
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions),
-                distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall);
+                distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall),
+                scoringHeightAccordingToActualDistanceToWall = new LookUpTable(correspondingDistanceToWall, scoringHeight);
 
         public enum Position {
             INTAKE,

@@ -13,10 +13,11 @@ import java.util.Map;
 public class UpperStructureService extends RobotService {
     private final Arm arm;
     private final FlippableDualClaw claw;
+    private final PilotChassisService chassisService;
 
     private final Gamepad copilotGamePad;
 
-    private double scoringHeight;
+    private double desiredScoringHeight;
 
     private enum UpperStructureStatus {
         GRABBING,
@@ -26,9 +27,10 @@ public class UpperStructureService extends RobotService {
 
     private UpperStructureStatus currentStatus;
 
-    public UpperStructureService(Arm arm, FlippableDualClaw claw, Gamepad copilotGamePad) {
+    public UpperStructureService(Arm arm, FlippableDualClaw claw, PilotChassisService chassisService, Gamepad copilotGamePad) {
         this.arm = arm;
         this.claw = claw;
+        this.chassisService = chassisService;
         this.copilotGamePad = copilotGamePad;
     }
     @Override
@@ -42,6 +44,7 @@ public class UpperStructureService extends RobotService {
         switch (currentStatus) {
             case HOLDING: {
                 claw.setAutoClosing(false, this);
+                claw.setScoringAngle(RobotConfig.FlippableDualClawConfigs.flipperHoldPosition, this);
                 claw.setLeftClawClosed(true, this);
                 claw.setRightClawClosed(true, this);
                 if (claw.rightClawInPosition() && claw.leftClawInPosition())
@@ -66,10 +69,15 @@ public class UpperStructureService extends RobotService {
             }
             case SCORING: {
                 claw.setAutoClosing(false, this);
-                arm.setScoringHeight(scoringHeight, this);
+
+                chassisService.getActualScoringHeightAccordingToDistanceToWall(desiredScoringHeight);
+                final double actualScoringHeight = chassisService.getActualScoringHeightAccordingToDistanceToWall(1);
+                arm.setScoringHeight(actualScoringHeight, this);
+                claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(actualScoringHeight), this);
+
                 if (Math.abs(copilotGamePad.left_stick_y) > 0.05)
-                    scoringHeight += -1 * dt * copilotGamePad.left_stick_y;
-                scoringHeight = Math.max(Math.min(scoringHeight, 0.85), 0.25);
+                    desiredScoringHeight += -1 * dt * copilotGamePad.left_stick_y;
+                desiredScoringHeight = Math.max(Math.min(desiredScoringHeight, 1), 0);
                 /* firstly we close the claw */
                 if (!clawRequestedDuringCurrentScoringProcess){
                     claw.setLeftClawClosed(true, this);
@@ -105,7 +113,6 @@ public class UpperStructureService extends RobotService {
         if (copilotGamePad.b) {
             this.currentStatus = UpperStructureStatus.SCORING;
             clawRequestedDuringCurrentScoringProcess = false;
-            this.scoringHeight = 0.85;
         }
     }
 
@@ -142,14 +149,14 @@ public class UpperStructureService extends RobotService {
         arm.gainOwnerShip(this);
 
         currentStatus = UpperStructureStatus.HOLDING;
-        scoringHeight = 1;
+        desiredScoringHeight = 1;
     }
 
     @Override
     public Map<String, Object> getDebugMessages() {
         final Map<String, Object> debugMessages = new HashMap<>();
         debugMessages.put("upper structure status", currentStatus);
-        debugMessages.put("scoring height", scoringHeight);
+        debugMessages.put("scoring height", desiredScoringHeight);
         return debugMessages;
     }
 }

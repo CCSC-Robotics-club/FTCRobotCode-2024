@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
+import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.MotorThreaded;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ProfiledServo;
@@ -14,12 +15,12 @@ import java.util.Map;
 
 public class FlippableDualClaw extends RobotModule {
     private final ProfiledServo flip, leftClaw, rightClaw;
-    private final Arm arm;
     private final SimpleSensor detectorLeft, detectorRight;
     private final MotorThreaded leftIndicatorLight, rightIndicatorLight;
 
     private boolean closeLeftClaw, closeRightClaw, flipperOnIntake, autoClosing;
-    public FlippableDualClaw(ProfiledServo flip, ProfiledServo leftClaw, ProfiledServo rightClaw, Arm arm, SimpleSensor detectorLeft, SimpleSensor detectorRight, MotorThreaded leftIndicatorLight, MotorThreaded rightIndicatorLight) {
+    private double scoringOrHoldingClawAngle;
+    public FlippableDualClaw(ProfiledServo flip, ProfiledServo leftClaw, ProfiledServo rightClaw, SimpleSensor detectorLeft, SimpleSensor detectorRight, MotorThreaded leftIndicatorLight, MotorThreaded rightIndicatorLight) {
         super("claw");
         this.flip = flip;
         this.leftClaw = leftClaw;
@@ -27,7 +28,6 @@ public class FlippableDualClaw extends RobotModule {
 
         this.detectorLeft = detectorLeft;
         this.detectorRight = detectorRight;
-        this.arm = arm;
         this.leftIndicatorLight = leftIndicatorLight;
         this.rightIndicatorLight = rightIndicatorLight;
     }
@@ -45,11 +45,16 @@ public class FlippableDualClaw extends RobotModule {
         closeLeftClaw |= autoClosing && leftClawDetected;
         closeRightClaw |= autoClosing && rightClawDetected;
 
+        /* flip automatically */
+        if (autoClosing && leftClawDetected && rightClawDetected && leftClaw.inPosition() && rightClaw.inPosition())
+            this.flipperOnIntake = false;
+
         leftClaw.setDesiredPosition(closeLeftClaw ? FlippableDualClawConfigs.leftClawClosePosition : FlippableDualClawConfigs.leftClawOpenPosition);
         rightClaw.setDesiredPosition(closeRightClaw ? FlippableDualClawConfigs.rightClawClosedPosition : FlippableDualClawConfigs.rightClawOpenPosition);
         flip.setDesiredPosition(
                 flipperOnIntake ? FlippableDualClawConfigs.flipperIntakePosition
-                : arm.getScoringOrHoldingClawAngle(FlippableDualClawConfigs.flipperHoldPosition));
+                : this.scoringOrHoldingClawAngle
+        );
 
         leftClaw.update(dt);
         rightClaw.update(dt);
@@ -78,6 +83,8 @@ public class FlippableDualClaw extends RobotModule {
         leftClaw.update(10);
         rightClaw.setDesiredPosition(FlippableDualClawConfigs.rightClawClosedPosition);
         rightClaw.update(10);
+
+        scoringOrHoldingClawAngle = FlippableDualClawConfigs.flipperHoldPosition;
     }
 
     public void setLeftClawClosed(boolean close, RobotService operatorService) {
@@ -118,6 +125,12 @@ public class FlippableDualClaw extends RobotModule {
 
     public boolean flipInPosition() {
         return flip.inPosition();
+    }
+
+    public void setScoringAngle(double scoringOrHoldingClawAngle, ModulesCommanderMarker operator) {
+        if (!isOwner(operator))
+            return;
+        this.scoringOrHoldingClawAngle = scoringOrHoldingClawAngle;
     }
 
     @Override
