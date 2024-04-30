@@ -188,29 +188,22 @@ public class PilotChassisService extends RobotService {
                 pilotRotationalCommand
         );
 
+        /* auto facing control*/
+        if (driverController.keyOnHold(RobotConfig.KeyBindings.facePilotLeftButton))
+            rotationMaintenanceFacing = Math.toRadians(90) + pilotFacingRotation.getRadian();
+        else if (driverController.keyOnHold(RobotConfig.KeyBindings.facePilotRightButton))
+            rotationMaintenanceFacing = Math.toRadians(270) + pilotFacingRotation.getRadian();
+        else if (driverController.keyOnHold(RobotConfig.KeyBindings.facePilotFrontButton))
+            rotationMaintenanceFacing = Math.toRadians(0) + pilotFacingRotation.getRadian();
+        else if (driverController.keyOnHold(RobotConfig.KeyBindings.facePilotBackButton))
+            rotationMaintenanceFacing = Math.toRadians(180) + pilotFacingRotation.getRadian();
+
         if (pilotLastRotationalActionTime < RobotConfig.ChassisConfigs.timeToStartDecelerateRotation)
             rotationMaintenanceFacing = chassis.getYaw();
         else if (!driverController.keyOnHold(RobotConfig.KeyBindings.turnOffRotationControlButton))
             rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
                     Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
-                    rotationMaintenanceFacing
-            );
-
-        /* auto facing control*/
-        double pilotDesiredFacing = -1;
-        if (driverController.keyOnHold(RobotConfig.KeyBindings.facePilotLeftButton))
-            pilotDesiredFacing = Math.toRadians(90);
-        else if (driverController.keyOnHold(RobotConfig.KeyBindings.facePilotRightButton))
-            pilotDesiredFacing = Math.toRadians(270);
-        else if (driverController.keyOnHold(RobotConfig.KeyBindings.facePilotFrontButton))
-            pilotDesiredFacing = 0;
-        else if (driverController.keyOnHold(RobotConfig.KeyBindings.facePilotBackButton))
-            pilotDesiredFacing = Math.toRadians(180);
-        if (pilotDesiredFacing != -1)
-            rotationalTaskByPilotStick = new Chassis.ChassisRotationalTask(
-                    Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
-                    pilotDesiredFacing + pilotFacingRotation.getRadian()
-            );
+                    rotationMaintenanceFacing);
 
         /* if there is no visual task going, send the pilot's rotation command to chassis module */
         if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
