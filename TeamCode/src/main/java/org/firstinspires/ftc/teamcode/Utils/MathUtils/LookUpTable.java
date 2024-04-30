@@ -22,9 +22,10 @@ public class LookUpTable {
         x = Math.max(xLowerBound, x);
 
         for (int i = 0; i < n-1; i++)
-            if (xValues[i] <= x && x <= xValues[i+1])
+            if ((xValues[i] <= x && x <= xValues[i+1]) || (xValues[i+1] <= x && x <= xValues[i]))
                 return linearInterpretation(xValues[i], yValues[i], xValues[i+1], yValues[i+1], x);
 
+        System.out.println("Warning, look up table cannot match");
         return 0;
     }
 

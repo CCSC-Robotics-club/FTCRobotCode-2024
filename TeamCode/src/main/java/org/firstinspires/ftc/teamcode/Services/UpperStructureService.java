@@ -70,7 +70,7 @@ public class UpperStructureService extends RobotService {
             case SCORING: {
                 claw.setAutoClosing(false, this);
 
-                chassisService.getActualScoringHeightAccordingToDistanceToWall(desiredScoringHeight);
+                chassisService.setDesiredScoringHeight(desiredScoringHeight);
                 final double actualScoringHeight = chassisService.getActualScoringHeightAccordingToDistanceToWall(1);
                 arm.setScoringHeight(actualScoringHeight, this);
                 claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(actualScoringHeight), this);

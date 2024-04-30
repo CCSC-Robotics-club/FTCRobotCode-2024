@@ -128,12 +128,8 @@ public class PilotChassisService extends RobotService {
         chassis.setLowSpeedModeEnabled(driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton));
         final boolean processVisualApproach = driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton),
                 initiateVisualApproach = driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton) && this.visualTaskStatus == VisualTaskStatus.UNUSED;
-        if (driverController.keyOnReleased(RobotConfig.KeyBindings.processVisualApproachButton)) {
-            if (previousWallPosition != null)
-                this.currentDesiredPosition = previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach);
-            this.rotationMaintenanceFacing = 0;
-            this.visualTaskStatus = VisualTaskStatus.FINISHED;
-        }
+        if (driverController.keyOnReleased(RobotConfig.KeyBindings.processVisualApproachButton))
+            aimFinish();
 
         if (driverController.keyOnPressed(RobotConfig.KeyBindings.setAimPositionLeftButton))
             aimCenter--;
@@ -294,10 +290,10 @@ public class PilotChassisService extends RobotService {
                 final boolean stickToWallAdjustmentDemanded = Math.abs(driverController.getTranslationStickVector().getX()) > 0.1
                         || driverController.keyOnHold(RobotConfig.KeyBindings.moveAimingPositionLeftManuallyButton)
                         || driverController.keyOnHold(RobotConfig.KeyBindings.moveAimingPositionRightManuallyButton);
-                if (chassis.isCurrentTranslationalTaskComplete() && stickToWallAdjustmentDemanded) // if the difference lies with tolerance, and that the chassis reports that current task is finished
-                {
+                if (chassis.isCurrentTranslationalTaskComplete()
+                        // && stickToWallAdjustmentDemanded
+                ) // if the difference lies with tolerance, and that the chassis reports that current task is finished
                     this.visualTaskStatus = VisualTaskStatus.MAINTAIN_AND_AIM; // end of this stage
-                }
                 return;
             }
             case MAINTAIN_AND_AIM:
@@ -379,7 +375,7 @@ public class PilotChassisService extends RobotService {
         /* send pilot's x command, and the maintain distance y command by tof sensor, to the chassis */
         final Vector2D aimTargetEncoder = new Vector2D(new double[] {
                 pilotXCommand * targetDistanceAtMaxDesiredSpeed + chassis.getChassisEncoderPosition().getX(),
-                previousWallPosition.getY() + getDesiredScoringDistanceToWall()
+                previousWallPosition.getY() - getDesiredScoringDistanceToWall()
         });
         chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                 aimTargetEncoder), this);
@@ -392,7 +388,7 @@ public class PilotChassisService extends RobotService {
     private Vector2D getDesiredPreciseWallAimPosition() {
         return new Vector2D(new double[] {
                 RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.getX(),
-                getDesiredScoringDistanceToWall()
+                -getDesiredScoringDistanceToWall()
         });
     }
 
@@ -402,8 +398,14 @@ public class PilotChassisService extends RobotService {
 
     private void aimFail() {
         this.lastAimSucceeded = false;
+        aimFinish();
+    }
+
+    private void aimFinish() {
+        if (previousWallPosition != null)
+            this.currentDesiredPosition = previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach);
+        this.rotationMaintenanceFacing = 0;
         this.visualTaskStatus = VisualTaskStatus.FINISHED;
-        currentDesiredPosition = chassis.getChassisEncoderPosition();
     }
 
     /**
@@ -481,7 +483,8 @@ public class PilotChassisService extends RobotService {
     }
 
     public double getActualScoringHeightAccordingToDistanceToWall(double defaultScoringHeight) {
-        if (this.visualTaskStatus != VisualTaskStatus.TOF_PRECISE_APPROACH) return defaultScoringHeight;
+        if (this.visualTaskStatus != VisualTaskStatus.MAINTAIN_AND_AIM) return defaultScoringHeight;
+        debugMessages.put("scoring height by distance sensor ", RobotConfig.ArmConfigs.scoringHeightAccordingToActualDistanceToWall.getYPrediction(distanceSensor.getSensorReading()));
         return RobotConfig.ArmConfigs.scoringHeightAccordingToActualDistanceToWall.getYPrediction(distanceSensor.getSensorReading());
     }
 
@@ -492,6 +495,8 @@ public class PilotChassisService extends RobotService {
 
     @Override
     public Map<String, Object> getDebugMessages() {
+        debugMessages.put("distance sensor reading", distanceSensor.getSensorReading());
+        debugMessages.put("desired scoring distance", getDesiredScoringDistanceToWall());
         return this.debugMessages;
     }
 

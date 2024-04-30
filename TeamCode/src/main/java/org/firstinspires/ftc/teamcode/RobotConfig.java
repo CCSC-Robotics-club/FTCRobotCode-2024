@@ -319,7 +319,7 @@ public final class RobotConfig {
 
         public static final double distanceSensorMaxDistance = 45;
         public static final double distanceSensorMaxDistance_maintainAndAim = 15;
-        public static final double distanceSensorMinDistance = 1;
+        public static final double distanceSensorMinDistance = 0;
         public static final double approachReverseSpeedTolerance = 20; // if the robot goes away from the wall in more than 20cm/s, we think the distance sensor failed
 
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -25});
