@@ -203,8 +203,8 @@ public abstract class Robot {
 
         /* arm */
         final MotorThreaded armMotor = new MotorThreaded(hardwareMap.get(DcMotor.class, "arm"));
-        final SimpleSensor armEncoder = new SimpleSensor(() -> hardwareMap.get(DcMotor.class, "arm").getCurrentPosition()),
-                armLimit = new SimpleSensor(() -> hardwareMap.get(TouchSensor.class, "armLimit").isPressed() ? 1:0);
+        final ThreadedEncoder armEncoder = new ThreadedEncoder(hardwareMap.get(DcMotor.class, "arm"));
+        final SimpleSensor armLimit = new SimpleSensor(() -> hardwareMap.get(TouchSensor.class, "armLimit").isPressed() ? 1:0);
         motors.add(armMotor);
         sensors.add(armEncoder);
         sensors.add(armLimit);

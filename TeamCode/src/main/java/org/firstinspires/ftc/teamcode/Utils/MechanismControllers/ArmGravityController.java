@@ -111,6 +111,10 @@ public class ArmGravityController implements MechanismController {
         return this.enhancedPIDController.getErrorAccumulation();
     }
 
+    public double getDesiredPosition() {
+        return this.desiredPosition;
+    }
+
     public void updateArmProfile(ArmProfile newArmProfile) {
         this.profile = newArmProfile;
         this.enhancedPIDController.setPidProfile(newArmProfile.staticPIDProfile);

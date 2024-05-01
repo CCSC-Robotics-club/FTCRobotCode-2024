@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
 import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.LookUpTable;
+import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.ArmGravityController;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EnhancedPIDController;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinder;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
@@ -133,25 +134,24 @@ public final class RobotConfig {
 
     public static final class ArmConfigs {
         /** positive should be scoring */
-        public static final boolean motorReversed = true, encoderReversed = true;
-        public static final double
-                maxPowerWhenMovingUp = 1,
-                maxPowerWhenMovingDown = 0.95,
-                errorStartDecelerate = 1000,
-                powerNeededToMoveUp = 0.5,
-                powerNeededToMoveDown = 0.4,
-                errorTolerance = 50;
-
-        private static final double[]
-                scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {5100, 4900, 4700, 4300, 4100},
-                correspondingServoPositions = new double[] {0.72, 0.76, 0.8, 0.88, 0.9},
-                correspondingDistanceToWall = new double[] {24, 22, 17, 6, 1.5}; // in cm
-        public static final LookUpTable
-                armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
-                flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions),
-                distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall),
-                scoringHeightAccordingToActualDistanceToWall = new LookUpTable(correspondingDistanceToWall, scoringHeight);
+        public static final boolean motorReversed = false, encoderReversed = false;
+        public static final ArmGravityController.ArmProfile armProfile = new ArmGravityController.ArmProfile(
+                0.8,
+                80,
+                0.05,
+                15,
+                0.07,
+                140,
+                0,
+                20,
+                600,
+                300,
+                0.1,
+                new LookUpTable(
+                        new double[] {0, 70, 150, 200, 270, 350, 400},
+                        new double[] {0.35, 0.45, 0.36, 0.28, 0, -0.28, -0.36}
+                )
+        );
 
         public enum Position {
             INTAKE,
@@ -162,11 +162,22 @@ public final class RobotConfig {
 
         public static final Map<Position, Double> encoderPositions = new HashMap<>(); // in reference to zero position (limit switch)
         static {
-            encoderPositions.put(Position.INTAKE, -20.0);
-            encoderPositions.put(Position.GRAB_STACK, 300.0);
-            encoderPositions.put(Position.GRAB_STACK_LOW, 240.0);
-            encoderPositions.put(Position.SCORE, 4400.0);
+            encoderPositions.put(Position.INTAKE, 0.0);
+            encoderPositions.put(Position.GRAB_STACK, 60.0);
+            encoderPositions.put(Position.GRAB_STACK_LOW, 50.0);
+            encoderPositions.put(Position.SCORE, 350.0);
         }
+
+        private static final double[]
+                scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
+                correspondingArmEncoderValues = new double[] {400, 375, 350, 325, 300},
+                correspondingServoPositions = new double[] {0.72, 0.76, 0.8, 0.88, 0.9},
+                correspondingDistanceToWall = new double[] {24, 22, 17, 6, 1.5}; // in cm
+        public static final LookUpTable
+                armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
+                flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions),
+                distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall),
+                scoringHeightAccordingToActualDistanceToWall = new LookUpTable(correspondingDistanceToWall, scoringHeight);
     }
 
     public static final class FlippableDualClawConfigs {

@@ -68,24 +68,7 @@ public class TestMain extends LinearOpMode {
     private void profiledArmTuning() {
         final DcMotor armMotor = hardwareMap.get(DcMotor.class, "arm");
         final ThreadedEncoder armEncoder = new ThreadedEncoder(armMotor);
-        final ArmGravityController.ArmProfile armProfile = new ArmGravityController.ArmProfile(
-                0.8,
-                80,
-                0.05,
-                10,
-                0.07,
-                100,
-                0,
-                20,
-                600,
-                400,
-                0.1,
-                new LookUpTable(
-                        new double[] {0, 70, 150, 200, 270, 350, 400},
-                        new double[] {0.35, 0.45, 0.36, 0.28, 0, -0.28, -0.36}
-                )
-        );
-        final ArmGravityController controller = new ArmGravityController(armProfile);
+        final ArmGravityController controller = new ArmGravityController(RobotConfig.ArmConfigs.armProfile);
 
         waitForStart();
 
@@ -94,7 +77,7 @@ public class TestMain extends LinearOpMode {
             armEncoder.update();
             desiredPosition += gamepad1.right_stick_y * -4;
             desiredPosition = Math.max(0, desiredPosition);
-            desiredPosition = Math.min(350, desiredPosition);
+            desiredPosition = Math.min(400, desiredPosition);
             if (gamepad1.b)
                 controller.goToDesiredPosition(desiredPosition);
 
