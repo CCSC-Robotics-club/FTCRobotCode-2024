@@ -8,8 +8,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class TelemetrySender extends RobotService{
+    private final Lock lock = new ReentrantLock();
     private Telemetry telemetry;
     private List<RobotModule> robotModules;
     private List<RobotService> robotServices;
@@ -27,10 +30,14 @@ public class TelemetrySender extends RobotService{
     }
 
     public void putSystemMessage(String caption, Object object) {
+        lock.lock();
         systemMessages.put(caption, object);
+        lock.unlock();
     }
     public void deleteSystemMessage(String caption) {
+        lock.lock();
         systemMessages.remove(caption);
+        lock.unlock();
     }
 
     @Override
@@ -62,9 +69,11 @@ public class TelemetrySender extends RobotService{
             telemetry.addLine();
         }
 
+        lock.lock();
         telemetry.addLine("\nsystem messages");
         for (String messageCaption: systemMessages.keySet())
             telemetry.addData(messageCaption, systemMessages.get(messageCaption));
+        lock.unlock();
 
         telemetry.update();
     }

@@ -35,7 +35,10 @@ import org.firstinspires.ftc.teamcode.Utils.RobotService;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.SimpleSensor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public abstract class Robot {
     public final HardwareMap hardwareMap;
@@ -65,7 +68,7 @@ public abstract class Robot {
     protected final List<RobotService> robotServices = new ArrayList<>(1);
     public TelemetrySender telemetrySender;
     protected IMU imu, alternativeIMU;
-    private final List<SimpleSensor> sensors = new ArrayList<>();
+    private final Map<String, SimpleSensor> sensors = new HashMap<>();
     private final List<MotorThreaded> motors = new ArrayList<>();
     private final List<ProfiledServo> servos = new ArrayList<>();
 
@@ -98,9 +101,9 @@ public abstract class Robot {
 
         this.imu = hardwareMap.get(IMU.class, "imu");
         this.distanceSensor = new SimpleSensor(() -> hardwareMap.get(DistanceSensor.class, "distance").getDistance(DistanceUnit.CM));
-        this.sensors.add(distanceSensor);
+        this.sensors.put("distance", distanceSensor);
         this.distanceSensorBack = new SimpleSensor(() -> hardwareMap.get(DistanceSensor.class, "distanceBack").getDistance(DistanceUnit.CM));
-        // this.sensors.add(distanceSensorBack);
+        // this.sensors.put("distance back", distanceSensorBack);
 
         imu.initialize(this.hardwareConfigs.imuParameter);
         if (hardwareConfigs.alternativeIMUParameter != null) {
@@ -125,10 +128,10 @@ public abstract class Robot {
                 verticalEncoder1 = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[1])),
                 verticalEncoder2 = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[2]));
         final ThreadedIMU imuSensor = new ThreadedIMU(imu);
-        sensors.add(horizontalEncoder);
-        sensors.add(verticalEncoder1);
-        sensors.add(verticalEncoder2);
-        sensors.add(imuSensor);
+        sensors.put("horizontal encoder", horizontalEncoder);
+        sensors.put("vertical encoder 1", verticalEncoder1);
+        sensors.put("vertical encoder 2", verticalEncoder2);
+        sensors.put("imu", imuSensor);
 
 
         this.positionEstimator = new TripleIndependentEncoderAndIMUPositionEstimator(
@@ -206,8 +209,8 @@ public abstract class Robot {
         final ThreadedEncoder armEncoder = new ThreadedEncoder(hardwareMap.get(DcMotor.class, "arm"));
         final SimpleSensor armLimit = new SimpleSensor(() -> hardwareMap.get(TouchSensor.class, "armLimit").isPressed() ? 1:0);
         motors.add(armMotor);
-        sensors.add(armEncoder);
-        sensors.add(armLimit);
+        sensors.put("arm enc", armEncoder);
+        sensors.put("arm lim", armLimit);
         arm = new Arm(armMotor, armEncoder, armLimit);
         robotModules.add(arm);
 
@@ -278,9 +281,16 @@ public abstract class Robot {
         aprilTagCamera.updateCamera();
 
         long t0 = System.currentTimeMillis();
-        for (SimpleSensor sensor: sensors)
-            sensor.update();
-        telemetrySender.putSystemMessage("sensors update time(ms)", System.currentTimeMillis() - t0);
+        for (String sensorName: sensors.keySet()) {
+            long t = System.currentTimeMillis();
+            Objects.requireNonNull(sensors.get(sensorName)).update();
+            long dt = System.currentTimeMillis() - t;
+            if (dt > 10)
+                telemetrySender.putSystemMessage("sensor <" + sensorName + "> update time (ms)", dt);
+            else
+                telemetrySender.deleteSystemMessage("sensor <" + sensorName + "> update time (ms)");
+        }
+        telemetrySender.putSystemMessage("sensors total update time(ms)", System.currentTimeMillis() - t0);
     }
 
     private void flushMotorsAndServos() {
