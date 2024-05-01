@@ -31,13 +31,14 @@ import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.DualServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.HuskyAprilTagCamera;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.LookUpTable;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
+import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.ArmGravityController;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EncoderMotorMechanism;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.PixelCameraAimBotLegacy;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.RawObjectDetectionCamera;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
-import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.SimpleSensor;
 import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinder;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TensorCamera;
@@ -61,7 +62,59 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        conceptColorSensorDetection();
+        profiledArmTuning();
+    }
+
+    private void profiledArmTuning() {
+        final DcMotor armMotor = hardwareMap.get(DcMotor.class, "arm");
+        final ThreadedEncoder armEncoder = new ThreadedEncoder(armMotor);
+        final ArmGravityController.ArmProfile armProfile = new ArmGravityController.ArmProfile(
+                0.8,
+                80,
+                0.05,
+                10,
+                0.07,
+                100,
+                0,
+                20,
+                600,
+                400,
+                0.1,
+                new LookUpTable(
+                        new double[] {0, 70, 150, 200, 270, 350, 400},
+                        new double[] {0.35, 0.45, 0.36, 0.28, 0, -0.28, -0.36}
+                )
+        );
+        final ArmGravityController controller = new ArmGravityController(armProfile);
+
+        waitForStart();
+
+        double desiredPosition = 0;
+        while (!isStopRequested() && opModeIsActive()) {
+            armEncoder.update();
+            desiredPosition += gamepad1.right_stick_y * -4;
+            desiredPosition = Math.max(0, desiredPosition);
+            desiredPosition = Math.min(350, desiredPosition);
+            if (gamepad1.b)
+                controller.goToDesiredPosition(desiredPosition);
+
+            final double commandedPower = Math.abs(gamepad1.left_stick_y) > 0.05 ? -gamepad1.left_stick_y:0,
+                    correctionPower = controller.getMotorPower(armEncoder.getVelocity(), armEncoder.getSensorReading());
+
+            armMotor.setPower(gamepad1.a ? correctionPower : commandedPower);
+
+            telemetry.addData("commanded power", commandedPower);
+            telemetry.addData("desired position (press b to send to controller)", desiredPosition);
+
+
+            telemetry.addData("arm encoder reading", armEncoder.getSensorReading());
+            telemetry.addData("arm velocity", armEncoder.getVelocity());
+            telemetry.addData("correction pow", correctionPower);
+            telemetry.addData("error accumulation", controller.getErrorAccumulation());
+
+            telemetry.update();
+            sleep(20);
+        }
     }
 
     List<RobotModule> robotModules = new ArrayList<>(1);
@@ -858,19 +911,17 @@ public class TestMain extends LinearOpMode {
     }
 
     private void newArmTest() {
-        DcMotor arm1 = hardwareMap.get(DcMotor.class, "arm1"), arm2 = hardwareMap.get(DcMotor.class, "arm2");
+        DcMotor arm = hardwareMap.get(DcMotor.class, "extend");
 
         waitForStart();
 
         while (!isStopRequested() && opModeIsActive()) {
-            final double arm1Power = Math.abs(gamepad1.left_stick_y) > 0.05 ? -gamepad1.left_stick_y:0,
-            arm2Power = Math.abs(gamepad1.right_stick_y) > 0.05 ? -gamepad1.right_stick_y:0;
+            final double armPower = Math.abs(gamepad1.left_stick_y) > 0.05 ? -gamepad1.left_stick_y:0;
 
-            arm1.setPower(arm1Power);
-            arm2.setPower(arm2Power);
+            arm.setPower(armPower);
 
-            telemetry.addData("arm1 pow", arm1Power);
-            telemetry.addData("arm2 pow", arm2Power);
+            telemetry.addData("arm pow", armPower);
+            telemetry.addData("arm encoder reading", arm.getCurrentPosition());
             telemetry.update();
         }
     }

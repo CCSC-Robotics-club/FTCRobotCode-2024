@@ -78,7 +78,12 @@ public class ArmGravityController implements MechanismController {
 
     @Override
     public double getMotorPower(double mechanismVelocity, double mechanismPosition) {
+        if (Math.abs(enhancedPIDController.getErrorAccumulation()) > this.profile.errorAccumulationMax)
+            enhancedPIDController.setErrorAccumulation(Math.copySign(this.profile.errorAccumulationMax, enhancedPIDController.getErrorAccumulation()));
         if (!alive) return 0;
+
+        if (Math.abs(mechanismVelocity) > profile.encoderVelocityTrustedRange)
+            mechanismVelocity = Math.copySign(profile.encoderVelocityTrustedRange, mechanismVelocity);
         final double scheduleTimer = (System.currentTimeMillis() - currentScheduleCreatedTime) / 1000.0,
                 currentDesiredVelocityAccordingToSchedule = Math.copySign(currentSchedule.getCurrentSpeed(scheduleTimer), currentSchedule.getCurrentPathPosition(1) - currentSchedule.getCurrentPathPosition(0)),
                 currentDesiredPositionAccordingToSchedule = currentSchedule.getCurrentPathPosition(scheduleTimer)
@@ -94,9 +99,16 @@ public class ArmGravityController implements MechanismController {
         previousTimeMillis = System.currentTimeMillis();
         if (Math.abs(overallCorrectionPower) > profile.staticPIDProfile.getMaxPowerAllowed())
             return Math.copySign(profile.staticPIDProfile.getMaxPowerAllowed(), overallCorrectionPower);
-        if (Math.abs(enhancedPIDController.getErrorAccumulation()) > this.profile.errorAccumulationMax)
-            enhancedPIDController.setErrorAccumulation(Math.copySign(this.profile.errorAccumulationMax, enhancedPIDController.getErrorAccumulation()));
+
         return overallCorrectionPower;
+    }
+
+    /**
+     * for debugging only
+     *  */
+    @Deprecated
+    public double getErrorAccumulation() {
+        return this.enhancedPIDController.getErrorAccumulation();
     }
 
     public void updateArmProfile(ArmProfile newArmProfile) {
@@ -113,7 +125,7 @@ public class ArmGravityController implements MechanismController {
         public final LookUpTable gravityTorqueEquilibriumMotorPowerLookUpTable;
         public final EnhancedPIDController.StaticPIDProfile staticPIDProfile;
         public final EnhancedPIDController.DynamicalPIDProfile dynamicalPIDProfile;
-        public final double inAdvanceTime, errorAccumulationMax;
+        public final double inAdvanceTime, errorAccumulationMax, encoderVelocityTrustedRange;
 
         /**
          * Creates a arm PID profile which is another dynamic pid profile
@@ -123,11 +135,12 @@ public class ArmGravityController implements MechanismController {
          * @param maxAcceleration                       the maximum instant acceleration that the mechanism can achieve with the max power
          * @param maxVelocity                           the restriction on the velocity of the mechanism
          */
-        public ArmProfile(double maxPowerAllowed, double errorStartDecelerate, double minPowerToMove, double errorTolerance, double feedForwardTime, double integralCoefficient, double errorAccumulationMax, double maxAcceleration, double maxVelocity, double inAdvanceTime, LookUpTable gravityTorqueEquilibriumMotorPowerLookUpTable) {
+        public ArmProfile(double maxPowerAllowed, double errorStartDecelerate, double minPowerToMove, double errorTolerance, double feedForwardTime, double encoderVelocityTrustedRange, double integralCoefficient, double errorAccumulationMax, double maxAcceleration, double maxVelocity, double inAdvanceTime, LookUpTable gravityTorqueEquilibriumMotorPowerLookUpTable) {
             this.dynamicalPIDProfile = new EnhancedPIDController.DynamicalPIDProfile(Double.POSITIVE_INFINITY, maxPowerAllowed, minPowerToMove, errorTolerance, integralCoefficient, 0, maxAcceleration, maxVelocity);
-            this.staticPIDProfile = new EnhancedPIDController.StaticPIDProfile(Math.PI * 2, maxPowerAllowed, minPowerToMove, errorStartDecelerate, errorTolerance, feedForwardTime, integralCoefficient, 0);
+            this.staticPIDProfile = new EnhancedPIDController.StaticPIDProfile(Double.POSITIVE_INFINITY, maxPowerAllowed, minPowerToMove, errorStartDecelerate, errorTolerance, feedForwardTime, integralCoefficient, 0);
             this.gravityTorqueEquilibriumMotorPowerLookUpTable = gravityTorqueEquilibriumMotorPowerLookUpTable;
             this.inAdvanceTime = inAdvanceTime;
+            this.encoderVelocityTrustedRange = encoderVelocityTrustedRange;
             this.errorAccumulationMax = errorAccumulationMax;
         }
     }
