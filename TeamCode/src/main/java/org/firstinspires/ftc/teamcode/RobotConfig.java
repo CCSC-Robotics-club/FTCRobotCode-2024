@@ -134,22 +134,22 @@ public final class RobotConfig {
 
     public static final class ArmConfigs {
         /** positive should be scoring */
-        public static final boolean motorReversed = false, encoderReversed = false;
+        public static final boolean motorReversed = false, encoderReversed = true;
         public static final ArmGravityController.ArmProfile armProfile = new ArmGravityController.ArmProfile(
                 0.8,
-                80,
+                200,
                 0.05,
                 15,
                 0.07,
-                140,
+                360,
                 0,
                 20,
+                1200,
                 600,
-                300,
                 0.1,
                 new LookUpTable(
-                        new double[] {0, 70, 150, 200, 270, 350, 400},
-                        new double[] {0.35, 0.45, 0.36, 0.28, 0, -0.28, -0.36}
+                        new double[] {0, 260, 500, 750, 1000, 1350, 1760},
+                        new double[] {0.28, 0.42, 0.28, 0.2, 0, -0.24, -0.38}
                 )
         );
 
@@ -165,18 +165,18 @@ public final class RobotConfig {
             encoderPositions.put(Position.INTAKE, 0.0);
             encoderPositions.put(Position.GRAB_STACK, 60.0);
             encoderPositions.put(Position.GRAB_STACK_LOW, 50.0);
-            encoderPositions.put(Position.SCORE, 350.0);
+            encoderPositions.put(Position.SCORE, 1200.0);
         }
 
         public static final double extendValueDuringNormalScoring = 0.4;
         private static final double[] // in cm
                 scoringHeightNormal = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValuesNormal = new double[] {400, 375, 350, 325, 300},
+                correspondingArmEncoderValuesNormal = new double[] {1600, 1500, 1400, 1300, 1200},
                 correspondingServoPositionsNormal = new double[] {0.72, 0.76, 0.8, 0.88, 0.9},
                 correspondingDistanceToWallNormal = new double[] {24, 22, 17, 6, 1.5},
 
                 scoringHeightExtended = new double[] {1, 1.25, 1.5, 1.75, 2},
-                correspondingArmEncoderValuesExtended = new double[] {300, 290, 280, 270, 260},
+                correspondingArmEncoderValuesExtended = new double[] {1200, 1180, 1160, 1140, 1120},
                 correspondingServoPositionsExtended = new double[] {0.9, 0.92, 0.94, 0.96, 0.98};
 
         public static final LookUpTable
