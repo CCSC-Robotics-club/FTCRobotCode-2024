@@ -6,7 +6,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.AngleUtils;
 
 
-public class ThreadedIMU extends SimpleSensor {
+public class ThreadedIMU extends ThreadedSensor {
     private final IMU imu;
     private double previousYaw, yawVelocity;
     private long previousTimeMillis;

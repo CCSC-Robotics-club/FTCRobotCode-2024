@@ -2,15 +2,12 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedEncoder;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.ArmGravityController;
-import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.MechanismController;
-import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.SimpleArmController;
-import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.MotorThreaded;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedMotor;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
-import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.SimpleSensor;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedSensor;
 
 import static org.firstinspires.ftc.teamcode.RobotConfig.ArmConfigs;
 
@@ -20,15 +17,15 @@ import java.util.Map;
 
 
 public class Arm extends RobotModule {
-    private final MotorThreaded armMotor;
+    private final ThreadedMotor armMotor;
     private final ThreadedEncoder armEncoder;
-    private final SimpleSensor limitSwitch;
+    private final ThreadedSensor limitSwitch;
     private int armEncoderZeroPosition = -114514;
     private double scoringHeight;
     private final ArmGravityController armController = new ArmGravityController(ArmConfigs.armProfile);
 
     private ArmConfigs.Position desiredPosition;
-    public Arm(MotorThreaded armMotor, ThreadedEncoder armEncoder, SimpleSensor limitSwitch) {
+    public Arm(ThreadedMotor armMotor, ThreadedEncoder armEncoder, ThreadedSensor limitSwitch) {
         super("arm");
         this.armMotor = armMotor;
         this.armEncoder = armEncoder;
@@ -60,7 +57,11 @@ public class Arm extends RobotModule {
         }
 
         if (desiredPosition == ArmConfigs.Position.SCORE)
-            armController.updateDesiredPosition(ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight));
+            armController.updateDesiredPosition(
+                    scoringHeight < 1 ?
+                            ArmConfigs.armScoringAnglesAccordingToScoringHeightNormal.getYPrediction(scoringHeight)
+                            : ArmConfigs.armScoringAnglesAccordingToScoringHeightExtended.getYPrediction(scoringHeight)
+            );
 
         final double armPosition = getArmEncoderPosition(),
                 armVelocity = armEncoder.getVelocity() * encoderFactor,

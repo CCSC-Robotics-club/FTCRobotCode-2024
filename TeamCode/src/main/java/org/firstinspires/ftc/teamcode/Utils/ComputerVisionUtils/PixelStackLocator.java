@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils;
 
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
-import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.SimpleSensor;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedSensor;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.SpeedCurves;
@@ -18,9 +14,9 @@ import java.util.List;
 public class PixelStackLocator {
     private static final double distanceTolerance = 4.0;
 
-    private final SimpleSensor distanceSensorBack;
+    private final ThreadedSensor distanceSensorBack;
     private final Chassis chassis;
-    public PixelStackLocator(SimpleSensor distanceSensorBack, Chassis chassis) {
+    public PixelStackLocator(ThreadedSensor distanceSensorBack, Chassis chassis) {
         this.distanceSensorBack = distanceSensorBack;
         this.chassis = chassis;
     }

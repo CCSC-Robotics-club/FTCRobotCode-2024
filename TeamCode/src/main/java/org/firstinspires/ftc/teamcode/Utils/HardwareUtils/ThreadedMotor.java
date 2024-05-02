@@ -5,12 +5,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MotorThreaded {
+public class ThreadedMotor {
     private final DcMotor motor;
     private final Lock lock;
     private double power = 0;
 
-    public MotorThreaded(DcMotor motor) {
+    public ThreadedMotor(DcMotor motor) {
         this.motor = motor;
         this.lock = new ReentrantLock();
     }

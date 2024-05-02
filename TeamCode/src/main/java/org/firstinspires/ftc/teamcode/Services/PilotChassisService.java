@@ -5,14 +5,10 @@ import static org.firstinspires.ftc.teamcode.RobotConfig.ChassisConfigs.targetDi
 
 import static java.lang.Thread.sleep;
 
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.RobotConfig;
-import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.SimpleSensor;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedSensor;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.PixelCameraAimBotLegacy;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
@@ -26,7 +22,7 @@ import java.util.Map;
 public class PilotChassisService extends RobotService {
     private final Chassis chassis;
     private final DriverGamePad driverController;
-    public final SimpleSensor distanceSensor;
+    public final ThreadedSensor distanceSensor;
     private final PixelCameraAimBotLegacy pixelAimBot;
     public final IntakeServiceLegacy.PixelDetector pixelDetector;
     private double rotationMaintenanceFacing;
@@ -46,7 +42,7 @@ public class PilotChassisService extends RobotService {
     private final Rotation2D pilotFacingRotation;
 
     private double desiredScoringHeight;
-    public PilotChassisService(Chassis chassis, DriverGamePad driverController, SimpleSensor distanceSensor, FixedAnglePixelCamera pixelCamera, double pilotFacing) {
+    public PilotChassisService(Chassis chassis, DriverGamePad driverController, ThreadedSensor distanceSensor, FixedAnglePixelCamera pixelCamera, double pilotFacing) {
         this.chassis = chassis;
         this.driverController = driverController;
         this.distanceSensor = distanceSensor;
@@ -386,7 +382,7 @@ public class PilotChassisService extends RobotService {
     }
 
     private double getDesiredScoringDistanceToWall() {
-        return RobotConfig.ArmConfigs.distancesToWallAccordingToScoringHeight.getYPrediction(desiredScoringHeight);
+        return RobotConfig.ArmConfigs.distancesToWallAccordingToScoringHeightNormal.getYPrediction(desiredScoringHeight);
     }
 
     private void aimFail() {
@@ -477,8 +473,8 @@ public class PilotChassisService extends RobotService {
 
     public double getActualScoringHeightAccordingToDistanceToWall(double defaultScoringHeight) {
         if (this.visualTaskStatus != VisualTaskStatus.MAINTAIN_AND_AIM) return defaultScoringHeight;
-        debugMessages.put("scoring height by distance sensor ", RobotConfig.ArmConfigs.scoringHeightAccordingToActualDistanceToWall.getYPrediction(distanceSensor.getSensorReading()));
-        return RobotConfig.ArmConfigs.scoringHeightAccordingToActualDistanceToWall.getYPrediction(distanceSensor.getSensorReading());
+        debugMessages.put("scoring height by distance sensor ", RobotConfig.ArmConfigs.scoringHeightAccordingToActualDistanceToWallNormal.getYPrediction(distanceSensor.getSensorReading()));
+        return RobotConfig.ArmConfigs.scoringHeightAccordingToActualDistanceToWallNormal.getYPrediction(distanceSensor.getSensorReading());
     }
 
     @Override

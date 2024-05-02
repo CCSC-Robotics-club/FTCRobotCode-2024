@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Services;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Modules.Arm;
+import org.firstinspires.ftc.teamcode.Modules.Extend;
 import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 public class UpperStructureService extends RobotService {
     private final Arm arm;
+    private final Extend extend;
     private final FlippableDualClaw claw;
     private final PilotChassisService chassisService;
 
@@ -27,8 +29,9 @@ public class UpperStructureService extends RobotService {
 
     private UpperStructureStatus currentStatus;
 
-    public UpperStructureService(Arm arm, FlippableDualClaw claw, PilotChassisService chassisService, Gamepad copilotGamePad) {
+    public UpperStructureService(Arm arm, Extend extend, FlippableDualClaw claw, PilotChassisService chassisService, Gamepad copilotGamePad) {
         this.arm = arm;
+        this.extend = extend;
         this.claw = claw;
         this.chassisService = chassisService;
         this.copilotGamePad = copilotGamePad;
@@ -51,10 +54,12 @@ public class UpperStructureService extends RobotService {
                     claw.setFlip(false, this);
 
                 arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
+                extend.setExtendPosition(0, this);
                 break;
             }
             case GRABBING: {
                 claw.setAutoClosing(copilotGamePad.x, this);
+                extend.setExtendPosition(0, this);
                 arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
                 claw.setFlip(true, this);
                 closeClawOnDemanded();
@@ -70,14 +75,22 @@ public class UpperStructureService extends RobotService {
             case SCORING: {
                 claw.setAutoClosing(false, this);
 
-                chassisService.setDesiredScoringHeight(desiredScoringHeight);
-                final double actualScoringHeight = chassisService.getActualScoringHeightAccordingToDistanceToWall(1);
-                arm.setScoringHeight(actualScoringHeight, this);
-                claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(actualScoringHeight), this);
-
                 if (Math.abs(copilotGamePad.left_stick_y) > 0.05)
                     desiredScoringHeight += -1 * dt * copilotGamePad.left_stick_y;
-                desiredScoringHeight = Math.max(Math.min(desiredScoringHeight, 1), 0);
+                desiredScoringHeight = Math.max(Math.min(desiredScoringHeight, 2), 0);
+
+                chassisService.setDesiredScoringHeight(Math.min(1, desiredScoringHeight));
+                final double actualScoringHeight = chassisService.getActualScoringHeightAccordingToDistanceToWall(1);
+                if (desiredScoringHeight <= 1) {
+                    arm.setScoringHeight(actualScoringHeight, this);
+                    claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeightNormal.getYPrediction(actualScoringHeight), this);
+                    extend.setExtendPosition(RobotConfig.ArmConfigs.extendValueDuringNormalScoring, this);
+                } else {
+                    arm.setScoringHeight(desiredScoringHeight, this);
+                    claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeightExtended.getYPrediction(desiredScoringHeight), this);
+                    extend.setExtendPosition(RobotConfig.ArmConfigs.extendValueAccordingToScoringHeight.getYPrediction(desiredScoringHeight), this);
+                }
+
                 /* firstly we close the claw */
                 if (!clawRequestedDuringCurrentScoringProcess){
                     claw.setLeftClawClosed(true, this);
@@ -142,6 +155,7 @@ public class UpperStructureService extends RobotService {
     public void reset() {
         claw.gainOwnerShip(this);
         arm.gainOwnerShip(this);
+        extend.gainOwnerShip(this);
 
         currentStatus = UpperStructureStatus.HOLDING;
         desiredScoringHeight = 1;

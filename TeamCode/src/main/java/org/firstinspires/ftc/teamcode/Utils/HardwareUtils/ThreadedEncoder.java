@@ -2,11 +2,7 @@ package org.firstinspires.ftc.teamcode.Utils.HardwareUtils;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.Utils.MathUtils.AngleUtils;
-
-import java.util.function.DoubleSupplier;
-
-public class ThreadedEncoder extends SimpleSensor {
+public class ThreadedEncoder extends ThreadedSensor {
     private double previousReading, velocity;
     private long previousTimeMillis;
     public ThreadedEncoder(DcMotor encoder) {

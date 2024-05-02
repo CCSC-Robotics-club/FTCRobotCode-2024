@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.AutoStages;
 
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.AutoStageProgram;
-import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.SimpleSensor;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedSensor;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.StatisticsUtils;
@@ -69,7 +66,7 @@ public class CameraAutoCalibrationVerticalOnly extends AutoStageProgram {
         ));
     }
 
-    private SequentialCommandSegment moveToPositionAndMeasure(double distance, PositionEstimator positionEstimator, Chassis chassis, RawArilTagRecognitionCamera cameraToTest, SimpleSensor distanceSensor, int i) {
+    private SequentialCommandSegment moveToPositionAndMeasure(double distance, PositionEstimator positionEstimator, Chassis chassis, RawArilTagRecognitionCamera cameraToTest, ThreadedSensor distanceSensor, int i) {
         final long timeOut = 2000;
         AtomicLong taskStartedTime = new AtomicLong();
         return new SequentialCommandSegment(

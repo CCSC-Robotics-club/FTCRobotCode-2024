@@ -4,16 +4,16 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
 
-public class SimpleSensor {
+public class ThreadedSensor {
     private final DoubleSupplier sensorReader;
     private double sensorReading;
     protected final Lock lock;
 
-    public SimpleSensor(DoubleSupplier sensorReader) {
+    public ThreadedSensor(DoubleSupplier sensorReader) {
         this(sensorReader, 0);
     }
 
-    public SimpleSensor(DoubleSupplier sensorReader, double startingReading) {
+    public ThreadedSensor(DoubleSupplier sensorReader, double startingReading) {
         this.sensorReader = sensorReader;
         this.lock = new ReentrantLock();
         this.sensorReading = startingReading;

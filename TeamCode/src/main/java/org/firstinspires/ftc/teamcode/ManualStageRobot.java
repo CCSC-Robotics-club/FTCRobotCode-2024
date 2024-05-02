@@ -38,7 +38,7 @@ public class ManualStageRobot extends Robot {
 //        final PlaneLaunchService planeLaunchService = new PlaneLaunchService(planeLauncher, copilotGamepad);
 //        super.robotServices.add(planeLaunchService);
 
-        final UpperStructureService upperStructureService = new UpperStructureService(arm, claw, chassisService, copilotGamepad);
+        final UpperStructureService upperStructureService = new UpperStructureService(arm, extend, claw, chassisService, copilotGamepad);
         super.robotServices.add(upperStructureService);
 
         final ClimbService climbService = new ClimbService(climb, copilotGamepad);

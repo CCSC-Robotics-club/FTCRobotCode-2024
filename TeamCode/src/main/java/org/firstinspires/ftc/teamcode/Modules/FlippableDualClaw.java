@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
-import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
-import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.MotorThreaded;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedMotor;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ProfiledServo;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
-import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.SimpleSensor;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedSensor;
 
 import static org.firstinspires.ftc.teamcode.RobotConfig.FlippableDualClawConfigs;
 
@@ -15,12 +14,12 @@ import java.util.Map;
 
 public class FlippableDualClaw extends RobotModule {
     private final ProfiledServo flip, leftClaw, rightClaw;
-    private final SimpleSensor detectorLeft, detectorRight;
-    private final MotorThreaded leftIndicatorLight, rightIndicatorLight;
+    private final ThreadedSensor detectorLeft, detectorRight;
+    private final ThreadedMotor leftIndicatorLight, rightIndicatorLight;
 
     private boolean closeLeftClaw, closeRightClaw, flipperOnIntake, autoClosing;
     private double scoringOrHoldingClawAngle;
-    public FlippableDualClaw(ProfiledServo flip, ProfiledServo leftClaw, ProfiledServo rightClaw, SimpleSensor detectorLeft, SimpleSensor detectorRight, MotorThreaded leftIndicatorLight, MotorThreaded rightIndicatorLight) {
+    public FlippableDualClaw(ProfiledServo flip, ProfiledServo leftClaw, ProfiledServo rightClaw, ThreadedSensor detectorLeft, ThreadedSensor detectorRight, ThreadedMotor leftIndicatorLight, ThreadedMotor rightIndicatorLight) {
         super("claw");
         this.flip = flip;
         this.leftClaw = leftClaw;

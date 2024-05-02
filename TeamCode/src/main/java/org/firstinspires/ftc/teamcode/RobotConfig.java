@@ -168,16 +168,42 @@ public final class RobotConfig {
             encoderPositions.put(Position.SCORE, 350.0);
         }
 
-        private static final double[]
-                scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {400, 375, 350, 325, 300},
-                correspondingServoPositions = new double[] {0.72, 0.76, 0.8, 0.88, 0.9},
-                correspondingDistanceToWall = new double[] {24, 22, 17, 6, 1.5}; // in cm
+        public static final double extendValueDuringNormalScoring = 0.4;
+        private static final double[] // in cm
+                scoringHeightNormal = new double[] {0, 0.25, 0.5, 0.75, 1},
+                correspondingArmEncoderValuesNormal = new double[] {400, 375, 350, 325, 300},
+                correspondingServoPositionsNormal = new double[] {0.72, 0.76, 0.8, 0.88, 0.9},
+                correspondingDistanceToWallNormal = new double[] {24, 22, 17, 6, 1.5},
+
+                scoringHeightExtended = new double[] {1, 1.25, 1.5, 1.75, 2},
+                correspondingArmEncoderValuesExtended = new double[] {300, 290, 280, 270, 260},
+                correspondingServoPositionsExtended = new double[] {0.9, 0.92, 0.94, 0.96, 0.98};
+
         public static final LookUpTable
-                armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
-                flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions),
-                distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall),
-                scoringHeightAccordingToActualDistanceToWall = new LookUpTable(correspondingDistanceToWall, scoringHeight);
+                armScoringAnglesAccordingToScoringHeightNormal = new LookUpTable(scoringHeightNormal, correspondingArmEncoderValuesNormal),
+                flipperPositionsAccordingToScoringHeightNormal = new LookUpTable(scoringHeightNormal, correspondingServoPositionsNormal),
+                distancesToWallAccordingToScoringHeightNormal = new LookUpTable(scoringHeightNormal, correspondingDistanceToWallNormal),
+                scoringHeightAccordingToActualDistanceToWallNormal = new LookUpTable(correspondingDistanceToWallNormal, scoringHeightNormal),
+
+                armScoringAnglesAccordingToScoringHeightExtended = new LookUpTable(scoringHeightExtended, correspondingArmEncoderValuesExtended),
+                flipperPositionsAccordingToScoringHeightExtended = new LookUpTable(scoringHeightExtended, correspondingServoPositionsExtended),
+                extendValueAccordingToScoringHeight = new LookUpTable(
+                        new double[] {scoringHeightNormal[0], scoringHeightExtended[0], scoringHeightExtended[scoringHeightExtended.length-1]},
+                        new double[] {extendValueDuringNormalScoring, extendValueDuringNormalScoring, 1}
+                );
+    }
+
+    public static final class ExtendConfigs {
+        public static final boolean extendMotorReversed = false, extendEncoderReversed = false;
+
+        public static final double
+                maxExtendValue = 400, // TODO measure true value
+                maxPowerWhenMovingForward = 0.4,
+                maxPowerWhenMovingBackward = 0.4,
+                errorStartDecelerate = 100, // TODO measure
+                powerNeededToMoveForward = 0.1,
+                powerNeededToMoveBackward = 0.1,
+                errorTolerance = 20; // TODO measure
     }
 
     public static final class FlippableDualClawConfigs {

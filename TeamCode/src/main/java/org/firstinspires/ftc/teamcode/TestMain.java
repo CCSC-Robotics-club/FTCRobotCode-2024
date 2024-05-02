@@ -31,7 +31,6 @@ import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.DualServoClaw;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.HuskyAprilTagCamera;
-import org.firstinspires.ftc.teamcode.Utils.MathUtils.LookUpTable;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.ArmGravityController;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EncoderMotorMechanism;
@@ -62,7 +61,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        profiledArmTuning();
+        armOrExtendTest();
     }
 
     private void profiledArmTuning() {
@@ -893,7 +892,7 @@ public class TestMain extends LinearOpMode {
         }
     }
 
-    private void newArmTest() {
+    private void armOrExtendTest() {
         DcMotor arm = hardwareMap.get(DcMotor.class, "extend");
 
         waitForStart();
