@@ -197,13 +197,13 @@ public final class RobotConfig {
         public static final boolean extendMotorReversed = false, extendEncoderReversed = false;
 
         public static final double
-                maxExtendValue = 400, // TODO measure true value
-                maxPowerWhenMovingForward = 0.4,
-                maxPowerWhenMovingBackward = 0.4,
-                errorStartDecelerate = 100, // TODO measure
-                powerNeededToMoveForward = 0.1,
-                powerNeededToMoveBackward = 0.1,
-                errorTolerance = 20; // TODO measure
+                maxExtendValue = 1600,
+                maxPowerWhenMovingForward = 0.6,
+                maxPowerWhenMovingBackward = 0.6,
+                errorStartDecelerate = 200,
+                powerNeededToMoveForward = 0.15,
+                powerNeededToMoveBackward = 0.15,
+                errorTolerance = 50;
     }
 
     public static final class FlippableDualClawConfigs {

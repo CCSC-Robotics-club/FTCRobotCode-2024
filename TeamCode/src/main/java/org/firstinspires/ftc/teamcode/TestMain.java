@@ -61,7 +61,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        armOrExtendTest();
+        armAndExtendTest();
     }
 
     private void profiledArmTuning() {
@@ -892,18 +892,33 @@ public class TestMain extends LinearOpMode {
         }
     }
 
-    private void armOrExtendTest() {
-        DcMotor arm = hardwareMap.get(DcMotor.class, "extend");
+    private void armAndExtendTest() {
+        DcMotor arm = hardwareMap.get(DcMotor.class, "arm"),
+                extend = hardwareMap.get(DcMotor.class, "extend");
+        TouchSensor armLimit = hardwareMap.get(TouchSensor.class, "armLimit"),
+                extendLimit = hardwareMap.get(TouchSensor.class, "extendLimit");
 
         waitForStart();
 
+        final double extendEncoderFactor = RobotConfig.ExtendConfigs.extendEncoderReversed ? -1: 1,
+                armEncoderFactor = RobotConfig.ArmConfigs.encoderReversed ? -1: 1;
+        double extendEncoderZeroPosition = extend.getCurrentPosition(),
+                armEncoderZeroPosition = arm.getCurrentPosition();
         while (!isStopRequested() && opModeIsActive()) {
-            final double armPower = Math.abs(gamepad1.left_stick_y) > 0.05 ? -gamepad1.left_stick_y:0;
+            final double armPower = Math.abs(gamepad1.left_stick_y) > 0.05 ? -gamepad1.left_stick_y:0,
+                    extendPower = Math.abs(gamepad1.right_stick_y) > 0.05 ? -gamepad1.right_stick_y:0;
 
             arm.setPower(armPower);
+            extend.setPower(extendPower);
+
+            if (armLimit.isPressed()) armEncoderZeroPosition = arm.getCurrentPosition();
+            if (extendLimit.isPressed()) extendEncoderZeroPosition = extend.getCurrentPosition();
 
             telemetry.addData("arm pow", armPower);
-            telemetry.addData("arm encoder reading", arm.getCurrentPosition());
+            telemetry.addData("extend pow", extendPower);
+            telemetry.addData("arm encoder reading", (arm.getCurrentPosition() - armEncoderZeroPosition) * armEncoderFactor);
+            telemetry.addData("extend encoder reading", (extend.getCurrentPosition() - extendEncoderZeroPosition) * extendEncoderFactor);
+
             telemetry.update();
         }
     }
