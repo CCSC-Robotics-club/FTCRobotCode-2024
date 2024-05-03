@@ -18,7 +18,7 @@ import java.util.Map;
 
 
 public class Arm extends RobotModule {
-    private final ThreadedMotor armMotor;
+    private final ThreadedMotor armMotor1, armMotor2;
     private final ThreadedEncoder armEncoder;
     private final ThreadedSensor limitSwitch;
     private int armEncoderZeroPosition = -114514;
@@ -27,8 +27,12 @@ public class Arm extends RobotModule {
 
     private ArmConfigs.Position desiredPosition;
     public Arm(ThreadedMotor armMotor, ThreadedEncoder armEncoder, ThreadedSensor limitSwitch) {
+        this(armMotor, armMotor, armEncoder, limitSwitch);
+    }
+    public Arm(ThreadedMotor armMotor1, ThreadedMotor armMotor2, ThreadedEncoder armEncoder, ThreadedSensor limitSwitch) {
         super("arm");
-        this.armMotor = armMotor;
+        this.armMotor1 = armMotor1;
+        this.armMotor2 = armMotor2;
         this.armEncoder = armEncoder;
         this.limitSwitch = limitSwitch;
     }
@@ -42,23 +46,27 @@ public class Arm extends RobotModule {
     private final Map<String, Object> debugMessages = new HashMap<>();
     @Override
     protected void periodic(double dt) {
-        final double motorPowerFactor = ArmConfigs.motorReversed ? -1:1,
+        final double motor1PowerFactor = ArmConfigs.motor1Reversed ? -1:1,
+                motor2PowerFactor = ArmConfigs.motor2Reversed? -1:1,
                 encoderFactor = ArmConfigs.encoderReversed ? -1:1;
         if (limitSwitch.getSensorReading() != 0)
             this.armEncoderZeroPosition = (int) armEncoder.getSensorReading();
         if (Math.abs(desiredPower) > 0.05) {
-            armMotor.setPower(desiredPower);
+            armMotor1.setPower(desiredPower * motor1PowerFactor);
+            armMotor2.setPower(desiredPower * motor2PowerFactor);
             return;
         }
         if (armEncoderZeroPosition == -114514) {
-            armMotor.setPower(0);
+            armMotor1.setPower(0);
+            armMotor2.setPower(0);
             return;
         }
 
         armController.goToDesiredPosition(ArmConfigs.encoderPositions.get(desiredPosition));
         if (desiredPosition == ArmConfigs.Position.INTAKE &&
                 (limitSwitch.getSensorReading()!=0 || Math.abs(armEncoder.getSensorReading() - armController.getDesiredPosition()) < ArmConfigs.armProfile.staticPIDProfile.getErrorTolerance())) {
-            armMotor.setPower(0);
+            armMotor1.setPower(0);
+            armMotor2.setPower(0);
             return;
         }
 
@@ -75,8 +83,8 @@ public class Arm extends RobotModule {
 
         debugMessages.put("correction power (by controller)", armCorrectionPower);
 
-        debugMessages.put("arm final correction power", armCorrectionPower * motorPowerFactor);
-        armMotor.setPower(armCorrectionPower * motorPowerFactor);
+        armMotor1.setPower(armCorrectionPower * motor1PowerFactor);
+        armMotor2.setPower(armCorrectionPower * motor2PowerFactor);
     }
 
     @Override
@@ -89,7 +97,8 @@ public class Arm extends RobotModule {
         this.desiredPosition = ArmConfigs.Position.INTAKE;
         this.scoringHeight = 1;
 
-        this.armMotor.getMotorInstance().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.armMotor1.getMotorInstance().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.armMotor2.getMotorInstance().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void setPosition(ArmConfigs.Position position, RobotService operatorService) {

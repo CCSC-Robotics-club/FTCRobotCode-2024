@@ -477,6 +477,10 @@ public class PilotChassisService extends RobotService {
         return RobotConfig.ArmConfigs.scoringHeightAccordingToActualDistanceToWallNormal.getYPrediction(distanceSensor.getSensorReading());
     }
 
+    public boolean stickToWallCompleted() {
+        return this.visualTaskStatus == VisualTaskStatus.MAINTAIN_AND_AIM;
+    }
+
     @Override
     public void onDestroy() {
 

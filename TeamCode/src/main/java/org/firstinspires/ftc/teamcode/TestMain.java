@@ -61,7 +61,23 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        armAndExtendTest();
+        dualArmMotorTest();
+    }
+
+    private void dualArmMotorTest() {
+        final DcMotor arm1 = hardwareMap.get(DcMotor.class, "arm"), arm2 = hardwareMap.get(DcMotor.class, "arm2");
+
+        waitForStart();
+
+        while (!isStopRequested() && opModeIsActive()) {
+            arm1.setPower(-gamepad1.left_stick_y);
+            arm2.setPower(-gamepad1.right_stick_y);
+
+            telemetry.addData("arm 1 pow", -gamepad1.left_stick_y);
+            telemetry.addData("arm 2 pow", -gamepad1.right_stick_y);
+            telemetry.addData("arm 1 enc reading", arm1.getCurrentPosition());
+            telemetry.update();
+        }
     }
 
     private void clawCalibration() {

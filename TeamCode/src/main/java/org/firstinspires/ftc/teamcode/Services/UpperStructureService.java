@@ -61,9 +61,9 @@ public class UpperStructureService extends RobotService {
             }
             case GRABBING: {
                 claw.setAutoClosing(copilotGamePad.x, this);
-                extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, this);
                 arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
-
+                if (arm.isArmInPosition())
+                    extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, this);
                 closeClawOnDemanded();
                 openClawOnDemanded();
 
@@ -87,7 +87,8 @@ public class UpperStructureService extends RobotService {
                 if (desiredScoringHeight <= 1) {
                     arm.setScoringHeight(actualScoringHeight, this);
                     claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeightNormal.getYPrediction(actualScoringHeight), this);
-                    extend.setExtendPosition(RobotConfig.ArmConfigs.extendValueDuringNormalScoring, this);
+                    extend.setExtendPosition(
+                            chassisService.stickToWallCompleted() ? RobotConfig.ArmConfigs.extendValueDuringNormalScoring : 0, this);
                 } else {
                     arm.setScoringHeight(desiredScoringHeight, this);
                     claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeightExtended.getYPrediction(desiredScoringHeight), this);

@@ -187,8 +187,10 @@ public abstract class Robot {
         final ProfiledServo flip = new ProfiledServo(hardwareMap.get(Servo.class, "flip"), 2),
                 clawLeft = new ProfiledServo(hardwareMap.get(Servo.class, "clawLeft"), 2),
                 clawRight = new ProfiledServo(hardwareMap.get(Servo.class, "clawRight"), 2);
-        final ThreadedMotor indicatorLightLeft = new ThreadedMotor(hardwareMap.get(DcMotor.class, "indicatorLightLeft")),
-                indicatorLightRight = new ThreadedMotor(hardwareMap.get(DcMotor.class, "indicatorLightRight"));
+        final ThreadedMotor indicatorLightRight = new ThreadedMotor(hardwareMap.get(DcMotor.class, "indicatorLightRight")),
+                indicatorLightLeft =
+                        // new ThreadedMotor(hardwareMap.get(DcMotor.class, "indicatorLightRight"));
+                        indicatorLightRight;
         final ThreadedSensor colorLeft = new ThreadedSensor(() -> hardwareMap.get(ColorSensor.class, "colorLeft").alpha()),
                 colorRight = new ThreadedSensor(() -> hardwareMap.get(ColorSensor.class, "colorRight").alpha());
         servos.add(flip);
@@ -206,13 +208,15 @@ public abstract class Robot {
         robotModules.add(claw);
 
         /* arm */
-        final ThreadedMotor armMotor = new ThreadedMotor(hardwareMap.get(DcMotor.class, "arm"));
+        final ThreadedMotor armMotor1 = new ThreadedMotor(hardwareMap.get(DcMotor.class, "arm")),
+                armMotor2 = new ThreadedMotor(hardwareMap.get(DcMotor.class, "arm2"));
         final ThreadedEncoder armEncoder = new ThreadedEncoder(hardwareMap.get(DcMotor.class, "arm"));
         final ThreadedSensor armLimit = new ThreadedSensor(() -> hardwareMap.get(TouchSensor.class, "armLimit").isPressed() ? 1:0);
-        motors.add(armMotor);
+        motors.add(armMotor1);
+        motors.add(armMotor2);
         sensors.put("arm-enc", armEncoder);
         sensors.put("arm-lim", armLimit);
-        arm = new Arm(armMotor, armEncoder, armLimit);
+        arm = new Arm(armMotor1, armMotor2, armEncoder, armLimit);
         robotModules.add(arm);
 
         /* extend */
