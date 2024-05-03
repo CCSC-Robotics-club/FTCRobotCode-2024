@@ -129,9 +129,9 @@ public abstract class Robot {
                 verticalEncoder1 = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[1])),
                 verticalEncoder2 = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[2]));
         final ThreadedIMU imuSensor = new ThreadedIMU(imu);
-        sensors.put("horizontal encoder", horizontalEncoder);
-        sensors.put("vertical encoder 1", verticalEncoder1);
-        sensors.put("vertical encoder 2", verticalEncoder2);
+        sensors.put("horizontal-encoder", horizontalEncoder);
+        sensors.put("vertical-encoder-1", verticalEncoder1);
+        sensors.put("vertical-encoder-2", verticalEncoder2);
         sensors.put("imu", imuSensor);
 
 
@@ -210,8 +210,8 @@ public abstract class Robot {
         final ThreadedEncoder armEncoder = new ThreadedEncoder(hardwareMap.get(DcMotor.class, "arm"));
         final ThreadedSensor armLimit = new ThreadedSensor(() -> hardwareMap.get(TouchSensor.class, "armLimit").isPressed() ? 1:0);
         motors.add(armMotor);
-        sensors.put("arm enc", armEncoder);
-        sensors.put("arm lim", armLimit);
+        sensors.put("arm-enc", armEncoder);
+        sensors.put("arm-lim", armLimit);
         arm = new Arm(armMotor, armEncoder, armLimit);
         robotModules.add(arm);
 
@@ -220,9 +220,10 @@ public abstract class Robot {
         final ThreadedEncoder extendEncoder = new ThreadedEncoder(hardwareMap.get(DcMotor.class, "extend"));
         final ThreadedSensor extendLimit = new ThreadedSensor(() -> hardwareMap.get(TouchSensor.class, "extendLimit").isPressed() ? 1:0);
         motors.add(extendMotor);
-        sensors.put("extend enc", extendEncoder);
-        // sensors.put("extend lim", extendLimit);
+        sensors.put("extend-enc", extendEncoder);
+        sensors.put("extend-lim", extendLimit);
         extend = new Extend(extendMotor, extendEncoder, extendLimit);
+        robotModules.add(extend);
 
         /* climb */
         climb = new Climb(

@@ -51,16 +51,17 @@ public class UpperStructureService extends RobotService {
                 claw.setScoringAngle(RobotConfig.FlippableDualClawConfigs.flipperHoldPosition, this);
                 claw.setLeftClawClosed(true, this);
                 claw.setRightClawClosed(true, this);
-                if (claw.rightClawInPosition() && claw.leftClawInPosition())
+                if (claw.rightClawInPosition() && claw.leftClawInPosition()) {
+                    extend.setExtendPosition(0, this);
                     claw.setFlip(false, this);
+                }
 
                 arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
-                extend.setExtendPosition(0, this);
                 break;
             }
             case GRABBING: {
                 claw.setAutoClosing(copilotGamePad.x, this);
-                extend.setExtendPosition(0, this);
+                extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, this);
                 arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
 
                 closeClawOnDemanded();

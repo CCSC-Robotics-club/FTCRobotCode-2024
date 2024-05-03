@@ -9,6 +9,8 @@ import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 
 import static org.firstinspires.ftc.teamcode.RobotConfig.ExtendConfigs;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 public class Extend extends RobotModule {
     private final ThreadedMotor extendMotor;
     private final ThreadedEncoder extendEncoder;
@@ -43,7 +45,7 @@ public class Extend extends RobotModule {
     protected void periodic(double dt) {
         final double motorPowerFactor = ExtendConfigs.extendMotorReversed ? -1 : 1,
                 encoderFactor = ExtendConfigs.extendEncoderReversed ? -1 : 1;
-        if (extendLimitSwitch.getSensorReading() != 0) {
+        if (extendLimitSwitch.getSensorReading() != 0 && controller.desiredPosition <= 0) {
             this.encoderZeroPosition = extendEncoder.getSensorReading();
             extendMotor.setPower(0);
             return;
@@ -67,6 +69,7 @@ public class Extend extends RobotModule {
     public void reset() {
         this.encoderZeroPosition = -114514;
         this.controller.desiredPosition = 0;
+        this.extendMotor.getMotorInstance().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     private double getExtendPosition() {
