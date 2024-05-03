@@ -59,7 +59,7 @@ public class FlippableDualClaw extends RobotModule {
         rightClaw.update(dt);
         flip.update(dt);
 
-        final double blink = 0.5+0.5*Math.sin(System.currentTimeMillis() / 1000.0f * 2);
+        final double blink = 0.5 * Math.sin(((System.currentTimeMillis()*2) % 1000) / 1000.0f * Math.PI);
         leftIndicatorLight.setPower(autoClosing ? (leftClawDetected ? 1 : blink) : 0);
         rightIndicatorLight.setPower(autoClosing ? (rightClawDetected ? 1 : blink) : 0);
     }

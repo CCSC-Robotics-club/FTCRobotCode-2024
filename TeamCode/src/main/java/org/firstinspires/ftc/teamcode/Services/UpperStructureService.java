@@ -44,6 +44,7 @@ public class UpperStructureService extends RobotService {
     @Override
     public void periodic(double dt) {
         keyBindings();
+        arm.forceSetPower(copilotGamePad.right_stick_y * -1, this);
         switch (currentStatus) {
             case HOLDING: {
                 claw.setAutoClosing(false, this);
@@ -66,9 +67,10 @@ public class UpperStructureService extends RobotService {
                 openClawOnDemanded();
 
                 // auto open claw the moment when arm got in position
-                if (!clawRequestedDuringCurrentGrabbingProcess && arm.isArmInPosition() && claw.flipInPosition()) {
+                if (!clawAutoOpenWhenTouchGroundInitated && arm.isArmInPosition() && claw.flipInPosition()) {
                     claw.setLeftClawClosed(false, this);
                     claw.setRightClawClosed(false, this);
+                    clawAutoOpenWhenTouchGroundInitated = true;
                 }
                 break;
             }
@@ -110,13 +112,13 @@ public class UpperStructureService extends RobotService {
         }
     }
 
-    private boolean clawRequestedDuringCurrentGrabbingProcess = false, clawRequestedDuringCurrentScoringProcess = false;
+    private boolean clawAutoOpenWhenTouchGroundInitated = false, clawRequestedDuringCurrentScoringProcess = false;
     private void keyBindings() {
         if (copilotGamePad.y)
             this.currentStatus = UpperStructureStatus.HOLDING;
         if (copilotGamePad.a) {
             this.currentStatus = UpperStructureStatus.GRABBING;
-            clawRequestedDuringCurrentGrabbingProcess = false;
+            clawAutoOpenWhenTouchGroundInitated = false;
         }
         if (copilotGamePad.b) {
             this.currentStatus = UpperStructureStatus.SCORING;
@@ -125,14 +127,10 @@ public class UpperStructureService extends RobotService {
     }
 
     private void closeClawOnDemanded() {
-        if (copilotGamePad.left_trigger > RobotConfig.ControlConfigs.triggerThreshold) {
-            clawRequestedDuringCurrentGrabbingProcess = true;
+        if (copilotGamePad.left_trigger > RobotConfig.ControlConfigs.triggerThreshold)
             claw.setLeftClawClosed(true, this);
-        }
-        if (copilotGamePad.right_trigger > RobotConfig.ControlConfigs.triggerThreshold) {
-            clawRequestedDuringCurrentGrabbingProcess = true;
+        if (copilotGamePad.right_trigger > RobotConfig.ControlConfigs.triggerThreshold)
             claw.setRightClawClosed(true, this);
-        }
     }
 
     private void openClawOnDemanded() {

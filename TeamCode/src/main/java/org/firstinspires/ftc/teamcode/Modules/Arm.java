@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedEncoder;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.ArmGravityController;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedMotor;
+import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedSensor;
@@ -45,13 +46,18 @@ public class Arm extends RobotModule {
                 encoderFactor = ArmConfigs.encoderReversed ? -1:1;
         if (limitSwitch.getSensorReading() != 0)
             this.armEncoderZeroPosition = (int) armEncoder.getSensorReading();
+        if (Math.abs(desiredPower) > 0.05) {
+            armMotor.setPower(desiredPower);
+            return;
+        }
         if (armEncoderZeroPosition == -114514) {
             armMotor.setPower(0);
             return;
         }
 
         armController.goToDesiredPosition(ArmConfigs.encoderPositions.get(desiredPosition));
-        if (desiredPosition == ArmConfigs.Position.INTAKE && (limitSwitch.getSensorReading()!=0 || isArmInPosition())) {
+        if (desiredPosition == ArmConfigs.Position.INTAKE &&
+                (limitSwitch.getSensorReading()!=0 || Math.abs(armEncoder.getSensorReading() - armController.getDesiredPosition()) < ArmConfigs.armProfile.staticPIDProfile.getErrorTolerance())) {
             armMotor.setPower(0);
             return;
         }
@@ -95,21 +101,28 @@ public class Arm extends RobotModule {
     public boolean isArmInPosition() {
         if (this.desiredPosition == ArmConfigs.Position.INTAKE)
             return limitSwitch.getSensorReading() != 0;
-        return Math.abs((double) armEncoder.getSensorReading() - armController.getDesiredPosition()) < ArmConfigs.armProfile.staticPIDProfile.getErrorTolerance();
+        return Math.abs(armEncoder.getSensorReading() - armController.getDesiredPosition()) < ArmConfigs.armProfile.staticPIDProfile.getErrorTolerance();
     }
 
     public int getArmEncoderPosition() {
         return (int) ((armEncoder.getSensorReading() - armEncoderZeroPosition) * (ArmConfigs.encoderReversed ? -1: 1));
     }
 
-    public void setScoringHeight(double scoringHeight, RobotService operatorService) {
-        if (!isOwner(operatorService))
+    public void setScoringHeight(double scoringHeight, ModulesCommanderMarker operator) {
+        if (!isOwner(operator))
             return;
         this.scoringHeight = scoringHeight;
     }
 
     public double getArmScoringHeight() {
         return this.scoringHeight;
+    }
+
+    private double desiredPower = 0;
+    public void forceSetPower(double power, ModulesCommanderMarker operator) {
+        if (!isOwner(operator))
+            return;
+        desiredPower = power;
     }
 
     @Override

@@ -61,7 +61,26 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        profiledArmTuning();
+        clawCalibration();
+    }
+
+    private void clawCalibration() {
+        final Servo clawLeft = hardwareMap.get(Servo.class, "clawLeft"),
+                clawRight = hardwareMap.get(Servo.class, "clawRight");
+
+        waitForStart();
+
+        double clawAngle = 0;
+        while (opModeIsActive() && !isStopRequested()) {
+            clawAngle -= gamepad1.left_stick_y * 0.5 / 50;
+            clawAngle = Math.max(0, clawAngle);
+            clawAngle = Math.min(clawAngle, 1);
+            clawRight.setPosition(clawAngle);
+            clawLeft.setPosition(1-clawAngle);
+            telemetry.addData("claw pos", clawAngle);
+            telemetry.update();
+            sleep(20);
+        }
     }
 
     private void profiledArmTuning() {
