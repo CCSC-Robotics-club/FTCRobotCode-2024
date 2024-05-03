@@ -62,7 +62,7 @@ public class UpperStructureService extends RobotService {
                 claw.setAutoClosing(copilotGamePad.x, this);
                 extend.setExtendPosition(0, this);
                 arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
-                claw.setFlip(true, this);
+
                 closeClawOnDemanded();
                 openClawOnDemanded();
 
@@ -118,6 +118,7 @@ public class UpperStructureService extends RobotService {
             this.currentStatus = UpperStructureStatus.HOLDING;
         if (copilotGamePad.a) {
             this.currentStatus = UpperStructureStatus.GRABBING;
+            claw.setFlip(true, this);
             clawAutoOpenWhenTouchGroundInitated = false;
         }
         if (copilotGamePad.b) {

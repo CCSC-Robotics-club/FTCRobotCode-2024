@@ -59,9 +59,9 @@ public class FlippableDualClaw extends RobotModule {
         rightClaw.update(dt);
         flip.update(dt);
 
-        final double blink = 0.5 * Math.sin(((System.currentTimeMillis()*2) % 1000) / 1000.0f * Math.PI);
-        leftIndicatorLight.setPower(autoClosing ? (leftClawDetected ? 1 : blink) : 0);
-        rightIndicatorLight.setPower(autoClosing ? (rightClawDetected ? 1 : blink) : 0);
+        final double blink = 0.2 * Math.sin(((System.currentTimeMillis()*2) % 1000) / 1000.0f * Math.PI);
+        leftIndicatorLight.setPower(leftClawDetected ? (autoClosing ? blink : 0.5) : 0);
+        rightIndicatorLight.setPower(rightClawDetected ? (autoClosing ? blink : 0.5) : 0);
     }
 
     @Override
@@ -105,6 +105,18 @@ public class FlippableDualClaw extends RobotModule {
             return;
         this.flipperOnIntake = flipOnIntakePosition;
         periodic(0); // flush claw status
+    }
+
+    public boolean isFlipperOnIntake() {
+        return this.flipperOnIntake;
+    }
+
+    public boolean leftClawRequestedToClose() {
+        return closeLeftClaw;
+    }
+
+    public boolean rightClawRequestedToClose() {
+        return closeRightClaw;
     }
 
     public void setAutoClosing(boolean autoClosing, ModulesCommanderMarker operator) {
