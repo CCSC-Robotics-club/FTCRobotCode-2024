@@ -136,16 +136,16 @@ public final class RobotConfig {
         /** positive should be scoring */
         public static final boolean motorReversed = false, encoderReversed = true;
         public static final ArmGravityController.ArmProfile armProfile = new ArmGravityController.ArmProfile(
-                0.8,
+                0.9,
                 200,
                 0.05,
                 15,
-                0.07,
+                0.09,
                 360,
                 0,
                 20,
-                1200,
-                600,
+                3200,
+                1600,
                 0.1,
                 new LookUpTable(
                         new double[] {0, 260, 500, 750, 1000, 1350, 1760},

@@ -61,27 +61,35 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        armAndExtendTest();
+        profiledArmTuning();
     }
 
     private void profiledArmTuning() {
         final DcMotor armMotor = hardwareMap.get(DcMotor.class, "arm");
+        final TouchSensor limitSwitch = hardwareMap.get(TouchSensor.class, "armLimit");
         final ThreadedEncoder armEncoder = new ThreadedEncoder(armMotor);
         final ArmGravityController controller = new ArmGravityController(RobotConfig.ArmConfigs.armProfile);
+        final double armEncoderReadingFactor = RobotConfig.ArmConfigs.encoderReversed ? -1:1;
 
         waitForStart();
 
-        double desiredPosition = 0;
+        armEncoder.update();
+        double desiredPosition = 0, encoderZeroPosition = armEncoder.getSensorReading();
         while (!isStopRequested() && opModeIsActive()) {
             armEncoder.update();
-            desiredPosition += gamepad1.right_stick_y * -4;
+            if (limitSwitch.isPressed())
+                encoderZeroPosition = armEncoder.getSensorReading();
+
+            final double armPosition = (armEncoder.getSensorReading() - encoderZeroPosition) * armEncoderReadingFactor;
+
+            desiredPosition += gamepad1.right_stick_y * -20;
             desiredPosition = Math.max(0, desiredPosition);
-            desiredPosition = Math.min(400, desiredPosition);
+            desiredPosition = Math.min(1800, desiredPosition);
             if (gamepad1.b)
                 controller.goToDesiredPosition(desiredPosition);
 
             final double commandedPower = Math.abs(gamepad1.left_stick_y) > 0.05 ? -gamepad1.left_stick_y:0,
-                    correctionPower = controller.getMotorPower(armEncoder.getVelocity(), armEncoder.getSensorReading());
+                    correctionPower = controller.getMotorPower(armEncoder.getVelocity() * armEncoderReadingFactor, armPosition);
 
             armMotor.setPower(gamepad1.a ? correctionPower : commandedPower);
 
@@ -89,8 +97,8 @@ public class TestMain extends LinearOpMode {
             telemetry.addData("desired position (press b to send to controller)", desiredPosition);
 
 
-            telemetry.addData("arm encoder reading", armEncoder.getSensorReading());
-            telemetry.addData("arm velocity", armEncoder.getVelocity());
+            telemetry.addData("arm encoder reading", armPosition);
+            telemetry.addData("arm velocity", armEncoder.getVelocity() * armEncoderReadingFactor);
             telemetry.addData("correction pow", correctionPower);
             telemetry.addData("error accumulation", controller.getErrorAccumulation());
 
