@@ -155,16 +155,16 @@ public final class RobotConfig {
 
         public static final ArmGravityController.ArmProfile armProfile = new ArmGravityController.ArmProfile(
                 0.9,
-                80,
+                100,
                 0.05,
-                15,
+                20,
                 0.09,
                 140,
                 0,
                 20,
                 600,
                 450,
-                0.1,
+                0.07,
                 new LookUpTable(
                         new double[] {0, 70, 150, 200, 270, 350, 400},
                         new double[] {0.25, 0.35, 0.26, 0.18, 0, -0.18, -0.26}
@@ -229,7 +229,7 @@ public final class RobotConfig {
                 errorTolerance = 50,
                 /* settings */
                 maxExtendValue = 1600,
-                intakeValue = 450 / maxExtendValue;
+                intakeValue = 550 / maxExtendValue;
     }
 
     public static final class FlippableDualClawConfigs {

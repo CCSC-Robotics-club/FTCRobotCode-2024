@@ -44,16 +44,16 @@ public class FlippableDualClaw extends RobotModule {
         closeLeftClaw |= autoClosing && leftClawDetected;
         closeRightClaw |= autoClosing && rightClawDetected;
 
-        /* flip automatically */
-        if (autoClosing && leftClawDetected && rightClawDetected && leftClaw.inPosition() && rightClaw.inPosition())
-            this.flipperOnIntake = false;
-
         leftClaw.setDesiredPosition(closeLeftClaw ? FlippableDualClawConfigs.leftClawClosePosition : FlippableDualClawConfigs.leftClawOpenPosition);
         rightClaw.setDesiredPosition(closeRightClaw ? FlippableDualClawConfigs.rightClawClosedPosition : FlippableDualClawConfigs.rightClawOpenPosition);
         flip.setDesiredPosition(
                 flipperOnIntake ? FlippableDualClawConfigs.flipperIntakePosition
                 : this.scoringOrHoldingClawAngle
         );
+
+        /* flip automatically */
+        if (autoClosing && leftClawDetected && rightClawDetected && leftClaw.inPosition() && rightClaw.inPosition())
+            this.flipperOnIntake = false;
 
         leftClaw.update(dt);
         rightClaw.update(dt);
