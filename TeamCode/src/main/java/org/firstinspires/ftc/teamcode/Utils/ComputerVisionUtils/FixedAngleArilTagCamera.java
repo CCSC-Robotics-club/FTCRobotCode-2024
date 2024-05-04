@@ -11,11 +11,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * TODO: add a param, the rotation of the pointing of the camera
  * */
 public class FixedAngleArilTagCamera{
+    private final Lock lock = new ReentrantLock();
     public static final double aprilTagMargin_CM = 16;
 
     private final RawArilTagRecognitionCamera camera;
@@ -47,9 +50,11 @@ public class FixedAngleArilTagCamera{
     }
 
     public void updateCamera() {
+        lock.lock();
         camera.update();
         updateAprilTagTargets();
         updateWallInFront();
+        lock.unlock();
     }
 
     private void updateAprilTagTargets() {
@@ -89,10 +94,15 @@ public class FixedAngleArilTagCamera{
     }
 
     public List<AprilTagTarget> getArilTagTargets() {
-        return aprilTagTargets;
+        lock.lock();
+        final List<AprilTagTarget> aprilTagTargetList = new ArrayList<>(aprilTagTargets);
+        lock.unlock();
+        return aprilTagTargetList;
     }
 
     public WallTarget getWallInFront() {
+        lock.lock();
+        lock.unlock();
         return wallInFront;
     }
 

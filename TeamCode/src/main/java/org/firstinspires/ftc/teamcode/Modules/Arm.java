@@ -71,10 +71,10 @@ public class Arm extends RobotModule {
         }
 
         if (desiredPosition == ArmConfigs.Position.SCORE)
-            armController.updateDesiredPosition(
+            armController.goToDesiredPosition(
                     scoringHeight < 1 ?
                             ArmConfigs.armScoringAnglesAccordingToScoringHeightNormal.getYPrediction(scoringHeight)
-                            : ArmConfigs.armScoringAnglesAccordingToScoringHeightExtended.getYPrediction(scoringHeight)
+                            : ArmConfigs.encoderPositions.get(ArmConfigs.Position.SCORE)
             );
 
         final double armPosition = getArmEncoderPosition(),

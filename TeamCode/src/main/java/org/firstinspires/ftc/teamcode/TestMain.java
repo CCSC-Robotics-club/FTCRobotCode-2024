@@ -64,7 +64,7 @@ public class TestMain extends LinearOpMode {
         profiledArmTuning();
     }
 
-    private void aimingSystemCalibration() {
+    private void scoringSettingsTuning() {
         final DcMotor arm = hardwareMap.get(DcMotor.class, "arm"),
                 extend = hardwareMap.get(DcMotor.class, "extend");
         final TouchSensor armLimit = hardwareMap.get(TouchSensor.class, "armLimit"),
@@ -81,7 +81,7 @@ public class TestMain extends LinearOpMode {
                 armEncoderZeroPosition = arm.getCurrentPosition(),
                 flipPosition = 0;
         while (!isStopRequested() && opModeIsActive()) {
-            flipPosition -= 0.5*gamepad1.left_stick_y;
+            flipPosition -= 0.5*gamepad1.left_stick_y / 50;
             flipPosition = Math.max(flipPosition, 0);
             flipPosition = Math.min(flipPosition, 1);
             final double extendPower = Math.abs(gamepad1.right_stick_y) > 0.05 ? -gamepad1.right_stick_y:0;
@@ -100,6 +100,7 @@ public class TestMain extends LinearOpMode {
             telemetry.addData("distance to wall", distance.getDistance(DistanceUnit.CM));
 
             telemetry.update();
+            sleep(20);
         }
     }
 

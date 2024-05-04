@@ -154,23 +154,23 @@ public final class RobotConfig {
         );
 
         public static final ArmGravityController.ArmProfile armProfile = new ArmGravityController.ArmProfile(
-                0.9,
-                120,
-                0.05,
-                5,
+                0.8,
+                75,
+                0.02,
+                2,
                 0.1,
                 120,
                 0,
                 20,
                 600,
                 450,
-                0.07,
+                0.25,
                 new LookUpTable(
                         new double[] {0, 40, 70, 180, 250, 300, 350, 400},
-                        new double[] {0.1, 0.15, 0.25, 0.15, 0, -0.12, -0.24, -0.35}
+                        new double[] {0.1, 0.15, 0.25, 0.15, 0, -0.08, -0.15, -0.25}
                 )
         );
-        public static final double errorAsArmInPosition = 20;
+        public static final double errorAsArmInPosition = 10;
 
         public enum Position {
             INTAKE,
@@ -188,33 +188,22 @@ public final class RobotConfig {
             encoderPositions.put(Position.INTAKE, 0.0);
             encoderPositions.put(Position.GRAB_STACK, 60.0);
             encoderPositions.put(Position.GRAB_STACK_LOW, 50.0);
-            encoderPositions.put(Position.SCORE, 350.0);
+            encoderPositions.put(Position.SCORE, 310.0);
         }
 
-        public static final double extendValueDuringNormalScoring = 0.15;
+        public static final double extendValueDuringNormalScoring = 0.2;
         private static final double[]
-                scoringHeightNormal = new double[] {0, 0.25, 0.5, 0.75, 1},
+                scoringHeightNormal = new double[] {0, 0.5, 1},
 //                correspondingArmEncoderValuesNormal = new double[] {1600, 1500, 1400, 1300, 1200},
-                correspondingArmEncoderValuesNormal = new double[] {400, 375, 350, 325, 300},
-                correspondingServoPositionsNormal = new double[] {0.72, 0.76, 0.8, 0.88, 0.9},
-                correspondingDistanceToWallNormal = new double[] {24, 22, 17, 6, 1.5},
-
-                scoringHeightExtended = new double[] {1, 1.25, 1.5, 1.75, 2},
-                correspondingArmEncoderValuesExtended = new double[] {300, 290, 280, 270, 260},
-                correspondingServoPositionsExtended = new double[] {0.9, 0.92, 0.94, 0.96, 0.98};
+                correspondingArmEncoderValuesNormal = new double[] {410, 360, 310},
+                correspondingServoPositionsNormal = new double[] {0.8, 0.9, 0.9},
+                correspondingDistanceToWallNormal = new double[] {22, 11, 3.5};
 
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeightNormal = new LookUpTable(scoringHeightNormal, correspondingArmEncoderValuesNormal),
                 flipperPositionsAccordingToScoringHeightNormal = new LookUpTable(scoringHeightNormal, correspondingServoPositionsNormal),
                 distancesToWallAccordingToScoringHeightNormal = new LookUpTable(scoringHeightNormal, correspondingDistanceToWallNormal),
-                scoringHeightAccordingToActualDistanceToWallNormal = new LookUpTable(correspondingDistanceToWallNormal, scoringHeightNormal),
-
-                armScoringAnglesAccordingToScoringHeightExtended = new LookUpTable(scoringHeightExtended, correspondingArmEncoderValuesExtended),
-                flipperPositionsAccordingToScoringHeightExtended = new LookUpTable(scoringHeightExtended, correspondingServoPositionsExtended),
-                extendValueAccordingToScoringHeight = new LookUpTable(
-                        new double[] {scoringHeightNormal[0], scoringHeightExtended[0], scoringHeightExtended[scoringHeightExtended.length-1]},
-                        new double[] {extendValueDuringNormalScoring, extendValueDuringNormalScoring, 1}
-                );
+                scoringHeightAccordingToActualDistanceToWallNormal = new LookUpTable(correspondingDistanceToWallNormal, scoringHeightNormal);
     }
 
     public static final class ExtendConfigs {
@@ -227,9 +216,9 @@ public final class RobotConfig {
                 errorStartDecelerate = 200,
                 powerNeededToMoveForward = 0.1,
                 powerNeededToMoveBackward = 0.1,
-                errorTolerance = 25,
+                errorTolerance = 40,
                 /* settings */
-                maxExtendValue = 1200,
+                maxExtendValue = 1000,
                 intakeValue = 600 / maxExtendValue;
     }
 
@@ -305,19 +294,19 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileX = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.02, // for precise wall aiming
-                40,
+                0.03, // for precise wall aiming
+                30,
                 1,
-                0.14,
+                0.16,
                 0, 0
         );
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileY = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.02,
-                40,
+                0.03,
+                30,
                 1,
-                0.13,
+                0.16,
                 0, 0
         );
 

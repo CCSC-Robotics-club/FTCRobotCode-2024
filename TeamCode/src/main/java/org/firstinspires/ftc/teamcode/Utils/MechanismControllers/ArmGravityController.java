@@ -84,11 +84,8 @@ public class ArmGravityController implements MechanismController {
 
         if (Math.abs(mechanismVelocity) > profile.encoderVelocityTrustedRange)
             mechanismVelocity = Math.copySign(profile.encoderVelocityTrustedRange, mechanismVelocity);
-        final double scheduleTimer = (System.currentTimeMillis() - currentScheduleCreatedTime) / 1000.0,
-                currentDesiredVelocityAccordingToSchedule = Math.copySign(currentSchedule.getCurrentSpeed(scheduleTimer), currentSchedule.getCurrentPathPosition(1) - currentSchedule.getCurrentPathPosition(0)),
-                currentDesiredPositionAccordingToSchedule = currentSchedule.getCurrentPathPosition(scheduleTimer)
-                        /* to solve the delay problem of trapezoid scheduled control, we set the desired position some time(about .5s) in advance, according to the current speed */
-                        + currentDesiredVelocityAccordingToSchedule * profile.inAdvanceTime,
+        final double scheduleTimer = (System.currentTimeMillis() - currentScheduleCreatedTime) / 1000.0 + profile.inAdvanceTime,
+                currentDesiredPositionAccordingToSchedule = currentSchedule.getCurrentPathPosition(scheduleTimer),
                 gravityCorrectionPower = profile.gravityTorqueEquilibriumMotorPowerLookUpTable.getYPrediction(mechanismPosition),
                 dt = (System.currentTimeMillis() - previousTimeMillis) / 1000.0,
                 pidCorrectionPower = enhancedPIDController.getMotorPowerGoToPositionClassic(mechanismPosition, mechanismVelocity,
@@ -112,7 +109,7 @@ public class ArmGravityController implements MechanismController {
     }
 
     public double getDesiredPosition() {
-        return this.desiredPosition;
+        return this.currentSchedule != null ? this.currentSchedule.getCurrentPathPosition(999) : this.desiredPosition;
     }
 
     public void updateArmProfile(ArmProfile newArmProfile) {

@@ -17,7 +17,7 @@ public class LookUpTable {
     public double getYPrediction(double x) {
         final double
                 xLowerBound = Math.min(xValues[xValues.length-1], xValues[0]),
-                xUpperBound = Math.max(xValues[xValues.length-1], xValues[1]);
+                xUpperBound = Math.max(xValues[xValues.length-1], xValues[0]);
         x = Math.min(xUpperBound, x);
         x = Math.max(xLowerBound, x);
 

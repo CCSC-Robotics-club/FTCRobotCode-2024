@@ -56,7 +56,8 @@ public class UpperStructureService extends RobotService {
                     claw.setFlip(false, this);
                 }
 
-                arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
+                if (extend.isExtendInPosition())
+                    arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
                 break;
             }
             case GRABBING: {
@@ -68,10 +69,10 @@ public class UpperStructureService extends RobotService {
                 openClawOnDemanded();
 
                 // auto open claw the moment when arm got in position
-                if (!clawAutoOpenWhenTouchGroundInitated && arm.isArmInPosition() && claw.flipInPosition()) {
+                if (!clawAutoOpenWhenTouchGroundInitiated && arm.isArmInPosition() && claw.flipInPosition()) {
                     claw.setLeftClawClosed(false, this);
                     claw.setRightClawClosed(false, this);
-                    clawAutoOpenWhenTouchGroundInitated = true;
+                    clawAutoOpenWhenTouchGroundInitiated = true;
                 }
                 break;
             }
@@ -85,15 +86,15 @@ public class UpperStructureService extends RobotService {
                 chassisService.setDesiredScoringHeight(Math.min(1, desiredScoringHeight));
                 final double actualScoringHeight = chassisService.getActualScoringHeightAccordingToDistanceToWall(1);
                 if (desiredScoringHeight <= 1) {
-                    arm.setScoringHeight(actualScoringHeight, this);
                     claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeightNormal.getYPrediction(actualScoringHeight), this);
                     extend.setExtendPosition(
                             chassisService.stickToWallCompleted() ? RobotConfig.ArmConfigs.extendValueDuringNormalScoring : 0, this);
                 } else {
-                    arm.setScoringHeight(desiredScoringHeight, this);
-                    claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeightExtended.getYPrediction(desiredScoringHeight), this);
-                    extend.setExtendPosition(RobotConfig.ArmConfigs.extendValueAccordingToScoringHeight.getYPrediction(desiredScoringHeight), this);
+                    claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeightNormal.getYPrediction(1), this);
+                    if (arm.isArmInPosition())
+                        extend.setExtendPosition(desiredScoringHeight - 1, this);
                 }
+                arm.setScoringHeight(actualScoringHeight, this);
 
                 /* firstly we close the claw */
                 if (!clawRequestedDuringCurrentScoringProcess){
@@ -105,26 +106,25 @@ public class UpperStructureService extends RobotService {
                     claw.setFlip(false, this);
                     arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
                 }
-                /* when arm reaches position, we can close/open claw on pilot demand */
-                if (arm.isArmInPosition())
-                    openClawOnDemanded();
+                openClawOnDemanded();
 
                 break;
             }
         }
     }
 
-    private boolean clawAutoOpenWhenTouchGroundInitated = false, clawRequestedDuringCurrentScoringProcess = false;
+    private boolean clawAutoOpenWhenTouchGroundInitiated = false, clawRequestedDuringCurrentScoringProcess = false;
     private void keyBindings() {
         if (copilotGamePad.y)
             this.currentStatus = UpperStructureStatus.HOLDING;
         if (copilotGamePad.a) {
             this.currentStatus = UpperStructureStatus.GRABBING;
             claw.setFlip(true, this);
-            clawAutoOpenWhenTouchGroundInitated = false;
+            clawAutoOpenWhenTouchGroundInitiated = false;
         }
         if (copilotGamePad.b) {
             this.currentStatus = UpperStructureStatus.SCORING;
+            this.desiredScoringHeight = 1;
             clawRequestedDuringCurrentScoringProcess = false;
         }
     }

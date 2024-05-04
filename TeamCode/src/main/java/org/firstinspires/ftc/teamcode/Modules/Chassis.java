@@ -296,7 +296,8 @@ public class Chassis extends RobotModule {
     }
 
     public boolean isVisualNavigationAvailable() {
-        return aprilTagCamera.getWallInFront() != null && aprilTagCamera.getWallInFront().isVisible() && aprilTagCamera.getWallInFront().name == allianceWallName;
+        final FixedAngleArilTagCamera.WallTarget wallTarget = aprilTagCamera.getWallInFront();
+        return wallTarget != null && wallTarget.isVisible() && wallTarget.name == allianceWallName;
     }
 
     private boolean isVisualNavigationReliable() {
