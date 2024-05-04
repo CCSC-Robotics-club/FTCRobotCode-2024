@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Extend;
 import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
 import org.firstinspires.ftc.teamcode.RobotConfig;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.LookUpTable;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 
 import java.util.HashMap;
@@ -94,7 +95,8 @@ public class UpperStructureService extends RobotService {
                     if (arm.isArmInPosition())
                         extend.setExtendPosition(desiredScoringHeight - 1, this);
                 }
-                arm.setScoringHeight(actualScoringHeight, this);
+                // TODO bugs over here
+                arm.setScoringHeight(LookUpTable.linearInterpretation(0, 1, 500, actualScoringHeight, chassisService.stickToWallCompleteTimeMillis()), this);
 
                 /* firstly we close the claw */
                 if (!clawRequestedDuringCurrentScoringProcess){

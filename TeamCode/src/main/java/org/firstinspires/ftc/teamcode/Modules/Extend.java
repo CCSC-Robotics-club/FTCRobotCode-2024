@@ -11,6 +11,9 @@ import static org.firstinspires.ftc.teamcode.RobotConfig.ExtendConfigs;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Extend extends RobotModule {
     private final ThreadedMotor extendMotor;
     private final ThreadedEncoder extendEncoder;
@@ -88,5 +91,12 @@ public class Extend extends RobotModule {
 
     public boolean isExtendInPosition() {
         return Math.abs(getExtendPosition() - controller.desiredPosition) < ExtendConfigs.errorTolerance;
+    }
+
+    @Override
+    public Map<String, Object> getDebugMessages() {
+        final Map<String, Object> debugMessages = new HashMap<>();
+        debugMessages.put("desired extend position", controller.desiredPosition);
+        return debugMessages;
     }
 }

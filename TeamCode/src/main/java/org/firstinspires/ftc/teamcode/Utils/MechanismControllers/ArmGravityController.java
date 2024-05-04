@@ -51,27 +51,22 @@ public class ArmGravityController implements MechanismController {
      * @param newDesiredPosition the new desired position, in encoder ticks
      * */
     public void updateDesiredPosition(double newDesiredPosition) {
+        this.desiredPosition = newDesiredPosition;
         this.currentSchedule = new EnhancedPIDController.TrapezoidPathSchedule(profile.dynamicalPIDProfile, new EnhancedPIDController.Task(EnhancedPIDController.Task.TaskType.GO_TO_POSITION, newDesiredPosition), currentSchedule.getCurrentPathPosition(0), currentSchedule.getCurrentSpeed(0));
         this.alive = true;
-        previousTimeMillis = System.currentTimeMillis();
     }
 
     /**
      * @param newDesiredPosition the new desired position, in encoder ticks
      * */
     public void goToDesiredPosition(double newDesiredPosition) {
-        /* when we are too close */
-        if (this.currentSchedule != null && Math.abs(newDesiredPosition - desiredPosition) / profile.dynamicalPIDProfile.maxVelocity < profile.inAdvanceTime) {
-            updateDesiredPosition(newDesiredPosition);
-            return;
-        }
-
+        if (desiredPosition == newDesiredPosition) return;
         /* if there is no schedule yet */
         if (currentSchedule == null)
             this.currentSchedule = new EnhancedPIDController.TrapezoidPathSchedule(profile.dynamicalPIDProfile, new EnhancedPIDController.Task(EnhancedPIDController.Task.TaskType.GO_TO_POSITION, newDesiredPosition), startingPosition, 0);
         else {
             /* override the current schedule, but we start from the current desired position */
-            final double scheduleTimer = (System.currentTimeMillis() - currentScheduleCreatedTime) / 1000.0;
+            final double scheduleTimer = (System.currentTimeMillis() - currentScheduleCreatedTime) / 1000.0 + this.profile.inAdvanceTime;
             this.currentSchedule = new EnhancedPIDController.TrapezoidPathSchedule(profile.dynamicalPIDProfile, new EnhancedPIDController.Task(EnhancedPIDController.Task.TaskType.GO_TO_POSITION, newDesiredPosition), currentSchedule.getCurrentPathPosition(scheduleTimer), currentSchedule.getCurrentSpeed(scheduleTimer));
         }
         this.desiredPosition = newDesiredPosition;
@@ -114,7 +109,7 @@ public class ArmGravityController implements MechanismController {
     }
 
     public double getDesiredPosition() {
-        return this.currentSchedule != null ? this.currentSchedule.getCurrentPathPosition(999) : this.desiredPosition;
+        return this.desiredPosition;
     }
 
     public void updateArmProfile(ArmProfile newArmProfile) {

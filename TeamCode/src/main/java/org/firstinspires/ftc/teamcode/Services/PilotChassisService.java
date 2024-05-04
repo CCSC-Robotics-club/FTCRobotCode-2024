@@ -288,6 +288,8 @@ public class PilotChassisService extends RobotService {
             case MAINTAIN_AND_AIM:
                 stickToWallAndManualAdjust();
         }
+        if (this.visualTaskStatus != VisualTaskStatus.MAINTAIN_AND_AIM)
+            stickToWallCompleteTimeMillis = System.currentTimeMillis();
     }
 
     /**
@@ -479,6 +481,11 @@ public class PilotChassisService extends RobotService {
 
     public boolean stickToWallCompleted() {
         return this.visualTaskStatus == VisualTaskStatus.MAINTAIN_AND_AIM;
+    }
+
+    private long stickToWallCompleteTimeMillis = System.currentTimeMillis();
+    public double stickToWallCompleteTimeMillis() {
+        return stickToWallCompleted() ? (System.currentTimeMillis() - stickToWallCompleteTimeMillis): 0;
     }
 
     @Override

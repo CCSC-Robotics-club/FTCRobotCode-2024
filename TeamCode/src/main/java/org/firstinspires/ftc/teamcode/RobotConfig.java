@@ -155,16 +155,16 @@ public final class RobotConfig {
 
         public static final ArmGravityController.ArmProfile armProfile = new ArmGravityController.ArmProfile(
                 0.8,
-                75,
+                90,
                 0.02,
                 2,
-                0.1,
+                0.15,
                 120,
                 0,
                 20,
                 600,
                 450,
-                0.25,
+                0.15,
                 new LookUpTable(
                         new double[] {0, 40, 70, 180, 250, 300, 350, 400},
                         new double[] {0.1, 0.15, 0.25, 0.15, 0, -0.08, -0.15, -0.25}
