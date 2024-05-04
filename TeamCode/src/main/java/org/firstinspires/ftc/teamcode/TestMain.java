@@ -61,7 +61,46 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        dualArmMotorTest();
+        profiledArmTuning();
+    }
+
+    private void aimingSystemCalibration() {
+        final DcMotor arm = hardwareMap.get(DcMotor.class, "arm"),
+                extend = hardwareMap.get(DcMotor.class, "extend");
+        final TouchSensor armLimit = hardwareMap.get(TouchSensor.class, "armLimit"),
+                extendLimit = hardwareMap.get(TouchSensor.class, "extendLimit");
+        final DistanceSensor distance = hardwareMap.get(DistanceSensor.class, "distance");
+
+        Servo flip = hardwareMap.get(Servo.class, "flip");
+
+        waitForStart();
+
+        final double extendEncoderFactor = RobotConfig.ExtendConfigs.extendEncoderReversed ? -1: 1,
+                armEncoderFactor = RobotConfig.ArmConfigs.encoderReversed ? -1: 1;
+        double extendEncoderZeroPosition = extend.getCurrentPosition(),
+                armEncoderZeroPosition = arm.getCurrentPosition(),
+                flipPosition = 0;
+        while (!isStopRequested() && opModeIsActive()) {
+            flipPosition -= 0.5*gamepad1.left_stick_y;
+            flipPosition = Math.max(flipPosition, 0);
+            flipPosition = Math.min(flipPosition, 1);
+            final double extendPower = Math.abs(gamepad1.right_stick_y) > 0.05 ? -gamepad1.right_stick_y:0;
+
+            extend.setPower(extendPower);
+            flip.setPosition(flipPosition);
+
+            if (armLimit.isPressed()) armEncoderZeroPosition = arm.getCurrentPosition();
+            if (extendLimit.isPressed()) extendEncoderZeroPosition = extend.getCurrentPosition();
+
+
+            telemetry.addData("extend pow", extendPower);
+            telemetry.addData("flip position", flipPosition);
+            telemetry.addData("arm position", (arm.getCurrentPosition() - armEncoderZeroPosition) * armEncoderFactor);
+            telemetry.addData("extend position", (extend.getCurrentPosition() - extendEncoderZeroPosition) * extendEncoderFactor);
+            telemetry.addData("distance to wall", distance.getDistance(DistanceUnit.CM));
+
+            telemetry.update();
+        }
     }
 
     private void dualArmMotorTest() {
@@ -81,8 +120,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void clawCalibration() {
-        final Servo clawLeft = hardwareMap.get(Servo.class, "clawLeft"),
-                clawRight = hardwareMap.get(Servo.class, "clawRight");
+        final Servo claw = hardwareMap.get(Servo.class, "clawRight");
 
         waitForStart();
 
@@ -91,8 +129,7 @@ public class TestMain extends LinearOpMode {
             clawAngle -= gamepad1.left_stick_y * 0.5 / 50;
             clawAngle = Math.max(0, clawAngle);
             clawAngle = Math.min(clawAngle, 1);
-            clawRight.setPosition(clawAngle);
-            clawLeft.setPosition(1-clawAngle);
+            claw.setPosition(clawAngle);
             telemetry.addData("claw pos", clawAngle);
             telemetry.update();
             sleep(20);
@@ -100,9 +137,10 @@ public class TestMain extends LinearOpMode {
     }
 
     private void profiledArmTuning() {
-        final DcMotor armMotor = hardwareMap.get(DcMotor.class, "arm");
+        final DcMotor armMotor1 = hardwareMap.get(DcMotor.class, "arm"),
+                armMotor2 = hardwareMap.get(DcMotor.class, "arm2");
         final TouchSensor limitSwitch = hardwareMap.get(TouchSensor.class, "armLimit");
-        final ThreadedEncoder armEncoder = new ThreadedEncoder(armMotor);
+        final ThreadedEncoder armEncoder = new ThreadedEncoder(armMotor1);
         final ArmGravityController controller = new ArmGravityController(RobotConfig.ArmConfigs.armProfile);
         final double armEncoderReadingFactor = RobotConfig.ArmConfigs.encoderReversed ? -1:1;
 
@@ -110,6 +148,8 @@ public class TestMain extends LinearOpMode {
 
         armEncoder.update();
         double desiredPosition = 0, encoderZeroPosition = armEncoder.getSensorReading();
+        final double armMotor1Rate = RobotConfig.ArmConfigs.motor1Reversed ? -1 : 1,
+                armMotor2Rate = RobotConfig.ArmConfigs.motor2Reversed ? -1 : 1;
         while (!isStopRequested() && opModeIsActive()) {
             armEncoder.update();
             if (limitSwitch.isPressed())
@@ -119,14 +159,15 @@ public class TestMain extends LinearOpMode {
 
             desiredPosition += gamepad1.right_stick_y * -20;
             desiredPosition = Math.max(0, desiredPosition);
-            desiredPosition = Math.min(1800, desiredPosition);
+            desiredPosition = Math.min(400, desiredPosition);
             if (gamepad1.b)
                 controller.goToDesiredPosition(desiredPosition);
 
             final double commandedPower = Math.abs(gamepad1.left_stick_y) > 0.05 ? -gamepad1.left_stick_y:0,
-                    correctionPower = controller.getMotorPower(armEncoder.getVelocity() * armEncoderReadingFactor, armPosition);
-
-            armMotor.setPower(gamepad1.a ? correctionPower : commandedPower);
+                    correctionPower = controller.getMotorPower(armEncoder.getVelocity() * armEncoderReadingFactor, armPosition),
+                    decidedPower = gamepad1.a ? correctionPower : commandedPower;
+            armMotor1.setPower(decidedPower * armMotor1Rate);
+            armMotor2.setPower(decidedPower * armMotor2Rate);
 
             telemetry.addData("commanded power", commandedPower);
             telemetry.addData("desired position (press b to send to controller)", desiredPosition);
@@ -1116,7 +1157,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void conceptColorSensorDetection() {
-        ColorSensor colorSensor = hardwareMap.get(ColorSensor.class, "color");
+        ColorSensor colorSensor = hardwareMap.get(ColorSensor.class, "colorLeft");
 
         waitForStart();
 
@@ -1128,6 +1169,9 @@ public class TestMain extends LinearOpMode {
              * reading when sensor disconnected: 0
              *  */
             telemetry.addData("alpha", colorSensor.alpha());
+            telemetry.addData("red", colorSensor.red());
+            telemetry.addData("green", colorSensor.green());
+            telemetry.addData("blue", colorSensor.blue());
             telemetry.update();
             sleep(50);
         }

@@ -64,7 +64,7 @@ public class Arm extends RobotModule {
 
         armController.goToDesiredPosition(ArmConfigs.encoderPositions.get(desiredPosition));
         if (desiredPosition == ArmConfigs.Position.INTAKE &&
-                (limitSwitch.getSensorReading()!=0 || Math.abs(armEncoder.getSensorReading() - armController.getDesiredPosition()) < ArmConfigs.armProfile.staticPIDProfile.getErrorTolerance())) {
+                (limitSwitch.getSensorReading()!=0 || Math.abs(getArmEncoderPosition() - armController.getDesiredPosition()) < ArmConfigs.armProfile.staticPIDProfile.getErrorTolerance())) {
             armMotor1.setPower(0);
             armMotor2.setPower(0);
             return;
@@ -110,7 +110,7 @@ public class Arm extends RobotModule {
     public boolean isArmInPosition() {
         if (this.desiredPosition == ArmConfigs.Position.INTAKE)
             return limitSwitch.getSensorReading() != 0;
-        return Math.abs(armEncoder.getSensorReading() - armController.getDesiredPosition()) < ArmConfigs.armProfile.staticPIDProfile.getErrorTolerance();
+        return Math.abs(armEncoder.getSensorReading() - armController.getDesiredPosition()) < ArmConfigs.errorAsArmInPosition;
     }
 
     public int getArmEncoderPosition() {

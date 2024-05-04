@@ -155,21 +155,22 @@ public final class RobotConfig {
 
         public static final ArmGravityController.ArmProfile armProfile = new ArmGravityController.ArmProfile(
                 0.9,
-                100,
+                120,
                 0.05,
-                20,
-                0.09,
-                140,
+                5,
+                0.1,
+                120,
                 0,
                 20,
                 600,
                 450,
                 0.07,
                 new LookUpTable(
-                        new double[] {0, 70, 150, 200, 270, 350, 400},
-                        new double[] {0.25, 0.35, 0.26, 0.18, 0, -0.18, -0.26}
+                        new double[] {0, 40, 70, 180, 250, 300, 350, 400},
+                        new double[] {0.1, 0.15, 0.25, 0.15, 0, -0.12, -0.24, -0.35}
                 )
         );
+        public static final double errorAsArmInPosition = 20;
 
         public enum Position {
             INTAKE,
@@ -224,20 +225,20 @@ public final class RobotConfig {
                 maxPowerWhenMovingForward = 0.6,
                 maxPowerWhenMovingBackward = 0.6,
                 errorStartDecelerate = 200,
-                powerNeededToMoveForward = 0.15,
-                powerNeededToMoveBackward = 0.15,
-                errorTolerance = 50,
+                powerNeededToMoveForward = 0.1,
+                powerNeededToMoveBackward = 0.1,
+                errorTolerance = 25,
                 /* settings */
-                maxExtendValue = 1600,
-                intakeValue = 550 / maxExtendValue;
+                maxExtendValue = 1200,
+                intakeValue = 600 / maxExtendValue;
     }
 
     public static final class FlippableDualClawConfigs {
         public static final double flipperIntakePosition = 0.15, flipperHoldPosition = 0.9;
 
-        public static final double leftClawClosePosition = 1-0.19, leftClawOpenPosition = 1-0.44, rightClawClosedPosition = 0.25, rightClawOpenPosition = 0.5;
+        public static final double leftClawClosePosition = 0.46, leftClawOpenPosition = 0.84, rightClawClosedPosition = 0.82, rightClawOpenPosition = 0.47;
 
-        public static final int colorDetectorThreshold = 1000;
+        public static final int colorDetectorThreshold = 800;
     }
 
     public static final class ArmConfigsLegacy {
@@ -274,13 +275,13 @@ public final class RobotConfig {
 
     public static final class ChassisConfigs {
         public static final LookUpTable wheelPowerLookUpTable = new LookUpTable(
-                new double[] {0, 0.03, 0.5, 0.9, 1}, // encoder velocity / max velocity
-                new double[] {0, 0.1, 0.4, 0.8, 1} // motor power
+                new double[] {0, 0.04, 0.5, 0.9, 1}, // encoder velocity / max velocity
+                new double[] {0, 0.08, 0.4, 0.8, 1} // motor power
         );
 
 
         public static final double chassisRotation_maximumCorrectionPower = 0.65;
-        public static final double chassisRotation_minimumCorrectionPower = 0.03;
+        public static final double chassisRotation_minimumCorrectionPower = 0.02;
         public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(45);
         public static final double chassisRotation_errorTolerance = Math.toRadians(1.5);
         public static final double chassisRotationErrorAsFinished = Math.toRadians(4);
@@ -304,7 +305,7 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileX = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.06, // for precise wall aiming
+                0.02, // for precise wall aiming
                 40,
                 1,
                 0.14,
@@ -313,7 +314,7 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileY = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.05,
+                0.02,
                 40,
                 1,
                 0.13,
