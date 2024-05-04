@@ -60,12 +60,17 @@ public class ArmGravityController implements MechanismController {
      * @param newDesiredPosition the new desired position, in encoder ticks
      * */
     public void goToDesiredPosition(double newDesiredPosition) {
-        if (newDesiredPosition == desiredPosition) return;
+        /* when we are too close */
+        if (this.currentSchedule != null && Math.abs(newDesiredPosition - desiredPosition) / profile.dynamicalPIDProfile.maxVelocity < profile.inAdvanceTime) {
+            updateDesiredPosition(newDesiredPosition);
+            return;
+        }
 
-
+        /* if there is no schedule yet */
         if (currentSchedule == null)
             this.currentSchedule = new EnhancedPIDController.TrapezoidPathSchedule(profile.dynamicalPIDProfile, new EnhancedPIDController.Task(EnhancedPIDController.Task.TaskType.GO_TO_POSITION, newDesiredPosition), startingPosition, 0);
         else {
+            /* override the current schedule, but we start from the current desired position */
             final double scheduleTimer = (System.currentTimeMillis() - currentScheduleCreatedTime) / 1000.0;
             this.currentSchedule = new EnhancedPIDController.TrapezoidPathSchedule(profile.dynamicalPIDProfile, new EnhancedPIDController.Task(EnhancedPIDController.Task.TaskType.GO_TO_POSITION, newDesiredPosition), currentSchedule.getCurrentPathPosition(scheduleTimer), currentSchedule.getCurrentSpeed(scheduleTimer));
         }

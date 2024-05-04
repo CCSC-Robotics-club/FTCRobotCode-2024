@@ -38,6 +38,9 @@ public class FlippableDualClaw extends RobotModule {
 
     @Override
     protected void periodic(double dt) {
+        detectorLeft.setEnabled(autoClosing);
+        detectorRight.setEnabled(autoClosing);
+
         final boolean leftClawDetected = detectorLeft.getSensorReading() > FlippableDualClawConfigs.colorDetectorThreshold,
                 rightClawDetected = detectorRight.getSensorReading() > FlippableDualClawConfigs.colorDetectorThreshold;
 

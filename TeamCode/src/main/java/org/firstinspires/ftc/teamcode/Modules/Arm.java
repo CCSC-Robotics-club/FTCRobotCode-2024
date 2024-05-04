@@ -70,12 +70,13 @@ public class Arm extends RobotModule {
             return;
         }
 
-        if (desiredPosition == ArmConfigs.Position.SCORE)
+        if (desiredPosition == ArmConfigs.Position.SCORE) {
             armController.goToDesiredPosition(
                     scoringHeight < 1 ?
                             ArmConfigs.armScoringAnglesAccordingToScoringHeightNormal.getYPrediction(scoringHeight)
                             : ArmConfigs.encoderPositions.get(ArmConfigs.Position.SCORE)
             );
+        }
 
         final double armPosition = getArmEncoderPosition(),
                 armVelocity = armEncoder.getVelocity() * encoderFactor,
@@ -83,6 +84,7 @@ public class Arm extends RobotModule {
 
         debugMessages.put("correction power (by controller)", armCorrectionPower);
 
+        limitSwitch.setEnabled(this.desiredPosition != ArmConfigs.Position.SCORE);
         armMotor1.setPower(armCorrectionPower * motor1PowerFactor);
         armMotor2.setPower(armCorrectionPower * motor2PowerFactor);
     }
