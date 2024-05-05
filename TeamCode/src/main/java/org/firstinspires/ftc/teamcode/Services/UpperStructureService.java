@@ -82,13 +82,12 @@ public class UpperStructureService extends RobotService {
 
                 if (Math.abs(copilotGamePad.left_stick_y) > 0.05)
                     desiredScoringHeight += -1 * dt * copilotGamePad.left_stick_y;
-                desiredScoringHeight = Math.max(Math.min(desiredScoringHeight, 2), 0);
+                desiredScoringHeight = Math.max(Math.min(desiredScoringHeight, 1), 0);
 
-                chassisService.setDesiredScoringHeight(Math.min(1, desiredScoringHeight));
-                final double actualScoringHeight =
-                        chassisService.getActualScoringHeightAccordingToDistanceToWall(desiredScoringHeight);
+                chassisService.setDesiredScoringHeight(desiredScoringHeight);
+                final double actualScoringHeight = chassisService.getActualScoringHeightAccordingToDistanceToWall(desiredScoringHeight);
                 arm.setScoringHeight(actualScoringHeight, this);
-                extend.setExtendPosition(RobotConfig.ArmConfigs.extendPositionAccordingToScoringHeight.getYPrediction(actualScoringHeight), this);
+                extend.setExtendPosition(RobotConfig.ArmConfigs.extendPositionAccordingToScoringHeight.getYPrediction(actualScoringHeight) / RobotConfig.ExtendConfigs.maxExtendValue, this);
                 claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(actualScoringHeight), this);
 
                 /* firstly we close the claw */

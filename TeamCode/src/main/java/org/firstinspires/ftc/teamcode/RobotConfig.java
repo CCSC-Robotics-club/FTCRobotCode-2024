@@ -191,7 +191,6 @@ public final class RobotConfig {
             encoderPositions.put(Position.SCORE, 310.0);
         }
 
-        public static final double extendValueDuringNormalScoring = 0.2;
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
 //                correspondingArmEncoderValuesNormal = new double[] {1600, 1500, 1400, 1300, 1200},
