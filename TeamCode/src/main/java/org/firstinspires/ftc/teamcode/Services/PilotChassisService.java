@@ -122,6 +122,7 @@ public class PilotChassisService extends RobotService {
 
         /* visual navigation: wall */
         chassis.setLowSpeedModeEnabled(driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton));
+        distanceSensor.setEnabled(driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton));
         final boolean processVisualApproach = driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton),
                 initiateVisualApproach = driverController.keyOnHold(RobotConfig.KeyBindings.processVisualApproachButton) && this.visualTaskStatus == VisualTaskStatus.UNUSED;
         if (driverController.keyOnReleased(RobotConfig.KeyBindings.processVisualApproachButton))
@@ -270,6 +271,7 @@ public class PilotChassisService extends RobotService {
                     this.visualTaskStatus = VisualTaskStatus.TOF_PRECISE_APPROACH;
                     this.previousWallPosition = new Vector2D(new double[]{chassis.getCurrentTranslationalTask().getTranslationalValue().getX(), 0});
                     processVisualNavigationTask(0, aimCenter); // go immediately
+                    tofProcessApproachStartTime = System.currentTimeMillis();
                 }
                 return;
             }
@@ -288,8 +290,6 @@ public class PilotChassisService extends RobotService {
             case MAINTAIN_AND_AIM:
                 stickToWallAndManualAdjust();
         }
-        if (this.visualTaskStatus != VisualTaskStatus.MAINTAIN_AND_AIM)
-            stickToWallCompleteTimeMillis = System.currentTimeMillis();
     }
 
     /**
@@ -384,7 +384,7 @@ public class PilotChassisService extends RobotService {
     }
 
     private double getDesiredScoringDistanceToWall() {
-        return RobotConfig.ArmConfigs.distancesToWallAccordingToScoringHeightNormal.getYPrediction(desiredScoringHeight);
+        return RobotConfig.ArmConfigs.distancesToWallAccordingToScoringHeight.getYPrediction(desiredScoringHeight);
     }
 
     private void aimFail() {
@@ -475,17 +475,22 @@ public class PilotChassisService extends RobotService {
 
     public double getActualScoringHeightAccordingToDistanceToWall(double defaultScoringHeight) {
         if (this.visualTaskStatus != VisualTaskStatus.MAINTAIN_AND_AIM) return defaultScoringHeight;
-        debugMessages.put("scoring height by distance sensor ", RobotConfig.ArmConfigs.scoringHeightAccordingToActualDistanceToWallNormal.getYPrediction(distanceSensor.getSensorReading()));
-        return RobotConfig.ArmConfigs.scoringHeightAccordingToActualDistanceToWallNormal.getYPrediction(distanceSensor.getSensorReading());
+        debugMessages.put("scoring height by distance sensor ", RobotConfig.ArmConfigs.scoringHeightAccordingToActualDistanceToWall.getYPrediction(distanceSensor.getSensorReading()));
+        return RobotConfig.ArmConfigs.scoringHeightAccordingToActualDistanceToWall.getYPrediction(distanceSensor.getSensorReading());
     }
 
-    public boolean stickToWallCompleted() {
+
+    public boolean tofPreciseApproachCompleted() {
         return this.visualTaskStatus == VisualTaskStatus.MAINTAIN_AND_AIM;
     }
 
-    private long stickToWallCompleteTimeMillis = System.currentTimeMillis();
-    public double stickToWallCompleteTimeMillis() {
-        return stickToWallCompleted() ? (System.currentTimeMillis() - stickToWallCompleteTimeMillis): 0;
+    public boolean tofPreciseApproachStarted() {
+        return this.visualTaskStatus == VisualTaskStatus.MAINTAIN_AND_AIM || this.visualTaskStatus == VisualTaskStatus.TOF_PRECISE_APPROACH;
+    }
+
+    private long tofProcessApproachStartTime;
+    public double timeSinceTOFPreciseApproach() {
+        return tofPreciseApproachStarted() ? (System.currentTimeMillis() - tofProcessApproachStartTime): 0;
     }
 
     @Override

@@ -78,6 +78,7 @@ public class UpperStructureService extends RobotService {
                 break;
             }
             case SCORING: {
+                final long tofPreciseApproachTime = 1200;
                 claw.setAutoClosing(false, this);
 
                 if (Math.abs(copilotGamePad.left_stick_y) > 0.05)
@@ -87,16 +88,17 @@ public class UpperStructureService extends RobotService {
                 chassisService.setDesiredScoringHeight(Math.min(1, desiredScoringHeight));
                 final double actualScoringHeight = chassisService.getActualScoringHeightAccordingToDistanceToWall(1);
                 if (desiredScoringHeight <= 1) {
-                    claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeightNormal.getYPrediction(actualScoringHeight), this);
-                    extend.setExtendPosition(
-                            chassisService.stickToWallCompleted() ? RobotConfig.ArmConfigs.extendValueDuringNormalScoring : 0, this);
+                    claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(actualScoringHeight), this);
+                    extend.setExtendPosition(LookUpTable.linearInterpretation(
+                            0, 0, tofPreciseApproachTime, RobotConfig.ArmConfigs.extendValueDuringNormalScoring, chassisService.timeSinceTOFPreciseApproach()), this);
                 } else {
-                    claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeightNormal.getYPrediction(1), this);
+                    claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(1), this);
                     if (arm.isArmInPosition())
                         extend.setExtendPosition(desiredScoringHeight - 1, this);
                 }
-                // TODO bugs over here
-                arm.setScoringHeight(LookUpTable.linearInterpretation(0, 1, 500, actualScoringHeight, chassisService.stickToWallCompleteTimeMillis()), this);
+                final double armScoringHeight = chassisService.tofPreciseApproachCompleted() ? actualScoringHeight : desiredScoringHeight;
+                arm.setScoringHeight(LookUpTable.linearInterpretation(
+                        0, 1, tofPreciseApproachTime, armScoringHeight, chassisService.timeSinceTOFPreciseApproach()), this);
 
                 /* firstly we close the claw */
                 if (!clawRequestedDuringCurrentScoringProcess){

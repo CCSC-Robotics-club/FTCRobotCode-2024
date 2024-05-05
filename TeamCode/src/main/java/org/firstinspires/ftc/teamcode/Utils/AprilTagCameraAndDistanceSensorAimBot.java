@@ -32,7 +32,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         this.aprilTagCamera = aprilTagCamera;
         this.modulesCommanderMarker = commanderMarker;
         this.telemetrySender = telemetrySender;
-        this.desiredDistanceToWallSupplier = () -> RobotConfig.ArmConfigs.distancesToWallAccordingToScoringHeightNormal.getYPrediction(arm.getArmScoringHeight());
+        this.desiredDistanceToWallSupplier = () -> RobotConfig.ArmConfigs.distancesToWallAccordingToScoringHeight.getYPrediction(arm.getArmScoringHeight());
     }
 
     public SequentialCommandSegment stickToWall(SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {

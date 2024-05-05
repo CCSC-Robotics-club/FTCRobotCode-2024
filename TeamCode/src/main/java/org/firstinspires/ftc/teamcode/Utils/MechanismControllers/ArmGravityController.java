@@ -51,7 +51,6 @@ public class ArmGravityController implements MechanismController {
      * @param newDesiredPosition the new desired position, in encoder ticks
      * */
     public void updateDesiredPosition(double newDesiredPosition) {
-        this.desiredPosition = newDesiredPosition;
         this.currentSchedule = new EnhancedPIDController.TrapezoidPathSchedule(profile.dynamicalPIDProfile, new EnhancedPIDController.Task(EnhancedPIDController.Task.TaskType.GO_TO_POSITION, newDesiredPosition), currentSchedule.getCurrentPathPosition(0), currentSchedule.getCurrentSpeed(0));
         this.alive = true;
     }
@@ -66,7 +65,7 @@ public class ArmGravityController implements MechanismController {
             this.currentSchedule = new EnhancedPIDController.TrapezoidPathSchedule(profile.dynamicalPIDProfile, new EnhancedPIDController.Task(EnhancedPIDController.Task.TaskType.GO_TO_POSITION, newDesiredPosition), startingPosition, 0);
         else {
             /* override the current schedule, but we start from the current desired position */
-            final double scheduleTimer = (System.currentTimeMillis() - currentScheduleCreatedTime) / 1000.0 + this.profile.inAdvanceTime;
+            final double scheduleTimer = (System.currentTimeMillis() - currentScheduleCreatedTime) / 1000.0;
             this.currentSchedule = new EnhancedPIDController.TrapezoidPathSchedule(profile.dynamicalPIDProfile, new EnhancedPIDController.Task(EnhancedPIDController.Task.TaskType.GO_TO_POSITION, newDesiredPosition), currentSchedule.getCurrentPathPosition(scheduleTimer), currentSchedule.getCurrentSpeed(scheduleTimer));
         }
         this.desiredPosition = newDesiredPosition;
