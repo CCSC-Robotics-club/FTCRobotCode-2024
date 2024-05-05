@@ -78,7 +78,6 @@ public class UpperStructureService extends RobotService {
                 break;
             }
             case SCORING: {
-                final long tofPreciseApproachTime = 1200;
                 claw.setAutoClosing(false, this);
 
                 if (Math.abs(copilotGamePad.left_stick_y) > 0.05)
@@ -86,19 +85,11 @@ public class UpperStructureService extends RobotService {
                 desiredScoringHeight = Math.max(Math.min(desiredScoringHeight, 2), 0);
 
                 chassisService.setDesiredScoringHeight(Math.min(1, desiredScoringHeight));
-                final double actualScoringHeight = chassisService.getActualScoringHeightAccordingToDistanceToWall(1);
-                if (desiredScoringHeight <= 1) {
-                    claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(actualScoringHeight), this);
-                    extend.setExtendPosition(LookUpTable.linearInterpretation(
-                            0, 0, tofPreciseApproachTime, RobotConfig.ArmConfigs.extendValueDuringNormalScoring, chassisService.timeSinceTOFPreciseApproach()), this);
-                } else {
-                    claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(1), this);
-                    if (arm.isArmInPosition())
-                        extend.setExtendPosition(desiredScoringHeight - 1, this);
-                }
-                final double armScoringHeight = chassisService.tofPreciseApproachCompleted() ? actualScoringHeight : desiredScoringHeight;
-                arm.setScoringHeight(LookUpTable.linearInterpretation(
-                        0, 1, tofPreciseApproachTime, armScoringHeight, chassisService.timeSinceTOFPreciseApproach()), this);
+                final double actualScoringHeight =
+                        chassisService.getActualScoringHeightAccordingToDistanceToWall(desiredScoringHeight);
+                arm.setScoringHeight(actualScoringHeight, this);
+                extend.setExtendPosition(RobotConfig.ArmConfigs.extendPositionAccordingToScoringHeight.getYPrediction(actualScoringHeight), this);
+                claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(actualScoringHeight), this);
 
                 /* firstly we close the claw */
                 if (!clawRequestedDuringCurrentScoringProcess){

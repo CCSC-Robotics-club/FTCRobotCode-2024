@@ -271,7 +271,6 @@ public class PilotChassisService extends RobotService {
                     this.visualTaskStatus = VisualTaskStatus.TOF_PRECISE_APPROACH;
                     this.previousWallPosition = new Vector2D(new double[]{chassis.getCurrentTranslationalTask().getTranslationalValue().getX(), 0});
                     processVisualNavigationTask(0, aimCenter); // go immediately
-                    tofProcessApproachStartTime = System.currentTimeMillis();
                 }
                 return;
             }
@@ -480,17 +479,8 @@ public class PilotChassisService extends RobotService {
     }
 
 
-    public boolean tofPreciseApproachCompleted() {
+    public boolean stickToWallComplete() {
         return this.visualTaskStatus == VisualTaskStatus.MAINTAIN_AND_AIM;
-    }
-
-    public boolean tofPreciseApproachStarted() {
-        return this.visualTaskStatus == VisualTaskStatus.MAINTAIN_AND_AIM || this.visualTaskStatus == VisualTaskStatus.TOF_PRECISE_APPROACH;
-    }
-
-    private long tofProcessApproachStartTime;
-    public double timeSinceTOFPreciseApproach() {
-        return tofPreciseApproachStarted() ? (System.currentTimeMillis() - tofProcessApproachStartTime): 0;
     }
 
     @Override
