@@ -45,7 +45,10 @@ public class UpperStructureService extends RobotService {
     @Override
     public void periodic(double dt) {
         keyBindings();
-        arm.forceSetPower(copilotGamePad.right_stick_y * -1, this);
+        if (copilotGamePad.right_stick_button)
+            arm.forceSetPower(copilotGamePad.right_stick_y * -1, this);
+        else
+            arm.forceSetPower(0, this);
         switch (currentStatus) {
             case HOLDING: {
                 claw.setAutoClosing(false, this);
@@ -57,15 +60,17 @@ public class UpperStructureService extends RobotService {
                     claw.setFlip(false, this);
                 }
 
-                if (extend.isExtendInPosition())
-                    arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
+                arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
                 break;
             }
             case GRABBING: {
                 claw.setAutoClosing(copilotGamePad.x, this);
                 arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
-                if (arm.isArmInPosition())
+                armInPositionDuringCurrentProcess |= arm.isArmInPosition();
+                if (armInPositionDuringCurrentProcess)
                     extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, this);
+                else
+                    extend.setExtendPosition(0, this);
                 closeClawOnDemanded();
                 openClawOnDemanded();
 
@@ -87,7 +92,12 @@ public class UpperStructureService extends RobotService {
                 chassisService.setDesiredScoringHeight(desiredScoringHeight);
                 final double actualScoringHeight = chassisService.getActualScoringHeightAccordingToDistanceToWall(desiredScoringHeight);
                 arm.setScoringHeight(actualScoringHeight, this);
-                extend.setExtendPosition(RobotConfig.ArmConfigs.extendPositionAccordingToScoringHeight.getYPrediction(actualScoringHeight) / RobotConfig.ExtendConfigs.maxExtendValue, this);
+
+                /* TODO: here, bugs when changing from grabbing to scoring */
+                if (armInPositionDuringCurrentProcess)
+                    extend.setExtendPosition(RobotConfig.ArmConfigs.extendPositionAccordingToScoringHeight.getYPrediction(actualScoringHeight) / RobotConfig.ExtendConfigs.maxExtendValue, this);
+                else
+                    extend.setExtendPosition(0, this);
                 claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(actualScoringHeight), this);
 
                 /* firstly we close the claw */
@@ -99,6 +109,7 @@ public class UpperStructureService extends RobotService {
                 if (claw.leftClawInPosition() && claw.rightClawInPosition() && claw.flipInPosition()) {
                     claw.setFlip(false, this);
                     arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
+                    this.armInPositionDuringCurrentProcess |= arm.isArmInPosition() || chassisService.stickToWallComplete();
                 }
                 openClawOnDemanded();
 
@@ -108,17 +119,20 @@ public class UpperStructureService extends RobotService {
     }
 
     private boolean clawAutoOpenWhenTouchGroundInitiated = false, clawRequestedDuringCurrentScoringProcess = false;
+    private boolean armInPositionDuringCurrentProcess = false;
     private void keyBindings() {
         if (copilotGamePad.y)
             this.currentStatus = UpperStructureStatus.HOLDING;
         if (copilotGamePad.a) {
             this.currentStatus = UpperStructureStatus.GRABBING;
+            armInPositionDuringCurrentProcess = false;
             claw.setFlip(true, this);
             clawAutoOpenWhenTouchGroundInitiated = false;
         }
         if (copilotGamePad.b) {
             this.currentStatus = UpperStructureStatus.SCORING;
-            this.desiredScoringHeight = 1;
+            // this.desiredScoringHeight = 1;
+            this.armInPositionDuringCurrentProcess = false;
             clawRequestedDuringCurrentScoringProcess = false;
         }
     }
@@ -153,7 +167,7 @@ public class UpperStructureService extends RobotService {
         extend.gainOwnerShip(this);
 
         currentStatus = UpperStructureStatus.HOLDING;
-        desiredScoringHeight = 1;
+        desiredScoringHeight = 0;
     }
 
     @Override

@@ -108,6 +108,8 @@ public class ArmGravityController implements MechanismController {
     }
 
     public double getDesiredPosition() {
+        if (this.currentSchedule != null)
+            return this.currentSchedule.getCurrentPathPosition(999);
         return this.desiredPosition;
     }
 

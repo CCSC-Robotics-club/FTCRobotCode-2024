@@ -156,7 +156,7 @@ public final class RobotConfig {
         public static final ArmGravityController.ArmProfile armProfile = new ArmGravityController.ArmProfile(
                 0.8,
                 90,
-                0.02,
+                0.03,
                 2,
                 0.15,
                 120,
@@ -170,7 +170,7 @@ public final class RobotConfig {
                         new double[] {0.1, 0.15, 0.25, 0.15, 0, -0.08, -0.15, -0.25}
                 )
         );
-        public static final double errorAsArmInPosition = 10;
+        public static final double errorAsArmInPosition = 20;
 
         public enum Position {
             INTAKE,
