@@ -125,9 +125,9 @@ public abstract class Robot {
                 new String[] {"frontLeft", "frontRight", "backLeft"} :
                 this.hardwareConfigs.encoderNames;
 
-        final ThreadedEncoder horizontalEncoder = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[0])),
-                verticalEncoder1 = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[1])),
-                verticalEncoder2 = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[2]));
+        final ThreadedEncoder horizontalEncoder = new ThreadedEncoder(hardwareMap.get(DcMotorEx.class, encoderNames[0])),
+                verticalEncoder1 = new ThreadedEncoder(hardwareMap.get(DcMotorEx.class, encoderNames[1])),
+                verticalEncoder2 = new ThreadedEncoder(hardwareMap.get(DcMotorEx.class, encoderNames[2]));
         final ThreadedIMU imuSensor = new ThreadedIMU(imu);
         sensors.put("horizontal-encoder", horizontalEncoder);
         sensors.put("vertical-encoder-1", verticalEncoder1);
@@ -210,7 +210,7 @@ public abstract class Robot {
         /* arm */
         final ThreadedMotor armMotor1 = new ThreadedMotor(hardwareMap.get(DcMotor.class, "arm")),
                 armMotor2 = new ThreadedMotor(hardwareMap.get(DcMotor.class, "arm2"));
-        final ThreadedEncoder armEncoder = new ThreadedEncoder(hardwareMap.get(DcMotor.class, "arm"));
+        final ThreadedEncoder armEncoder = new ThreadedEncoder(hardwareMap.get(DcMotorEx.class, "arm"));
         final ThreadedSensor armLimit = new ThreadedSensor(() -> hardwareMap.get(TouchSensor.class, "armLimit").isPressed() ? 1:0);
         motors.add(armMotor1);
         motors.add(armMotor2);
@@ -221,7 +221,7 @@ public abstract class Robot {
 
         /* extend */
         final ThreadedMotor extendMotor = new ThreadedMotor(hardwareMap.get(DcMotor.class, "extend"));
-        final ThreadedEncoder extendEncoder = new ThreadedEncoder(hardwareMap.get(DcMotor.class, "extend"));
+        final ThreadedEncoder extendEncoder = new ThreadedEncoder(hardwareMap.get(DcMotorEx.class, "extend"));
         final ThreadedSensor extendLimit = new ThreadedSensor(() -> hardwareMap.get(TouchSensor.class, "extendLimit").isPressed() ? 1:0);
         motors.add(extendMotor);
         sensors.put("extend-enc", extendEncoder);

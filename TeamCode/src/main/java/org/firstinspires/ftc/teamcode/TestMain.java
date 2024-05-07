@@ -61,7 +61,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        scoringSettingsTuning();
+        profiledArmTuning();
     }
 
     private void scoringSettingsTuning() {
@@ -138,8 +138,8 @@ public class TestMain extends LinearOpMode {
     }
 
     private void profiledArmTuning() {
-        final DcMotor armMotor1 = hardwareMap.get(DcMotor.class, "arm"),
-                armMotor2 = hardwareMap.get(DcMotor.class, "arm2");
+        final DcMotorEx armMotor1 = hardwareMap.get(DcMotorEx.class, "arm"),
+                armMotor2 = hardwareMap.get(DcMotorEx.class, "arm2");
         final TouchSensor limitSwitch = hardwareMap.get(TouchSensor.class, "armLimit");
         final ThreadedEncoder armEncoder = new ThreadedEncoder(armMotor1);
         final ArmGravityController controller = new ArmGravityController(RobotConfig.ArmConfigs.armProfile);
@@ -227,9 +227,9 @@ public class TestMain extends LinearOpMode {
         String[] encoderNames =hardwareConfigs.encoderNames == null ?
                 new String[] {"frontLeft", "frontRight", "backLeft"} :
                 hardwareConfigs.encoderNames;
-        final ThreadedEncoder horizontalEncoder = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[0])),
-                verticalEncoder1 = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[1])),
-                verticalEncoder2 = new ThreadedEncoder(hardwareMap.get(DcMotor.class, encoderNames[2]));
+        final ThreadedEncoder horizontalEncoder = new ThreadedEncoder(hardwareMap.get(DcMotorEx.class, encoderNames[0])),
+                verticalEncoder1 = new ThreadedEncoder(hardwareMap.get(DcMotorEx.class, encoderNames[1])),
+                verticalEncoder2 = new ThreadedEncoder(hardwareMap.get(DcMotorEx.class, encoderNames[2]));
         final ThreadedIMU imuSensor = new ThreadedIMU(imu);
 
 
@@ -237,7 +237,7 @@ public class TestMain extends LinearOpMode {
                 horizontalEncoder,
                 verticalEncoder1,
                 verticalEncoder2,
-                new ThreadedIMU(imu),
+                imuSensor,
                 hardwareConfigs.encodersParams
         );
         positionEstimator.init();

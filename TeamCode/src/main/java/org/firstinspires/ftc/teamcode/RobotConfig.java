@@ -156,7 +156,7 @@ public final class RobotConfig {
         public static final ArmGravityController.ArmProfile armProfile = new ArmGravityController.ArmProfile(
                 0.8,
                 90,
-                0.03,
+                0.01,
                 2,
                 0.15,
                 120,
@@ -194,7 +194,7 @@ public final class RobotConfig {
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
 //                correspondingArmEncoderValuesNormal = new double[] {1600, 1500, 1400, 1300, 1200},
-                correspondingArmEncoderValues = new double[] {395, 360, 350, 340, 330},
+                correspondingArmEncoderValues = new double[] {395, 370, 360, 330, 330},
                 correspondingExtendValues = new double[] {0, 320, 700, 900, 1200},
                 correspondingServoPositions = new double[] {0.6, 0.7, 0.75, 0.8, 0.82},
                 correspondingDistanceToWall = new double[] {20, 15, 10, 6, 3};

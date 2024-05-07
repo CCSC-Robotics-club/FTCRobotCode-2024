@@ -71,10 +71,10 @@ public class UpperStructureService extends RobotService {
                     extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, this);
                 else
                     extend.setExtendPosition(0, this);
-                closeClawOnDemanded();
-                openClawOnDemanded();
 
                 // auto open claw the moment when arm got in position
+                closeClawOnDemanded();
+                openClawOnDemanded();
                 if (!clawAutoOpenWhenTouchGroundInitiated && arm.isArmInPosition() && claw.flipInPosition()) {
                     claw.setLeftClawClosed(false, this);
                     claw.setRightClawClosed(false, this);
@@ -109,7 +109,8 @@ public class UpperStructureService extends RobotService {
                 if (claw.leftClawInPosition() && claw.rightClawInPosition() && claw.flipInPosition()) {
                     claw.setFlip(false, this);
                     arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
-                    this.armInPositionDuringCurrentProcess |= arm.isArmInPosition() || chassisService.stickToWallComplete();
+                    // this.armInPositionDuringCurrentProcess |= arm.isArmInPosition() || chassisService.stickToWallComplete();
+                    this.armInPositionDuringCurrentProcess |= arm.isArmInPosition() && chassisService.stickToWallComplete();
                 }
                 openClawOnDemanded();
 
@@ -138,10 +139,14 @@ public class UpperStructureService extends RobotService {
     }
 
     private void closeClawOnDemanded() {
-        if (copilotGamePad.left_trigger > RobotConfig.ControlConfigs.triggerThreshold)
+        if (copilotGamePad.left_trigger > RobotConfig.ControlConfigs.triggerThreshold) {
             claw.setLeftClawClosed(true, this);
-        if (copilotGamePad.right_trigger > RobotConfig.ControlConfigs.triggerThreshold)
+            this.clawAutoOpenWhenTouchGroundInitiated = true;
+        }
+        if (copilotGamePad.right_trigger > RobotConfig.ControlConfigs.triggerThreshold) {
             claw.setRightClawClosed(true, this);
+            this.clawAutoOpenWhenTouchGroundInitiated = true;
+        }
     }
 
     private void openClawOnDemanded() {

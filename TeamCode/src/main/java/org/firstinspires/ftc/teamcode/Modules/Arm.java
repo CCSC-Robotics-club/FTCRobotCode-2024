@@ -83,7 +83,7 @@ public class Arm extends RobotModule {
 
         debugMessages.put("correction power (by controller)", armCorrectionPower);
 
-        limitSwitch.setEnabled(this.desiredPosition != ArmConfigs.Position.SCORE);
+        // limitSwitch.setEnabled(this.desiredPosition != ArmConfigs.Position.SCORE);
         armMotor1.setPower(armCorrectionPower * motor1PowerFactor);
         armMotor2.setPower(armCorrectionPower * motor2PowerFactor);
     }
@@ -111,7 +111,7 @@ public class Arm extends RobotModule {
     public boolean isArmInPosition() {
         if (this.desiredPosition == ArmConfigs.Position.INTAKE && limitSwitch.getSensorReading() != 0)
             return true;
-        return Math.abs(armEncoder.getSensorReading() - armController.getDesiredPosition()) < ArmConfigs.errorAsArmInPosition;
+        return Math.abs(getArmEncoderPosition() - armController.getDesiredPosition()) < ArmConfigs.errorAsArmInPosition;
     }
 
     public int getArmEncoderPosition() {
