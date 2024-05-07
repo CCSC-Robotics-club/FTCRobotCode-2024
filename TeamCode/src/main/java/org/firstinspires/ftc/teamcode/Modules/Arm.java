@@ -62,19 +62,10 @@ public class Arm extends RobotModule {
             return;
         }
 
-        armController.goToDesiredPosition(ArmConfigs.encoderPositions.get(desiredPosition));
         if (desiredPosition == ArmConfigs.Position.INTAKE && isArmInPosition()) {
             armMotor1.setPower(0);
             armMotor2.setPower(0);
             return;
-        }
-
-        if (desiredPosition == ArmConfigs.Position.SCORE) {
-            armController.updateDesiredPosition(
-                    scoringHeight < 1 ?
-                            ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight)
-                            : ArmConfigs.encoderPositions.get(ArmConfigs.Position.SCORE)
-            );
         }
 
         final double armPosition = getArmEncoderPosition(),
@@ -105,7 +96,17 @@ public class Arm extends RobotModule {
     public void setPosition(ArmConfigs.Position position, RobotService operatorService) {
         if (!isOwner(operatorService))
             return;
+
         this.desiredPosition = position;
+        armController.goToDesiredPosition(ArmConfigs.encoderPositions.get(desiredPosition));
+
+        if (desiredPosition == ArmConfigs.Position.SCORE) {
+            armController.updateDesiredPosition(
+                    scoringHeight < 1 ?
+                            ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight)
+                            : ArmConfigs.encoderPositions.get(ArmConfigs.Position.SCORE)
+            );
+        }
     }
 
     public boolean isArmInPosition() {
