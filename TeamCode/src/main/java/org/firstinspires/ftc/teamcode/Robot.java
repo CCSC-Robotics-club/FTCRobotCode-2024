@@ -50,7 +50,7 @@ public abstract class Robot {
     protected final boolean useMultiThread;
 
     private final EncoderMotorMechanism frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
-    public ThreadedSensor distanceSensor, distanceSensorBack;
+    public ThreadedSensor distanceSensor, distanceSensorBack, spikeMarkDetectionSensor;
     public Chassis chassis;
 //    public IntakeLegacy intake;
 //    public ArmLegacy arm;
@@ -105,6 +105,8 @@ public abstract class Robot {
         this.sensors.put("distance", distanceSensor);
         this.distanceSensorBack = new ThreadedSensor(() -> hardwareMap.get(DistanceSensor.class, "distanceBack").getDistance(DistanceUnit.CM));
         this.sensors.put("distance back", distanceSensorBack);
+        this.spikeMarkDetectionSensor = new ThreadedSensor(() -> 0, 0);
+        this.sensors.put("spike mark sensor", spikeMarkDetectionSensor);
 
         imu.initialize(this.hardwareConfigs.imuParameter);
         if (hardwareConfigs.alternativeIMUParameter != null) {

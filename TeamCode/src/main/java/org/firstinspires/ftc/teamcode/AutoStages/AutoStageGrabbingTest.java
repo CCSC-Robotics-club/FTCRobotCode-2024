@@ -35,24 +35,6 @@ public class AutoStageGrabbingTest extends AutoStageProgram {
                 () -> {}, () -> {}
         ));
 
-//        super.commandSegments.add(new SequentialCommandSegment(
-//                () -> true,
-//                () -> null,
-//                () -> {},
-//                () -> {
-//                    final double wallGrabbingPositionY =
-//                            robot.distanceSensorBack.getSensorReading() > 30 ?
-//                                    stackCenterPosition.getY()
-//                                    : robot.positionEstimator.getCurrentPosition().getY() - robot.distanceSensorBack.getSensorReading() + grabbingDistanceToWall;
-//                    telemetrySender.putSystemMessage("wall grabbing pos y", wallGrabbingPositionY);
-//                    telemetrySender.putSystemMessage("distance sensor reading", robot.distanceSensorBack.getSensorReading());
-//                },
-//                () -> {},
-//                () -> false,
-//                () -> new Rotation2D(0),
-//                () -> new Rotation2D(0)
-//        ));
-
         super.commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> null,
