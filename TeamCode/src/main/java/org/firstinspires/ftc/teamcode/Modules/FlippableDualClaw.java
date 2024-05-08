@@ -42,7 +42,7 @@ public class FlippableDualClaw extends RobotModule {
 
         flipperPositions.put(FlipperPosition.INTAKE, 0.0);
         flipperPositions.put(FlipperPosition.PREPARE_TO_GRAB_STACK, 0.3);
-        flipperPositions.put(FlipperPosition.HOLD, 0.6);
+        flipperPositions.put(FlipperPosition.HOLD, 0.7);
         flipperPositions.put(FlipperPosition.SCORE, 1.0);
     }
 

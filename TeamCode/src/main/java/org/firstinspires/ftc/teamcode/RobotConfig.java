@@ -228,7 +228,7 @@ public final class RobotConfig {
 
     public static final class FlippableDualClawConfigs {
 
-        public static final double leftClawClosePosition = 0.46, leftClawOpenPosition = 0.84, rightClawClosedPosition = 0.82, rightClawOpenPosition = 0.47;
+        public static final double leftClawClosePosition = 0.47, leftClawOpenPosition = 0.9, rightClawClosedPosition = 0.84, rightClawOpenPosition = 0.38;
 
         public static final int colorDetectorThreshold = 800;
     }
