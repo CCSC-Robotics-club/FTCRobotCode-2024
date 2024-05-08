@@ -51,12 +51,11 @@ public class UpperStructureService extends RobotService {
         switch (currentStatus) {
             case HOLDING: {
                 claw.setAutoClosing(false, this);
-                claw.setScoringAngle(RobotConfig.FlippableDualClawConfigs.flipperHoldPosition, this);
                 claw.setLeftClawClosed(true, this);
                 claw.setRightClawClosed(true, this);
                 if (claw.rightClawInPosition() && claw.leftClawInPosition()) {
                     extend.setExtendPosition(0, this);
-                    claw.setFlip(false, this);
+                    claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, this);
                 }
 
                 arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
@@ -108,7 +107,7 @@ public class UpperStructureService extends RobotService {
                 }
                 /* when the claw is closed, we flip the claw and raise the arm */
                 if (claw.leftClawInPosition() && claw.rightClawInPosition() && claw.flipInPosition()) {
-                    claw.setFlip(false, this);
+                    claw.setFlip(FlippableDualClaw.FlipperPosition.SCORE, this);
                     arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
                     this.armInPositionDuringCurrentProcess |= arm.isArmInPosition() || chassisService.stickToWallComplete();
                     // this.armInPositionDuringCurrentProcess |= arm.isArmInPosition() && chassisService.stickToWallComplete();
@@ -128,7 +127,7 @@ public class UpperStructureService extends RobotService {
         if (copilotGamePad.a) {
             this.currentStatus = UpperStructureStatus.GRABBING;
             this.armInPositionDuringCurrentProcess = false;
-            claw.setFlip(true, this);
+            claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, this);
             clawAutoOpenWhenTouchGroundInitiated = false;
         }
         if (copilotGamePad.b) {

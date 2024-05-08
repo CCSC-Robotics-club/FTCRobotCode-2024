@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils;
+package org.firstinspires.ftc.teamcode.Utils;
 
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedSensor;
@@ -6,17 +6,16 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.SpeedCurves;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
-import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PixelStackLocator {
+public class PixelStackLocatorDistance {
     private static final double distanceTolerance = 4.0;
 
     private final ThreadedSensor distanceSensorBack;
     private final Chassis chassis;
-    public PixelStackLocator(ThreadedSensor distanceSensorBack, Chassis chassis) {
+    public PixelStackLocatorDistance(ThreadedSensor distanceSensorBack, Chassis chassis) {
         this.distanceSensorBack = distanceSensorBack;
         this.chassis = chassis;
     }

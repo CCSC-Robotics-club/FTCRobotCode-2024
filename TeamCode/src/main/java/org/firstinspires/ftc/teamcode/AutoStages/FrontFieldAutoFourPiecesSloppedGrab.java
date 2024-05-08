@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.AutoStages;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
+import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
@@ -43,11 +44,11 @@ public class FrontFieldAutoFourPiecesSloppedGrab extends AutoStageProgram  {
                             robot.claw.setRightClawClosed(true, null);
                             robot.claw.setLeftClawClosed(true, null);
                         }, () -> {},
-                        () -> robot.claw.setFlip(false, null),
+                        () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null),
                         allianceSide == Robot.Side.BLUE ? robot.claw::leftClawInPosition : robot.claw::rightClawInPosition,
                         () -> null, () -> null);
 
-        robot.claw.setFlip(false, null);
+        robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
         robot.claw.setLeftClawClosed(true, null);
         robot.claw.setRightClawClosed(true, null);
 
@@ -68,9 +69,9 @@ public class FrontFieldAutoFourPiecesSloppedGrab extends AutoStageProgram  {
                         () -> {},
                         () -> {
                             if (robot.chassis.isCurrentRotationalTaskRoughlyComplete())
-                                robot.claw.setFlip(true, null);
+                                robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null);
                         },
-                        () -> robot.claw.setFlip(true, null),
+                        () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null),
                         robot.chassis::isCurrentTranslationalTaskComplete,
                         robot.positionEstimator::getRotation2D, () -> new Rotation2D(0)
                 )
@@ -92,7 +93,7 @@ public class FrontFieldAutoFourPiecesSloppedGrab extends AutoStageProgram  {
                     robot.claw.setLeftClawClosed(true, null);
                     robot.claw.setRightClawClosed(true, null);
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
-                    robot.claw.setFlip(false, null);
+                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
                 },
                 ()->{}, ()->{}
         ));
@@ -112,7 +113,7 @@ public class FrontFieldAutoFourPiecesSloppedGrab extends AutoStageProgram  {
                 () -> true,
                 () -> sequentialCommandFactory.getBezierCurvesFromPathFile("move back and grab third from stack slopped").get(0),
                 () -> {
-                    robot.claw.setFlip(false, null);
+                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.GRAB_STACK, null);
                 },
                 () -> {}, () -> {},
@@ -134,7 +135,7 @@ public class FrontFieldAutoFourPiecesSloppedGrab extends AutoStageProgram  {
                         sequentialCommandFactory.getBezierCurvesFromPathFile("move back and grab third from stack slopped").get(1).getPositionWithLERP(1)
                 ), null),
                 () -> {
-                    robot.claw.setFlip(true, null);
+                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null);
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.GRAB_STACK_LOW, null);
                 },
                 () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.chassis.isCurrentRotationalTaskComplete(),
@@ -145,7 +146,7 @@ public class FrontFieldAutoFourPiecesSloppedGrab extends AutoStageProgram  {
         super.commandSegments.add(grabFromStack);
         super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
         super.commandSegments.add(sequentialCommandFactory.justDoIt(() -> {
-            robot.claw.setFlip(false, null);
+            robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
             if (allianceSide == Robot.Side.BLUE) robot.claw.setLeftClawClosed(false, null);
             else robot.claw.setRightClawClosed(false, null);
         }));
@@ -166,7 +167,7 @@ public class FrontFieldAutoFourPiecesSloppedGrab extends AutoStageProgram  {
                         Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
                         sequentialCommandFactory.getBezierCurvesFromPathFile("grab fourth from stack slopped").get(0).getPositionWithLERP(1)
                 ), null),
-                () -> robot.claw.setFlip(true, null),
+                () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null),
                 () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.chassis.isCurrentRotationalTaskComplete(),
                 () -> new Rotation2D(Math.toRadians(30)), () -> new Rotation2D(Math.toRadians(30))
         ));

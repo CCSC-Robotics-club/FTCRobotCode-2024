@@ -104,7 +104,7 @@ public abstract class Robot {
         this.distanceSensor = new ThreadedSensor(() -> hardwareMap.get(DistanceSensor.class, "distance").getDistance(DistanceUnit.CM));
         this.sensors.put("distance", distanceSensor);
         this.distanceSensorBack = new ThreadedSensor(() -> hardwareMap.get(DistanceSensor.class, "distanceBack").getDistance(DistanceUnit.CM));
-        // this.sensors.put("distance back", distanceSensorBack);
+        this.sensors.put("distance back", distanceSensorBack);
 
         imu.initialize(this.hardwareConfigs.imuParameter);
         if (hardwareConfigs.alternativeIMUParameter != null) {

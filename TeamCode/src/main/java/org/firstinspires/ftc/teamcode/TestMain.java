@@ -61,7 +61,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        profiledArmTuning();
+        tofDistanceSensorTest();
     }
 
     private void scoringSettingsTuning() {
@@ -1116,7 +1116,7 @@ public class TestMain extends LinearOpMode {
         waitForStart();
 
         final double powerRate = -1;
-        double servoCurrentDesiredPosition = RobotConfig.FlippableDualClawConfigs.flipperHoldPosition;
+        double servoCurrentDesiredPosition = 0.5;
         int startingPos = armMotor.getCurrentPosition();
         while (!isStopRequested() && opModeIsActive()) {
             double power = gamepad1.left_stick_y * powerRate;

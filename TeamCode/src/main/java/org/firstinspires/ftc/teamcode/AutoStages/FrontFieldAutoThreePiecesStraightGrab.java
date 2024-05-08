@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.AutoStages;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
+import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
@@ -43,7 +44,7 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
                     () -> null,
                     allianceSide == Robot.Side.BLUE ? () -> robot.claw.setLeftClawClosed(true, null) : () -> robot.claw.setRightClawClosed(true, null),
                     () -> {},
-                    () -> robot.claw.setFlip(false, null),
+                    () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null),
                     allianceSide == Robot.Side.BLUE ? robot.claw::leftClawInPosition : robot.claw::rightClawInPosition,
                     () -> new Rotation2D(0), () -> new Rotation2D(0)),
                 grabFromStackInner = new SequentialCommandSegment(
@@ -51,11 +52,11 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
                     () -> null,
                     allianceSide == Robot.Side.BLUE ? () -> robot.claw.setRightClawClosed(true, null) : () -> robot.claw.setLeftClawClosed(true, null),
                     () -> {},
-                    () -> robot.claw.setFlip(false, null),
+                    () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null),
                     allianceSide == Robot.Side.BLUE ? robot.claw::leftClawInPosition : robot.claw::rightClawInPosition,
                     () -> new Rotation2D(0), () -> new Rotation2D(0));
 
-        robot.claw.setFlip(false, null);
+        robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
         robot.claw.setLeftClawClosed(true, null);
         robot.claw.setRightClawClosed(true, null);
 
@@ -74,7 +75,7 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
                             }
                         },
                         () -> {}, () -> {},
-                        () -> robot.claw.setFlip(true, null),
+                        () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null),
                         robot.chassis::isCurrentTranslationalTaskComplete,
                         robot.positionEstimator::getRotation2D, () -> new Rotation2D(0)
                 )
@@ -96,7 +97,7 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
                     robot.claw.setLeftClawClosed(true, null);
                     robot.claw.setRightClawClosed(true, null);
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
-                    robot.claw.setFlip(false, null);
+                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
                 },
                 ()->{}, ()->{}
         ));
@@ -116,7 +117,7 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
                 () -> true,
                 () -> sequentialCommandFactory.getBezierCurvesFromPathFile("move back and grab third from stack").get(0),
                 () -> {
-                    robot.claw.setFlip(false, null);
+                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.GRAB_STACK, null);
                 },
                 () -> {}, () -> {},
@@ -139,7 +140,7 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
                                 sequentialCommandFactory.getBezierCurvesFromPathFile("move back and grab third from stack").get(1).getPositionWithLERP(1).getX(),
                                 robot.positionEstimator.getCurrentPosition().getY() + stackDistanceToBackWall - robot.distanceSensorBack.getSensorReading() - 1
                         })), null),
-                () -> robot.claw.setFlip(true, null),
+                () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null),
                 () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.distanceSensorBack.getSensorReading() < stackDistanceToBackWall + 1,
                 () -> new Rotation2D(0), () -> new Rotation2D(0)
         ));
@@ -147,7 +148,7 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
         super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
         super.commandSegments.add(grabFromStackOuter);
         super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
-        super.commandSegments.add(sequentialCommandFactory.justDoIt(() -> robot.claw.setFlip(false, null)));
+        super.commandSegments.add(sequentialCommandFactory.justDoIt(() -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null)));
 
         super.commandSegments.add(new SequentialCommandSegment(
                 () -> true,
@@ -167,7 +168,7 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
                                 sequentialCommandFactory.getBezierCurvesFromPathFile("grab fourth from stack").get(0).getPositionWithLERP(1).getX(),
                                 robot.positionEstimator.getCurrentPosition().getY() + stackDistanceToBackWall - robot.distanceSensorBack.getSensorReading() - 1
                         })), null),
-                () -> robot.claw.setFlip(true, null),
+                () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null),
                 () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.distanceSensorBack.getSensorReading() < stackDistanceToBackWall + 1,
                 () -> new Rotation2D(0), () -> new Rotation2D(0)
         ));
@@ -179,7 +180,7 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
         super.commandSegments.add(sequentialCommandFactory.followSingleCurve(
                 "score third and fourth", 0,
                 new Rotation2D(0),
-                () -> robot.claw.setFlip(false, null), () -> {}, () -> {}
+                () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null), () -> {}, () -> {}
         ));
 
         super.commandSegments.add(sequentialCommandFactory.followSingleCurve(

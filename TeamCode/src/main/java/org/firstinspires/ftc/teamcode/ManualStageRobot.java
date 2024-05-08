@@ -45,5 +45,7 @@ public class ManualStageRobot extends Robot {
         super.robotServices.add(climbService);
 
         super.initializeRobot();
+
+        super.distanceSensorBack.setEnabled(false);
     }
 }

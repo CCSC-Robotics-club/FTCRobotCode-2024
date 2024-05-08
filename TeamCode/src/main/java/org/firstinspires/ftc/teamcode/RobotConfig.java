@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.DoubleSupplier;
 
 public final class RobotConfig {
     public static final HardwareConfigs hardwareConfigs_2024OffSeason = new HardwareConfigs( // backup machine
@@ -212,19 +213,20 @@ public final class RobotConfig {
 
         public static final double
                 /* pid */
-                maxPowerWhenMovingForward = 0.6,
-                maxPowerWhenMovingBackward = 0.6,
+                maxPowerWhenMovingForward = 0.8,
+                maxPowerWhenMovingBackward = 0.8,
                 errorStartDecelerate = 200,
-                powerNeededToMoveForward = 0.1,
-                powerNeededToMoveBackward = 0.1,
-                errorTolerance = 40,
+                powerNeededToMoveForward = 0.15,
+                powerNeededToMoveBackward = 0.15,
+                errorTolerance = 30,
                 /* settings */
                 maxExtendValue = 1000,
-                intakeValue = 520 / maxExtendValue;
+                intakeValue = 520 / maxExtendValue,
+                grabStackValue = 200 / maxExtendValue;
+
     }
 
     public static final class FlippableDualClawConfigs {
-        public static final double flipperIntakePosition = 0, flipperHoldPosition = 0.6;
 
         public static final double leftClawClosePosition = 0.46, leftClawOpenPosition = 0.84, rightClawClosedPosition = 0.82, rightClawOpenPosition = 0.47;
 
