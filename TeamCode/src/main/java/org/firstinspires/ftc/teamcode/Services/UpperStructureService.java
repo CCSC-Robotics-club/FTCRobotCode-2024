@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Extend;
 import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
+import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 
@@ -84,7 +85,7 @@ public class UpperStructureService extends RobotService {
                 claw.setAutoClosing(false, this);
 
                 if (Math.abs(copilotGamePad.left_stick_y) > 0.05)
-                    desiredScoringHeight += -1 * dt * copilotGamePad.left_stick_y;
+                    desiredScoringHeight += -0.5 * dt * copilotGamePad.left_stick_y;
                 desiredScoringHeight = Math.max(Math.min(desiredScoringHeight, 1), 0);
 
                 chassisService.setDesiredScoringHeight(desiredScoringHeight);
@@ -109,8 +110,8 @@ public class UpperStructureService extends RobotService {
                 if (claw.leftClawInPosition() && claw.rightClawInPosition() && claw.flipInPosition()) {
                     claw.setFlip(FlippableDualClaw.FlipperPosition.SCORE, this);
                     arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
-                    this.armInPositionDuringCurrentProcess |= arm.isArmInPosition() || chassisService.stickToWallComplete();
-                    // this.armInPositionDuringCurrentProcess |= arm.isArmInPosition() && chassisService.stickToWallComplete();
+                    // this.armInPositionDuringCurrentProcess |= arm.isArmInPosition() || chassisService.stickToWallComplete();
+                    this.armInPositionDuringCurrentProcess |= arm.isArmInPosition() && chassisService.stickToWallComplete();
                 }
                 openClawOnDemanded();
 

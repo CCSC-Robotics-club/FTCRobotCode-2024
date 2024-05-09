@@ -195,10 +195,10 @@ public final class RobotConfig {
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
 //                correspondingArmEncoderValuesNormal = new double[] {1600, 1500, 1400, 1300, 1200},
-                correspondingArmEncoderValues = new double[] {395, 370, 360, 350, 330},
-                correspondingExtendValues = new double[] {0, 320, 700, 900, 1200},
-                correspondingServoPositions = new double[] {0.6, 0.7, 0.75, 0.8, 0.82},
-                correspondingDistanceToWall = new double[] {20, 15, 10, 6, 3};
+                correspondingArmEncoderValues = new double[] {390, 365, 345, 335, 320},
+                correspondingExtendValues = new double[] {0, 400, 850, 1050, 1400},
+                correspondingServoPositions = new double[] {0.5, 0.6, 0.78, 0.8, 0.72},
+                correspondingDistanceToWall = new double[] {20.5, 16.5, 12.5, 8.5, 4.5};
 
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),

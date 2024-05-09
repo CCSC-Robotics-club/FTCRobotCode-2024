@@ -61,7 +61,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        conceptColorSensorDetection();
+        scoringSettingsTuning();
     }
 
     private void scoringSettingsTuning() {
