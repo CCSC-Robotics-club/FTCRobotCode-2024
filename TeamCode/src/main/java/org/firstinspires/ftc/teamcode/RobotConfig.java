@@ -297,7 +297,7 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileX = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.03, // for precise wall aiming
+                0.03,
                 30,
                 1,
                 0.16,
@@ -335,7 +335,7 @@ public final class RobotConfig {
 
         public static final double errorAsTaskRoughlyFinished = 12;
 
-        public static final double autoStageMaxVelocity = 135;
+        public static final double autoStageMaxVelocity = 160;
         public static final double autoStageMaxAcceleration = 200;
         public static final double autoStageMaxAngularVelocity = Math.toRadians(180);
         public static final double autoStageInAdvanceTime = 0.15;

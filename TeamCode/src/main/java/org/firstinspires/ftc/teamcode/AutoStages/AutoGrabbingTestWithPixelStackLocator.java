@@ -23,7 +23,7 @@ public class AutoGrabbingTestWithPixelStackLocator extends AutoStageProgram {
         /*
          * the position at which the center of the claw is above the stack
          * */
-        final Vector2D stackCenterPositionDefault = new Vector2D(new double[] {0, -50});
+        final Vector2D stackCenterPositionDefault = new Vector2D(new double[] {0, -80});
 
         super.commandSegments.addAll(PixelStackGrabbingCommand.getCommandSegmentSegments(robot, sequentialCommandFactory, stackCenterPositionDefault));
     }

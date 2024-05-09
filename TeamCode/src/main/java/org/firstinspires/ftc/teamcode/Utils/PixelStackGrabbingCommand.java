@@ -16,12 +16,19 @@ public class PixelStackGrabbingCommand {
 
     public static List<SequentialCommandSegment> getCommandSegmentSegments(Robot robot, SequentialCommandFactory commandFactory, Vector2D stackCenterPositionDefault) {
         final List<SequentialCommandSegment> commandSegments = new ArrayList<>();
-        final double clawWidth = 6, grabbingDistanceToWall = 13, colorSensorThreshold = 1000, colorSensorPositionOnRobot = -8, scanningDistanceToWall = 17;
+        final double clawWidth = 6, grabbingDistanceToWall = 13, colorSensorThreshold = 2000, colorSensorPositionOnRobot = -8, scanningDistanceToWall = 17;
 
         final Vector2D scanningStartPosition = stackCenterPositionDefault.addBy(new Vector2D(new double[] {20, scanningDistanceToWall}));
+
+        /* step 1: drive a smooth curve to the starting point of the spike-mark detecting process */
         commandSegments.add(new SequentialCommandSegment(
                 () -> true,
-                () -> new BezierCurve(robot.positionEstimator.getCurrentPosition(), scanningStartPosition.addBy(new Vector2D(new double[] {20, 0})), scanningStartPosition),
+                () -> new BezierCurve(
+                        stackCenterPositionDefault.addBy(new Vector2D(new double[] {0, 80})),
+                        stackCenterPositionDefault.addBy(new Vector2D(new double[] {0, 50})),
+                        scanningStartPosition.addBy(new Vector2D(new double[] {50, 0})),
+                        scanningStartPosition
+                ),
                 () -> {
                     robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
                     robot.claw.setRightClawClosed(true, null);
@@ -34,13 +41,14 @@ public class PixelStackGrabbingCommand {
                     robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null);
                     robot.extend.setExtendPosition(RobotConfig.ExtendConfigs.grabStackValue, null);
                 },
-                robot.chassis::isCurrentTranslationalTaskRoughlyComplete,
+                robot.chassis::isCurrentTranslationalTaskComplete,
                 () -> new Rotation2D(0),
                 () -> new Rotation2D(0)
         ));
 
         final double startingPositionX = scanningStartPosition.getX();
 
+        /* step 2: move along a horizontal path with distance to wall 17cm (using distance sensor) and find the spike mark */
         final double[] actualStackCenterPositionX = new double[] {stackCenterPositionDefault.getX()};
         commandSegments.add(new SequentialCommandSegment(
                 () -> true,
@@ -56,7 +64,8 @@ public class PixelStackGrabbingCommand {
                 () -> {},
                 () -> {
                     if (robot.spikeMarkDetectionSensor.getSensorReading() > colorSensorThreshold)
-                        actualStackCenterPositionX[0] = robot.positionEstimator.getCurrentPosition().getX() + colorSensorPositionOnRobot;
+                        throw new RuntimeException("spike mark detected!!!");
+                        // actualStackCenterPositionX[0] = robot.positionEstimator.getCurrentPosition().getX() + colorSensorPositionOnRobot;
                 },
                 () -> {},
                 robot.chassis::isCurrentTranslationalTaskComplete,
@@ -64,6 +73,7 @@ public class PixelStackGrabbingCommand {
                 () -> new Rotation2D(0)
         ));
 
+        /* step 3: line up the lefter claw with the stack */
         commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> null,
@@ -84,6 +94,9 @@ public class PixelStackGrabbingCommand {
                 () -> new Rotation2D(0)
         ));
 
+        commandSegments.add(commandFactory.waitFor(114514));
+
+        /* step 4: drive back to the grabbing distance */
         commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> null,

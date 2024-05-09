@@ -61,7 +61,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        tofDistanceSensorTest();
+        conceptColorSensorDetection();
     }
 
     private void scoringSettingsTuning() {
@@ -1158,7 +1158,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void conceptColorSensorDetection() {
-        ColorSensor colorSensor = hardwareMap.get(ColorSensor.class, "colorLeft");
+        ColorSensor colorSensor = hardwareMap.get(ColorSensor.class, "markSensor");
 
         waitForStart();
 

@@ -105,8 +105,8 @@ public abstract class Robot {
         this.sensors.put("distance", distanceSensor);
         this.distanceSensorBack = new ThreadedSensor(() -> hardwareMap.get(DistanceSensor.class, "distanceBack").getDistance(DistanceUnit.CM));
         this.sensors.put("distance back", distanceSensorBack);
-        this.spikeMarkDetectionSensor = new ThreadedSensor(() -> 0, 0);
-        this.sensors.put("spike mark sensor", spikeMarkDetectionSensor);
+        this.spikeMarkDetectionSensor = new ThreadedSensor(() -> hardwareMap.get(ColorSensor.class, "markSensor").alpha(), 0);
+        // this.sensors.put("spike mark sensor", spikeMarkDetectionSensor);
 
         imu.initialize(this.hardwareConfigs.imuParameter);
         if (hardwareConfigs.alternativeIMUParameter != null) {
