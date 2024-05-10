@@ -98,17 +98,13 @@ public class PixelStackGrabbingCommand {
         final List<SequentialCommandSegment> commandSegments = new ArrayList<>();
         final double clawWidth = 6.5, grabbingDistanceToWall = 13, colorSensorThreshold = 2000, colorSensorPositionOnRobot = -9, scanningDistanceToWall = 13.5;
 
-        final Vector2D scanningStartPosition = stackCenterPositionDefault.addBy(new Vector2D(new double[] {20, scanningDistanceToWall}));
+        final Vector2D scanningStartPosition = stackCenterPositionDefault.addBy(new Vector2D(new double[] {30, scanningDistanceToWall}));
 
+        final double startingPositionX = scanningStartPosition.getX();
         /* step 1: drive a smooth curve to the starting point of the spike-mark detecting process */
         commandSegments.add(new SequentialCommandSegment(
                 () -> true,
-                () -> new BezierCurve(
-                        stackCenterPositionDefault.addBy(new Vector2D(new double[] {0, 80})),
-//                        stackCenterPositionDefault.addBy(new Vector2D(new double[] {0, 50})),
-//                        scanningStartPosition.addBy(new Vector2D(new double[] {50, 0})),
-                        scanningStartPosition
-                ),
+                () -> null,
                 () -> {
                     robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
                     robot.claw.setRightClawClosed(true, null);
@@ -116,7 +112,13 @@ public class PixelStackGrabbingCommand {
                     robot.extend.setExtendPosition(0, null);
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, null);
                 },
-                () -> {},
+                () -> {
+                    final double wallPositionY = robot.distanceSensorBack.getSensorReading() < 50 ?
+                            robot.positionEstimator.getCurrentPosition().getY() - robot.distanceSensorBack.getSensorReading()
+                            : stackCenterPositionDefault.getY();
+                    robot.chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+                            new Vector2D(new double[] {startingPositionX, wallPositionY + scanningDistanceToWall})), null);
+                },
                 () -> {
                     robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null);
                     robot.extend.setExtendPosition(RobotConfig.ExtendConfigs.grabStackValue, null);
@@ -126,18 +128,23 @@ public class PixelStackGrabbingCommand {
                 () -> new Rotation2D(0)
         ));
 
-        final double startingPositionX = scanningStartPosition.getX();
+
 
         /* step 2: move along a horizontal path with distance to wall 17cm (using distance sensor) and find the spike mark */
         final double[] actualStackCenterPositionX = new double[] {stackCenterPositionDefault.getX()};
         final Vector2D scanningStartingPosition = new Vector2D(new double[] {startingPositionX, stackCenterPositionDefault.getY()+ scanningDistanceToWall}),
-                scanningEndingPosition = new Vector2D(new double[] {0, stackCenterPositionDefault.getY() + scanningDistanceToWall});
+                scanningEndingPosition = new Vector2D(new double[] {stackCenterPositionDefault.getX(), stackCenterPositionDefault.getY() + scanningDistanceToWall});
         commandSegments.add(new SequentialCommandSegment(
                 () -> true,
-                () -> new BezierCurve(
-                        scanningStartingPosition,
-                        scanningEndingPosition
-                ),
+                () -> {
+                    final double wallPositionY = robot.distanceSensorBack.getSensorReading() < 50 ?
+                            robot.positionEstimator.getCurrentPosition().getY() - robot.distanceSensorBack.getSensorReading()
+                            : stackCenterPositionDefault.getY();
+                    return new BezierCurve(
+                            new Vector2D(new double[] {startingPositionX, wallPositionY + scanningDistanceToWall}),
+                            new Vector2D(new double[] {stackCenterPositionDefault.getX(), wallPositionY + scanningDistanceToWall})
+                    );
+                },
                 () -> {},
                 () -> {
                     final double wallPositionY = robot.distanceSensorBack.getSensorReading() < 60 ?
@@ -146,7 +153,6 @@ public class PixelStackGrabbingCommand {
                     scanningStartingPosition.update(new double[] {
                             scanningStartingPosition.getX(), wallPositionY + scanningDistanceToWall
                     });
-
                     scanningEndingPosition.update(new double[] {
                             scanningEndingPosition.getX(), wallPositionY + scanningDistanceToWall
                     });
