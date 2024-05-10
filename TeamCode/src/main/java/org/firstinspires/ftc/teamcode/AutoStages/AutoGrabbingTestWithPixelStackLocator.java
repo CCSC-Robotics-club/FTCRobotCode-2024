@@ -19,12 +19,22 @@ public class AutoGrabbingTestWithPixelStackLocator extends AutoStageProgram {
 
     @Override
     public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
-        final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, super.allianceSide, robot.hardwareMap);
+        // distance from wall to first stack: (18 + 131.5, 20)
+        final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "test path", new Rotation2D(0), super.allianceSide, robot.hardwareMap);
         /*
          * the position at which the center of the claw is above the stack
          * */
-        final Vector2D stackCenterPositionDefault = new Vector2D(new double[] {0, -80});
+        final Vector2D stackCenterPositionDefault = new Vector2D(new double[] {18 + 135, 20});
 
-        super.commandSegments.addAll(PixelStackGrabbingCommand.getCommandSegmentSegments(robot, sequentialCommandFactory, stackCenterPositionDefault));
+        super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
+        super.commandSegments.add(sequentialCommandFactory.justDoIt(() -> {
+                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
+                    robot.claw.setLeftClawClosed(true, null);
+                    robot.claw.setRightClawClosed(true, null);
+        }));
+        super.commandSegments.addAll(sequentialCommandFactory.followPathFacing("test path", new Rotation2D(0)));
+        super.commandSegments.addAll(PixelStackGrabbingCommand.getCommandSegmentSegmentsWithColorSensor(robot, robot.spikeMarkDetectionSensor, sequentialCommandFactory, stackCenterPositionDefault));
+        super.commandSegments.addAll(sequentialCommandFactory.followPathFacing("test path 2", new Rotation2D(0)));
+
     }
 }

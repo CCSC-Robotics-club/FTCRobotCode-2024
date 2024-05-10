@@ -305,9 +305,10 @@ public class PilotChassisService extends RobotService {
     }
 
     private boolean updateWallPositionTOF(double distanceSensorMaxDistance) {
+        final Vector2D relativeFieldPositionToWall = chassis.getRelativeFieldPositionToWall();
         final double distanceSensorReading = distanceSensor.getSensorReading(),
-                newWallPositionX = chassis.isVisualNavigationAvailable() ?
-                        chassis.getChassisEncoderPosition().getX() - chassis.getRelativeFieldPositionToWall().getX():
+                newWallPositionX = relativeFieldPositionToWall != null?
+                        chassis.getChassisEncoderPosition().getX() - relativeFieldPositionToWall.getX():
                         previousWallPosition.getX();
         final Vector2D newWallPosition = new Vector2D(
                 new double[]{

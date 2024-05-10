@@ -27,6 +27,8 @@ public class AutoStageRobot extends Robot {
 
         autoStageProgram.scheduleCommands(this, telemetrySender);
         autoProgramRunnerService.setCommandSegments(autoStageProgram.commandSegments);
+        super.colorLeft.setEnabled(false);
+        super.colorRight.setEnabled(false);
     }
 
     @Override

@@ -61,7 +61,14 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        scoringSettingsTuning();
+        tofDistanceSensorTest();
+    }
+
+    private void ledTest() {
+        final Servo led = hardwareMap.get(Servo.class, "ledLeft");
+        waitForStart();
+        while (!isStopRequested() && opModeIsActive())
+            led.setPosition(gamepad1.right_stick_y);
     }
 
     private void scoringSettingsTuning() {

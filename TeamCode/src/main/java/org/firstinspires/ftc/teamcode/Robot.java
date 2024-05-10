@@ -50,7 +50,7 @@ public abstract class Robot {
     protected final boolean useMultiThread;
 
     private final EncoderMotorMechanism frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
-    public ThreadedSensor distanceSensor, distanceSensorBack, spikeMarkDetectionSensor;
+    public ThreadedSensor distanceSensor, distanceSensorBack, spikeMarkDetectionSensor, colorLeft, colorRight;
     public Chassis chassis;
 //    public IntakeLegacy intake;
 //    public ArmLegacy arm;
@@ -106,7 +106,7 @@ public abstract class Robot {
         this.distanceSensorBack = new ThreadedSensor(() -> hardwareMap.get(DistanceSensor.class, "distanceBack").getDistance(DistanceUnit.CM));
         this.sensors.put("distance back", distanceSensorBack);
         this.spikeMarkDetectionSensor = new ThreadedSensor(() -> hardwareMap.get(ColorSensor.class, "markSensor").alpha(), 0);
-        // this.sensors.put("spike mark sensor", spikeMarkDetectionSensor);
+        this.sensors.put("spike mark sensor", spikeMarkDetectionSensor);
 
         imu.initialize(this.hardwareConfigs.imuParameter);
         if (hardwareConfigs.alternativeIMUParameter != null) {
@@ -193,8 +193,8 @@ public abstract class Robot {
                 indicatorLightLeft =
                         // new ThreadedMotor(hardwareMap.get(DcMotor.class, "indicatorLightRight"));
                         indicatorLightRight;
-        final ThreadedSensor colorLeft = new ThreadedSensor(() -> hardwareMap.get(ColorSensor.class, "colorLeft").alpha()),
-                colorRight = new ThreadedSensor(() -> hardwareMap.get(ColorSensor.class, "colorRight").alpha());
+        colorLeft = new ThreadedSensor(() -> hardwareMap.get(ColorSensor.class, "colorLeft").alpha());
+        colorRight = new ThreadedSensor(() -> hardwareMap.get(ColorSensor.class, "colorRight").alpha());
         servos.add(flip);
         servos.add(clawLeft);
         servos.add(clawRight);

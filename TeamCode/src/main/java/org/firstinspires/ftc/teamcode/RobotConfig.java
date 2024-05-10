@@ -267,7 +267,7 @@ public final class RobotConfig {
 
     public static final class ChassisConfigs {
         public static final LookUpTable wheelPowerLookUpTable = new LookUpTable(
-                new double[] {0, 0.04, 0.5, 0.9, 1}, // encoder velocity / max velocity
+                new double[] {0, 0.03, 0.5, 0.9, 1}, // encoder velocity / max velocity
                 new double[] {0, 0.08, 0.4, 0.8, 1} // motor power
         );
 
@@ -306,16 +306,16 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileY = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.03,
+                0.02,
                 30,
                 1,
-                0.16,
+                0.18,
                 0, 0
         );
 
         /** the maximum chassis speed when using visual navigation */
-        public static final double lowSpeedModeMaximumMotorSpeedConstrain = 0.8;
-        public static final double lowSpeedModeStickSensitivity = 0.6;
+        public static final double lowSpeedModeMaximumMotorSpeedConstrain = 0.6;
+        public static final double lowSpeedModeStickSensitivity = 0.45;
 
         /** a power constrain to the motors to not push them too hard */
         public static final double ordinaryModeMaximumMotorSpeedConstrain = 1.4;

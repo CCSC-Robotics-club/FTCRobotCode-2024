@@ -363,7 +363,7 @@ public class SequentialCommandFactory {
 
 
     public List<SequentialCommandSegment> followPath(String pathName, Runnable beginning, Runnable periodic, Runnable ending) {
-        return followPath(pathName, new Rotation2D[getBezierCurvesFromPathFile(pathName).size()+1], beginning, periodic, ending);
+        return followPath(pathName, new Rotation2D[getBezierCurvesFromPathFile(pathName).size()], beginning, periodic, ending);
     }
 
     public List<SequentialCommandSegment> followPath(String pathName, Rotation2D[] robotRotationTargets, Runnable beginning, Runnable periodic, Runnable ending) {

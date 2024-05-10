@@ -47,5 +47,6 @@ public class ManualStageRobot extends Robot {
         super.initializeRobot();
 
         super.distanceSensorBack.setEnabled(false);
+        super.spikeMarkDetectionSensor.setEnabled(false);
     }
 }
