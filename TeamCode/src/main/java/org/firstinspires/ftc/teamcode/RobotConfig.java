@@ -222,7 +222,7 @@ public final class RobotConfig {
                 /* settings */
                 maxExtendValue = 1000,
                 intakeValue = 520 / maxExtendValue,
-                grabStackValue = 200 / maxExtendValue;
+                grabStackValue = 180 / maxExtendValue;
 
     }
 
@@ -268,7 +268,7 @@ public final class RobotConfig {
     public static final class ChassisConfigs {
         public static final LookUpTable wheelPowerLookUpTable = new LookUpTable(
                 new double[] {0, 0.03, 0.5, 0.9, 1}, // encoder velocity / max velocity
-                new double[] {0, 0.08, 0.4, 0.8, 1} // motor power
+                new double[] {0, 0.1, 0.4, 0.8, 1} // motor power
         );
 
 
@@ -297,10 +297,10 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileX = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.03,
-                30,
+                0.02,
+                25,
                 1,
-                0.16,
+                0.18,
                 0, 0
         );
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileY = new EnhancedPIDController.StaticPIDProfile(
@@ -309,7 +309,7 @@ public final class RobotConfig {
                 0.02,
                 30,
                 1,
-                0.18,
+                0.2,
                 0, 0
         );
 
