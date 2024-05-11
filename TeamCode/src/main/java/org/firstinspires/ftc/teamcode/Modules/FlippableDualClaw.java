@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedLED;
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedMotor;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ProfiledServo;
@@ -23,13 +24,13 @@ public class FlippableDualClaw extends RobotModule {
 
 
     private final ProfiledServo flip, leftClaw, rightClaw;
+    private final ThreadedLED leftIndicatorLight, rightIndicatorLight;
     private final ThreadedSensor detectorLeft, detectorRight;
-    private final ThreadedMotor leftIndicatorLight, rightIndicatorLight;
 
     private boolean closeLeftClaw, closeRightClaw, autoClosing;
     private FlipperPosition flipperPosition;
 
-    public FlippableDualClaw(ProfiledServo flip, ProfiledServo leftClaw, ProfiledServo rightClaw, ThreadedSensor detectorLeft, ThreadedSensor detectorRight, ThreadedMotor leftIndicatorLight, ThreadedMotor rightIndicatorLight) {
+    public FlippableDualClaw(ProfiledServo flip, ProfiledServo leftClaw, ProfiledServo rightClaw, ThreadedSensor detectorLeft, ThreadedSensor detectorRight, ThreadedLED leftIndicatorLight, ThreadedLED rightIndicatorLight) {
         super("claw");
         this.flip = flip;
         this.leftClaw = leftClaw;
@@ -75,9 +76,9 @@ public class FlippableDualClaw extends RobotModule {
         rightClaw.update(dt);
         flip.update(dt);
 
-        final double blink = 0.2 * Math.sin(((System.currentTimeMillis()*2) % 1000) / 1000.0f * Math.PI);
-        leftIndicatorLight.setPower(leftClawDetected ? (autoClosing ? blink : 0.5) : 0);
-        rightIndicatorLight.setPower(rightClawDetected ? (autoClosing ? blink : 0.5) : 0);
+        final boolean blink = Math.sin(System.currentTimeMillis() / 1000.0f * 2) > 0;
+        leftIndicatorLight.setEnabled(leftClawDetected && (!autoClosing || blink));
+        rightIndicatorLight.setEnabled(rightClawDetected && (!autoClosing || blink));
     }
 
     @Override
@@ -90,8 +91,8 @@ public class FlippableDualClaw extends RobotModule {
         closeLeftClaw = closeRightClaw = autoClosing = false;
         this.flipperPosition = FlipperPosition.HOLD;
 
-        leftIndicatorLight.setPower(0);
-        rightIndicatorLight.setPower(0);
+        leftIndicatorLight.setEnabled(false);
+        rightIndicatorLight.setEnabled(false);
 
         flip.setDesiredPosition(flipperPositions.get(FlipperPosition.HOLD));
         flip.update(10);

@@ -157,11 +157,11 @@ public final class RobotConfig {
 
         /** simple arm controller */
         public static final double
-                maxPowerWhenMovingUp = 0.8,
-                maxPowerWhenMovingDown = 0.7,
-                errorStartDecelerate = 150,
-                powerNeededToMoveUp = 0.3,
-                powerNeededToMoveDown = 0.2,
+                maxPowerWhenMovingUp = 1,
+                maxPowerWhenMovingDown = 0.8,
+                errorStartDecelerate = 200,
+                powerNeededToMoveUp = 0.25,
+                powerNeededToMoveDown = 0.15,
                 errorTolerance = 30;
         public static final double errorAsArmInPosition = 20;
 

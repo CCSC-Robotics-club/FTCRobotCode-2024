@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -25,6 +26,7 @@ import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.HuskyAprilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedEncoder;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedIMU;
+import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedLED;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EncoderMotorMechanism;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedMotor;
 import org.firstinspires.ftc.teamcode.Utils.PositionEstimator;
@@ -189,10 +191,8 @@ public abstract class Robot {
         final ProfiledServo flip = new ProfiledServo(hardwareMap.get(Servo.class, "flip"), 0.8),
                 clawLeft = new ProfiledServo(hardwareMap.get(Servo.class, "clawLeft"), 1.4),
                 clawRight = new ProfiledServo(hardwareMap.get(Servo.class, "clawRight"), 1.4);
-        final ThreadedMotor indicatorLightRight = new ThreadedMotor(hardwareMap.get(DcMotor.class, "indicatorLightRight")),
-                indicatorLightLeft =
-                        // new ThreadedMotor(hardwareMap.get(DcMotor.class, "indicatorLightRight"));
-                        indicatorLightRight;
+        final ThreadedLED indicatorLightLeft = new ThreadedLED(hardwareMap.get(LED.class, "lightLeft")),
+                indicatorLightRight = new ThreadedLED(hardwareMap.get(LED.class, "lightRight"));
         colorLeft = new ThreadedSensor(() -> hardwareMap.get(ColorSensor.class, "colorLeft").alpha());
         colorRight = new ThreadedSensor(() -> hardwareMap.get(ColorSensor.class, "colorRight").alpha());
         servos.add(flip);
@@ -200,8 +200,6 @@ public abstract class Robot {
         servos.add(clawRight);
         sensors.put("color-left", colorLeft);
         sensors.put("color-right", colorRight);
-        motors.add(indicatorLightLeft);
-        motors.add(indicatorLightRight);
         claw = new FlippableDualClaw(
                 flip, clawLeft, clawRight,
                 colorLeft, colorRight,
@@ -211,7 +209,7 @@ public abstract class Robot {
 
         /* arm */
         final ThreadedMotor armMotor1 = new ThreadedMotor(hardwareMap.get(DcMotor.class, "arm")),
-                armMotor2 = new ThreadedMotor(hardwareMap.get(DcMotor.class, "arm2"));
+                armMotor2 = new ThreadedMotor(hardwareMap.get(DcMotor.class, "arm"));
         final ThreadedEncoder armEncoder = new ThreadedEncoder(hardwareMap.get(DcMotorEx.class, "arm"));
         final ThreadedSensor armLimit = new ThreadedSensor(() -> hardwareMap.get(TouchSensor.class, "armLimit").isPressed() ? 1:0);
         motors.add(armMotor1);

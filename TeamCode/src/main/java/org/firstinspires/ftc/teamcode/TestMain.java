@@ -9,8 +9,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.LED;
+import com.qualcomm.robotcore.hardware.PWMOutput;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -62,14 +65,17 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        simpleArmTuning();
+        ledTest();
     }
 
     private void ledTest() {
-        final Servo led = hardwareMap.get(Servo.class, "ledLeft");
+        final LED lightLeft = hardwareMap.get(LED.class, "lightLeft"),
+                lightRight = hardwareMap.get(LED.class, "lightLeft");
         waitForStart();
-        while (!isStopRequested() && opModeIsActive())
-            led.setPosition(gamepad1.right_stick_y);
+        while (!isStopRequested() && opModeIsActive()) {
+            lightRight.enable(gamepad1.a);
+            lightLeft.enable(gamepad1.b);
+        }
     }
 
     private void scoringSettingsTuning() {
@@ -82,6 +88,8 @@ public class TestMain extends LinearOpMode {
         Servo flip = hardwareMap.get(Servo.class, "flip");
 
         waitForStart();
+
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         final double extendEncoderFactor = RobotConfig.ExtendConfigs.extendEncoderReversed ? -1: 1,
                 armEncoderFactor = RobotConfig.ArmConfigs.encoderReversed ? -1: 1;
