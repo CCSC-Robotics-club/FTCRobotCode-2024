@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Services.ClimbService;
+import org.firstinspires.ftc.teamcode.Services.ClimbAndPlaneService;
 import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
 import org.firstinspires.ftc.teamcode.Services.UpperStructureService;
 import org.firstinspires.ftc.teamcode.Utils.DriverGamePad;
@@ -41,8 +41,8 @@ public class ManualStageRobot extends Robot {
         final UpperStructureService upperStructureService = new UpperStructureService(arm, extend, claw, chassisService, copilotGamepad);
         super.robotServices.add(upperStructureService);
 
-        final ClimbService climbService = new ClimbService(climb, copilotGamepad);
-        super.robotServices.add(climbService);
+        final ClimbAndPlaneService climbAndPlaneService = new ClimbAndPlaneService(climbAndPlane, copilotGamepad);
+        super.robotServices.add(climbAndPlaneService);
 
         super.initializeRobot();
 

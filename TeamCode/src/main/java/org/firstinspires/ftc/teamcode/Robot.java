@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
-import org.firstinspires.ftc.teamcode.Modules.Climb;
+import org.firstinspires.ftc.teamcode.Modules.ClimbAndPlane;
 import org.firstinspires.ftc.teamcode.Modules.Extend;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAnglePixelCamera;
@@ -61,7 +61,7 @@ public abstract class Robot {
     public Extend extend;
     public FlippableDualClaw claw;
 
-    public Climb climb;
+    public ClimbAndPlane climbAndPlane;
 
     public FixedAnglePixelCamera pixelCamera;
     public PositionEstimator positionEstimator;
@@ -230,11 +230,12 @@ public abstract class Robot {
         robotModules.add(extend);
 
         /* climb */
-        climb = new Climb(
+        climbAndPlane = new ClimbAndPlane(
                 hardwareMap.get(Servo.class, "climb0"),
-                hardwareMap.get(Servo.class, "climb1")
+                hardwareMap.get(Servo.class, "climb1"),
+                hardwareMap.get(Servo.class, "plane")
         );
-        robotModules.add(climb);
+        robotModules.add(climbAndPlane);
     }
 
     /**

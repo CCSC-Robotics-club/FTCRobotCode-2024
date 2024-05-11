@@ -2,15 +2,15 @@ package org.firstinspires.ftc.teamcode.Services;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.Modules.Climb;
+import org.firstinspires.ftc.teamcode.Modules.ClimbAndPlane;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 
-public class ClimbService extends RobotService {
-    private final Climb climb;
+public class ClimbAndPlaneService extends RobotService {
+    private final ClimbAndPlane climbAndPlane;
     private final Gamepad copilotGamepad;
 
-    public ClimbService(Climb climb, Gamepad copilotGamepad) {
-        this.climb = climb;
+    public ClimbAndPlaneService(ClimbAndPlane climbAndPlane, Gamepad copilotGamepad) {
+        this.climbAndPlane = climbAndPlane;
         this.copilotGamepad = copilotGamepad;
     }
 
@@ -22,7 +22,7 @@ public class ClimbService extends RobotService {
     @Override
     public void periodic(double dt) {
         if (copilotGamepad.dpad_up)
-            this.climb.startClimb();
+            this.climbAndPlane.startClimb();
     }
 
     @Override

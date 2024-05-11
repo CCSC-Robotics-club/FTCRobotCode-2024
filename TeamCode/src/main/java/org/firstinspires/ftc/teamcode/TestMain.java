@@ -65,7 +65,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        scoringSettingsTuning();
+        servoTest();
     }
 
     private void ledTest() {
@@ -430,7 +430,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void servoTest() {
-        Servo servo = hardwareMap.get(Servo.class, "arm1");
+        Servo servo = hardwareMap.get(Servo.class, "plane");
         waitForStart();
 
         double servoAngle = 0;
