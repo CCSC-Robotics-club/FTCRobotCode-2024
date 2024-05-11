@@ -261,13 +261,13 @@ public final class RobotConfig {
 
 
         public static final double chassisRotation_maximumCorrectionPower = 0.65;
-        public static final double chassisRotation_minimumCorrectionPower = 0.02;
+        public static final double chassisRotation_minimumCorrectionPower = 0;
         public static final double chassisRotation_errorStartDecelerateRadian = Math.toRadians(45);
-        public static final double chassisRotation_errorTolerance = Math.toRadians(1.5);
-        public static final double chassisRotationErrorAsFinished = Math.toRadians(4);
+        public static final double chassisRotation_errorTolerance = Math.toRadians(0);
+        public static final double chassisRotationErrorAsFinished = Math.toRadians(5);
         public static final double chassisRotationErrorAsRoughlyFinished = Math.toRadians(12);
         public static final double chassisRotationSpeedAsStopped = Math.toRadians(15); // rad/sec
-        public static final double chassisRotation_feedForwardDelay = 0.15; // in seconds
+        public static final double chassisRotation_feedForwardDelay = 0.1; // in seconds
         public static final EnhancedPIDController.StaticPIDProfile chassisRotationControllerProfile = new EnhancedPIDController.StaticPIDProfile(
                 Math.PI * 2,
                 chassisRotation_maximumCorrectionPower,
