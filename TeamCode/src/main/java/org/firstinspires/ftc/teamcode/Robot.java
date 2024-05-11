@@ -215,7 +215,7 @@ public abstract class Robot {
         final ThreadedEncoder armEncoder = new ThreadedEncoder(hardwareMap.get(DcMotorEx.class, "arm"));
         final ThreadedSensor armLimit = new ThreadedSensor(() -> hardwareMap.get(TouchSensor.class, "armLimit").isPressed() ? 1:0);
         motors.add(armMotor1);
-        motors.add(armMotor2);
+        // motors.add(armMotor2);
         sensors.put("arm-enc", armEncoder);
         sensors.put("arm-lim", armLimit);
         arm = new Arm(armMotor1, armMotor2, armEncoder, armLimit);

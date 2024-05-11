@@ -36,6 +36,7 @@ import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.ArmGravityContr
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EncoderMotorMechanism;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.PixelCameraAimBotLegacy;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.RawObjectDetectionCamera;
+import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.SimpleArmController;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
@@ -61,7 +62,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        tofDistanceSensorTest();
+        simpleArmTuning();
     }
 
     private void ledTest() {
@@ -144,9 +145,59 @@ public class TestMain extends LinearOpMode {
         }
     }
 
+    private void simpleArmTuning() {
+        final DcMotorEx armMotor = hardwareMap.get(DcMotorEx.class, "arm");
+        final TouchSensor limitSwitch = hardwareMap.get(TouchSensor.class, "armLimit");
+        final ThreadedEncoder armEncoder = new ThreadedEncoder(armMotor);
+        armEncoder.update();
+        final double armEncoderReadingFactor = RobotConfig.ArmConfigs.encoderReversed ? -1:1;
+        double desiredPosition = 0, encoderZeroPosition = armEncoder.getSensorReading();
+        final double armMotorRate = RobotConfig.ArmConfigs.motor1Reversed ? -1 : 1;
+        waitForStart();
+
+        final SimpleArmController armController = new SimpleArmController(
+                RobotConfig.ArmConfigs.maxPowerWhenMovingUp,
+                RobotConfig.ArmConfigs.maxPowerWhenMovingDown,
+                RobotConfig.ArmConfigs.errorStartDecelerate,
+                RobotConfig.ArmConfigs.powerNeededToMoveUp,
+                RobotConfig.ArmConfigs.powerNeededToMoveDown,
+                RobotConfig.ArmConfigs.errorTolerance,
+                false
+        );
+        while (!isStopRequested() && opModeIsActive()) {
+            armEncoder.update();
+            armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            if (limitSwitch.isPressed())
+                encoderZeroPosition = armEncoder.getSensorReading();
+
+            final double armPosition = (armEncoder.getSensorReading() - encoderZeroPosition) * armEncoderReadingFactor;
+
+            desiredPosition += gamepad1.right_stick_y * -20;
+            desiredPosition = Math.max(0, desiredPosition);
+            desiredPosition = Math.min(1500, desiredPosition);
+            if (gamepad1.b)
+                armController.desiredPosition = desiredPosition;
+
+            final double commandedPower = Math.abs(gamepad1.left_stick_y) > 0.05 ? -gamepad1.left_stick_y:0,
+                    correctionPower = armController.getMotorPower(armEncoder.getVelocity() * armEncoderReadingFactor, armPosition),
+                    decidedPower = gamepad1.a ? correctionPower : commandedPower;
+            armMotor.setPower(decidedPower * armMotorRate);
+
+            telemetry.addData("commanded power", commandedPower);
+            telemetry.addData("desired position (press b to send to controller)", desiredPosition);
+
+
+            telemetry.addData("arm encoder reading", armPosition);
+            telemetry.addData("arm velocity", armEncoder.getVelocity() * armEncoderReadingFactor);
+            telemetry.addData("correction pow", correctionPower);
+
+            telemetry.update();
+            sleep(20);
+        }
+    }
+
     private void profiledArmTuning() {
-        final DcMotorEx armMotor1 = hardwareMap.get(DcMotorEx.class, "arm"),
-                armMotor2 = hardwareMap.get(DcMotorEx.class, "arm2");
+        final DcMotorEx armMotor1 = hardwareMap.get(DcMotorEx.class, "arm");
         final TouchSensor limitSwitch = hardwareMap.get(TouchSensor.class, "armLimit");
         final ThreadedEncoder armEncoder = new ThreadedEncoder(armMotor1);
         final ArmGravityController controller = new ArmGravityController(RobotConfig.ArmConfigs.armProfile);
@@ -156,10 +207,10 @@ public class TestMain extends LinearOpMode {
 
         armEncoder.update();
         double desiredPosition = 0, encoderZeroPosition = armEncoder.getSensorReading();
-        final double armMotor1Rate = RobotConfig.ArmConfigs.motor1Reversed ? -1 : 1,
-                armMotor2Rate = RobotConfig.ArmConfigs.motor2Reversed ? -1 : 1;
+        final double armMotor1Rate = RobotConfig.ArmConfigs.motor1Reversed ? -1 : 1;
         while (!isStopRequested() && opModeIsActive()) {
             armEncoder.update();
+            armMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             if (limitSwitch.isPressed())
                 encoderZeroPosition = armEncoder.getSensorReading();
 
@@ -175,7 +226,6 @@ public class TestMain extends LinearOpMode {
                     correctionPower = controller.getMotorPower(armEncoder.getVelocity() * armEncoderReadingFactor, armPosition),
                     decidedPower = gamepad1.a ? correctionPower : commandedPower;
             armMotor1.setPower(decidedPower * armMotor1Rate);
-            armMotor2.setPower(decidedPower * armMotor2Rate);
 
             telemetry.addData("commanded power", commandedPower);
             telemetry.addData("desired position (press b to send to controller)", desiredPosition);

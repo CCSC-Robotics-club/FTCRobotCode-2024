@@ -136,23 +136,6 @@ public final class RobotConfig {
     public static final class ArmConfigs {
         /** positive should be scoring */
         public static final boolean motor1Reversed = false, motor2Reversed = false, encoderReversed = false;
-        public static final ArmGravityController.ArmProfile armProfileLegacy = new ArmGravityController.ArmProfile(
-                0.9,
-                200,
-                0.05,
-                15,
-                0.09,
-                360,
-                0,
-                20,
-                3200,
-                1600,
-                0.1,
-                new LookUpTable(
-                        new double[] {0, 260, 500, 750, 1000, 1350, 1760},
-                        new double[] {0.28, 0.42, 0.28, 0.2, 0, -0.24, -0.38}
-                )
-        );
 
         public static final ArmGravityController.ArmProfile armProfile = new ArmGravityController.ArmProfile(
                 0.8,
@@ -171,12 +154,19 @@ public final class RobotConfig {
                         new double[] {0.1, 0.15, 0.25, 0.15, 0, -0.08, -0.15, -0.25}
                 )
         );
+
+        /** simple arm controller */
+        public static final double
+                maxPowerWhenMovingUp = 0.8,
+                maxPowerWhenMovingDown = 0.7,
+                errorStartDecelerate = 150,
+                powerNeededToMoveUp = 0.3,
+                powerNeededToMoveDown = 0.2,
+                errorTolerance = 30;
         public static final double errorAsArmInPosition = 20;
 
         public enum Position {
             INTAKE,
-            GRAB_STACK,
-            GRAB_STACK_LOW,
             SCORE
         }
 
@@ -187,15 +177,13 @@ public final class RobotConfig {
 //            encoderPositions.put(Position.GRAB_STACK_LOW, 50.0);
 //            encoderPositions.put(Position.SCORE, 1200.0);
             encoderPositions.put(Position.INTAKE, 0.0);
-            encoderPositions.put(Position.GRAB_STACK, 60.0);
-            encoderPositions.put(Position.GRAB_STACK_LOW, 50.0);
-            encoderPositions.put(Position.SCORE, 310.0);
+            encoderPositions.put(Position.SCORE, 1200.0);
         }
 
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-//                correspondingArmEncoderValuesNormal = new double[] {1600, 1500, 1400, 1300, 1200},
-                correspondingArmEncoderValues = new double[] {390, 365, 345, 335, 320},
+                correspondingArmEncoderValues = new double[] {1400, 1350, 1300, 1250, 1200},
+                // correspondingArmEncoderValues = new double[] {390, 365, 345, 335, 320},
                 correspondingExtendValues = new double[] {0, 400, 850, 1050, 1400},
                 correspondingServoPositions = new double[] {0.5, 0.6, 0.78, 0.8, 0.72},
                 correspondingDistanceToWall = new double[] {20.5, 16.5, 12.5, 8.5, 4.5};

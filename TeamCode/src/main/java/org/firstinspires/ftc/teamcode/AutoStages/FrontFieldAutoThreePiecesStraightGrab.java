@@ -29,32 +29,34 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
         final double speedConstrainWhenArmRaised = 0.6, stackDistanceToBackWall = 13;
         final Runnable
                 splitPreload = () -> {
-                    if (super.allianceSide == Robot.Side.BLUE)
-                        robot.claw.setRightClawClosed(false, null);
-                    else
-                        robot.claw.setLeftClawClosed(false, null);
-                    },
+            if (super.allianceSide == Robot.Side.BLUE)
+                robot.claw.setRightClawClosed(false, null);
+            else
+                robot.claw.setLeftClawClosed(false, null);
+        },
                 scorePreload = () -> {
                     robot.claw.setLeftClawClosed(false, null);
                     robot.claw.setRightClawClosed(false, null);
                 };
         final SequentialCommandSegment
                 grabFromStackOuter = new SequentialCommandSegment(
-                    () -> true,
-                    () -> null,
-                    allianceSide == Robot.Side.BLUE ? () -> robot.claw.setLeftClawClosed(true, null) : () -> robot.claw.setRightClawClosed(true, null),
-                    () -> {},
-                    () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null),
-                    allianceSide == Robot.Side.BLUE ? robot.claw::leftClawInPosition : robot.claw::rightClawInPosition,
-                    () -> new Rotation2D(0), () -> new Rotation2D(0)),
+                () -> true,
+                () -> null,
+                allianceSide == Robot.Side.BLUE ? () -> robot.claw.setLeftClawClosed(true, null) : () -> robot.claw.setRightClawClosed(true, null),
+                () -> {
+                },
+                () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null),
+                allianceSide == Robot.Side.BLUE ? robot.claw::leftClawInPosition : robot.claw::rightClawInPosition,
+                () -> new Rotation2D(0), () -> new Rotation2D(0)),
                 grabFromStackInner = new SequentialCommandSegment(
-                    () -> true,
-                    () -> null,
-                    allianceSide == Robot.Side.BLUE ? () -> robot.claw.setRightClawClosed(true, null) : () -> robot.claw.setLeftClawClosed(true, null),
-                    () -> {},
-                    () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null),
-                    allianceSide == Robot.Side.BLUE ? robot.claw::leftClawInPosition : robot.claw::rightClawInPosition,
-                    () -> new Rotation2D(0), () -> new Rotation2D(0));
+                        () -> true,
+                        () -> null,
+                        allianceSide == Robot.Side.BLUE ? () -> robot.claw.setRightClawClosed(true, null) : () -> robot.claw.setLeftClawClosed(true, null),
+                        () -> {
+                        },
+                        () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null),
+                        allianceSide == Robot.Side.BLUE ? robot.claw::leftClawInPosition : robot.claw::rightClawInPosition,
+                        () -> new Rotation2D(0), () -> new Rotation2D(0));
 
         robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
         robot.claw.setLeftClawClosed(true, null);
@@ -68,13 +70,20 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
                         () -> true,
                         () -> {
                             switch (teamElementFinder.getTeamElementPosition()) {
-                                case LEFT: case UNDETERMINED: return sequentialCommandFactory.getBezierCurvesFromPathFile("split first(left)").get(0);
-                                case CENTER: return sequentialCommandFactory.getBezierCurvesFromPathFile("split first(mid)").get(0);
-                                case RIGHT: return sequentialCommandFactory.getBezierCurvesFromPathFile("split first(right)").get(0);
-                                default: throw new IllegalStateException("unknown team element position: " + teamElementFinder.getTeamElementPosition());
+                                case LEFT:
+                                case UNDETERMINED:
+                                    return sequentialCommandFactory.getBezierCurvesFromPathFile("split first(left)").get(0);
+                                case CENTER:
+                                    return sequentialCommandFactory.getBezierCurvesFromPathFile("split first(mid)").get(0);
+                                case RIGHT:
+                                    return sequentialCommandFactory.getBezierCurvesFromPathFile("split first(right)").get(0);
+                                default:
+                                    throw new IllegalStateException("unknown team element position: " + teamElementFinder.getTeamElementPosition());
                             }
                         },
-                        () -> {}, () -> {},
+                        () -> {
+                        }, () -> {
+                },
                         () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null),
                         robot.chassis::isCurrentTranslationalTaskComplete,
                         robot.positionEstimator::getRotation2D, () -> new Rotation2D(0)
@@ -99,7 +108,9 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
                     robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
                 },
-                ()->{}, ()->{}
+                () -> {
+                }, () -> {
+                }
         ));
 
         super.commandSegments.add(wallAimBot.stickToWall(
@@ -113,118 +124,5 @@ public class FrontFieldAutoThreePiecesStraightGrab extends AutoStageProgram {
 
         super.commandSegments.add(sequentialCommandFactory.waitFor(500));
 
-        super.commandSegments.add(new SequentialCommandSegment(
-                () -> true,
-                () -> sequentialCommandFactory.getBezierCurvesFromPathFile("move back and grab third from stack").get(0),
-                () -> {
-                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
-                    robot.arm.setPosition(RobotConfig.ArmConfigs.Position.GRAB_STACK, null);
-                },
-                () -> {}, () -> {},
-                robot.arm::isArmInPosition,
-                () -> new Rotation2D(0), () -> new Rotation2D(0),
-                SpeedCurves.originalSpeed, 0.4
-        ));
-
-        super.commandSegments.add(sequentialCommandFactory.followSingleCurve(
-                "move back and grab third from stack", 1,
-                new Rotation2D(0)
-        ));
-        super.commandSegments.add(new SequentialCommandSegment(
-                () -> true,
-                () -> null,
-                () -> {},
-                () -> robot.chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
-                        Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
-                        new Vector2D(new double[] {
-                                sequentialCommandFactory.getBezierCurvesFromPathFile("move back and grab third from stack").get(1).getPositionWithLERP(1).getX(),
-                                robot.positionEstimator.getCurrentPosition().getY() + stackDistanceToBackWall - robot.distanceSensorBack.getSensorReading() - 1
-                        })), null),
-                () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null),
-                () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.distanceSensorBack.getSensorReading() < stackDistanceToBackWall + 1,
-                () -> new Rotation2D(0), () -> new Rotation2D(0)
-        ));
-
-        super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
-        super.commandSegments.add(grabFromStackOuter);
-        super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
-        super.commandSegments.add(sequentialCommandFactory.justDoIt(() -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null)));
-
-        super.commandSegments.add(new SequentialCommandSegment(
-                () -> true,
-                () -> sequentialCommandFactory.getBezierCurvesFromPathFile("grab fourth from stack").get(0),
-                () -> {}, () -> {}, () -> {},
-                robot.chassis::isCurrentTranslationalTaskComplete,
-                () -> new Rotation2D(0), () -> new Rotation2D(0),
-                SpeedCurves.easeOut, 0.8
-        ));
-        super.commandSegments.add(new SequentialCommandSegment(
-                () -> true,
-                () -> null,
-                () -> robot.arm.setPosition(RobotConfig.ArmConfigs.Position.GRAB_STACK_LOW, null),
-                () -> robot.chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
-                        Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
-                        new Vector2D(new double[] {
-                                sequentialCommandFactory.getBezierCurvesFromPathFile("grab fourth from stack").get(0).getPositionWithLERP(1).getX(),
-                                robot.positionEstimator.getCurrentPosition().getY() + stackDistanceToBackWall - robot.distanceSensorBack.getSensorReading() - 1
-                        })), null),
-                () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null),
-                () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.distanceSensorBack.getSensorReading() < stackDistanceToBackWall + 1,
-                () -> new Rotation2D(0), () -> new Rotation2D(0)
-        ));
-
-        super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
-        super.commandSegments.add(grabFromStackInner);
-        super.commandSegments.add(sequentialCommandFactory.waitFor(500)); // wait for servo
-
-        super.commandSegments.add(sequentialCommandFactory.followSingleCurve(
-                "score third and fourth", 0,
-                new Rotation2D(0),
-                () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null), () -> {}, () -> {}
-        ));
-
-        super.commandSegments.add(sequentialCommandFactory.followSingleCurve(
-                "score third and fourth", 1,
-                new Rotation2D(0),
-                () -> {
-                    robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
-                    robot.arm.setScoringHeight(0.5, null);
-                }, () -> {}, () -> {},
-                SpeedCurves.easeOut, speedConstrainWhenArmRaised
-        ));
-
-        super.commandSegments.add(wallAimBot.stickToWall(robot.arm::isArmInPosition));
-        super.commandSegments.add(sequentialCommandFactory.waitFor(800));
-        super.commandSegments.add(sequentialCommandFactory.justDoIt(() -> {
-            robot.claw.setLeftClawClosed(false, null);
-            robot.claw.setRightClawClosed(false, null);
-        }));
-
-        // end early
-        super.commandSegments.addAll(sequentialCommandFactory.followPathFacing(
-                "park",
-                new Rotation2D(0),
-                () -> robot.arm.setPosition(RobotConfig.ArmConfigs.Position.GRAB_STACK, null),
-                ()->{}, ()->{}
-        ));if (1==1) return;
-
-        super.commandSegments.addAll(
-                sequentialCommandFactory.followPathFacing("move to stack grab fifth", new Rotation2D(0))
-        );
-
-        super.commandSegments.addAll(
-                sequentialCommandFactory.followPathFacing("grab sixth from stack", new Rotation2D(0))
-        );
-
-        super.commandSegments.addAll(
-                sequentialCommandFactory.followPathFacing("score fifth and sixth", new Rotation2D(0))
-        );
-
-        super.commandSegments.addAll(sequentialCommandFactory.followPathFacing(
-                "park",
-                new Rotation2D(0),
-                () -> robot.arm.setPosition(RobotConfig.ArmConfigs.Position.GRAB_STACK, null),
-                ()->{}, ()->{}
-        ));
     }
 }

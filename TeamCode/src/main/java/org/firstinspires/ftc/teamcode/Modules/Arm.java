@@ -2,9 +2,11 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedEncoder;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.ArmGravityController;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedMotor;
+import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.SimpleArmController;
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
@@ -24,6 +26,15 @@ public class Arm extends RobotModule {
     private int armEncoderZeroPosition = -114514;
     private double scoringHeight;
     private final ArmGravityController armController = new ArmGravityController(ArmConfigs.armProfile);
+    private final SimpleArmController simpleArmController = new SimpleArmController(
+            RobotConfig.ArmConfigs.maxPowerWhenMovingUp,
+            RobotConfig.ArmConfigs.maxPowerWhenMovingDown,
+            RobotConfig.ArmConfigs.errorStartDecelerate,
+            RobotConfig.ArmConfigs.powerNeededToMoveUp,
+            RobotConfig.ArmConfigs.powerNeededToMoveDown,
+            RobotConfig.ArmConfigs.errorTolerance,
+            false
+    );
 
     private ArmConfigs.Position desiredPosition;
     public Arm(ThreadedMotor armMotor, ThreadedEncoder armEncoder, ThreadedSensor limitSwitch) {
@@ -57,8 +68,8 @@ public class Arm extends RobotModule {
             return;
         }
         if (armEncoderZeroPosition == -114514) {
-            armMotor1.setPower(0);
-            armMotor2.setPower(0);
+            armMotor1.setPower(-0.3);
+            armMotor2.setPower(-0.3);
             return;
         }
 
@@ -68,9 +79,11 @@ public class Arm extends RobotModule {
             return;
         }
 
+        simpleArmController.desiredPosition = armController.getDesiredPosition();
         final double armPosition = getArmEncoderPosition(),
                 armVelocity = armEncoder.getVelocity() * encoderFactor,
-                armCorrectionPower = armController.getMotorPower(armVelocity, armPosition);
+                // armCorrectionPower = armController.getMotorPower(armVelocity, armPosition);
+                armCorrectionPower = simpleArmController.getMotorPower(armVelocity, armPosition);
 
         debugMessages.put("correction power (by controller)", armCorrectionPower);
 
