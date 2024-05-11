@@ -8,7 +8,7 @@ public class ThreadedSensor {
     private final DoubleSupplier sensorReader;
     private double sensorReading;
     private final double defaultReading;
-    private boolean enabled;
+    protected boolean enabled;
     protected final Lock lock;
 
     public ThreadedSensor(DoubleSupplier sensorReader) {

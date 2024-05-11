@@ -159,10 +159,10 @@ public final class RobotConfig {
         public static final double
                 maxPowerWhenMovingUp = 1,
                 maxPowerWhenMovingDown = 0.8,
-                errorStartDecelerate = 200,
-                powerNeededToMoveUp = 0.25,
-                powerNeededToMoveDown = 0.15,
-                errorTolerance = 30;
+                errorStartDecelerate = 160,
+                powerNeededToMoveUp = 0.16,
+                powerNeededToMoveDown = 0.12,
+                errorTolerance = 15;
         public static final double errorAsArmInPosition = 20;
 
         public enum Position {
@@ -182,10 +182,10 @@ public final class RobotConfig {
 
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {1400, 1350, 1300, 1250, 1200},
+                correspondingArmEncoderValues = new double[] {1400, 1300, 1250, 1200, 1150},
                 // correspondingArmEncoderValues = new double[] {390, 365, 345, 335, 320},
-                correspondingExtendValues = new double[] {0, 400, 850, 1050, 1400},
-                correspondingServoPositions = new double[] {0.5, 0.6, 0.78, 0.8, 0.72},
+                correspondingExtendValues = new double[] {0, 450, 800, 1050, 1480},
+                correspondingServoPositions = new double[] {0.6, 0.7, 0.75, 0.8, 0.8},
                 correspondingDistanceToWall = new double[] {20.5, 16.5, 12.5, 8.5, 4.5};
 
         public static final LookUpTable
