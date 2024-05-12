@@ -30,7 +30,6 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
 
 
         final Runnable
-                // TODO split preload program
                 splitPreload = () -> robot.claw.setLeftClawClosed(false, null),
                 scorePreload = () -> robot.claw.setRightClawClosed(false, null);
         final Vector2D stackCenterPositionDefault = new Vector2D(new double[] {18 + 135, 20});
@@ -42,6 +41,8 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
 
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
         super.commandSegments.add(teamElementFinder.findTeamElementAndShutDown(5000));
+
+        // TODO split preload positions measuring
         super.commandSegments.add(
                 new SequentialCommandSegment(
                         () -> true,
