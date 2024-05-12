@@ -130,6 +130,8 @@ public class AutoProgramRunner extends RobotService {
 
     public boolean isCurrentSegmentComplete() {
         SequentialCommandSegment currentSegment = this.commandSegments.get(this.currentSegmentID);
+        if (currentSegment.endEarlyChecker.isComplete())
+            return true;
         final boolean translationalMovementFinished = currentPathSchedule == null || currentPathSchedule.isCurrentPathFinished();
         final boolean rotationalMovementFinished = currentSegmentRotationScheduleETA == -1 || rotationT >= 1;
 

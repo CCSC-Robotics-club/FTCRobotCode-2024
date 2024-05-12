@@ -96,7 +96,7 @@ public class PixelStackGrabbingCommand {
 
     public static List<SequentialCommandSegment> getCommandSegmentSegmentsWithColorSensor(Robot robot, ThreadedSensor markDetector, SequentialCommandFactory commandFactory, Vector2D stackCenterPositionDefault) {
         final List<SequentialCommandSegment> commandSegments = new ArrayList<>();
-        final double clawWidth = 6.5, grabbingDistanceToWall = 11.5, colorSensorThreshold = 2000, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 13.5;
+        final double clawWidth = 6.5, grabbingDistanceToWall = 8, colorSensorThreshold = 2000, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 10.5;
 
         final Vector2D scanningStartPosition = stackCenterPositionDefault.addBy(new Vector2D(new double[] {20, scanningDistanceToWall}));
 
@@ -170,6 +170,7 @@ public class PixelStackGrabbingCommand {
                     else throw new IllegalStateException("spike mark unseen");
                 },
                 robot.chassis::isCurrentTranslationalTaskComplete,
+                () -> actualStackCenterPositionX[1] != -1 && actualStackCenterPositionX[2] != -1,
                 () -> new Rotation2D(0),
                 () -> new Rotation2D(0),
                 SpeedCurves.originalSpeed,

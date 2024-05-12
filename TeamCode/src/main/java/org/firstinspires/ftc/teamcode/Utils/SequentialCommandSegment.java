@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.SpeedCurves;
 public class SequentialCommandSegment {
     public final BezierCurveFeeder chassisMovementPathFeeder;
     public final Runnable beginning, periodic, ending;
-    public final IsCompleteChecker isCompleteChecker;
+    public final IsCompleteChecker isCompleteChecker, endEarlyChecker;
     public final InitiateCondition initiateCondition;
     public final RotationFeeder startingRotationFeeder, endingRotationFeeder;
     public final SpeedCurves.SpeedCurve speedCurve;
@@ -23,6 +23,10 @@ public class SequentialCommandSegment {
     }
 
     public SequentialCommandSegment(InitiateCondition initiateCondition, BezierCurveFeeder pathFeeder, Runnable beginning, Runnable periodic, Runnable ending, IsCompleteChecker isCompleteChecker, RotationFeeder startingRotation, RotationFeeder endingRotation, SpeedCurves.SpeedCurve speedCurve, double timeScale) {
+        this(initiateCondition, pathFeeder, beginning, periodic, ending, isCompleteChecker, () -> false, startingRotation, endingRotation, speedCurve, timeScale);
+    }
+
+    public SequentialCommandSegment(InitiateCondition initiateCondition, BezierCurveFeeder pathFeeder, Runnable beginning, Runnable periodic, Runnable ending, IsCompleteChecker isCompleteChecker, IsCompleteChecker endEarlyChecker, RotationFeeder startingRotation, RotationFeeder endingRotation, SpeedCurves.SpeedCurve speedCurve, double timeScale) {
         this.chassisMovementPathFeeder = pathFeeder;
 
         this.beginning = beginning;
@@ -31,6 +35,7 @@ public class SequentialCommandSegment {
 
         this.isCompleteChecker = isCompleteChecker;
         this.initiateCondition = initiateCondition;
+        this.endEarlyChecker = endEarlyChecker;
 
         this.startingRotationFeeder = startingRotation;
         this.endingRotationFeeder = endingRotation;
@@ -49,9 +54,9 @@ public class SequentialCommandSegment {
      */
     public StaticSequentialCommandSegment embodyCurrentCommandSegment() {
         return new StaticSequentialCommandSegment(
-                chassisMovementPathFeeder.getBezierCurve(),
-                beginning,periodic,ending,initiateCondition, isCompleteChecker,
-                startingRotationFeeder.getRotation(),endingRotationFeeder.getRotation(),
+                this.chassisMovementPathFeeder.getBezierCurve(),
+                this.beginning, this.periodic, this.ending, this.initiateCondition, this.isCompleteChecker, this.endEarlyChecker,
+                this.startingRotationFeeder.getRotation(), this.endingRotationFeeder.getRotation(),
                 this.speedCurve, this.timeScale
         );
     }
@@ -62,17 +67,18 @@ public class SequentialCommandSegment {
         public final BezierCurve chassisMovementPath;
         public final Runnable beginning, periodic, ending;
         public final InitiateCondition initiateCondition;
-        public final IsCompleteChecker isCompleteChecker;
+        public final IsCompleteChecker isCompleteChecker, endEarlyChecker;
         public final Rotation2D startingRotation, endingRotation;
         public final SpeedCurves.SpeedCurve speedCurve;
         public final double timeScale;
-        public StaticSequentialCommandSegment(BezierCurve chassisMovementPath, Runnable beginning, Runnable periodic, Runnable ending, InitiateCondition initiateCondition, IsCompleteChecker isCompleteChecker, Rotation2D startingRotation, Rotation2D endingRotation, SpeedCurves.SpeedCurve speedCurve, double timeScale) {
+        public StaticSequentialCommandSegment(BezierCurve chassisMovementPath, Runnable beginning, Runnable periodic, Runnable ending, InitiateCondition initiateCondition, IsCompleteChecker isCompleteChecker, IsCompleteChecker endEarlyChecker, Rotation2D startingRotation, Rotation2D endingRotation, SpeedCurves.SpeedCurve speedCurve, double timeScale) {
             this.chassisMovementPath = chassisMovementPath;
             this.beginning = beginning;
             this.periodic = periodic;
             this.ending = ending;
             this.initiateCondition = initiateCondition;
             this.isCompleteChecker = isCompleteChecker;
+            this.endEarlyChecker = endEarlyChecker;
             this.startingRotation = startingRotation;
             this.endingRotation = endingRotation;
             this.speedCurve = speedCurve;

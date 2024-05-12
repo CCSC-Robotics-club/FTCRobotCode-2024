@@ -210,7 +210,7 @@ public final class RobotConfig {
                 /* settings */
                 maxExtendValue = 1000,
                 intakeValue = 520 / maxExtendValue,
-                grabStackValue = 180 / maxExtendValue;
+                grabStackValue = 160 / maxExtendValue;
 
     }
 
