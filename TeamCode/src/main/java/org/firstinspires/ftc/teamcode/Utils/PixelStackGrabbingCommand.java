@@ -177,31 +177,35 @@ public class PixelStackGrabbingCommand {
                 0.1
         ));
 
-        /* step 3: line up the lefter claw with the stack */
-        commandSegments.add(new SequentialCommandSegment(
-                () -> true,
-                () -> null,
-                () -> {
-                    robot.claw.setLeftClawClosed(false, null);
-                    robot.claw.setRightClawClosed(false, null);
-                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null);
-                },
-                () -> {
-                    final double wallPositionY = robot.distanceSensorBack.getSensorReading() < 50 ?
-                            robot.positionEstimator.getCurrentPosition().getY() - robot.distanceSensorBack.getSensorReading()
-                            : stackCenterPositionDefault.getY();
-                    robot.chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
-                            new Vector2D(new double[] {actualStackCenterPositionX[0] + clawWidth, wallPositionY + scanningDistanceToWall})), null);
-                },
-                () -> {},
-                robot.chassis::isCurrentTranslationalTaskComplete,
-                () -> new Rotation2D(0),
-                () -> new Rotation2D(0)
-        ));
+//        /* step 3: line up the lefter claw with the stack */
+//        commandSegments.add(new SequentialCommandSegment(
+//                () -> true,
+//                () -> null,
+//                () -> {
+//                    robot.claw.setLeftClawClosed(false, null);
+//                    robot.claw.setRightClawClosed(false, null);
+//                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null);
+//                },
+//                () -> {
+//                    final double wallPositionY = robot.distanceSensorBack.getSensorReading() < 50 ?
+//                            robot.positionEstimator.getCurrentPosition().getY() - robot.distanceSensorBack.getSensorReading()
+//                            : stackCenterPositionDefault.getY();
+//                    robot.chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_ENCODER,
+//                            new Vector2D(new double[] {actualStackCenterPositionX[0] + clawWidth, wallPositionY + scanningDistanceToWall})), null);
+//                },
+//                () -> {},
+//                robot.chassis::isCurrentTranslationalTaskComplete,
+//                () -> new Rotation2D(0),
+//                () -> new Rotation2D(0)
+//        ));
 
-        // commandSegments.add(commandFactory.waitFor(114514));
+        commandSegments.add(commandFactory.justDoIt(() -> {
+            robot.claw.setLeftClawClosed(false, null);
+            robot.claw.setRightClawClosed(false, null);
+            robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null);
+        }));
 
-        /* step 4: drive back to the grabbing distance */
+        /* step 3: drive back to the grabbing distance */
         commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> null,

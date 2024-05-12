@@ -73,7 +73,7 @@ public class TeamElementFinder {
     }
 
     public void shutDown() {
-        visionPortal.setProcessorEnabled(tfod, false);
+        // visionPortal.setProcessorEnabled(tfod, false);
     }
 
     public TeamElementPosition getTeamElementPosition() {
