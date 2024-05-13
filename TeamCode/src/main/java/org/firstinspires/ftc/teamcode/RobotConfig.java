@@ -313,7 +313,7 @@ public final class RobotConfig {
         /** the distance to set the position target, when pilot sends a command of full speed  */
         public static final double targetDistanceAtMaxDesiredSpeed = 75;
         /** the smooth-out time, or the time after the pilot let the chassis stop till it start maintaining its current position */
-        public static final double timeToStartDecelerateTranslation = 0.5;
+        public static final double timeToStartDecelerateTranslation = 0.7;
 
         public static final double timeToStartDecelerateRotation = 0.3;
 

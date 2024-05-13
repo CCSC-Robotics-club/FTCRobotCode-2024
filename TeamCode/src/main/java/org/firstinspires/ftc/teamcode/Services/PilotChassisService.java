@@ -28,7 +28,7 @@ public class PilotChassisService extends RobotService {
     private double rotationMaintenanceFacing;
     private Vector2D currentDesiredPosition;
     /** time since last translational command sent by pilot */
-    private double pilotLastTranslationalActionTime, pilotLastRotationalActionTime;
+    private double pilotLastTranslationalXActionTime, pilotLastTranslationalYActionTime, pilotLastRotationalActionTime;
 
     public enum ControlMode {
         MANUAL,
@@ -64,7 +64,7 @@ public class PilotChassisService extends RobotService {
         this.chassis.gainOwnerShip(this);
         this.currentDesiredPosition = new Vector2D();
         this.rotationMaintenanceFacing = 0;
-        this.pilotLastTranslationalActionTime = this.pilotLastRotationalActionTime = 0;
+        this.pilotLastTranslationalXActionTime = this.pilotLastTranslationalYActionTime = this.pilotLastRotationalActionTime = 0;
         this.currentDesiredPosition = chassis.getChassisEncoderPosition();
         this.controlMode = RobotConfig.ControlConfigs.defaultControlMode;
         visualTaskStatus = VisualTaskStatus.UNUSED;
@@ -86,18 +86,23 @@ public class PilotChassisService extends RobotService {
                 pilotTranslationalCommand
         );
 
-        if (pilotTranslationalCommand.getMagnitude() > zeroJudge)
-            pilotLastTranslationalActionTime = 0;
+        if (Math.abs(pilotTranslationalCommand.getX()) > zeroJudge)
+            pilotLastTranslationalXActionTime = 0;
         else
-            pilotLastTranslationalActionTime += dt;
+            pilotLastTranslationalXActionTime += dt;
+
+        if (Math.abs(pilotTranslationalCommand.getY()) > zeroJudge)
+            pilotLastTranslationalYActionTime = 0;
+        else
+            pilotLastTranslationalYActionTime += dt;
 
         final double currentDesiredPositionX = ((Math.abs(pilotTranslationalCommand.getX()) < zeroJudge && Math.abs(pilotTranslationalCommand.getY()) > zeroJudge) // if the pilot moves the y axis is moving but not the x axis
-                || pilotLastTranslationalActionTime > timeToStartDecelerateTranslation) // or, if there haven't been actions for a period of time
+                || pilotLastTranslationalXActionTime > timeToStartDecelerateTranslation) // or, if there haven't been actions for a period of time
                 ? currentDesiredPosition.getX() // maintain current x position
                 : chassis.getChassisEncoderPosition().getX(), // otherwise, do speed control only by setting desired position to actual position (ignore proportion part)
 
                 currentDesiredPositionY = ((Math.abs(pilotTranslationalCommand.getY()) < zeroJudge && Math.abs(pilotTranslationalCommand.getX()) > zeroJudge)
-                        || pilotLastTranslationalActionTime > timeToStartDecelerateTranslation)
+                        || pilotLastTranslationalYActionTime > timeToStartDecelerateTranslation)
                         ? currentDesiredPosition.getY() : chassis.getChassisEncoderPosition().getY(); // same method
 
         currentDesiredPosition = new Vector2D(new double[]{currentDesiredPositionX, currentDesiredPositionY});
@@ -167,7 +172,7 @@ public class PilotChassisService extends RobotService {
                             Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY,
                             getSlowMotionButtonsMovement()),
                     this);
-            pilotLastTranslationalActionTime = 0;
+            pilotLastTranslationalXActionTime = 0;
         } else
             if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
             &&
