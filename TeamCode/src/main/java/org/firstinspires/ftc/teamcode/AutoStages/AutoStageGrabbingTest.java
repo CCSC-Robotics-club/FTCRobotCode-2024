@@ -60,11 +60,11 @@ public class AutoStageGrabbingTest extends AutoStageProgram {
                 () -> new Rotation2D(0)
         ));
 
-        super.commandSegments.add(sequentialCommandFactory.waitFor(600)); // wait for things to be in position
+        super.commandSegments.add(sequentialCommandFactory.stayStillFor(600)); // wait for things to be in position
 
         super.commandSegments.add(sequentialCommandFactory.justDoIt(() -> robot.claw.setLeftClawClosed(true, null)));
 
-        super.commandSegments.add(sequentialCommandFactory.waitFor(400));
+        super.commandSegments.add(sequentialCommandFactory.stayStillFor(400));
 
         super.commandSegments.add(sequentialCommandFactory.justDoIt(() -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null)));
 

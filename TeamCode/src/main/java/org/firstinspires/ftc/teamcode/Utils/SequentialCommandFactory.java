@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Utils;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.checkerframework.checker.units.qual.Speed;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
@@ -295,7 +294,7 @@ public class SequentialCommandFactory {
         );
     }
 
-    public SequentialCommandSegment waitFor(long timeMillis) {
+    public SequentialCommandSegment stayStillFor(long timeMillis) {
         final long[] t0 = new long[1];
         return new SequentialCommandSegment(
                 justGo,

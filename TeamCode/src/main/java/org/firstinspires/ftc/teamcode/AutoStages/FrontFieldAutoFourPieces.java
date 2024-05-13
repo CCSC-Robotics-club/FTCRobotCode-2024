@@ -23,18 +23,13 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
     @Override
     public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
         final TeamElementFinder teamElementFinder = new TeamElementFinder(robot.hardwareMap.get(WebcamName.class, "Webcam 1"), super.allianceSide);
-        final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(Math.toRadians(90)), super.allianceSide, robot.hardwareMap);
+        final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(0), super.allianceSide, robot.hardwareMap);
         final AprilTagCameraAndDistanceSensorAimBot wallAimBot = new AprilTagCameraAndDistanceSensorAimBot(robot.chassis, robot.distanceSensor, robot.aprilTagCamera, robot.arm, null, robot.telemetrySender, super.allianceSide);
         final double speedFactorWhenArmRaised = 0.6;
 
         final Runnable
-                splitPreload = this.allianceSide == Robot.Side.BLUE ?
-                () -> robot.claw.setRightClawClosed(false, null)
-                : () -> robot.claw.setLeftClawClosed(false, null),
-                scorePreload = () -> {
-            robot.claw.setRightClawClosed(false, null);
-            robot.claw.setLeftClawClosed(false, null);
-                };
+                splitPreload = () -> robot.claw.setRightClawClosed(false, null),
+                scorePreload = () -> robot.claw.setLeftClawClosed(false, null);
 
         final Vector2D stack1Position = this.allianceSide == Robot.Side.BLUE ?
                 new Vector2D(new double[] {18 + 135, 20}) : new Vector2D(new double[] {0, 0});
@@ -52,32 +47,53 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
                 new SequentialCommandSegment(
                         () -> true,
                         () -> {
+                            final Vector2D splitFirstPosition;
                             switch (teamElementFinder.getTeamElementPosition()) {
-                                case LEFT: case UNDETERMINED:
-                                    return sequentialCommandFactory.getBezierCurvesFromPathFile("split first(left)").get(0);
-                                case CENTER:
-                                    return sequentialCommandFactory.getBezierCurvesFromPathFile("split first(center)").get(0);
-                                case RIGHT:
-                                    return sequentialCommandFactory.getBezierCurvesFromPathFile("split first(right)").get(0);
+                                case LEFT: case UNDETERMINED: {
+                                    splitFirstPosition = this.allianceSide == Robot.Side.BLUE ?
+                                            new Vector2D(new double[] {0, 0}) : new Vector2D(new double[] {0, 0});
+                                    break;
+                                }
+                                case CENTER: {
+                                    splitFirstPosition = this.allianceSide == Robot.Side.BLUE ?
+                                            new Vector2D(new double[] {0, 0}) : new Vector2D(new double[] {0, 0});
+                                    break;
+                                }
+                                case RIGHT: {
+                                    splitFirstPosition = this.allianceSide == Robot.Side.BLUE ?
+                                            new Vector2D(new double[] {0, 0}) : new Vector2D(new double[] {0, 0});
+                                    break;
+                                }
                                 default:
                                     throw new IllegalStateException("unknown team element position: " + teamElementFinder.getTeamElementPosition());
                             }
+
+                            return new BezierCurve(
+                                    sequentialCommandFactory.getRobotStartingPosition("split first(left)"),
+                                    splitFirstPosition.addBy(new Vector2D(new double[] {0, 10})),
+                                    splitFirstPosition
+                            );
                             },
+                        () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null),
                         () -> {
-                            robot.extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, null);
-                            robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null);
+                            if (robot.chassis.isCurrentRotationalTaskRoughlyComplete())
+                                robot.extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, null);
                         },
-                        () -> {},
                         () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null),
                         robot.chassis::isCurrentTranslationalTaskComplete,
-                        robot.positionEstimator::getRotation2D, () -> new Rotation2D(0)
+                        () -> new Rotation2D(0), () -> new Rotation2D(0)
                 )
         );
 
-        super.commandSegments.add(sequentialCommandFactory.waitFor(500));
+        super.commandSegments.add(sequentialCommandFactory.stayStillFor(300));
         super.commandSegments.add(sequentialCommandFactory.justDoIt(splitPreload));
-        super.commandSegments.add(sequentialCommandFactory.waitFor(300));
+        super.commandSegments.add(sequentialCommandFactory.stayStillFor(300));
 
+        super.commandSegments.add(sequentialCommandFactory.justDoIt(() -> {
+            robot.extend.setExtendPosition(0, null);
+            robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
+        }));
+        super.commandSegments.add(sequentialCommandFactory.stayStillFor(300));
         super.commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> new BezierCurve(robot.positionEstimator.getCurrentPosition(), sequentialCommandFactory.getBezierCurvesFromPathFile("score second").get(0).getPositionWithLERP(1)),
@@ -104,11 +120,11 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
                 teamElementFinder, robot.extend::isExtendInPosition
         ));
 
-        super.commandSegments.add(sequentialCommandFactory.waitFor(300));
+        super.commandSegments.add(sequentialCommandFactory.stayStillFor(300));
 
         super.commandSegments.add(sequentialCommandFactory.justDoIt(scorePreload));
 
-        super.commandSegments.add(sequentialCommandFactory.waitFor(500));
+        super.commandSegments.add(sequentialCommandFactory.stayStillFor(500));
 
     }
 }

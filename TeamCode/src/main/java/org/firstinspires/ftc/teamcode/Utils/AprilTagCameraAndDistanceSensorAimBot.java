@@ -76,20 +76,19 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         double deviationFromCenter;
         switch (teamElementPosition) {
             case UNDETERMINED: case LEFT: {
-                deviationFromCenter = -autoStageScoringPositionsMargin;
+                deviationFromCenter = autoStageScoringPositionsLeft;
                 break;
             }
             case RIGHT: {
-                deviationFromCenter = autoStageScoringPositionsMargin;
+                deviationFromCenter = autoStageScoringPositionsRight;
                 break;
             }
             case CENTER: {
-                deviationFromCenter = 0;
+                deviationFromCenter = autoStageScoringPositionsCenter;
                 break;
             }
             default: throw new IllegalStateException("unknown team element result: " + teamElementPosition);
         }
-        deviationFromCenter += side == Robot.Side.BLUE ? clawWidth : -clawWidth;
         return new Vector2D(new double[] {
                 RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.getX() + deviationFromCenter,
                 desiredDistanceToWallSupplier.getAsDouble()
