@@ -23,12 +23,15 @@ public class OdometerMeasurement extends AutoStageProgram {
         super.commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> null,
+                () -> {},
                 () -> {
+                    robot.claw.setRightClawClosed(true, null);
+                    robot.claw.setLeftClawClosed(true, null);
                     robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null);
                     robot.extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, null);
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, null);
+                    robot.chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), null);
                 },
-                () -> robot.chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), null),
                 () -> {},
                 () -> false,
                 () -> new Rotation2D(0), () -> new Rotation2D(0)

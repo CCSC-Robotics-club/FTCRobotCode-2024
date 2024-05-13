@@ -208,8 +208,8 @@ public final class RobotConfig {
                 powerNeededToMoveBackward = 0.15,
                 errorTolerance = 30,
                 /* settings */
-                maxExtendValue = 1000,
-                intakeValue = 520 / maxExtendValue,
+                maxExtendValue = 1200,
+                intakeValue = 480 / maxExtendValue,
                 grabStackValue = 160 / maxExtendValue;
 
     }

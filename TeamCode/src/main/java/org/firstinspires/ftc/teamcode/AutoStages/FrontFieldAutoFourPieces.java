@@ -40,6 +40,7 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
 
 
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
+        super.commandSegments.add(sequentialCommandFactory.stayStillFor(200));
         super.commandSegments.add(teamElementFinder.findTeamElementAndShutDown(5000));
 
         // TODO split preload positions measuring
@@ -51,17 +52,17 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
                             switch (teamElementFinder.getTeamElementPosition()) {
                                 case LEFT: case UNDETERMINED: {
                                     splitFirstPosition = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {0, 0}) : new Vector2D(new double[] {0, 0});
+                                            new Vector2D(new double[] {92, 266}) : new Vector2D(new double[] {0, 0});
                                     break;
                                 }
                                 case CENTER: {
                                     splitFirstPosition = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {0, 0}) : new Vector2D(new double[] {0, 0});
+                                            new Vector2D(new double[] {120, 244}) : new Vector2D(new double[] {0, 0});
                                     break;
                                 }
                                 case RIGHT: {
                                     splitFirstPosition = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {0, 0}) : new Vector2D(new double[] {0, 0});
+                                            new Vector2D(new double[] {92.5, 206}) : new Vector2D(new double[] {0, 0});
                                     break;
                                 }
                                 default:
@@ -74,8 +75,9 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
                                     splitFirstPosition
                             );
                             },
-                        () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null),
+                        () -> {},
                         () -> {
+                            robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null);
                             if (robot.chassis.isCurrentRotationalTaskRoughlyComplete())
                                 robot.extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, null);
                         },

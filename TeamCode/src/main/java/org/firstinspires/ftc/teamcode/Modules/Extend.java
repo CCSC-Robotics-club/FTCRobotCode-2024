@@ -48,12 +48,10 @@ public class Extend extends RobotModule {
     protected void periodic(double dt) {
         final double motorPowerFactor = ExtendConfigs.extendMotorReversed ? -1 : 1,
                 encoderFactor = ExtendConfigs.extendEncoderReversed ? -1 : 1;
-        if (extendLimitSwitch.getSensorReading() != 0) {
+        if (extendLimitSwitch.getSensorReading() != 0 && controller.desiredPosition == 0) {
             this.encoderZeroPosition = extendEncoder.getSensorReading();
-            if (controller.desiredPosition == 0) {
-                extendMotor.setPower(0);
-                return;
-            }
+            extendMotor.setPower(0);
+            return;
         }
 
         if (encoderZeroPosition == -114514 || controller.desiredPosition == 0) {
@@ -87,6 +85,7 @@ public class Extend extends RobotModule {
      * */
     public void setExtendPosition(double extendPosition, ModulesCommanderMarker operator) {
         if (!isOwner(operator)) return;
+        if (encoderZeroPosition == -114514) return;
 
         this.controller.desiredPosition = extendPosition * ExtendConfigs.maxExtendValue;
     }
