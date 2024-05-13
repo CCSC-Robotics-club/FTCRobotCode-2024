@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
@@ -11,10 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 public class TeamElementFinder {
-    final String[] LABELS = {
-            "team-prop-red",
-    };
-    final TfodProcessor tfod = new TfodProcessor.Builder().setModelAssetName("Team Prop Red.tflite").setModelLabels(LABELS).build();
+    final String[] LABELS;
+    final TfodProcessor tfod;
     final VisionPortal visionPortal;
     public enum TeamElementPosition {
         LEFT,
@@ -31,7 +30,26 @@ public class TeamElementFinder {
     }
 
     private TeamElementPosition teamElementPosition;
-    public TeamElementFinder(WebcamName webcamName) {
+    public TeamElementFinder(WebcamName webcamName, Robot.Side side) {
+        switch (side) {
+            case RED: {
+                LABELS = new String[] {
+                        "team-prop-red"
+                };
+                tfod = new TfodProcessor.Builder().setModelAssetName("Team Prop Red.tflite").setModelLabels(LABELS).build();
+                break;
+            }
+            case BLUE: {
+                LABELS = new String[] {
+                    "team-prop-blue"
+                };
+                tfod =  new TfodProcessor.Builder().setModelAssetName("Team Prop Blue.tflite").setModelLabels(LABELS).build();
+
+                break;
+            }
+            default: throw new IllegalArgumentException("unknown side: " + side);
+        }
+
         tfod.setMinResultConfidence(0.75f);
 
         VisionPortal.Builder builder = new VisionPortal.Builder();

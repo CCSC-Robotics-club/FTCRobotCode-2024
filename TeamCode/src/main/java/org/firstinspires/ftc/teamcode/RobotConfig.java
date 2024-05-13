@@ -369,7 +369,8 @@ public final class RobotConfig {
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -25});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
-        public static final double autoStageScoringHorizontalDeviation = 12;
+        public static final double autoStageScoringPositionsMargin = 10;
+        public static final double clawWidth = 6.5, grabbingDistanceToWall = 8, colorSensorThreshold = 2000, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 10.5;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 150;

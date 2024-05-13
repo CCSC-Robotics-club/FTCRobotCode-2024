@@ -9,12 +9,11 @@ import org.firstinspires.ftc.teamcode.Utils.AprilTagCameraAndDistanceSensorAimBo
 import org.firstinspires.ftc.teamcode.Utils.AutoStageProgram;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils.SpeedCurves;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandFactory;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinder;
-
-import java.util.PrimitiveIterator;
 
 public class FrontFieldAutoFourPieces extends AutoStageProgram {
     public FrontFieldAutoFourPieces(Robot.Side side) {
@@ -23,16 +22,22 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
 
     @Override
     public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
-        final TeamElementFinder teamElementFinder = new TeamElementFinder(robot.hardwareMap.get(WebcamName.class, "Webcam 1"));
+        final TeamElementFinder teamElementFinder = new TeamElementFinder(robot.hardwareMap.get(WebcamName.class, "Webcam 1"), super.allianceSide);
         final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(Math.toRadians(90)), super.allianceSide, robot.hardwareMap);
-        final AprilTagCameraAndDistanceSensorAimBot wallAimBot = new AprilTagCameraAndDistanceSensorAimBot(robot.chassis, robot.distanceSensor, robot.aprilTagCamera, robot.arm, null, robot.telemetrySender);
-        final double speedConstrainWhenArmRaised = 0.6;
-
+        final AprilTagCameraAndDistanceSensorAimBot wallAimBot = new AprilTagCameraAndDistanceSensorAimBot(robot.chassis, robot.distanceSensor, robot.aprilTagCamera, robot.arm, null, robot.telemetrySender, super.allianceSide);
+        final double speedFactorWhenArmRaised = 0.6;
 
         final Runnable
-                splitPreload = () -> robot.claw.setLeftClawClosed(false, null),
-                scorePreload = () -> robot.claw.setRightClawClosed(false, null);
-        final Vector2D stackCenterPositionDefault = new Vector2D(new double[] {18 + 135, 20});
+                splitPreload = this.allianceSide == Robot.Side.BLUE ?
+                () -> robot.claw.setRightClawClosed(false, null)
+                : () -> robot.claw.setLeftClawClosed(false, null),
+                scorePreload = () -> {
+            robot.claw.setRightClawClosed(false, null);
+            robot.claw.setLeftClawClosed(false, null);
+                };
+
+        final Vector2D stack1Position = this.allianceSide == Robot.Side.BLUE ?
+                new Vector2D(new double[] {18 + 135, 20}) : new Vector2D(new double[] {0, 0});
 
         robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
         robot.claw.setLeftClawClosed(true, null);
@@ -73,28 +78,30 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
         super.commandSegments.add(sequentialCommandFactory.justDoIt(splitPreload));
         super.commandSegments.add(sequentialCommandFactory.waitFor(300));
 
-        super.commandSegments.add(sequentialCommandFactory.justDoIt(() ->
-                robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null)));
-
-        super.commandSegments.add(sequentialCommandFactory.waitFor(200));
-
-        super.commandSegments.add(sequentialCommandFactory.moveToPoint(
-                sequentialCommandFactory.getBezierCurvesFromPathFile("score second").get(0).getPositionWithLERP(1),
+        super.commandSegments.add(new SequentialCommandSegment(
+                () -> true,
+                () -> new BezierCurve(robot.positionEstimator.getCurrentPosition(), sequentialCommandFactory.getBezierCurvesFromPathFile("score second").get(0).getPositionWithLERP(1)),
                 () -> {
-                    robot.arm.setScoringHeight(0, null);
-                    robot.claw.setLeftClawClosed(true, null);
-                    robot.claw.setRightClawClosed(true, null);
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
-                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
+                    robot.arm.setScoringHeight(0, null);
+                    robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
+                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.SCORE, null);
+                    robot.claw.setScoringAngle(1, null);
                 },
+                () -> {},
                 () -> {
-                }, () -> {
-                }
+                    robot.extend.setExtendPosition(
+                            RobotConfig.ArmConfigs.extendValuesAccordingToActualArmAngle.getYPrediction(robot.arm.getArmDesiredPosition()), null);
+                    robot.claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToActualArmAngle.getYPrediction(robot.arm.getArmDesiredPosition()) ,null);
+                },
+                robot.chassis::isCurrentTranslationalTaskComplete,
+                () -> robot.aprilTagCamera.getWallInFront() != null,
+                () -> new Rotation2D(0), () -> new Rotation2D(0),
+                SpeedCurves.originalSpeed, speedFactorWhenArmRaised
         ));
 
         super.commandSegments.add(wallAimBot.stickToWall(
-                teamElementFinder,
-                robot.arm::isArmInPosition
+                teamElementFinder, robot.extend::isExtendInPosition
         ));
 
         super.commandSegments.add(sequentialCommandFactory.waitFor(300));

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
+import static org.firstinspires.ftc.teamcode.RobotConfig.VisualNavigationConfigs.*;
+
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -96,8 +98,6 @@ public class PixelStackGrabbingCommand {
 
     public static List<SequentialCommandSegment> getCommandSegmentSegmentsWithColorSensor(Robot robot, ThreadedSensor markDetector, SequentialCommandFactory commandFactory, Vector2D stackCenterPositionDefault) {
         final List<SequentialCommandSegment> commandSegments = new ArrayList<>();
-        final double clawWidth = 6.5, grabbingDistanceToWall = 8, colorSensorThreshold = 2000, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 10.5;
-
         final Vector2D scanningStartPosition = stackCenterPositionDefault.addBy(new Vector2D(new double[] {20, scanningDistanceToWall}));
 
         final double startingPositionX = scanningStartPosition.getX();

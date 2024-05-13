@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Utils;
 
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
+import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleArilTagCamera;
@@ -9,6 +10,8 @@ import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinde
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedSensor;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
+
+import static org.firstinspires.ftc.teamcode.RobotConfig.VisualNavigationConfigs.*;
 
 import java.util.function.DoubleSupplier;
 
@@ -21,18 +24,20 @@ public class AprilTagCameraAndDistanceSensorAimBot {
     private final FixedAngleArilTagCamera aprilTagCamera;
     private final ModulesCommanderMarker modulesCommanderMarker;
     private final TelemetrySender telemetrySender;
+    private final Robot.Side side;
     private Vector2D previousWallPosition = new Vector2D(new double[]{0, 0});
     private double previousWallDistance = Double.POSITIVE_INFINITY;
-    public AprilTagCameraAndDistanceSensorAimBot(Chassis chassis, ThreadedSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, ModulesCommanderMarker commanderMarker) {
-        this(chassis, distanceSensor, aprilTagCamera, null, commanderMarker, null);
+    public AprilTagCameraAndDistanceSensorAimBot(Chassis chassis, ThreadedSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, ModulesCommanderMarker commanderMarker, Robot.Side side) {
+        this(chassis, distanceSensor, aprilTagCamera, null, commanderMarker, null, side);
     }
-    public AprilTagCameraAndDistanceSensorAimBot(Chassis chassis, ThreadedSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, Arm arm, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender) {
+    public AprilTagCameraAndDistanceSensorAimBot(Chassis chassis, ThreadedSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, Arm arm, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender, Robot.Side side) {
         this.chassis = chassis;
         this.distanceSensor = distanceSensor;
         this.aprilTagCamera = aprilTagCamera;
         this.modulesCommanderMarker = commanderMarker;
         this.telemetrySender = telemetrySender;
         this.desiredDistanceToWallSupplier = () -> RobotConfig.ArmConfigs.distancesToWallAccordingToScoringHeight.getYPrediction(arm.getArmScoringHeight());
+        this.side = side;
     }
 
     public SequentialCommandSegment stickToWall(SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
@@ -68,14 +73,14 @@ public class AprilTagCameraAndDistanceSensorAimBot {
     }
 
     public Vector2D getWallPosition(TeamElementFinder.TeamElementPosition teamElementPosition) {
-        final double deviationFromCenter;
+        double deviationFromCenter;
         switch (teamElementPosition) {
             case UNDETERMINED: case LEFT: {
-                deviationFromCenter = -RobotConfig.VisualNavigationConfigs.autoStageScoringHorizontalDeviation;
+                deviationFromCenter = -autoStageScoringPositionsMargin;
                 break;
             }
             case RIGHT: {
-                deviationFromCenter = RobotConfig.VisualNavigationConfigs.autoStageScoringHorizontalDeviation;
+                deviationFromCenter = autoStageScoringPositionsMargin;
                 break;
             }
             case CENTER: {
@@ -84,6 +89,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
             }
             default: throw new IllegalStateException("unknown team element result: " + teamElementPosition);
         }
+        deviationFromCenter += side == Robot.Side.BLUE ? clawWidth : -clawWidth;
         return new Vector2D(new double[] {
                 RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.getX() + deviationFromCenter,
                 desiredDistanceToWallSupplier.getAsDouble()

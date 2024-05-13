@@ -132,6 +132,10 @@ public class Arm extends RobotModule {
         return (int) ((armEncoder.getSensorReading() - armEncoderZeroPosition) * (ArmConfigs.encoderReversed ? -1: 1));
     }
 
+    public double getArmDesiredPosition() {
+        return armController.getDesiredPosition();
+    }
+
     public void setScoringHeight(double scoringHeight, ModulesCommanderMarker operator) {
         if (!isOwner(operator))
             return;

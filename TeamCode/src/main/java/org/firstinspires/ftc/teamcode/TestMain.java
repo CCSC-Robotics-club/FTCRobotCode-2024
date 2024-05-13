@@ -1206,7 +1206,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void teamElementFinderTest() {
-        final TeamElementFinder teamElementFinder = new TeamElementFinder(hardwareMap.get(WebcamName.class, "Webcam 1"));
+        final TeamElementFinder teamElementFinder = new TeamElementFinder(hardwareMap.get(WebcamName.class, "Webcam 1"), Robot.Side.RED);
 
         waitForStart();
 
