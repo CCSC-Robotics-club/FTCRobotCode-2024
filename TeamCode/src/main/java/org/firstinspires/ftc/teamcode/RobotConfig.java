@@ -163,7 +163,7 @@ public final class RobotConfig {
                 powerNeededToMoveUp = 0.14,
                 powerNeededToMoveDown = 0.12,
                 errorTolerance = 10;
-        public static final double errorAsArmInPosition = 20;
+        public static final double errorAsArmInPosition = 10;
 
         public enum Position {
             INTAKE,
@@ -318,8 +318,8 @@ public final class RobotConfig {
         public static final double timeToStartDecelerateRotation = 0.3;
 
         /** within how much distance should the translational task be counted as complete */
-        public static final double errorAsTaskFinishedCM = 2;
-        public static final double chassisSpeedAsRobotStoppedCMPerSec = 3;
+        public static final double errorAsTaskFinishedCM = 2.5;
+        public static final double chassisSpeedAsRobotStoppedCMPerSec = 10;
 
         public static final double errorAsTaskRoughlyFinished = 12;
 
@@ -369,7 +369,7 @@ public final class RobotConfig {
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -25});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
-        public static final double autoStageScoringPositionsLeft = -13, autoStageScoringPositionsCenter = 2, autoStageScoringPositionsRight = 17;
+        public static final double autoStageScoringPositionsLeft = -8, autoStageScoringPositionsCenter = 2, autoStageScoringPositionsRight = 12;
         public static final double clawWidth = 6.5, grabbingDistanceToWall = 8, colorSensorThreshold = 2000, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 10.5;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;

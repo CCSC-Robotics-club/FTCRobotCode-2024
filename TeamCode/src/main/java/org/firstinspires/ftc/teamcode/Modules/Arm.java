@@ -81,10 +81,7 @@ public class Arm extends RobotModule {
 //        armController.goToDesiredPosition(ArmConfigs.encoderPositions.get(desiredPosition));
 //        if (desiredPosition == ArmConfigs.Position.SCORE)
 //            armController.updateDesiredPosition(ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight));
-
-        simpleArmController.desiredPosition = ArmConfigs.encoderPositions.get(desiredPosition);
-        if (desiredPosition == ArmConfigs.Position.SCORE)
-            simpleArmController.desiredPosition = ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight);
+        updateDesiredPositions();
         final double armPosition = getArmEncoderPosition(),
                 armVelocity = armEncoder.getVelocity() * encoderFactor,
                 // armCorrectionPower = armController.getMotorPower(armVelocity, armPosition);
@@ -115,6 +112,7 @@ public class Arm extends RobotModule {
         if (!isOwner(operatorService))
             return;
         this.desiredPosition = position;
+        updateDesiredPositions();
     }
 
     public boolean isArmInPosition() {
@@ -133,11 +131,18 @@ public class Arm extends RobotModule {
                 simpleArmController.desiredPosition;
     }
 
+    private void updateDesiredPositions() {
+        simpleArmController.desiredPosition = ArmConfigs.encoderPositions.get(desiredPosition);
+        if (desiredPosition == ArmConfigs.Position.SCORE)
+            simpleArmController.desiredPosition = ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight);
+    }
+
     public void setScoringHeight(double scoringHeight, ModulesCommanderMarker operator) {
         System.out.println("arm set scoring height: " + scoringHeight + " by operator: " + operator);
         if (!isOwner(operator))
             return;
         this.scoringHeight = scoringHeight;
+        updateDesiredPositions();
     }
 
     public double getArmDesiredScoringHeight() {

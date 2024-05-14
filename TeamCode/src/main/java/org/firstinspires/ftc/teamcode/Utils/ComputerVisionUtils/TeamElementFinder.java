@@ -29,7 +29,7 @@ public class TeamElementFinder {
         teamElementPositionsPixel.put(TeamElementPosition.RIGHT, 580);
     }
 
-    private TeamElementPosition teamElementPosition;
+    public TeamElementPosition teamElementPosition;
     public TeamElementFinder(WebcamName webcamName, Robot.Side side) {
         switch (side) {
             case RED: {
@@ -92,9 +92,5 @@ public class TeamElementFinder {
 
     public void shutDown() {
         // visionPortal.setProcessorEnabled(tfod, false);
-    }
-
-    public TeamElementPosition getTeamElementPosition() {
-        return teamElementPosition;
     }
 }
