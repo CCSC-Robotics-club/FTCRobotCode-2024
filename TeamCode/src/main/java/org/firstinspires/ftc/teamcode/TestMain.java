@@ -65,7 +65,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        tofDistanceSensorTest();
+        scoringSettingsTuning();
     }
 
     private void ledTest() {
@@ -1004,7 +1004,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void limitSwitchTest() {
-        TouchSensor limitSwitch = hardwareMap.get(TouchSensor.class, "limit");
+        TouchSensor limitSwitch = hardwareMap.get(TouchSensor.class, "armLimit");
 
         waitForStart();
 

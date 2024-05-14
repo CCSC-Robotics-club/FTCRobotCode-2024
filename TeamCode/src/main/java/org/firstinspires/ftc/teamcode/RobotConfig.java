@@ -158,12 +158,12 @@ public final class RobotConfig {
         /** simple arm controller */
         public static final double
                 maxPowerWhenMovingUp = 0.85,
-                maxPowerWhenMovingDown = 0.6,
-                errorStartDecelerate = 160,
+                maxPowerWhenMovingDown = 0.65,
+                errorStartDecelerate = 240,
                 powerNeededToMoveUp = 0.18,
-                powerNeededToMoveDown = 0.18,
+                powerNeededToMoveDown = 0.24,
                 errorTolerance = 10;
-        public static final double errorAsArmInPosition = 10;
+        public static final double errorAsArmInPosition = 15;
 
         public enum Position {
             INTAKE,
