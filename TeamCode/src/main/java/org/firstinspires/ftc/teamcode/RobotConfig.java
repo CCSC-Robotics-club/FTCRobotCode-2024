@@ -160,8 +160,8 @@ public final class RobotConfig {
                 maxPowerWhenMovingUp = 0.85,
                 maxPowerWhenMovingDown = 0.6,
                 errorStartDecelerate = 160,
-                powerNeededToMoveUp = 0.14,
-                powerNeededToMoveDown = 0.12,
+                powerNeededToMoveUp = 0.18,
+                powerNeededToMoveDown = 0.18,
                 errorTolerance = 10;
         public static final double errorAsArmInPosition = 10;
 
@@ -209,7 +209,7 @@ public final class RobotConfig {
                 errorTolerance = 30,
                 /* settings */
                 maxExtendValue = 1450,
-                intakeValue = 480,
+                intakeValue = 520,
                 grabStackValue = 160;
 
     }
@@ -369,7 +369,7 @@ public final class RobotConfig {
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -25});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
-        public static final double autoStageScoringPositionsLeft = -8, autoStageScoringPositionsCenter = 2, autoStageScoringPositionsRight = 12;
+        public static final double autoStageScoringPositionsLeft = -6, autoStageScoringPositionsCenter = 4, autoStageScoringPositionsRight = 14;
         public static final double clawWidth = 6.5, grabbingDistanceToWall = 8, colorSensorThreshold = 2000, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 10.5;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
