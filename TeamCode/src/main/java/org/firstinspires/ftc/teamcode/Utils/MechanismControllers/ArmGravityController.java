@@ -66,6 +66,7 @@ public class ArmGravityController implements MechanismController {
         else {
             /* override the current schedule, but we start from the current desired position */
             final double scheduleTimer = (System.currentTimeMillis() - currentScheduleCreatedTime) / 1000.0;
+            System.out.println("schedule timer: " + scheduleTimer);
             this.currentSchedule = new EnhancedPIDController.TrapezoidPathSchedule(profile.dynamicalPIDProfile, new EnhancedPIDController.Task(EnhancedPIDController.Task.TaskType.GO_TO_POSITION, newDesiredPosition), currentSchedule.getCurrentPathPosition(scheduleTimer), currentSchedule.getCurrentSpeed(scheduleTimer));
         }
         this.desiredPosition = newDesiredPosition;

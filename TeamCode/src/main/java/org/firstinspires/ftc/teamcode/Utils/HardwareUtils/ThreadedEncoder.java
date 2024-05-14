@@ -20,10 +20,6 @@ public class ThreadedEncoder extends ThreadedSensor {
         final double reading = super.getSensorReading();
         super.lock.lock();
         velocity = (reading - previousReading) / (System.currentTimeMillis() - previousTimeMillis) * 1000.0;
-        System.out.print("encoder current reading: " + reading + ", ");
-        System.out.print("previous reading: " + previousReading + ", ");
-        System.out.print("time elapsed: " + ((System.currentTimeMillis() - previousTimeMillis) / 1000.0) + ", ");
-        System.out.println("calculated velocity: " + velocity);
         super.lock.unlock();
         previousTimeMillis = System.currentTimeMillis();
         previousReading = reading;

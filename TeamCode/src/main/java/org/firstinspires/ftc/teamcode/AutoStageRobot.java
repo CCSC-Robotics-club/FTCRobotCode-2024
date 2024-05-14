@@ -29,6 +29,9 @@ public class AutoStageRobot extends Robot {
         autoProgramRunnerService.setCommandSegments(autoStageProgram.commandSegments);
         super.colorLeft.setEnabled(false);
         super.colorRight.setEnabled(false);
+
+        super.spikeMarkDetectionSensor.setEnabled(false);
+        super.distanceSensorBack.setEnabled(false);
     }
 
     @Override

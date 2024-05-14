@@ -94,7 +94,7 @@ public class UpperStructureService extends RobotService {
 
                 if (armInPositionDuringCurrentProcess) {
                     claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToActualArmAngle.getYPrediction(arm.getArmEncoderPosition()), this);
-                    extend.setExtendPosition(RobotConfig.ArmConfigs.extendValuesAccordingToActualArmAngle.getYPrediction(arm.getArmEncoderPosition()) / RobotConfig.ExtendConfigs.maxExtendValue, this);
+                    extend.setExtendPosition(RobotConfig.ArmConfigs.extendValuesAccordingToActualArmAngle.getYPrediction(arm.getArmEncoderPosition()), this);
                 }
                 else {
                     claw.setScoringAngle(1, this);

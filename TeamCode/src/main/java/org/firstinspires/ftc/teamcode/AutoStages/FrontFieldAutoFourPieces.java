@@ -80,17 +80,15 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
                             if (robot.chassis.isCurrentRotationalTaskRoughlyComplete())
                                 robot.extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, null);
                         },
-                        () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null),
+                        splitPreload,
                         robot.chassis::isCurrentTranslationalTaskComplete,
                         () -> new Rotation2D(0), () -> new Rotation2D(0)
                 )
         );
-
-        super.commandSegments.add(sequentialCommandFactory.stayStillFor(300));
-        super.commandSegments.add(sequentialCommandFactory.justDoIt(splitPreload));
         super.commandSegments.add(sequentialCommandFactory.stayStillFor(300));
 
         super.commandSegments.add(sequentialCommandFactory.justDoIt(() -> {
+            robot.claw.setRightClawClosed(true, null);
             robot.extend.setExtendPosition(0, null);
             robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
         }));
@@ -101,17 +99,18 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
                 () -> {
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
                     robot.arm.setScoringHeight(0, null);
-                    robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
                     robot.claw.setFlip(FlippableDualClaw.FlipperPosition.SCORE, null);
                     robot.claw.setScoringAngle(1, null);
                 },
                 () -> {},
                 () -> {
                     robot.extend.setExtendPosition(
-                            RobotConfig.ArmConfigs.extendValuesAccordingToActualArmAngle.getYPrediction(robot.arm.getArmDesiredPosition()), null);
-                    robot.claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToActualArmAngle.getYPrediction(robot.arm.getArmDesiredPosition()) ,null);
-                },
-                robot.chassis::isCurrentTranslationalTaskComplete,
+                            RobotConfig.ArmConfigs.extendValuesAccordingToActualArmAngle.getYPrediction(robot.arm.getArmEncoderPosition()), null);
+                    robot.claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToActualArmAngle.getYPrediction(robot.arm.getArmEncoderPosition()) ,null);
+                    robot.telemetrySender.putSystemMessage("arm desired position", robot.arm.getArmDesiredPosition());
+                    robot.telemetrySender.putSystemMessage("corresponding extend value", RobotConfig.ArmConfigs.extendValuesAccordingToActualArmAngle.getYPrediction(robot.arm.getArmDesiredPosition()));
+                    },
+                () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.arm.isArmInPosition(),
                 () -> robot.aprilTagCamera.getWallInFront() != null,
                 () -> new Rotation2D(0), () -> new Rotation2D(0),
                 SpeedCurves.originalSpeed, speedFactorWhenArmRaised

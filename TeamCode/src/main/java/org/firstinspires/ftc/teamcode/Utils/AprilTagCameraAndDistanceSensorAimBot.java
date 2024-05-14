@@ -36,13 +36,13 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         this.aprilTagCamera = aprilTagCamera;
         this.modulesCommanderMarker = commanderMarker;
         this.telemetrySender = telemetrySender;
-        this.desiredDistanceToWallSupplier = () -> RobotConfig.ArmConfigs.distancesToWallAccordingToScoringHeight.getYPrediction(arm.getArmScoringHeight());
+        this.desiredDistanceToWallSupplier = () -> RobotConfig.ArmConfigs.distancesToWallAccordingToScoringHeight.getYPrediction(arm.getArmDesiredScoringHeight());
         this.side = side;
     }
 
     public SequentialCommandSegment stickToWall(SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
         return stickToWall(
-                () -> update(getWallPosition(TeamElementFinder.TeamElementPosition.CENTER)),
+                () -> update(getDesiredAimingPositionToWall(TeamElementFinder.TeamElementPosition.CENTER)),
                 additionalCompleteChecker
         );
     }
@@ -53,7 +53,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
 
     public SequentialCommandSegment stickToWall(TeamElementFinder teamElementFinder, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
         return stickToWall(
-                () -> this.update(getWallPosition(teamElementFinder.getTeamElementPosition())),
+                () -> this.update(getDesiredAimingPositionToWall(teamElementFinder.getTeamElementPosition())),
                 additionalCompleteChecker
         );
     }
@@ -72,7 +72,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         );
     }
 
-    public Vector2D getWallPosition(TeamElementFinder.TeamElementPosition teamElementPosition) {
+    public Vector2D getDesiredAimingPositionToWall(TeamElementFinder.TeamElementPosition teamElementPosition) {
         double deviationFromCenter;
         switch (teamElementPosition) {
             case UNDETERMINED: case LEFT: {
@@ -91,7 +91,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         }
         return new Vector2D(new double[] {
                 RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.getX() + deviationFromCenter,
-                desiredDistanceToWallSupplier.getAsDouble()
+                -desiredDistanceToWallSupplier.getAsDouble()
         });
     }
 

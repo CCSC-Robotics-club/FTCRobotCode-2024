@@ -87,7 +87,7 @@ public class Extend extends RobotModule {
         if (!isOwner(operator)) return;
         if (encoderZeroPosition == -114514) return;
 
-        this.controller.desiredPosition = extendPosition * ExtendConfigs.maxExtendValue;
+        this.controller.desiredPosition = Math.max(0, Math.min(ExtendConfigs.maxExtendValue, extendPosition));
     }
 
     public boolean isExtendInPosition() {

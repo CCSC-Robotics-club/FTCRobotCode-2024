@@ -198,8 +198,8 @@ public abstract class Robot {
         servos.add(flip);
         servos.add(clawLeft);
         servos.add(clawRight);
-        sensors.put("color-left", colorLeft);
-        sensors.put("color-right", colorRight);
+        // sensors.put("color-left", colorLeft);
+        // sensors.put("color-right", colorRight);
         claw = new FlippableDualClaw(
                 flip, clawLeft, clawRight,
                 colorLeft, colorRight,

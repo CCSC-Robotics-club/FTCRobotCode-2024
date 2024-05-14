@@ -24,7 +24,10 @@ public class PixelStackGrabbingCommand {
         commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> null,
-                () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null),
+                () -> {
+                    robot.distanceSensorBack.setEnabled(true);
+                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null);
+                },
                 () -> {
                     final double wallPositionY = robot.distanceSensorBack.getSensorReading() < 50 ?
                             robot.positionEstimator.getCurrentPosition().getY() - robot.distanceSensorBack.getSensorReading()
@@ -62,7 +65,10 @@ public class PixelStackGrabbingCommand {
 
         final Vector2D robotPositionGrabbingRightClaw = new Vector2D();
         commandSegments.add(commandFactory.justDoIt(
-                () -> robotPositionGrabbingRightClaw.update(new double[] {stackCenterPositionDefault.getX() - clawWidth, robot.positionEstimator.getCurrentPosition().getY()})
+                () -> {
+                    robot.distanceSensorBack.setEnabled(false);
+                    robotPositionGrabbingRightClaw.update(new double[] {stackCenterPositionDefault.getX() - clawWidth, robot.positionEstimator.getCurrentPosition().getY()});
+                }
         ));
 
         commandSegments.add(commandFactory.justDoIt(() -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null)));
@@ -106,6 +112,7 @@ public class PixelStackGrabbingCommand {
                 () -> true,
                 () -> null,
                 () -> {
+                    robot.distanceSensorBack.setEnabled(true);
                     robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
                     robot.claw.setRightClawClosed(true, null);
                     robot.claw.setLeftClawClosed(true, null);
@@ -137,6 +144,7 @@ public class PixelStackGrabbingCommand {
         commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> {
+                    markDetector.setEnabled(true);
                     robot.chassis.setLowSpeedModeEnabled(true);
                     final double wallPositionY = robot.distanceSensorBack.getSensorReading() < 50 ?
                             robot.positionEstimator.getCurrentPosition().getY() - robot.distanceSensorBack.getSensorReading()
@@ -168,6 +176,8 @@ public class PixelStackGrabbingCommand {
                     if (actualStackCenterPositionX[1] != -1 && actualStackCenterPositionX[2] != -1)
                         actualStackCenterPositionX[0] = (actualStackCenterPositionX[1] + actualStackCenterPositionX[2])/2;
                     else throw new IllegalStateException("spike mark unseen");
+
+                    markDetector.setEnabled(false);
                 },
                 robot.chassis::isCurrentTranslationalTaskComplete,
                 () -> actualStackCenterPositionX[1] != -1 && actualStackCenterPositionX[2] != -1,
@@ -224,9 +234,10 @@ public class PixelStackGrabbingCommand {
         ));
 
         final Vector2D robotPositionGrabbingRightClaw = new Vector2D();
-        commandSegments.add(commandFactory.justDoIt(
-                () -> robotPositionGrabbingRightClaw.update(new double[] {actualStackCenterPositionX[0] - clawWidth, robot.positionEstimator.getCurrentPosition().getY()})
-        ));
+        commandSegments.add(commandFactory.justDoIt(() -> {
+            robot.distanceSensorBack.setEnabled(false);
+            robotPositionGrabbingRightClaw.update(new double[] {actualStackCenterPositionX[0] - clawWidth, robot.positionEstimator.getCurrentPosition().getY()});
+        }));
 
         commandSegments.add(commandFactory.justDoIt(() -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null)));
 

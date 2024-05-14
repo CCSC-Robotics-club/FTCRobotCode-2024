@@ -157,12 +157,12 @@ public final class RobotConfig {
 
         /** simple arm controller */
         public static final double
-                maxPowerWhenMovingUp = 1,
-                maxPowerWhenMovingDown = 0.8,
+                maxPowerWhenMovingUp = 0.85,
+                maxPowerWhenMovingDown = 0.6,
                 errorStartDecelerate = 160,
-                powerNeededToMoveUp = 0.16,
+                powerNeededToMoveUp = 0.14,
                 powerNeededToMoveDown = 0.12,
-                errorTolerance = 15;
+                errorTolerance = 10;
         public static final double errorAsArmInPosition = 20;
 
         public enum Position {
@@ -182,9 +182,9 @@ public final class RobotConfig {
 
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {1400, 1300, 1250, 1200, 1150},
+                correspondingArmEncoderValues = new double[] {1400, 1300, 1250, 1200, 1120},
                 // correspondingArmEncoderValues = new double[] {390, 365, 345, 335, 320},
-                correspondingExtendValues = new double[] {0, 450, 800, 1050, 1480},
+                correspondingExtendValues = new double[] {200, 650, 800, 1050, 1400},
                 correspondingServoPositions = new double[] {0.6, 0.7, 0.75, 0.8, 0.8},
                 correspondingDistanceToWall = new double[] {20.5, 16.5, 12.5, 8.5, 4.5};
 
@@ -208,9 +208,9 @@ public final class RobotConfig {
                 powerNeededToMoveBackward = 0.15,
                 errorTolerance = 30,
                 /* settings */
-                maxExtendValue = 1200,
-                intakeValue = 480 / maxExtendValue,
-                grabStackValue = 160 / maxExtendValue;
+                maxExtendValue = 1450,
+                intakeValue = 480,
+                grabStackValue = 160;
 
     }
 
@@ -369,7 +369,7 @@ public final class RobotConfig {
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -25});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
-        public static final double autoStageScoringPositionsLeft = -18, autoStageScoringPositionsCenter = 2, autoStageScoringPositionsRight = 22;
+        public static final double autoStageScoringPositionsLeft = -13, autoStageScoringPositionsCenter = 2, autoStageScoringPositionsRight = 17;
         public static final double clawWidth = 6.5, grabbingDistanceToWall = 8, colorSensorThreshold = 2000, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 10.5;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
