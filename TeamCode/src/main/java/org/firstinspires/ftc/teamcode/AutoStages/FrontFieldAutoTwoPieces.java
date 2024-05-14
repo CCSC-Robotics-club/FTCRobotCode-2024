@@ -42,7 +42,6 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
         // super.commandSegments.add(teamElementFinder.findTeamElementAndShutDown(5000));
         teamElementFinder.teamElementPosition = TeamElementFinder.TeamElementPosition.RIGHT;
 
-        // TODO split preload positions measuring
         super.commandSegments.add(
                 new SequentialCommandSegment(
                         () -> true,
@@ -70,15 +69,16 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
 
                             return new BezierCurve(
                                     sequentialCommandFactory.getRobotStartingPosition("split first(left)"),
-                                    splitFirstPosition.addBy(new Vector2D(new double[] {0, 10})),
+                                    splitFirstPosition.addBy(new Vector2D(new double[] {0, 20})),
                                     splitFirstPosition
                             );
                             },
                         () -> {},
                         () -> {
+                            if (!robot.chassis.isCurrentRotationalTaskRoughlyComplete())
+                                return;
                             robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null);
-                            if (robot.chassis.isCurrentRotationalTaskRoughlyComplete())
-                                robot.extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, null);
+                            robot.extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, null);
                         },
                         splitPreload,
                         robot.chassis::isCurrentTranslationalTaskComplete,
