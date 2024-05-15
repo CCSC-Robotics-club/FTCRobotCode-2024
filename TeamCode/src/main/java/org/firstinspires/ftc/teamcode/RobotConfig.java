@@ -182,11 +182,12 @@ public final class RobotConfig {
 
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {1500, 1400, 1300, 1250, 1200},
-                correspondingExtendValues = new double[] {300, 650, 1000, 1200, 1400},
-                correspondingServoPositions = new double[] {0.54, 0.6, 0.64, 0.68, 0.72},
-                correspondingDistanceToWall = new double[] {28, 24, 16, 10, 4};
+                correspondingArmEncoderValues = new double[] {1500, 1400, 1300, 1250, 1150},
+                correspondingExtendValues = new double[] {250, 550, 850, 1050, 1400},
+                correspondingServoPositions = new double[] {0.46, 0.52, 0.56, 0.6, 0.66},
+                correspondingDistanceToWall = new double[] {30, 26, 18, 12, 5};
 
+        public static final double manualStageMinScoringHeight = 0.2, manualStageMaxScoringHeight = 1;
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall),
@@ -205,12 +206,12 @@ public final class RobotConfig {
                 errorStartDecelerate = 200,
                 powerNeededToMoveForward = 0.03,
                 powerNeededToMoveBackward = 0.03,
-                errorTolerance = 20,
-                errorAsTaskFinished = 30,
+                errorTolerance = 25,
+                errorAsTaskFinished = 50,
                 /* settings */
                 maxExtendValue = 1450,
-                intakeValue = 540,
-                grabStackValue = 160;
+                intakeValue = 560,
+                grabStackValue = 180;
 
     }
 
@@ -366,8 +367,8 @@ public final class RobotConfig {
         public static final double distanceSensorMinDistance = 0;
         public static final double approachReverseSpeedTolerance = 20; // if the robot goes away from the wall in more than 20cm/s, we think the distance sensor failed
 
-        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -25});
-        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3});
+        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -38});
+        public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -5});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
         public static final double autoStageScoringPositionsLeft = -6, autoStageScoringPositionsCenter = 4, autoStageScoringPositionsRight = 14;
         public static final double clawWidth = 6.5, grabbingDistanceToWall = 8, colorSensorThreshold = 100, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 10.5;

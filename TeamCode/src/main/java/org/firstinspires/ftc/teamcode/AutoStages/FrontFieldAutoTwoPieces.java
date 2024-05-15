@@ -66,13 +66,13 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
 
                             return new BezierCurve(
                                     sequentialCommandFactory.getRobotStartingPosition("split first(left)"),
-                                    splitFirstPosition.addBy(new Vector2D(new double[] {0, 12})),
+                                    splitFirstPosition.addBy(new Vector2D(new double[] {0, 20})),
                                     splitFirstPosition
                             );
                             },
                         () -> {},
                         () -> {
-                            if (!robot.chassis.isCurrentRotationalTaskRoughlyComplete())
+                            if (!robot.chassis.isCurrentTranslationalTaskRoughlyComplete())
                                 return;
                             robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null);
                             robot.extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, null);
@@ -95,14 +95,14 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                 () -> new BezierCurve(robot.positionEstimator.getCurrentPosition(), sequentialCommandFactory.getBezierCurvesFromPathFile("score second").get(0).getPositionWithLERP(1)),
                 () -> {
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
-                    robot.arm.setScoringHeight(0, null);
+                    robot.arm.setScoringHeight(0.1, null);
                     robot.claw.setFlip(FlippableDualClaw.FlipperPosition.SCORE, null);
                     robot.claw.setScoringAngle(1, null);
                     robot.extend.setExtendPosition(0, null);
                 },
                 () -> {},
                 () -> {
-                    robot.extend.setExtendPosition(500, null);
+                    robot.extend.setExtendPosition(700, null);
                     robot.claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToActualArmAngle.getYPrediction(robot.arm.getArmDesiredPosition()) ,null);
                     },
                 () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.arm.isArmInPosition(),

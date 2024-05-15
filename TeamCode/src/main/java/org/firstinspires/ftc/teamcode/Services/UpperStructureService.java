@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode.Modules.Arm;
 import org.firstinspires.ftc.teamcode.Modules.Extend;
 import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
-import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.RobotService;
 
@@ -65,8 +64,8 @@ public class UpperStructureService extends RobotService {
             case GRABBING: {
                 claw.setAutoClosing(copilotGamePad.x, this);
                 arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, this);
-                armInPositionDuringCurrentProcess |= arm.isArmInPosition();
-                if (armInPositionDuringCurrentProcess)
+                armInPositionDuringCurrentScoringProcess |= arm.isArmInPosition();
+                if (armInPositionDuringCurrentScoringProcess)
                     extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, this);
                 else
                     extend.setExtendPosition(0, this);
@@ -86,20 +85,21 @@ public class UpperStructureService extends RobotService {
 
                 if (Math.abs(copilotGamePad.left_stick_y) > 0.05)
                     desiredScoringHeight += -0.5 * dt * copilotGamePad.left_stick_y;
-                desiredScoringHeight = Math.max(Math.min(desiredScoringHeight, 1), 0.25);
+                desiredScoringHeight = Math.max(Math.min(desiredScoringHeight, RobotConfig.ArmConfigs.manualStageMaxScoringHeight), RobotConfig.ArmConfigs.manualStageMinScoringHeight);
 
                 chassisService.setDesiredScoringHeight(desiredScoringHeight);
                 final double actualScoringHeight = chassisService.getActualScoringHeightAccordingToDistanceToWall(desiredScoringHeight);
                 arm.setScoringHeight(actualScoringHeight, this);
 
-                if (armInPositionDuringCurrentProcess) {
-                    claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToActualArmAngle.getYPrediction(arm.getArmEncoderPosition()), this);
+                if (armInPositionDuringCurrentScoringProcess) {
                     extend.setExtendPosition(RobotConfig.ArmConfigs.extendValuesAccordingToActualArmAngle.getYPrediction(arm.getArmEncoderPosition()), this);
-                }
-                else {
-                    claw.setScoringAngle(1, this);
+                    extendInPositionDuringCurrentScoringProcess |= extend.isExtendInPosition();
+                } else
                     extend.setExtendPosition(0, this);
-                }
+                claw.setScoringAngle(armInPositionDuringCurrentScoringProcess && extendInPositionDuringCurrentScoringProcess ?
+                        RobotConfig.ArmConfigs.flipperPositionsAccordingToActualArmAngle.getYPrediction(arm.getArmEncoderPosition())
+                        : 1
+                        , this);
 
                 /* firstly we close the claw */
                 if (!clawRequestedDuringCurrentScoringProcess){
@@ -111,7 +111,7 @@ public class UpperStructureService extends RobotService {
                     claw.setFlip(FlippableDualClaw.FlipperPosition.SCORE, this);
                     arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
                     // this.armInPositionDuringCurrentProcess |= arm.isArmInPosition() || chassisService.stickToWallComplete();
-                    this.armInPositionDuringCurrentProcess |= arm.isArmInPosition() && chassisService.stickToWallComplete();
+                    this.armInPositionDuringCurrentScoringProcess |= arm.isArmInPosition() && chassisService.stickToWallComplete();
                 }
                 openClawOnDemanded();
 
@@ -120,22 +120,19 @@ public class UpperStructureService extends RobotService {
         }
     }
 
-    private boolean clawAutoOpenWhenTouchGroundInitiated = false, clawRequestedDuringCurrentScoringProcess = false;
-    private boolean armInPositionDuringCurrentProcess = false;
+    private boolean clawAutoOpenWhenTouchGroundInitiated = false, clawRequestedDuringCurrentScoringProcess = false, armInPositionDuringCurrentScoringProcess = false, extendInPositionDuringCurrentScoringProcess = false;
     private void keyBindings() {
         if (copilotGamePad.y)
             this.currentStatus = UpperStructureStatus.HOLDING;
         if (copilotGamePad.a) {
             this.currentStatus = UpperStructureStatus.GRABBING;
-            this.armInPositionDuringCurrentProcess = false;
+            this.armInPositionDuringCurrentScoringProcess = false;
             claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, this);
             clawAutoOpenWhenTouchGroundInitiated = false;
         }
         if (copilotGamePad.b) {
             this.currentStatus = UpperStructureStatus.SCORING;
-            // this.desiredScoringHeight = 1;
-            this.armInPositionDuringCurrentProcess = false;
-            clawRequestedDuringCurrentScoringProcess = false;
+            this.armInPositionDuringCurrentScoringProcess = this.clawRequestedDuringCurrentScoringProcess = this.extendInPositionDuringCurrentScoringProcess = false;
         }
     }
 
