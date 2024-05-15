@@ -37,7 +37,7 @@ $$
 
 ### 自动阶段路径规划
 <div align="center">
-<img src="media/automaticStaDecSys.flowchart.png">
+<img src="media/automaticStaDecSys.flowchart.png" width="40%">
 </div>
 
 - 我们将FRC中的PathPlanner下放到了机器当中。PathPlanner是由FRC Team 3015创建的FRC运动轮廓生成器。其优点在于：
