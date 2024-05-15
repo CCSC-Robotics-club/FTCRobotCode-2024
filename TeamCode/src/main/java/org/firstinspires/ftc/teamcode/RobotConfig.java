@@ -157,13 +157,13 @@ public final class RobotConfig {
 
         /** simple arm controller */
         public static final double
-                maxPowerWhenMovingUp = 0.85,
-                maxPowerWhenMovingDown = 0.65,
+                maxPowerWhenMovingUp = 0.75,
+                maxPowerWhenMovingDown = 0.8,
                 errorStartDecelerate = 240,
                 powerNeededToMoveUp = 0.18,
                 powerNeededToMoveDown = 0.24,
-                errorTolerance = 10;
-        public static final double errorAsArmInPosition = 15;
+                errorTolerance = 12;
+        public static final double errorAsArmInPosition = 25;
 
         public enum Position {
             INTAKE,
@@ -200,15 +200,16 @@ public final class RobotConfig {
 
         public static final double
                 /* pid */
-                maxPowerWhenMovingForward = 0.8,
-                maxPowerWhenMovingBackward = 0.8,
+                maxPowerWhenMovingForward = 0.9,
+                maxPowerWhenMovingBackward = 0.85,
                 errorStartDecelerate = 200,
-                powerNeededToMoveForward = 0.15,
-                powerNeededToMoveBackward = 0.15,
-                errorTolerance = 30,
+                powerNeededToMoveForward = 0.03,
+                powerNeededToMoveBackward = 0.03,
+                errorTolerance = 20,
+                errorAsTaskFinished = 30,
                 /* settings */
                 maxExtendValue = 1450,
-                intakeValue = 520,
+                intakeValue = 540,
                 grabStackValue = 160;
 
     }
@@ -284,7 +285,7 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileX = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.02,
+                0.03,
                 25,
                 1,
                 0.18,
@@ -318,7 +319,7 @@ public final class RobotConfig {
 
         /** within how much distance should the translational task be counted as complete */
         public static final double errorAsTaskFinishedCM = 2.5;
-        public static final double chassisSpeedAsRobotStoppedCMPerSec = 10;
+        public static final double chassisSpeedAsRobotStoppedCMPerSec = 15;
 
         public static final double errorAsTaskRoughlyFinished = 12;
 
@@ -369,7 +370,7 @@ public final class RobotConfig {
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -3});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
         public static final double autoStageScoringPositionsLeft = -6, autoStageScoringPositionsCenter = 4, autoStageScoringPositionsRight = 14;
-        public static final double clawWidth = 6.5, grabbingDistanceToWall = 8, colorSensorThreshold = 2000, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 10.5;
+        public static final double clawWidth = 6.5, grabbingDistanceToWall = 8, colorSensorThreshold = 100, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 10.5;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 150;

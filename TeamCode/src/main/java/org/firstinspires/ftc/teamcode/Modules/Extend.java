@@ -91,7 +91,7 @@ public class Extend extends RobotModule {
     }
 
     public boolean isExtendInPosition() {
-        return Math.abs(getExtendPosition() - controller.desiredPosition) < ExtendConfigs.errorTolerance;
+        return Math.abs(getExtendPosition() - controller.desiredPosition) < ExtendConfigs.errorAsTaskFinished;
     }
 
     @Override

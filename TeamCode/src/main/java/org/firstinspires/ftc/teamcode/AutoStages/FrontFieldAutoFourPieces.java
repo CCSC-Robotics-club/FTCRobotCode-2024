@@ -24,7 +24,9 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
         final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(0), super.allianceSide, robot.hardwareMap);
         final AutoStageProgram firstTwoPieces = new FrontFieldAutoTwoPieces(allianceSide);
         final double speedFactorWhenArmRaised = 0.6;
-        final Vector2D stackCenterPositionDefault = new Vector2D(new double[] {18 + 135, 20});
+
+        final Vector2D stack1Position = this.allianceSide == Robot.Side.BLUE ?
+                new Vector2D(new double[] {18 + 135, 20}) : new Vector2D(new double[] {0, 0});
 
         firstTwoPieces.scheduleCommands(robot, telemetrySender);
         commandSegments.addAll(firstTwoPieces.commandSegments);
@@ -50,7 +52,7 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
                 speedFactorWhenArmRaised
         ));
         commandSegments.add(sequentialCommandFactory.followSingleCurve("move back and grab third from stack", 1, new Rotation2D(0)));
-        commandSegments.addAll(PixelStackGrabbingCommand.getCommandSegmentSegmentsWithColorSensor(robot, robot.spikeMarkDetectionSensor, sequentialCommandFactory, stackCenterPositionDefault));
+        commandSegments.addAll(PixelStackGrabbingCommand.getCommandSegmentSegmentsWithColorSensor(robot, robot.spikeMarkDetectionSensor, sequentialCommandFactory, stack1Position));
 
         commandSegments.add(sequentialCommandFactory.followSingleCurve("score third and fourth", 1, new Rotation2D(0)));
 

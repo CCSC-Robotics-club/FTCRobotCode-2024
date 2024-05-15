@@ -65,7 +65,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        scoringSettingsTuning();
+        conceptColorSensorDetection();
     }
 
     private void ledTest() {
@@ -1230,8 +1230,8 @@ public class TestMain extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive()) {
             colorSensor.enableLed(gamepad1.a);
             /*
-             * reading when facing ground: 350
-             * reading when pixel detected: > 3500
+             * reading when facing ground: 30
+             * reading when pixel detected: > 100
              * reading when sensor disconnected: 0
              *  */
             telemetry.addData("alpha", colorSensor.alpha());
