@@ -157,13 +157,13 @@ public final class RobotConfig {
 
         /** simple arm controller */
         public static final double
-                maxPowerWhenMovingUp = 0.75,
-                maxPowerWhenMovingDown = 0.8,
-                errorStartDecelerate = 240,
+                maxPowerWhenMovingUp = 0.65,
+                maxPowerWhenMovingDown = 0.7,
+                errorStartDecelerate = 350,
                 powerNeededToMoveUp = 0.18,
-                powerNeededToMoveDown = 0.24,
+                powerNeededToMoveDown = 0.26,
                 errorTolerance = 12;
-        public static final double errorAsArmInPosition = 25;
+        public static final double errorAsArmInPosition = 40;
 
         public enum Position {
             INTAKE,
@@ -212,12 +212,11 @@ public final class RobotConfig {
                 maxExtendValue = 1450,
                 intakeValue = 560,
                 grabStackValue = 180;
-
     }
 
     public static final class FlippableDualClawConfigs {
 
-        public static final double leftClawClosePosition = 0.47, leftClawOpenPosition = 0.9, rightClawClosedPosition = 0.84, rightClawOpenPosition = 0.38;
+        public static final double leftClawClosePosition = 0.47, leftClawOpenPosition = 0.9, rightClawClosedPosition = 0.74, rightClawOpenPosition = 0.28;
 
         public static final int colorDetectorThreshold = 800;
     }
@@ -289,7 +288,7 @@ public final class RobotConfig {
                 0.03,
                 25,
                 1,
-                0.18,
+                0.22,
                 0, 0
         );
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileY = new EnhancedPIDController.StaticPIDProfile(
@@ -298,7 +297,7 @@ public final class RobotConfig {
                 0.01,
                 30,
                 1,
-                0.2,
+                0.24,
                 0, 0
         );
 
@@ -319,8 +318,8 @@ public final class RobotConfig {
         public static final double timeToStartDecelerateRotation = 0.3;
 
         /** within how much distance should the translational task be counted as complete */
-        public static final double errorAsTaskFinishedCM = 2.5;
-        public static final double chassisSpeedAsRobotStoppedCMPerSec = 15;
+        public static final double errorAsTaskFinishedCM = 3;
+        public static final double chassisSpeedAsRobotStoppedCMPerSec = 20;
 
         public static final double errorAsTaskRoughlyFinished = 12;
 
@@ -360,7 +359,7 @@ public final class RobotConfig {
          * if the updated wall encoder position differed to the current smaller than this value, do not update
          * in cm
          * */
-        public static final double errorTolerance = 1.5;
+        public static final double errorTolerance = 3;
 
         public static final double distanceSensorMaxDistance = 45;
         public static final double distanceSensorMaxDistance_maintainAndAim = 15;
