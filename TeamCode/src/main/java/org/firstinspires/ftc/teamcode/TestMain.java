@@ -65,7 +65,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        clawCalibration();
+        conceptColorSensorDetection();
     }
 
     private void ledTest() {

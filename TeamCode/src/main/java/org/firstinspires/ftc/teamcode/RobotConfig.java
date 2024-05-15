@@ -182,8 +182,8 @@ public final class RobotConfig {
 
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {1500, 1400, 1300, 1250, 1150},
-                correspondingExtendValues = new double[] {300, 600, 900, 1100, 1400},
+                correspondingArmEncoderValues = new double[] {1500, 1400, 1300, 1250, 1200},
+                correspondingExtendValues = new double[] {300, 600, 900, 1100, 1300},
                 correspondingServoPositions = new double[] {0.56, 0.62, 0.66, 0.7, 0.76},
                 correspondingDistanceToWall = new double[] {28.5, 24.5, 16.5, 10.5, 4};
 
@@ -204,13 +204,13 @@ public final class RobotConfig {
                 maxPowerWhenMovingForward = 0.9,
                 maxPowerWhenMovingBackward = 0.85,
                 errorStartDecelerate = 200,
-                powerNeededToMoveForward = 0.03,
-                powerNeededToMoveBackward = 0.03,
-                errorTolerance = 25,
-                errorAsTaskFinished = 50,
+                powerNeededToMoveForward = 0.04,
+                powerNeededToMoveBackward = 0.04,
+                errorTolerance = 20,
+                errorAsTaskFinished = 60,
                 /* settings */
                 maxExtendValue = 1450,
-                intakeValue = 560,
+                intakeValue = 540,
                 grabStackValue = 180;
     }
 
