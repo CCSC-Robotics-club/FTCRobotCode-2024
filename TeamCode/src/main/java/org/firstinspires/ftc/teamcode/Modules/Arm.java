@@ -2,9 +2,7 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedEncoder;
-import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.ArmGravityController;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedMotor;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.SimpleArmController;
 import org.firstinspires.ftc.teamcode.Utils.ModulesCommanderMarker;
@@ -25,14 +23,23 @@ public class Arm extends RobotModule {
     private final ThreadedSensor limitSwitch;
     private int armEncoderZeroPosition = -114514;
     private double scoringHeight;
-    private final ArmGravityController armController = new ArmGravityController(ArmConfigs.armProfile);
-    private final SimpleArmController simpleArmController = new SimpleArmController(
-            RobotConfig.ArmConfigs.maxPowerWhenMovingUp,
-            RobotConfig.ArmConfigs.maxPowerWhenMovingDown,
-            RobotConfig.ArmConfigs.errorStartDecelerate,
-            RobotConfig.ArmConfigs.powerNeededToMoveUp,
-            RobotConfig.ArmConfigs.powerNeededToMoveDown,
-            RobotConfig.ArmConfigs.errorTolerance,
+    private final SimpleArmController
+            simpleArmControllerNormal = new SimpleArmController(
+            ArmConfigs.maxPowerWhenMovingUpNormal,
+            ArmConfigs.maxPowerWhenMovingDownNormal,
+            ArmConfigs.errorStartDecelerateNormal,
+            ArmConfigs.powerNeededToMoveUpNormal,
+            ArmConfigs.powerNeededToMoveDownNormal,
+            ArmConfigs.errorToleranceNormal,
+            false
+    ),
+            simpleArmControllerScoring = new SimpleArmController(
+            ArmConfigs.maxPowerWhenMovingUpScoring,
+            ArmConfigs.maxPowerWhenMovingDownScoring,
+            ArmConfigs.errorStartDecelerateScoring,
+            ArmConfigs.powerNeededToMoveUpScoring,
+            ArmConfigs.powerNeededToMoveDownScoring,
+            ArmConfigs.errorToleranceScoring,
             false
     );
 
@@ -57,41 +64,34 @@ public class Arm extends RobotModule {
     private final Map<String, Object> debugMessages = new HashMap<>();
     @Override
     protected void periodic(double dt) {
-        final double motor1PowerFactor = ArmConfigs.motor1Reversed ? -1:1,
-                motor2PowerFactor = ArmConfigs.motor2Reversed? -1:1,
-                encoderFactor = ArmConfigs.encoderReversed ? -1:1;
+        final double encoderFactor = ArmConfigs.encoderReversed ? -1:1;
         if (limitSwitch.getSensorReading() != 0)
             this.armEncoderZeroPosition = (int) armEncoder.getSensorReading();
         if (Math.abs(desiredPower) != 0) {
-            armMotor1.setPower(desiredPower * motor1PowerFactor);
-            armMotor2.setPower(desiredPower * motor2PowerFactor);
+            setArmPower(desiredPower);
             return;
         }
         if (armEncoderZeroPosition == -114514) {
-            armMotor1.setPower(-0.3);
-            armMotor2.setPower(-0.3);
-            return;
-        }
-        if (desiredPosition == ArmConfigs.Position.INTAKE && isArmInPosition()) {
-            armMotor1.setPower(0);
-            armMotor2.setPower(0);
+            setArmPower(-0.4);
             return;
         }
 
-//        armController.goToDesiredPosition(ArmConfigs.encoderPositions.get(desiredPosition));
-//        if (desiredPosition == ArmConfigs.Position.SCORE)
-//            armController.updateDesiredPosition(ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight));
         updateDesiredPositions();
         final double armPosition = getArmEncoderPosition(),
                 armVelocity = armEncoder.getVelocity() * encoderFactor,
                 // armCorrectionPower = armController.getMotorPower(armVelocity, armPosition);
-                armCorrectionPower = simpleArmController.getMotorPower(armVelocity, armPosition);
-
+                armCorrectionPower = this.desiredPosition == ArmConfigs.Position.SCORE ?
+                        this.simpleArmControllerScoring.getMotorPower(armVelocity, armPosition) + pidBasePower
+                        : this.simpleArmControllerNormal.getMotorPower(armVelocity, armPosition);
         debugMessages.put("correction power (by controller)", armCorrectionPower);
+        setArmPower(armCorrectionPower);
+    }
 
-        // limitSwitch.setEnabled(this.desiredPosition != ArmConfigs.Position.SCORE);
-        armMotor1.setPower(armCorrectionPower * motor1PowerFactor);
-        armMotor2.setPower(armCorrectionPower * motor2PowerFactor);
+    private void setArmPower(double power) {
+        final double motor1PowerFactor = ArmConfigs.motor1Reversed ? -1:1,
+                motor2PowerFactor = ArmConfigs.motor2Reversed? -1:1;
+        armMotor1.setPower(power * motor1PowerFactor);
+        armMotor2.setPower(power * motor2PowerFactor);
     }
 
     @Override
@@ -106,6 +106,8 @@ public class Arm extends RobotModule {
 
         this.armMotor1.getMotorInstance().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.armMotor2.getMotorInstance().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        this.pidBasePower = this.desiredPower = 0;
     }
 
     public void setPosition(ArmConfigs.Position position, RobotService operatorService) {
@@ -118,7 +120,8 @@ public class Arm extends RobotModule {
     public boolean isArmInPosition() {
         if (this.desiredPosition == ArmConfigs.Position.INTAKE && limitSwitch.getSensorReading() != 0)
             return true;
-        return Math.abs(getArmEncoderPosition() - getArmDesiredPosition()) < ArmConfigs.errorAsArmInPosition;
+        final double errorTolerance = this.desiredPosition == ArmConfigs.Position.SCORE ? ArmConfigs.errorToleranceScoring : ArmConfigs.errorToleranceNormal;
+        return Math.abs(getArmEncoderPosition() - getArmDesiredPosition()) < errorTolerance;
     }
 
     public int getArmEncoderPosition() {
@@ -126,15 +129,13 @@ public class Arm extends RobotModule {
     }
 
     public double getArmDesiredPosition() {
-        return
-                // armController.getDesiredPosition();
-                simpleArmController.desiredPosition;
+        return simpleArmControllerNormal.desiredPosition;
     }
 
     private void updateDesiredPositions() {
-        simpleArmController.desiredPosition = ArmConfigs.encoderPositions.get(desiredPosition);
-        if (desiredPosition == ArmConfigs.Position.SCORE)
-            simpleArmController.desiredPosition = ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight);
+        simpleArmControllerNormal.desiredPosition = desiredPosition == ArmConfigs.Position.SCORE ?
+                ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight)
+                : ArmConfigs.encoderPositions.get(desiredPosition);
     }
 
     public void setScoringHeight(double scoringHeight, ModulesCommanderMarker operator) {
@@ -149,17 +150,25 @@ public class Arm extends RobotModule {
         return this.scoringHeight;
     }
 
-    private double desiredPower = 0;
+    private double desiredPower, pidBasePower;
     public void forceSetPower(double power, ModulesCommanderMarker operator) {
         if (!isOwner(operator))
             return;
         desiredPower = power;
     }
+    public void setPIDMovingDirection(double direction, ModulesCommanderMarker operator) {
+        if (!isOwner(operator))
+            return;
+        if (direction <= 0.05)
+            pidBasePower = 0;
+        else
+            pidBasePower = direction > 0 ? ArmConfigs.basePowerWhenMoveUp : ArmConfigs.basePowerWhenMoveDown;
+    }
 
     @Override
     public Map<String, Object> getDebugMessages() {
         debugMessages.put("arm desired position", desiredPosition);
-        debugMessages.put("arm desired encoder position", armController.getDesiredPosition());
+        debugMessages.put("arm desired position (enc)", getArmDesiredPosition());
         debugMessages.put("arm current position (enc)" , getArmEncoderPosition());
         final double encoderFactor = ArmConfigs.encoderReversed ? -1:1;
         debugMessages.put("arm current velocity (enc)", armEncoder.getVelocity() * encoderFactor);

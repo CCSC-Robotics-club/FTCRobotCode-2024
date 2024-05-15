@@ -102,7 +102,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                 () -> {},
                 () -> {
                     robot.extend.setExtendPosition(700, null);
-                    robot.claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToActualArmAngle.getYPrediction(robot.arm.getArmDesiredPosition()) ,null);
+                    robot.claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(0.1), null);
                     },
                 () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.arm.isArmInPosition(),
                 () -> new Rotation2D(0), () -> new Rotation2D(0),
