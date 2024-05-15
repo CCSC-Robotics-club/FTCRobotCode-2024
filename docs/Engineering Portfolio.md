@@ -13,3 +13,6 @@
 2. **平行从动轮做差得出旋转量，推算出横向从动轮的误差，并从原始数值中减掉**
 
 ### 自动阶段路径规划
+<img src="media/spline curve+pathplanner1.png">
+<img src="media/pathplanner 2+3.png">
+</p>
