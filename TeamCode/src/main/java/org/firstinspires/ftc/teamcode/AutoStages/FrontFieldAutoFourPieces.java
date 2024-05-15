@@ -56,19 +56,20 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
 
         commandSegments.add(sequentialCommandFactory.followSingleCurve("score third and fourth", 1, new Rotation2D(0)));
 
+        final double scoringHeight = 0.5;
         commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> sequentialCommandFactory.getBezierCurvesFromPathFile("score third and fourth").get(0),
                 () -> {
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
-                    robot.arm.setScoringHeight(0.5, null);
+                    robot.arm.setScoringHeight(scoringHeight, null);
                 },
                 () -> {
                     if (!robot.arm.isArmInPosition())
                         return;
 
-                    robot.claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToActualArmAngle.getYPrediction(robot.arm.getArmDesiredPosition()), null);
-                    robot.extend.setExtendPosition(RobotConfig.ArmConfigs.extendValuesAccordingToActualArmAngle.getYPrediction(robot.arm.getArmDesiredPosition()), null);
+                    robot.claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(scoringHeight), null);
+                    robot.extend.setExtendPosition(RobotConfig.ArmConfigs.extendValuesAccordingToScoringHeight.getYPrediction(scoringHeight), null);
                 },
                 () -> {},
                 () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.arm.isArmInPosition() && robot.extend.isExtendInPosition(),

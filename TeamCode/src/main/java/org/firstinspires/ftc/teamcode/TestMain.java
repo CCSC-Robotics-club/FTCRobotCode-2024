@@ -9,11 +9,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.LED;
-import com.qualcomm.robotcore.hardware.PWMOutput;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -164,12 +162,12 @@ public class TestMain extends LinearOpMode {
         waitForStart();
 
         final SimpleArmController armController = new SimpleArmController(
-                RobotConfig.ArmConfigs.maxPowerWhenMovingUp,
-                RobotConfig.ArmConfigs.maxPowerWhenMovingDown,
-                RobotConfig.ArmConfigs.errorStartDecelerate,
-                RobotConfig.ArmConfigs.powerNeededToMoveUp,
-                RobotConfig.ArmConfigs.powerNeededToMoveDown,
-                RobotConfig.ArmConfigs.errorTolerance,
+                RobotConfig.ArmConfigs.maxPowerWhenMovingUpNormal,
+                RobotConfig.ArmConfigs.maxPowerWhenMovingDownNormal,
+                RobotConfig.ArmConfigs.errorStartDecelerateNormal,
+                RobotConfig.ArmConfigs.powerNeededToMoveUpNormal,
+                RobotConfig.ArmConfigs.powerNeededToMoveDownNormal,
+                RobotConfig.ArmConfigs.errorToleranceNormal,
                 false
         );
         while (!isStopRequested() && opModeIsActive()) {

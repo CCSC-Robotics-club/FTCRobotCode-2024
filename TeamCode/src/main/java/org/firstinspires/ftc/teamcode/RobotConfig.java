@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.DoubleSupplier;
 
 public final class RobotConfig {
     public static final HardwareConfigs hardwareConfigs_2024OffSeason = new HardwareConfigs( // backup machine
@@ -157,17 +156,28 @@ public final class RobotConfig {
 
         /** simple arm controller */
         public static final double
-                maxPowerWhenMovingUp = 0.65,
-                maxPowerWhenMovingDown = 0.7,
-                errorStartDecelerate = 350,
-                powerNeededToMoveUp = 0.18,
-                powerNeededToMoveDown = 0.26,
-                errorTolerance = 12;
-        public static final double errorAsArmInPosition = 40;
+                maxPowerWhenMovingUpNormal = 0.85,
+                maxPowerWhenMovingDownNormal = 0.75,
+                errorStartDecelerateNormal = 500,
+                powerNeededToMoveUpNormal = 0.24,
+                powerNeededToMoveDownNormal = 0.2,
+                errorToleranceNormal = 10,
+                errorAsArmInPositionNormal = 30,
+
+                maxPowerWhenMovingUpScoring = 0.4,
+                maxPowerWhenMovingDownScoring = 0.5,
+                errorStartDecelerateScoring = 80,
+                powerNeededToMoveUpScoring = 0.15,
+                powerNeededToMoveDownScoring = 0.25,
+                basePowerWhenMoveUp = 0.1,
+                basePowerWhenMoveDown = -0.3,
+                errorToleranceScoring = 5,
+                        errorAsArmInPositionScoring = 20;
 
         public enum Position {
             INTAKE,
-            SCORE
+            PREPARE_TO_SCORE,
+            SCORE,
         }
 
         public static final Map<Position, Double> encoderPositions = new HashMap<>(); // in reference to zero position (limit switch)
@@ -177,7 +187,7 @@ public final class RobotConfig {
 //            encoderPositions.put(Position.GRAB_STACK_LOW, 50.0);
 //            encoderPositions.put(Position.SCORE, 1200.0);
             encoderPositions.put(Position.INTAKE, 0.0);
-            encoderPositions.put(Position.SCORE, 1200.0);
+            encoderPositions.put(Position.PREPARE_TO_SCORE, 1000.0);
         }
 
         private static final double[]
@@ -192,8 +202,8 @@ public final class RobotConfig {
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall),
                 scoringHeightAccordingToActualDistanceToWall = new LookUpTable(correspondingDistanceToWall, scoringHeight),
-                extendValuesAccordingToActualArmAngle = new LookUpTable(correspondingArmEncoderValues, correspondingExtendValues),
-                flipperPositionsAccordingToActualArmAngle = new LookUpTable(correspondingArmEncoderValues, correspondingServoPositions);
+                extendValuesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingExtendValues),
+                flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions);
     }
 
     public static final class ExtendConfigs {
