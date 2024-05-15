@@ -13,6 +13,10 @@
 2. **平行从动轮做差得出旋转量，推算出横向从动轮的误差，并从原始数值中减掉**
 
 ### 自动阶段路径规划
+<div align="center">
+<img src="media/automaticStaDecSys.flowchart.png">
+</div>
+
 - 我们将FRC中的PathPlanner下放到了机器当中。PathPlanner是由FRC Team 3015创建的FRC运动轮廓生成器。其优点在于：
 1. **我们可以精确地对每条路径进行微调，其每条路径都是用贝塞尔曲线制作的**
 <img src="media/spline curve+pathplanner1.png">
