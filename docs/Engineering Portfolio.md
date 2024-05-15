@@ -44,6 +44,9 @@ $$
 1. **我们可以精确地对每条路径进行微调，其每条路径都是用贝塞尔曲线制作的**
 <img src="media/spline curve+pathplanner1.png">
 <img src="media/pathplanner 2+3.png">
+<p float="left">
+  <img src="media/linear speed curve_e -original-horizontal.gif" width="49%" /> 
+  <img src="media/ease-in-out speed cu -original-horizontal.gif" width="49%" />
 </p>
 
 ### 三、自动瞄准系统
