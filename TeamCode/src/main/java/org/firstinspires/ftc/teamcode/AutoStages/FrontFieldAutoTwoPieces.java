@@ -84,16 +84,15 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
         );
         super.commandSegments.add(sequentialCommandFactory.stayStillFor(300));
 
-        super.commandSegments.add(sequentialCommandFactory.justDoIt(() -> {
-            robot.claw.setRightClawClosed(true, null);
-            robot.extend.setExtendPosition(0, null);
-            robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
-        }));
         super.commandSegments.add(sequentialCommandFactory.stayStillFor(300));
         super.commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> new BezierCurve(robot.positionEstimator.getCurrentPosition(), sequentialCommandFactory.getBezierCurvesFromPathFile("score second").get(0).getPositionWithLERP(1)),
                 () -> {
+                    robot.claw.setRightClawClosed(true, null);
+                    robot.extend.setExtendPosition(0, null);
+                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
+
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
                     robot.arm.setScoringHeight(0.1, null);
                     robot.claw.setFlip(FlippableDualClaw.FlipperPosition.SCORE, null);
@@ -115,10 +114,10 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                 robot.extend::isExtendInPosition
         ));
 
-        super.commandSegments.add(sequentialCommandFactory.stayStillFor(500));
+        super.commandSegments.add(sequentialCommandFactory.stayStillFor(300));
 
         super.commandSegments.add(sequentialCommandFactory.justDoIt(scorePreload));
 
-        super.commandSegments.add(sequentialCommandFactory.stayStillFor(500));
+        super.commandSegments.add(sequentialCommandFactory.stayStillFor(300));
     }
 }
