@@ -121,15 +121,19 @@ public class Arm extends RobotModule {
         if (this.desiredPosition == ArmConfigs.Position.INTAKE && limitSwitch.getSensorReading() != 0)
             return true;
         final double errorTolerance = this.desiredPosition == ArmConfigs.Position.SCORE ? ArmConfigs.errorAsArmInPositionScoring : ArmConfigs.errorAsArmInPositionNormal;
-        return Math.abs(getArmEncoderPosition() - getArmDesiredPosition()) < errorTolerance;
+        return Math.abs(getArmEncoderPosition() - getArmDesiredPositionEncoder()) < errorTolerance;
     }
 
     public int getArmEncoderPosition() {
         return (int) ((armEncoder.getSensorReading() - armEncoderZeroPosition) * (ArmConfigs.encoderReversed ? -1: 1));
     }
 
-    public double getArmDesiredPosition() {
-        return simpleArmControllerNormal.desiredPosition;
+    public double getArmDesiredPositionEncoder() {
+        return this.simpleArmControllerNormal.desiredPosition;
+    }
+
+    public ArmConfigs.Position getArmDesiredPosition() {
+        return this.desiredPosition;
     }
 
     private void updateDesiredPositions() {
@@ -169,7 +173,7 @@ public class Arm extends RobotModule {
     @Override
     public Map<String, Object> getDebugMessages() {
         debugMessages.put("arm desired position", desiredPosition);
-        debugMessages.put("arm desired position (enc)", getArmDesiredPosition());
+        debugMessages.put("arm desired position (enc)", getArmDesiredPositionEncoder());
         debugMessages.put("arm current position (enc)" , getArmEncoderPosition());
         final double encoderFactor = ArmConfigs.encoderReversed ? -1:1;
         debugMessages.put("arm current velocity (enc)", armEncoder.getVelocity() * encoderFactor);

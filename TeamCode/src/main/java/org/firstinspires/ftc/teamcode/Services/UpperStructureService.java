@@ -110,7 +110,10 @@ public class UpperStructureService extends RobotService {
                     return;
                 }
 
-                final double actualScoringHeight = chassisService.getActualScoringHeightAccordingToDistanceToWall(desiredScoringHeight);
+                final double actualScoringHeight =
+                        Math.min(RobotConfig.ArmConfigs.manualStageMaxScoringHeight,
+                                Math.max(RobotConfig.ArmConfigs.manualStageMinScoringHeight,
+                                        chassisService.getActualScoringHeightAccordingToDistanceToWall(desiredScoringHeight)));
                 arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
                 arm.setScoringHeight(actualScoringHeight, this);
                 extend.setExtendPosition(RobotConfig.ArmConfigs.extendValuesAccordingToScoringHeight.getYPrediction(actualScoringHeight), this);

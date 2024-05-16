@@ -73,6 +73,10 @@ public class AprilTagCameraAndDistanceSensorAimBot {
     }
 
     public Vector2D getDesiredAimingPositionToWall(TeamElementFinder.TeamElementPosition teamElementPosition) {
+        return getDesiredAimingPositionToWall(teamElementPosition, desiredDistanceToWallSupplier.getAsDouble());
+    }
+
+    public Vector2D getDesiredAimingPositionToWall(TeamElementFinder.TeamElementPosition teamElementPosition, double requiredDistanceToWall) {
         double deviationFromCenter;
         switch (teamElementPosition) {
             case UNDETERMINED: case LEFT: {
@@ -91,7 +95,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         }
         return new Vector2D(new double[] {
                 RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.getX() + deviationFromCenter,
-                -desiredDistanceToWallSupplier.getAsDouble()
+                -requiredDistanceToWall
         });
     }
 
