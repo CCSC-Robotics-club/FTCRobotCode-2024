@@ -39,24 +39,25 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
         teamElementFinder.teamElementPosition = TeamElementFinder.TeamElementPosition.CENTER;
         // super.commandSegments.add(teamElementFinder.findTeamElementAndShutDown(5000));
 
+        final Vector2D[] splitFirstPosition = new Vector2D[1];
         super.commandSegments.add(
                 new SequentialCommandSegment(
                         () -> true,
                         () -> {
-                            final Vector2D splitFirstPosition;
+
                             switch (teamElementFinder.teamElementPosition) {
                                 case LEFT: case UNDETERMINED: {
-                                    splitFirstPosition = this.allianceSide == Robot.Side.BLUE ?
+                                    splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
                                             new Vector2D(new double[] {90, 273}) : new Vector2D(new double[] {0, 0});
                                     break;
                                 }
                                 case CENTER: {
-                                    splitFirstPosition = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {120, 248}) : new Vector2D(new double[] {0, 0});
+                                    splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
+                                            new Vector2D(new double[] {120, 252}) : new Vector2D(new double[] {0, 0});
                                     break;
                                 }
                                 case RIGHT: {
-                                    splitFirstPosition = this.allianceSide == Robot.Side.BLUE ?
+                                    splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
                                             new Vector2D(new double[] {92, 210}) : new Vector2D(new double[] {0, 0});
                                     break;
                                 }
@@ -66,8 +67,8 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
 
                             return new BezierCurve(
                                     sequentialCommandFactory.getRobotStartingPosition("split first(left)"),
-                                    splitFirstPosition.addBy(new Vector2D(new double[] {0, 20})),
-                                    splitFirstPosition
+                                    splitFirstPosition[0].addBy(new Vector2D(new double[] {0, 15})),
+                                    splitFirstPosition[0]
                             );
                             },
                         () -> {},
@@ -78,7 +79,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                             robot.extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, null);
                         },
                         splitPreload,
-                        robot.chassis::isCurrentTranslationalTaskComplete,
+                        () -> Vector2D.displacementToTarget(robot.positionEstimator.getCurrentPosition(), splitFirstPosition[0]).getMagnitude() < 5,
                         () -> new Rotation2D(0), () -> new Rotation2D(0)
                 )
         );

@@ -64,29 +64,50 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
                 () -> new Rotation2D(0), () -> new Rotation2D(0)
         ));
 
-        final double scoringHeight = 0.25;
+        final double scoringHeight = 0.5;
         commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> sequentialCommandFactory.getBezierCurvesFromPathFile("score third and fourth").get(1),
+                () -> robot.arm.setPosition(RobotConfig.ArmConfigs.Position.PREPARE_TO_SCORE, null),
                 () -> {
-                    robot.arm.setPosition(RobotConfig.ArmConfigs.Position.PREPARE_TO_SCORE, null);
+                    if (robot.arm.isArmInPosition())
+                        robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
                     robot.arm.setScoringHeight(scoringHeight, null);
                 },
                 () -> {
-                    if (!robot.arm.isArmInPosition())
-                        return;
                     robot.claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(scoringHeight), null);
-                    robot.extend.setExtendPosition(600, null);
+                    robot.extend.setExtendPosition(750, null);
                 },
-                () -> robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null),
-                () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.arm.isArmInPosition() && robot.extend.isExtendInPosition(),
+                () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.arm.getArmDesiredPosition() == RobotConfig.ArmConfigs.Position.SCORE && robot.arm.isArmInPosition() && robot.extend.isExtendInPosition(),
                 () -> robot.chassis.isVisualNavigationAvailable() && robot.arm.isArmInPosition() && robot.extend.isExtendInPosition(),
                 () -> new Rotation2D(0), () -> new Rotation2D(0),
                 SpeedCurves.originalSpeed, speedFactorWhenArmRaised
         ));
 
-        commandSegments.add(wallAimBot.stickToWall(() -> true));
+        commandSegments.add(wallAimBot.stickToWall(
+                new Vector2D(new double[] {0, -14}),
+                () -> true
+        ));
 
-        commandSegments.add(sequentialCommandFactory.stayStillFor(500));
+        commandSegments.add(sequentialCommandFactory.stayStillFor(300));
+
+        commandSegments.add(sequentialCommandFactory.justDoIt(() -> {
+            robot.claw.setLeftClawClosed(false, null);
+            robot.claw.setRightClawClosed(false, null);
+        }));
+
+        commandSegments.add(sequentialCommandFactory.stayStillFor(300));
+        commandSegments.add(sequentialCommandFactory.followSingleCurveAndStop(
+                "park", 0,
+                new Rotation2D(0),
+                () -> {
+                    robot.claw.setRightClawClosed(true, null);
+                    robot.claw.setLeftClawClosed(true, null);
+                    robot.extend.setExtendPosition(0, null);
+                    robot.arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, null);
+                },
+                () -> {},
+                () -> {}
+        ));
     }
 }

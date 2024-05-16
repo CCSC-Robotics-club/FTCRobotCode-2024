@@ -81,7 +81,7 @@ public class Arm extends RobotModule {
                 armVelocity = armEncoder.getVelocity() * encoderFactor,
                 // armCorrectionPower = armController.getMotorPower(armVelocity, armPosition);
                 armCorrectionPower = this.desiredPosition == ArmConfigs.Position.SCORE ?
-                        this.simpleArmControllerScoring.getMotorPower(armVelocity, armPosition) + pidBasePower
+                        this.simpleArmControllerScoring.getMotorPower(armVelocity, armPosition) + getPidBasePower()
                         : this.simpleArmControllerNormal.getMotorPower(armVelocity, armPosition);
         debugMessages.put("correction power (by controller)", armCorrectionPower);
         setArmPower(armCorrectionPower);
@@ -107,7 +107,7 @@ public class Arm extends RobotModule {
         this.armMotor1.getMotorInstance().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.armMotor2.getMotorInstance().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        this.pidBasePower = this.desiredPower = 0;
+        this.armDesiredMovingDirection = this.desiredPower = 0;
     }
 
     public void setPosition(ArmConfigs.Position position, RobotService operatorService) {
@@ -155,7 +155,8 @@ public class Arm extends RobotModule {
         return this.scoringHeight;
     }
 
-    private double desiredPower, pidBasePower;
+    private double desiredPower;
+    private double armDesiredMovingDirection;
     public void forceSetPower(double power, ModulesCommanderMarker operator) {
         if (!isOwner(operator))
             return;
@@ -165,9 +166,17 @@ public class Arm extends RobotModule {
         if (!isOwner(operator))
             return;
         if (direction <= 0.05)
-            pidBasePower = ArmConfigs.basePowerWhenStayStill;
+            armDesiredMovingDirection = 0;
         else
-            pidBasePower = direction > 0 ? ArmConfigs.basePowerWhenMovingScoringHeightUp : ArmConfigs.basePowerWhenMovingScoringHeightDown;
+            armDesiredMovingDirection = direction;
+    }
+
+    private double getPidBasePower() {
+        if (armDesiredMovingDirection == 0)
+            return ArmConfigs.baseGravityPower.getYPrediction(getArmEncoderPosition());
+        if (armDesiredMovingDirection > 0)
+            return ArmConfigs.basePowerWhenMovingScoringHeightUp;
+        return ArmConfigs.basePowerWhenMovingScoringHeightDown;
     }
 
     @Override

@@ -162,18 +162,21 @@ public final class RobotConfig {
                 powerNeededToMoveUpNormal = 0.24,
                 powerNeededToMoveDownNormal = 0.2,
                 errorToleranceNormal = 10,
-                errorAsArmInPositionNormal = 30,
+                errorAsArmInPositionNormal = 50,
 
-                maxPowerWhenMovingUpScoring = 0.35,
-                maxPowerWhenMovingDownScoring = 0.45,
+                maxPowerWhenMovingUpScoring = 0.25,
+                maxPowerWhenMovingDownScoring = 0.55,
                 errorStartDecelerateScoring = 80,
                 powerNeededToMoveUpScoring = 0.05,
-                powerNeededToMoveDownScoring = 0.24,
-                basePowerWhenStayStill = -0.2,
-                basePowerWhenMovingScoringHeightUp = -0.35,
+                powerNeededToMoveDownScoring = 0.15,
+                basePowerWhenMovingScoringHeightUp = -0.3,
                 basePowerWhenMovingScoringHeightDown = 0,
                 errorToleranceScoring = 12,
-                        errorAsArmInPositionScoring = 38;
+                        errorAsArmInPositionScoring = 40;
+        public static final LookUpTable baseGravityPower = new LookUpTable(
+                new double[] {1100, 1300, 1500},
+                new double[] {0, -0.2, -0.25}
+        );
 
         public enum Position {
             INTAKE,
@@ -193,12 +196,12 @@ public final class RobotConfig {
 
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {1500, 1450, 1350, 1300, 1200},
+                correspondingArmEncoderValues = new double[] {1500, 1400, 1300, 1250, 1150},
                 correspondingExtendValues = new double[] {100, 400, 800, 1000, 1400},
                 correspondingServoPositions = new double[] {0.6, 0.62, 0.66, 0.7, 0.76},
-                correspondingDistanceToWall = new double[] {24.5, 24, 18, 12, 4};
+                correspondingDistanceToWall = new double[] {24.5, 26, 20, 14, 4};
 
-        public static final double manualStageMinScoringHeight = 0.3, manualStageMaxScoringHeight = 1, inAdvanceHeight = 0.2;
+        public static final double manualStageMinScoringHeight = 0.3, manualStageMaxScoringHeight = 1, inAdvanceHeight = 0.1;
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall),
@@ -377,14 +380,14 @@ public final class RobotConfig {
         public static final double distanceSensorMinDistance = 0;
         public static final double approachReverseSpeedTolerance = 20; // if the robot goes away from the wall in more than 20cm/s, we think the distance sensor failed
 
-        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -38});
+        public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -30});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -5});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
         public static final double autoStageScoringPositionsLeft = -6, autoStageScoringPositionsCenter = 4, autoStageScoringPositionsRight = 14;
-        public static final double clawWidth = 7.5, grabbingDistanceToWall = 9, colorSensorThreshold = 100, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 9;
+        public static final double clawWidth = 8, grabbingDistanceToWall = 9, colorSensorThreshold = 100, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 9;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
-        public static final double visualApproachSpeed = 150;
+        public static final double visualApproachSpeed = 100;
         public static final boolean faceToTargetWhenApproaching = true;
 
         public static final long maxTimeToWaitForVisualNavigationMS = 800; // after this much milliseconds, if the target still does not occur, the navigation will be considered failed
