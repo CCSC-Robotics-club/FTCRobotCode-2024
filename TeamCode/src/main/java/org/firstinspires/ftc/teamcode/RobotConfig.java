@@ -222,7 +222,7 @@ public final class RobotConfig {
                 /* settings */
                 maxExtendValue = 1450,
                 intakeValue = 500,
-                grabStackValue = 180;
+                grabStackValue = 0;
     }
 
     public static final class FlippableDualClawConfigs {
@@ -381,7 +381,7 @@ public final class RobotConfig {
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -5});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
         public static final double autoStageScoringPositionsLeft = -6, autoStageScoringPositionsCenter = 4, autoStageScoringPositionsRight = 14;
-        public static final double clawWidth = 6.5, grabbingDistanceToWall = 10, colorSensorThreshold = 100, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 10.5;
+        public static final double clawWidth = 7.5, grabbingDistanceToWall = 9, colorSensorThreshold = 100, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 9;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 150;
