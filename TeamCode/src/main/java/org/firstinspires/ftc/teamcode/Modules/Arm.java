@@ -120,7 +120,7 @@ public class Arm extends RobotModule {
     public boolean isArmInPosition() {
         if (this.desiredPosition == ArmConfigs.Position.INTAKE && limitSwitch.getSensorReading() != 0)
             return true;
-        final double errorTolerance = this.desiredPosition == ArmConfigs.Position.SCORE ? ArmConfigs.errorToleranceScoring : ArmConfigs.errorToleranceNormal;
+        final double errorTolerance = this.desiredPosition == ArmConfigs.Position.SCORE ? ArmConfigs.errorAsArmInPositionScoring : ArmConfigs.errorAsArmInPositionNormal;
         return Math.abs(getArmEncoderPosition() - getArmDesiredPosition()) < errorTolerance;
     }
 
@@ -133,9 +133,10 @@ public class Arm extends RobotModule {
     }
 
     private void updateDesiredPositions() {
-        simpleArmControllerNormal.desiredPosition = desiredPosition == ArmConfigs.Position.SCORE ?
-                ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight)
-                : ArmConfigs.encoderPositions.get(desiredPosition);
+        this.simpleArmControllerScoring.desiredPosition = this.simpleArmControllerNormal.desiredPosition =
+                desiredPosition == ArmConfigs.Position.SCORE ?
+                        ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight) :
+                        ArmConfigs.encoderPositions.get(desiredPosition);
     }
 
     public void setScoringHeight(double scoringHeight, ModulesCommanderMarker operator) {
@@ -160,7 +161,7 @@ public class Arm extends RobotModule {
         if (!isOwner(operator))
             return;
         if (direction <= 0.05)
-            pidBasePower = 0;
+            pidBasePower = ArmConfigs.basePowerWhenStayStill;
         else
             pidBasePower = direction > 0 ? ArmConfigs.basePowerWhenMoveUp : ArmConfigs.basePowerWhenMoveDown;
     }

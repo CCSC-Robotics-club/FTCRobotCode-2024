@@ -164,15 +164,16 @@ public final class RobotConfig {
                 errorToleranceNormal = 10,
                 errorAsArmInPositionNormal = 30,
 
-                maxPowerWhenMovingUpScoring = 0.4,
-                maxPowerWhenMovingDownScoring = 0.5,
+                maxPowerWhenMovingUpScoring = 0.35,
+                maxPowerWhenMovingDownScoring = 0.45,
                 errorStartDecelerateScoring = 80,
-                powerNeededToMoveUpScoring = 0.15,
-                powerNeededToMoveDownScoring = 0.25,
-                basePowerWhenMoveUp = 0.1,
+                powerNeededToMoveUpScoring = 0.1,
+                powerNeededToMoveDownScoring = 0.2,
+                basePowerWhenStayStill = -0.1,
+                basePowerWhenMoveUp = 0,
                 basePowerWhenMoveDown = -0.3,
-                errorToleranceScoring = 5,
-                        errorAsArmInPositionScoring = 20;
+                errorToleranceScoring = 15,
+                        errorAsArmInPositionScoring = 30;
 
         public enum Position {
             INTAKE,
@@ -216,17 +217,17 @@ public final class RobotConfig {
                 errorStartDecelerate = 200,
                 powerNeededToMoveForward = 0.04,
                 powerNeededToMoveBackward = 0.04,
-                errorTolerance = 20,
+                errorTolerance = 24,
                 errorAsTaskFinished = 60,
                 /* settings */
                 maxExtendValue = 1450,
-                intakeValue = 520,
+                intakeValue = 500,
                 grabStackValue = 180;
     }
 
     public static final class FlippableDualClawConfigs {
 
-        public static final double leftClawClosePosition = 0.47, leftClawOpenPosition = 0.9, rightClawClosedPosition = 0.74, rightClawOpenPosition = 0.28;
+        public static final double leftClawClosePosition = 0.48, leftClawOpenPosition = 0.81, rightClawClosedPosition = 0.7, rightClawOpenPosition = 0.37;
 
         public static final int colorDetectorThreshold = 800;
     }

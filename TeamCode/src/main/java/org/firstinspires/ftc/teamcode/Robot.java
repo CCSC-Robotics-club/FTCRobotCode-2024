@@ -188,9 +188,9 @@ public abstract class Robot {
 //        robotModules.add(extendableClaw);
 
         /* claw */
-        final ProfiledServo flip = new ProfiledServo(hardwareMap.get(Servo.class, "flip"), 0.8),
-                clawLeft = new ProfiledServo(hardwareMap.get(Servo.class, "clawLeft"), 1.4),
-                clawRight = new ProfiledServo(hardwareMap.get(Servo.class, "clawRight"), 1.4);
+        final ProfiledServo flip = new ProfiledServo(hardwareMap.get(Servo.class, "flip"), 1),
+                clawLeft = new ProfiledServo(hardwareMap.get(Servo.class, "clawLeft"), 1),
+                clawRight = new ProfiledServo(hardwareMap.get(Servo.class, "clawRight"), 1);
         final ThreadedLED indicatorLightLeft = new ThreadedLED(hardwareMap.get(LED.class, "lightLeft")),
                 indicatorLightRight = new ThreadedLED(hardwareMap.get(LED.class, "lightRight"));
         colorLeft = new ThreadedSensor(() -> hardwareMap.get(ColorSensor.class, "colorLeft").alpha());

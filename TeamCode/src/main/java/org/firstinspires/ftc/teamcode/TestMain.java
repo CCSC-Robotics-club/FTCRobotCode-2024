@@ -135,7 +135,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void clawCalibration() {
-        final Servo claw = hardwareMap.get(Servo.class, "clawRight");
+        final Servo claw = hardwareMap.get(Servo.class, "clawLeft");
 
         waitForStart();
 
