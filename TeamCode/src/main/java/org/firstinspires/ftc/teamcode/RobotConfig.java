@@ -220,7 +220,7 @@ public final class RobotConfig {
                 errorAsTaskFinished = 60,
                 /* settings */
                 maxExtendValue = 1450,
-                intakeValue = 540,
+                intakeValue = 520,
                 grabStackValue = 180;
     }
 
