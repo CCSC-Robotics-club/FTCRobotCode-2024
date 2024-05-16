@@ -147,7 +147,7 @@ public class Arm extends RobotModule {
         System.out.println("arm set scoring height: " + scoringHeight + " by operator: " + operator);
         if (!isOwner(operator))
             return;
-        this.scoringHeight = scoringHeight;
+        this.scoringHeight = Math.min(Math.max(0, scoringHeight), 1);
         updateDesiredPositions();
     }
 

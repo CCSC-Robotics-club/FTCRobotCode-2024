@@ -103,7 +103,7 @@ public class UpperStructureService extends RobotService {
                 }
                 if (!chassisAutoAlignmentCompleteDuringCurrentScoringProcess) {
                     arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
-                    arm.setScoringHeight(desiredScoringHeight, this);
+                    arm.setScoringHeight(desiredScoringHeight + RobotConfig.ArmConfigs.inAdvanceHeight, this);
                     claw.setScoringAngle(1, this);
                     extend.setExtendPosition(0, this);
                     this.chassisAutoAlignmentCompleteDuringCurrentScoringProcess |= chassisService.stickToWallComplete();

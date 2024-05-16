@@ -193,12 +193,12 @@ public final class RobotConfig {
 
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {1500, 1400, 1300, 1250, 1180},
+                correspondingArmEncoderValues = new double[] {1500, 1450, 1350, 1300, 1200},
                 correspondingExtendValues = new double[] {100, 400, 800, 1000, 1400},
                 correspondingServoPositions = new double[] {0.6, 0.62, 0.66, 0.7, 0.76},
                 correspondingDistanceToWall = new double[] {24.5, 24, 18, 12, 4};
 
-        public static final double manualStageMinScoringHeight = 0.25, manualStageMaxScoringHeight = 1;
+        public static final double manualStageMinScoringHeight = 0.3, manualStageMaxScoringHeight = 1, inAdvanceHeight = 0.2;
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall),
@@ -212,8 +212,8 @@ public final class RobotConfig {
 
         public static final double
                 /* pid */
-                maxPowerWhenMovingForward = 0.9,
-                maxPowerWhenMovingBackward = 0.85,
+                maxPowerWhenMovingForward = 0.6,
+                maxPowerWhenMovingBackward = 0.65,
                 errorStartDecelerate = 200,
                 powerNeededToMoveForward = 0.04,
                 powerNeededToMoveBackward = 0.04,
