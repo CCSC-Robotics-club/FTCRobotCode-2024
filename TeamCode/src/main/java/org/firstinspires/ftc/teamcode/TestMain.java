@@ -63,7 +63,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        tofDistanceSensorTest();
+        dualArmMotorTest();
     }
 
     private void ledTest() {
