@@ -85,6 +85,7 @@ public class UpperStructureService extends RobotService {
 
                 if (Math.abs(copilotGamePad.left_stick_y) > 0.05)
                     desiredScoringHeight += -0.75 * dt * copilotGamePad.left_stick_y;
+
                 desiredScoringHeight = Math.max(Math.min(desiredScoringHeight, RobotConfig.ArmConfigs.manualStageMaxScoringHeight), RobotConfig.ArmConfigs.manualStageMinScoringHeight);
 
                 chassisService.setDesiredScoringHeight(desiredScoringHeight);
