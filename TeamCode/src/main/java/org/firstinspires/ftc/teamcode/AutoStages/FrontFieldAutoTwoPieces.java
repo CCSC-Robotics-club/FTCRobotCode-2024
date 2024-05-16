@@ -36,7 +36,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
 
 
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
-        teamElementFinder.teamElementPosition = TeamElementFinder.TeamElementPosition.CENTER;
+        teamElementFinder.teamElementPosition = TeamElementFinder.TeamElementPosition.RIGHT;
         // super.commandSegments.add(teamElementFinder.findTeamElementAndShutDown(5000));
 
         final Vector2D[] splitFirstPosition = new Vector2D[1];
@@ -47,17 +47,17 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                             switch (teamElementFinder.teamElementPosition) {
                                 case LEFT: case UNDETERMINED: {
                                     splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {90, 273}) : new Vector2D(new double[] {248, 215});
+                                            new Vector2D(new double[] {90, 273}) : new Vector2D(new double[] {248, 216});
                                     break;
                                 }
                                 case CENTER: {
                                     splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {120, 252}) : new Vector2D(new double[] {245, 252});
+                                            new Vector2D(new double[] {120, 252}) : new Vector2D(new double[] {240, 252});
                                     break;
                                 }
                                 case RIGHT: {
                                     splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {92, 210}) : new Vector2D(new double[] {250, 269});
+                                            new Vector2D(new double[] {92, 210}) : new Vector2D(new double[] {253, 271});
                                     break;
                                 }
                                 default:
