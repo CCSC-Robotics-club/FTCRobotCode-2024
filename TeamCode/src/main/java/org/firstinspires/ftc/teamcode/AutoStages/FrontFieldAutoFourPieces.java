@@ -25,8 +25,10 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
         final AutoStageProgram firstTwoPieces = new FrontFieldAutoTwoPieces(allianceSide);
         final double speedFactorWhenArmRaised = 0.6;
 
-        final Vector2D stack1Position = this.allianceSide == Robot.Side.BLUE ?
-                new Vector2D(new double[] {18 + 135, 20}) : new Vector2D(new double[] {0, 0});
+        final Vector2D stack1Position = new Vector2D(new double[] {
+                this.allianceSide == Robot.Side.BLUE ? 153 : 216,
+                20
+        });
 
         firstTwoPieces.scheduleCommands(robot, telemetrySender);
         commandSegments.addAll(firstTwoPieces.commandSegments);

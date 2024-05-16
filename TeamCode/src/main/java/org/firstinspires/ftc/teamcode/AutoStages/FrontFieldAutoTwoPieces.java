@@ -44,21 +44,20 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                 new SequentialCommandSegment(
                         () -> true,
                         () -> {
-
                             switch (teamElementFinder.teamElementPosition) {
                                 case LEFT: case UNDETERMINED: {
                                     splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {90, 273}) : new Vector2D(new double[] {0, 0});
+                                            new Vector2D(new double[] {90, 273}) : new Vector2D(new double[] {248, 215});
                                     break;
                                 }
                                 case CENTER: {
                                     splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {120, 252}) : new Vector2D(new double[] {0, 0});
+                                            new Vector2D(new double[] {120, 252}) : new Vector2D(new double[] {245, 252});
                                     break;
                                 }
                                 case RIGHT: {
                                     splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {92, 210}) : new Vector2D(new double[] {0, 0});
+                                            new Vector2D(new double[] {92, 210}) : new Vector2D(new double[] {250, 269});
                                     break;
                                 }
                                 default:

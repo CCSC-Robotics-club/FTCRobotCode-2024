@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.AutoStages.CameraAutoCalibrationVerticalOn
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
-@Autonomous(name = "<Auto> [Camera Calibration]")
+// @Autonomous(name = "<Auto> [Camera Calibration]")
 public class CameraCalibrationAutoProgram extends AutoMain {
     public CameraCalibrationAutoProgram() {
 //        super(new CameraAutoCalibration(
