@@ -163,7 +163,7 @@ public class Arm extends RobotModule {
         if (direction <= 0.05)
             pidBasePower = ArmConfigs.basePowerWhenStayStill;
         else
-            pidBasePower = direction > 0 ? ArmConfigs.basePowerWhenMoveUp : ArmConfigs.basePowerWhenMoveDown;
+            pidBasePower = direction > 0 ? ArmConfigs.basePowerWhenMovingScoringHeightUp : ArmConfigs.basePowerWhenMovingScoringHeightDown;
     }
 
     @Override

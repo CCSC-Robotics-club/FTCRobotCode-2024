@@ -167,13 +167,13 @@ public final class RobotConfig {
                 maxPowerWhenMovingUpScoring = 0.35,
                 maxPowerWhenMovingDownScoring = 0.45,
                 errorStartDecelerateScoring = 80,
-                powerNeededToMoveUpScoring = 0.1,
-                powerNeededToMoveDownScoring = 0.2,
+                powerNeededToMoveUpScoring = 0.05,
+                powerNeededToMoveDownScoring = 0.15,
                 basePowerWhenStayStill = -0.1,
-                basePowerWhenMoveUp = 0,
-                basePowerWhenMoveDown = -0.3,
-                errorToleranceScoring = 15,
-                        errorAsArmInPositionScoring = 30;
+                basePowerWhenMovingScoringHeightUp = -0.3,
+                basePowerWhenMovingScoringHeightDown = 0,
+                errorToleranceScoring = 18,
+                        errorAsArmInPositionScoring = 34;
 
         public enum Position {
             INTAKE,
@@ -188,17 +188,17 @@ public final class RobotConfig {
 //            encoderPositions.put(Position.GRAB_STACK_LOW, 50.0);
 //            encoderPositions.put(Position.SCORE, 1200.0);
             encoderPositions.put(Position.INTAKE, 0.0);
-            encoderPositions.put(Position.PREPARE_TO_SCORE, 1000.0);
+            encoderPositions.put(Position.PREPARE_TO_SCORE, 1150.0);
         }
 
         private static final double[]
-                scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {1500, 1400, 1300, 1250, 1200},
-                correspondingExtendValues = new double[] {300, 600, 900, 1100, 1300},
-                correspondingServoPositions = new double[] {0.56, 0.62, 0.66, 0.7, 0.76},
-                correspondingDistanceToWall = new double[] {28.5, 24.5, 16.5, 10.5, 4};
+                scoringHeight = new double[] {0, 0.33, 0.67, 1},
+                correspondingArmEncoderValues = new double[] {1400, 1300, 1250, 1180},
+                correspondingExtendValues = new double[] {400, 800, 1000, 1400},
+                correspondingServoPositions = new double[] {0.62, 0.66, 0.7, 0.76},
+                correspondingDistanceToWall = new double[] {24, 18, 12, 4};
 
-        public static final double manualStageMinScoringHeight = 0.2, manualStageMaxScoringHeight = 1;
+        public static final double manualStageMinScoringHeight = 0, manualStageMaxScoringHeight = 1;
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall),
