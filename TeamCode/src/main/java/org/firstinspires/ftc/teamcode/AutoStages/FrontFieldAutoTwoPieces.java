@@ -103,7 +103,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                         robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
                 },
                 () -> {
-                    robot.extend.setExtendPosition(300, null);
+                    robot.extend.setExtendPosition(100, null);
                     robot.claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(0), null);
                     },
                 () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.arm.getArmDesiredPosition() == RobotConfig.ArmConfigs.Position.SCORE && robot.arm.isArmInPosition(),
@@ -113,6 +113,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
 
         super.commandSegments.add(wallAimBot.stickToWall(
                 teamElementFinder,
+                14,
                 robot.extend::isExtendInPosition
         ));
 

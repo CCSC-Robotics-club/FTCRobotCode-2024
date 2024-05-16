@@ -51,6 +51,13 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         return stickToWall(() -> this.update(desiredPositionToWall), additionalCompleteChecker);
     }
 
+    public SequentialCommandSegment stickToWall(TeamElementFinder teamElementFinder, double requiredDistanceToWall, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
+        return stickToWall(
+                () -> this.update(getDesiredAimingPositionToWall(teamElementFinder.teamElementPosition, requiredDistanceToWall)),
+                additionalCompleteChecker
+        );
+    }
+
     public SequentialCommandSegment stickToWall(TeamElementFinder teamElementFinder, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
         return stickToWall(
                 () -> this.update(getDesiredAimingPositionToWall(teamElementFinder.teamElementPosition)),

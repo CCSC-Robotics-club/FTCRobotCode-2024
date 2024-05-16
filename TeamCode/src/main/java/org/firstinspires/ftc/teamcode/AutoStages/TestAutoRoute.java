@@ -15,15 +15,10 @@ public class TestAutoRoute extends AutoStageProgram {
 
     @Override
     public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
-        final TeamElementFinder teamElementFinder = new TeamElementFinder(robot.hardwareMap.get(WebcamName.class, "Webcam 1"), super.allianceSide);
-        final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(Math.toRadians(90)), super.allianceSide, robot.hardwareMap);
+        final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(Math.toRadians(0)), super.allianceSide, robot.hardwareMap);
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
         super.commandSegments.addAll(
                 sequentialCommandFactory.followPathFacing("split first(left)", new Rotation2D(0))
-        );
-
-        super.commandSegments.addAll(
-                sequentialCommandFactory.followPathFacing("score second", new Rotation2D(0))
         );
 
         super.commandSegments.addAll(

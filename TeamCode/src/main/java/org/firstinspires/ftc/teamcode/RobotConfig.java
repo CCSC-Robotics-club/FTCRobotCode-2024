@@ -169,8 +169,8 @@ public final class RobotConfig {
                 errorStartDecelerateScoring = 80,
                 powerNeededToMoveUpScoring = 0.05,
                 powerNeededToMoveDownScoring = 0.24,
-                basePowerWhenStayStill = -0.1,
-                basePowerWhenMovingScoringHeightUp = -0.3,
+                basePowerWhenStayStill = -0.2,
+                basePowerWhenMovingScoringHeightUp = -0.35,
                 basePowerWhenMovingScoringHeightDown = 0,
                 errorToleranceScoring = 12,
                         errorAsArmInPositionScoring = 38;
