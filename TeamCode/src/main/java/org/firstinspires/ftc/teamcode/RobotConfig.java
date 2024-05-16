@@ -134,7 +134,7 @@ public final class RobotConfig {
 
     public static final class ArmConfigs {
         /** positive should be scoring */
-        public static final boolean motor1Reversed = false, motor2Reversed = false, encoderReversed = false;
+        public static final boolean motor1Reversed = false, motor2Reversed = true, encoderReversed = false;
 
         public static final ArmGravityController.ArmProfile armProfile = new ArmGravityController.ArmProfile(
                 0.8,
@@ -169,13 +169,13 @@ public final class RobotConfig {
                 errorStartDecelerateScoring = 80,
                 powerNeededToMoveUpScoring = 0.05,
                 powerNeededToMoveDownScoring = 0.15,
-                basePowerWhenMovingScoringHeightUp = -0.3,
+                basePowerWhenMovingScoringHeightUp = -0.25,
                 basePowerWhenMovingScoringHeightDown = 0,
                 errorToleranceScoring = 12,
                         errorAsArmInPositionScoring = 40;
         public static final LookUpTable baseGravityPower = new LookUpTable(
                 new double[] {1100, 1300, 1500},
-                new double[] {0, -0.2, -0.25}
+                new double[] {0, -0.15, -0.25}
         );
 
         public enum Position {

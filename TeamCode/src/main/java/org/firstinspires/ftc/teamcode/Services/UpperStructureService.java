@@ -106,7 +106,7 @@ public class UpperStructureService extends RobotService {
                     arm.setScoringHeight(desiredScoringHeight + RobotConfig.ArmConfigs.inAdvanceHeight, this);
                     claw.setScoringAngle(1, this);
                     extend.setExtendPosition(0, this);
-                    this.chassisAutoAlignmentCompleteDuringCurrentScoringProcess |= chassisService.stickToWallComplete();
+                    this.chassisAutoAlignmentCompleteDuringCurrentScoringProcess |= chassisService.stickToWallComplete() || copilotGamePad.left_stick_button;
                     return;
                 }
 
