@@ -35,7 +35,7 @@ $$
 <img src="media/encoder calibration.png"/>
 
 
-### 二、自动阶段路径规划
+## 二、自动阶段路径规划
 <div align="center">
 <img src="media/automaticStaDecSys.flowchart.png" width="40%">
 </div>
@@ -45,14 +45,21 @@ $$
 <img src="media/spline curve+pathplanner1.png">
 <img src="media/pathplanner 2+3.png">
 <p float="left">
-  <img src="media/linear speed curve_e -original-horizontal.gif" width="49%" /> 
-  <img src="media/ease-in-out speed cu -original-horizontal.gif" width="49%" />
+  <img src="media/speed curve ease-in-out.gif" width="49%" /> 
+  <img src="media/speed curve linear.gif" width="49%" />
 </p>
 
-### 三、自动瞄准系统
+## 三、自动瞄准系统
 - 我们意识到在手动阶段，驾驶员自行控制机器接近目标并放置pixel需要很多时间反复微调，还可能出现失误，操作不慎撞上目标。因此，我们设计了一套继集编码器、智能摄像头和TOF距离传感器三种感知方式于一体的自动瞄准系统，实现自主瞄准功能。
 <img src="media/visual nav-1.png">
 - **第一阶段: 自动接近** 当驾驶员按下手柄上的自动瞄准案件，机器会首先通过智能摄像头计算出目标的大概位置。但是，智能摄像头存在延迟、帧率较低、容易丢失目标等问题。所以，这期间地盘会用从动轮编码器感应自身位置，用PID算法接移动到目标前面，同时正对目标。
 - **第二阶段：自动贴合** 当机器到达目标面前，tof距离传感器启动，感知目标距离；而智能摄像头则负责感应目标的水平偏差。机器会在0.7秒内完成自动贴近目标
 - **第三阶段: 微调位置** 当机器完全贴近目标，驾驶员通过手柄选择具体瞄准位置。程序会自动保持与板子的距离（精度 <= 1cm）并调整机器水平位置直到完成瞄准。
 - 目前为止我们能够实现三个阶段总共用时**不到4秒**
+
+## 四、手动阶段精准控制
+- 有了从动轮提供的导航信息，我们建立了一套兼顾灵活、精准、易用的控制系统。这套系统的核心是动态轨迹纠正系统
+
+- 当驾驶员输入移动命令后，系统首先根据自身IMU获取的方向对驾驶员输入进行变换，使机器的移动方向永远和驾驶员参照系的方向一致，不论机器朝向。这个功能简称“无头模式”
+- 而且，机器在运动途中，从动轮会实时监测机器的实际运动，如果与驾驶员的输入存在误差，会用PID算法进行校正，使机器走一条直线
+<img src="media/encoder-assisted drive-1.png">
