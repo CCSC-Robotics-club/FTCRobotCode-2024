@@ -241,7 +241,7 @@ public class PixelStackGrabbingCommand {
 
         commandSegments.add(commandFactory.justDoIt(() -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null)));
 
-        commandSegments.add(commandFactory.stayStillFor(500));
+        commandSegments.add(commandFactory.stayStillFor(300));
 
         commandSegments.add(commandFactory.justDoIt(() -> robot.claw.setLeftClawClosed(true, null)));
 
@@ -249,23 +249,20 @@ public class PixelStackGrabbingCommand {
 
         commandSegments.add(commandFactory.justDoIt(() -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null)));
 
-        commandSegments.add(commandFactory.moveToPoint(new Vector2D(new double[] {actualStackCenterPositionX[0] + clawWidth, 40})));
-
-        commandSegments.add(commandFactory.moveToPointAndStop(new Vector2D(new double[] {actualStackCenterPositionX[0] - clawWidth, 40})));
-
         commandSegments.add(commandFactory.moveToPointAndStop(robotPositionGrabbingRightClaw));
+
 
         commandSegments.add(commandFactory.justDoIt(() -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, null)));
 
-        commandSegments.add(commandFactory.stayStillFor(500));
+        commandSegments.add(commandFactory.stayStillFor(300));
 
         commandSegments.add(commandFactory.justDoIt(() -> robot.claw.setRightClawClosed(true, null)));
 
-        commandSegments.add(commandFactory.stayStillFor(400));
+        commandSegments.add(commandFactory.stayStillFor(300));
 
         commandSegments.add(commandFactory.justDoIt(() -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null)));
 
-        commandSegments.add(commandFactory.stayStillFor(400));
+        commandSegments.add(commandFactory.stayStillFor(300));
 
         return commandSegments;
     }
