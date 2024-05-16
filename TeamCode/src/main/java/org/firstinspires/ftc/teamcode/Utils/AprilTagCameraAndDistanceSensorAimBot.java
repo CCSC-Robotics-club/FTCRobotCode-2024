@@ -51,6 +51,13 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         return stickToWall(() -> this.update(desiredPositionToWall), additionalCompleteChecker);
     }
 
+    public SequentialCommandSegment stickToWall(TeamElementFinder teamElementFinder, double requiredDistanceToWall, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
+        return stickToWall(
+                () -> this.update(getDesiredAimingPositionToWall(teamElementFinder.teamElementPosition, requiredDistanceToWall)),
+                additionalCompleteChecker
+        );
+    }
+
     public SequentialCommandSegment stickToWall(TeamElementFinder teamElementFinder, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
         return stickToWall(
                 () -> this.update(getDesiredAimingPositionToWall(teamElementFinder.teamElementPosition)),
@@ -73,6 +80,10 @@ public class AprilTagCameraAndDistanceSensorAimBot {
     }
 
     public Vector2D getDesiredAimingPositionToWall(TeamElementFinder.TeamElementPosition teamElementPosition) {
+        return getDesiredAimingPositionToWall(teamElementPosition, desiredDistanceToWallSupplier.getAsDouble());
+    }
+
+    public Vector2D getDesiredAimingPositionToWall(TeamElementFinder.TeamElementPosition teamElementPosition, double requiredDistanceToWall) {
         double deviationFromCenter;
         switch (teamElementPosition) {
             case UNDETERMINED: case LEFT: {
@@ -91,7 +102,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         }
         return new Vector2D(new double[] {
                 RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.getX() + deviationFromCenter,
-                -desiredDistanceToWallSupplier.getAsDouble()
+                -requiredDistanceToWall
         });
     }
 

@@ -54,24 +54,31 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
         commandSegments.add(sequentialCommandFactory.followSingleCurve("move back and grab third from stack", 1, new Rotation2D(0)));
         commandSegments.addAll(PixelStackGrabbingCommand.getCommandSegmentSegmentsWithColorSensor(robot, robot.spikeMarkDetectionSensor, sequentialCommandFactory, stack1Position));
 
-        commandSegments.add(sequentialCommandFactory.followSingleCurve("score third and fourth", 1, new Rotation2D(0)));
-
-        final double scoringHeight = 0.5;
         commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> sequentialCommandFactory.getBezierCurvesFromPathFile("score third and fourth").get(0),
+                () -> {},
+                () -> {},
+                () -> {},
+                robot.chassis::isCurrentTranslationalTaskRoughlyComplete,
+                () -> new Rotation2D(0), () -> new Rotation2D(0)
+        ));
+
+        final double scoringHeight = 0.25;
+        commandSegments.add(new SequentialCommandSegment(
+                () -> true,
+                () -> sequentialCommandFactory.getBezierCurvesFromPathFile("score third and fourth").get(1),
                 () -> {
-                    robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
+                    robot.arm.setPosition(RobotConfig.ArmConfigs.Position.PREPARE_TO_SCORE, null);
                     robot.arm.setScoringHeight(scoringHeight, null);
                 },
                 () -> {
                     if (!robot.arm.isArmInPosition())
                         return;
-
                     robot.claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(scoringHeight), null);
-                    robot.extend.setExtendPosition(RobotConfig.ArmConfigs.extendValuesAccordingToScoringHeight.getYPrediction(scoringHeight), null);
+                    robot.extend.setExtendPosition(600, null);
                 },
-                () -> {},
+                () -> robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null),
                 () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.arm.isArmInPosition() && robot.extend.isExtendInPosition(),
                 () -> robot.chassis.isVisualNavigationAvailable() && robot.arm.isArmInPosition() && robot.extend.isExtendInPosition(),
                 () -> new Rotation2D(0), () -> new Rotation2D(0),

@@ -84,7 +84,7 @@ public class UpperStructureService extends RobotService {
                 claw.setAutoClosing(false, this);
 
                 if (Math.abs(copilotGamePad.left_stick_y) > 0.05)
-                    desiredScoringHeight += -0.5 * dt * copilotGamePad.left_stick_y;
+                    desiredScoringHeight += -0.75 * dt * copilotGamePad.left_stick_y;
                 desiredScoringHeight = Math.max(Math.min(desiredScoringHeight, RobotConfig.ArmConfigs.manualStageMaxScoringHeight), RobotConfig.ArmConfigs.manualStageMinScoringHeight);
 
                 chassisService.setDesiredScoringHeight(desiredScoringHeight);
@@ -102,13 +102,18 @@ public class UpperStructureService extends RobotService {
                     return;
                 }
                 if (!chassisAutoAlignmentCompleteDuringCurrentScoringProcess) {
-                    arm.setPosition(RobotConfig.ArmConfigs.Position.PREPARE_TO_SCORE, this);
+                    arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
+                    arm.setScoringHeight(desiredScoringHeight, this);
                     claw.setScoringAngle(1, this);
-                    extend.setExtendPosition(RobotConfig.ArmConfigs.extendValuesAccordingToScoringHeight.getYPrediction(desiredScoringHeight), this);
+                    extend.setExtendPosition(0, this);
                     this.chassisAutoAlignmentCompleteDuringCurrentScoringProcess |= chassisService.stickToWallComplete();
+                    return;
                 }
 
-                final double actualScoringHeight = chassisService.getActualScoringHeightAccordingToDistanceToWall(desiredScoringHeight);
+                final double actualScoringHeight =
+                        Math.min(RobotConfig.ArmConfigs.manualStageMaxScoringHeight,
+                                Math.max(RobotConfig.ArmConfigs.manualStageMinScoringHeight,
+                                        chassisService.getActualScoringHeightAccordingToDistanceToWall(desiredScoringHeight)));
                 arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
                 arm.setScoringHeight(actualScoringHeight, this);
                 extend.setExtendPosition(RobotConfig.ArmConfigs.extendValuesAccordingToScoringHeight.getYPrediction(actualScoringHeight), this);

@@ -84,7 +84,6 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
         );
         super.commandSegments.add(sequentialCommandFactory.stayStillFor(300));
 
-        super.commandSegments.add(sequentialCommandFactory.stayStillFor(300));
         super.commandSegments.add(new SequentialCommandSegment(
                 () -> true,
                 () -> new BezierCurve(robot.positionEstimator.getCurrentPosition(), sequentialCommandFactory.getBezierCurvesFromPathFile("score second").get(0).getPositionWithLERP(1)),
@@ -93,24 +92,28 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                     robot.extend.setExtendPosition(0, null);
                     robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
 
-                    robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
-                    robot.arm.setScoringHeight(0.1, null);
+                    robot.arm.setPosition(RobotConfig.ArmConfigs.Position.PREPARE_TO_SCORE, null);
+                    robot.arm.setScoringHeight(0, null);
                     robot.claw.setFlip(FlippableDualClaw.FlipperPosition.SCORE, null);
                     robot.claw.setScoringAngle(1, null);
                     robot.extend.setExtendPosition(0, null);
                 },
-                () -> {},
                 () -> {
-                    robot.extend.setExtendPosition(700, null);
-                    robot.claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(0.1), null);
+                    if (robot.arm.isArmInPosition())
+                        robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
+                },
+                () -> {
+                    robot.extend.setExtendPosition(100, null);
+                    robot.claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(0), null);
                     },
-                () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.arm.isArmInPosition(),
+                () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.arm.getArmDesiredPosition() == RobotConfig.ArmConfigs.Position.SCORE && robot.arm.isArmInPosition(),
                 () -> new Rotation2D(0), () -> new Rotation2D(0),
                 SpeedCurves.originalSpeed, 0.5
         ));
 
         super.commandSegments.add(wallAimBot.stickToWall(
                 teamElementFinder,
+                14,
                 robot.extend::isExtendInPosition
         ));
 

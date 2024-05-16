@@ -20,12 +20,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "score second"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "move back and grab third from stack"
           }
         },

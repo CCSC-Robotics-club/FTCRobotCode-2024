@@ -120,22 +120,27 @@ public class Arm extends RobotModule {
     public boolean isArmInPosition() {
         if (this.desiredPosition == ArmConfigs.Position.INTAKE && limitSwitch.getSensorReading() != 0)
             return true;
-        final double errorTolerance = this.desiredPosition == ArmConfigs.Position.SCORE ? ArmConfigs.errorToleranceScoring : ArmConfigs.errorToleranceNormal;
-        return Math.abs(getArmEncoderPosition() - getArmDesiredPosition()) < errorTolerance;
+        final double errorTolerance = this.desiredPosition == ArmConfigs.Position.SCORE ? ArmConfigs.errorAsArmInPositionScoring : ArmConfigs.errorAsArmInPositionNormal;
+        return Math.abs(getArmEncoderPosition() - getArmDesiredPositionEncoder()) < errorTolerance;
     }
 
     public int getArmEncoderPosition() {
         return (int) ((armEncoder.getSensorReading() - armEncoderZeroPosition) * (ArmConfigs.encoderReversed ? -1: 1));
     }
 
-    public double getArmDesiredPosition() {
-        return simpleArmControllerNormal.desiredPosition;
+    public double getArmDesiredPositionEncoder() {
+        return this.simpleArmControllerNormal.desiredPosition;
+    }
+
+    public ArmConfigs.Position getArmDesiredPosition() {
+        return this.desiredPosition;
     }
 
     private void updateDesiredPositions() {
-        simpleArmControllerNormal.desiredPosition = desiredPosition == ArmConfigs.Position.SCORE ?
-                ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight)
-                : ArmConfigs.encoderPositions.get(desiredPosition);
+        this.simpleArmControllerScoring.desiredPosition = this.simpleArmControllerNormal.desiredPosition =
+                desiredPosition == ArmConfigs.Position.SCORE ?
+                        ArmConfigs.armScoringAnglesAccordingToScoringHeight.getYPrediction(scoringHeight) :
+                        ArmConfigs.encoderPositions.get(desiredPosition);
     }
 
     public void setScoringHeight(double scoringHeight, ModulesCommanderMarker operator) {
@@ -160,15 +165,15 @@ public class Arm extends RobotModule {
         if (!isOwner(operator))
             return;
         if (direction <= 0.05)
-            pidBasePower = 0;
+            pidBasePower = ArmConfigs.basePowerWhenStayStill;
         else
-            pidBasePower = direction > 0 ? ArmConfigs.basePowerWhenMoveUp : ArmConfigs.basePowerWhenMoveDown;
+            pidBasePower = direction > 0 ? ArmConfigs.basePowerWhenMovingScoringHeightUp : ArmConfigs.basePowerWhenMovingScoringHeightDown;
     }
 
     @Override
     public Map<String, Object> getDebugMessages() {
         debugMessages.put("arm desired position", desiredPosition);
-        debugMessages.put("arm desired position (enc)", getArmDesiredPosition());
+        debugMessages.put("arm desired position (enc)", getArmDesiredPositionEncoder());
         debugMessages.put("arm current position (enc)" , getArmEncoderPosition());
         final double encoderFactor = ArmConfigs.encoderReversed ? -1:1;
         debugMessages.put("arm current velocity (enc)", armEncoder.getVelocity() * encoderFactor);

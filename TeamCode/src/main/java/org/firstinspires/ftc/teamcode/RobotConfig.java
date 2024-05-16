@@ -164,15 +164,16 @@ public final class RobotConfig {
                 errorToleranceNormal = 10,
                 errorAsArmInPositionNormal = 30,
 
-                maxPowerWhenMovingUpScoring = 0.4,
-                maxPowerWhenMovingDownScoring = 0.5,
+                maxPowerWhenMovingUpScoring = 0.35,
+                maxPowerWhenMovingDownScoring = 0.45,
                 errorStartDecelerateScoring = 80,
-                powerNeededToMoveUpScoring = 0.15,
-                powerNeededToMoveDownScoring = 0.25,
-                basePowerWhenMoveUp = 0.1,
-                basePowerWhenMoveDown = -0.3,
-                errorToleranceScoring = 5,
-                        errorAsArmInPositionScoring = 20;
+                powerNeededToMoveUpScoring = 0.05,
+                powerNeededToMoveDownScoring = 0.24,
+                basePowerWhenStayStill = -0.2,
+                basePowerWhenMovingScoringHeightUp = -0.35,
+                basePowerWhenMovingScoringHeightDown = 0,
+                errorToleranceScoring = 12,
+                        errorAsArmInPositionScoring = 38;
 
         public enum Position {
             INTAKE,
@@ -187,17 +188,17 @@ public final class RobotConfig {
 //            encoderPositions.put(Position.GRAB_STACK_LOW, 50.0);
 //            encoderPositions.put(Position.SCORE, 1200.0);
             encoderPositions.put(Position.INTAKE, 0.0);
-            encoderPositions.put(Position.PREPARE_TO_SCORE, 1000.0);
+            encoderPositions.put(Position.PREPARE_TO_SCORE, 1150.0);
         }
 
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {1500, 1400, 1300, 1250, 1200},
-                correspondingExtendValues = new double[] {300, 600, 900, 1100, 1300},
-                correspondingServoPositions = new double[] {0.56, 0.62, 0.66, 0.7, 0.76},
-                correspondingDistanceToWall = new double[] {28.5, 24.5, 16.5, 10.5, 4};
+                correspondingArmEncoderValues = new double[] {1500, 1400, 1300, 1250, 1180},
+                correspondingExtendValues = new double[] {100, 400, 800, 1000, 1400},
+                correspondingServoPositions = new double[] {0.6, 0.62, 0.66, 0.7, 0.76},
+                correspondingDistanceToWall = new double[] {24.5, 24, 18, 12, 4};
 
-        public static final double manualStageMinScoringHeight = 0.2, manualStageMaxScoringHeight = 1;
+        public static final double manualStageMinScoringHeight = 0.25, manualStageMaxScoringHeight = 1;
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall),
@@ -216,17 +217,17 @@ public final class RobotConfig {
                 errorStartDecelerate = 200,
                 powerNeededToMoveForward = 0.04,
                 powerNeededToMoveBackward = 0.04,
-                errorTolerance = 20,
+                errorTolerance = 24,
                 errorAsTaskFinished = 60,
                 /* settings */
                 maxExtendValue = 1450,
-                intakeValue = 540,
+                intakeValue = 500,
                 grabStackValue = 180;
     }
 
     public static final class FlippableDualClawConfigs {
 
-        public static final double leftClawClosePosition = 0.47, leftClawOpenPosition = 0.9, rightClawClosedPosition = 0.74, rightClawOpenPosition = 0.28;
+        public static final double leftClawClosePosition = 0.48, leftClawOpenPosition = 0.81, rightClawClosedPosition = 0.7, rightClawOpenPosition = 0.37;
 
         public static final int colorDetectorThreshold = 800;
     }
@@ -380,7 +381,7 @@ public final class RobotConfig {
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -5});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
         public static final double autoStageScoringPositionsLeft = -6, autoStageScoringPositionsCenter = 4, autoStageScoringPositionsRight = 14;
-        public static final double clawWidth = 6.5, grabbingDistanceToWall = 8, colorSensorThreshold = 100, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 10.5;
+        public static final double clawWidth = 6.5, grabbingDistanceToWall = 10, colorSensorThreshold = 100, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 10.5;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 150;
