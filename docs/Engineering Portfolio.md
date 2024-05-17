@@ -38,10 +38,20 @@ $$
 ## 二、自动阶段路线行走
 
 
-- 我们将FRC中的PathPlanner下放到了机器当中。PathPlanner是由FRC Team 3015创建的FRC运动轮廓生成器。其优点在于：
-**我们可以精确得对每条路径进行微调，其每条路径都是用贝塞尔曲线制作的**
+- 为了使得机器可以在自动阶段精准地完成指令，我们魔改了FRC队伍3015的开源工具Path Planner，对比传统的自动阶段编程，使用pathplanner进行路线设定有以下好处：
+  1. 路径由贝塞尔曲线生成，保证机器移动丝滑流畅，且可以通过微调控制点精准控制走线轨迹
+  2. 内置物理引擎，即使没有训练场也可以模拟出机器走线过程，甚至可以计算出确切的完成时间。
+  3. 用户友好gsui界面，初学者也可以快速编辑自动
 <img src="media/spline curve+pathplanner1.png">
 <img src="media/pathplanner 2+3.png">
+- 制定出精确的路径后，我们使用了一套创新的pid算法来控制机器，使其可以精准的跟随路径，具体原理见下图:
+<img src="media/pathFollowing.png">$$
+    \text{a} = \frac{\text{v}^2 }{\text{r}}
+    $$
+
+
+- 另外，我们的机器在跟随路径时，加入了速度曲线来使过程更加流畅。
+
 <p float="left">
   <img src="media/speed curve ease-in-out.gif" width="49%" /> 
   <img src="media/speed curve linear.gif" width="49%" />
@@ -55,11 +65,10 @@ $$
 </div>
 
 例如，自动阶段导航（放置紫色像素）我们是这样实现的：
-TODO: 编辑图片 **COMPLETED**
-<p float="left">
+<div float="center">
 <img src="media/auto code structure 1.png" width="49%">
 <img src="media/auto code structure 2_edited.png" width="49%">
-</p>
+</div>
 
 除了基础的导航任务，用这套程序架构我们还可以做出很多功能，例如，当我们夹取一个像素堆失败后，机器不会浪费时间去背景板放置，而是会直接夹取下一个像素堆。
 
@@ -72,8 +81,9 @@ TODO: 编辑图片 **COMPLETED**
 - 目前为止我们能够实现三个阶段总共用时**不到4秒**
 
 - **新功能：手臂高度无级调整** 当机器已经完全贴合背板后，手臂可以根据操作手的指令无级调整像素放置高度。操作手只需决定防止高度，程序会自动计算出对应的底盘距离、手臂角度、伸展长度与舵机位置，并实时进行调整
-
-**TODO： gif与重影图**
+<div align="center">
+<img src="media/ftc2024_car_edited_cut.png">
+</div>
 
 
 ## 五、手动阶段精准控制
@@ -84,5 +94,16 @@ TODO: 编辑图片 **COMPLETED**
 <img src="media/encoder-assisted drive-1.png">
 
 ## 六、程序优化问题
+一般来说，ftc机器的程序以单线程运行，机器依次读取传感器、处理程序逻辑、对电机进行控制。
+但是当机器有太多功能时，这样做会导致程序延迟过高，于是我们将程序分成三个线程执行，如下所示：
+- 优化前
+<div align="center">
+<img src="media/beforeOptimize.png">
+</div>
 
-- 在
+- 优化后
+<div align="center">
+<img src="media/afterOptimize.png">
+</div>
+主线程以100次每秒读取手柄并处理程序逻辑；马达控制线程以100次每秒控制电机；传感器通讯线程受到rev控制板自身硬件性能限制，只能以40次每秒读取传感器
+在这种情况下，我们成功将操作延迟从50ms降低至10ms，并将PID的更新速率从20次每秒提升至40次每秒，大大提升了机器的流畅度
