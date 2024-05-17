@@ -36,7 +36,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
 
 
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
-        teamElementFinder.teamElementPosition = TeamElementFinder.TeamElementPosition.RIGHT;
+        teamElementFinder.teamElementPosition = TeamElementFinder.TeamElementPosition.LEFT;
         // super.commandSegments.add(teamElementFinder.findTeamElementAndShutDown(5000));
 
         final Vector2D[] splitFirstPosition = new Vector2D[1];
@@ -47,7 +47,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                             switch (teamElementFinder.teamElementPosition) {
                                 case LEFT: case UNDETERMINED: {
                                     splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {90, 273}) : new Vector2D(new double[] {248, 216});
+                                            new Vector2D(new double[] {92, 275}) : new Vector2D(new double[] {248, 218});
                                     break;
                                 }
                                 case CENTER: {
@@ -57,7 +57,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                                 }
                                 case RIGHT: {
                                     splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {92, 210}) : new Vector2D(new double[] {253, 271});
+                                            new Vector2D(new double[] {92, 217}) : new Vector2D(new double[] {253, 271});
                                     break;
                                 }
                                 default:

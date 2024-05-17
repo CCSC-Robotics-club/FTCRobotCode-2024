@@ -26,7 +26,7 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
         final double speedFactorWhenArmRaised = 0.6;
 
         final Vector2D stack1Position = new Vector2D(new double[] {
-                this.allianceSide == Robot.Side.BLUE ? 153 : 216,
+                this.allianceSide == Robot.Side.BLUE ? 155 : 220,
                 20
         });
 
@@ -99,17 +99,17 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
         }));
 
         commandSegments.add(sequentialCommandFactory.stayStillFor(300));
-        commandSegments.add(sequentialCommandFactory.followSingleCurveAndStop(
-                "park", 0,
-                new Rotation2D(0),
+        commandSegments.add(new SequentialCommandSegment(
+                () -> true,
+                () -> sequentialCommandFactory.getBezierCurvesFromPathFile("park").get(0),
                 () -> {
+                    robot.arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, null);
+                    robot.extend.setExtendPosition(0, null);
                     robot.claw.setRightClawClosed(true, null);
                     robot.claw.setLeftClawClosed(true, null);
-                    robot.extend.setExtendPosition(0, null);
-                    robot.arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, null);
-                },
-                () -> {},
-                () -> {}
+                },() -> {}, () -> {},
+                () -> robot.arm.isArmInPosition(),
+                () -> new Rotation2D(0), () -> new Rotation2D(0)
         ));
     }
 }

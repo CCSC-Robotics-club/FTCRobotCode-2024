@@ -300,7 +300,7 @@ public final class RobotConfig {
                 Double.POSITIVE_INFINITY,
                 1.05,
                 0.03,
-                25,
+                20,
                 1,
                 0.22,
                 0, 0
@@ -308,7 +308,7 @@ public final class RobotConfig {
         public static final EnhancedPIDController.StaticPIDProfile encoderTranslationalControllerProfileY = new EnhancedPIDController.StaticPIDProfile(
                 Double.POSITIVE_INFINITY,
                 1.05,
-                0.01,
+                0.015,
                 30,
                 1,
                 0.24,
@@ -332,7 +332,7 @@ public final class RobotConfig {
         public static final double timeToStartDecelerateRotation = 0.3;
 
         /** within how much distance should the translational task be counted as complete */
-        public static final double errorAsTaskFinishedCM = 3;
+        public static final double errorAsTaskFinishedCM = 3.5;
         public static final double chassisSpeedAsRobotStoppedCMPerSec = 20;
 
         public static final double errorAsTaskRoughlyFinished = 12;
@@ -384,7 +384,7 @@ public final class RobotConfig {
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -5});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
         public static final double autoStageScoringPositionsLeft = -14, autoStageScoringPositionsCenter = 4, autoStageScoringPositionsRight = 20;
-        public static final double clawWidth = 8, grabbingDistanceToWall = 10, colorSensorThreshold = 100, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 9;
+        public static final double clawWidth = 8, grabbingDistanceToWall = 7, colorSensorThreshold = 100, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 7;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 100;
