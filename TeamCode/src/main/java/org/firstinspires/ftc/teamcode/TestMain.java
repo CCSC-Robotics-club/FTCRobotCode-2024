@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAnglePixelC
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.AutoProgramRunner;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamPropFinderEasyOpenCV;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedEncoder;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedIMU;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
@@ -51,6 +52,16 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,7 +74,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        dualArmMotorTest();
+        testTeamPropFinder();
     }
 
     private void ledTest() {
@@ -1208,6 +1219,9 @@ public class TestMain extends LinearOpMode {
 
         waitForStart();
 
+        telemetry.addLine("finding team element...");
+        telemetry.update();
+
         teamElementFinder.findTeamElementAndShutDown(5000);
         telemetry.addData("team element finder result: ", teamElementFinder.teamElementPosition);
         telemetry.update();
@@ -1248,6 +1262,63 @@ public class TestMain extends LinearOpMode {
         waitForStart();
         while (!isStopRequested() && opModeIsActive()) {
             light.setState(gamepad1.a);
+        }
+    }
+
+    private void testTeamPropFinder() {
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
+        OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()));
+
+        TestPipeLine testPipeLine = new TestPipeLine();
+
+        // webcam.setPipeline(testPipeLine);
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                // webcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+            }
+            @Override
+            public void onError(int errorCode) {
+                telemetry.addData("error code: ", errorCode);
+            }
+        });
+        waitForStart();
+        webcam.openCameraDevice();
+
+        while (opModeIsActive() && !isStopRequested()) {
+            final double sensitivity = 5;
+            testPipeLine.regionOfInterest[0] += (int) (gamepad1.left_stick_x * sensitivity);
+            testPipeLine.regionOfInterest[1] -= (int) (gamepad1.left_stick_y * sensitivity);
+
+            testPipeLine.regionOfInterest[2] += (int) (gamepad1.right_stick_x * sensitivity);
+            testPipeLine.regionOfInterest[3] -= (int) (gamepad1.right_stick_y * sensitivity);
+
+            telemetry.addData("result: ", testPipeLine.result);
+            telemetry.update();
+            sleep(20);
+        }
+    }
+
+    class TestPipeLine extends OpenCvPipeline {
+        public final int[] regionOfInterest = new int[] {0, 0, 0, 0};
+        Mat YCbCr = new Mat(), output = new Mat(), crop = new Mat();
+        double result = 0;
+        @Override
+        public Mat processFrame(Mat inp) {
+            Imgproc.cvtColor(inp, YCbCr, Imgproc.COLOR_RGB2YCrCb);
+
+            Rect regionOfInterest = new Rect(this.regionOfInterest[0], this.regionOfInterest[1], this.regionOfInterest[2], this.regionOfInterest[3]);
+
+            inp.copyTo(output);
+            Imgproc.rectangle(output, regionOfInterest, new Scalar(255, 0, 0), 2);
+
+            crop = YCbCr.submat(regionOfInterest);
+
+            Core.extractChannel(crop, crop, 2);
+            result = Core.mean(crop).val[0];
+
+            return output;
         }
     }
 }

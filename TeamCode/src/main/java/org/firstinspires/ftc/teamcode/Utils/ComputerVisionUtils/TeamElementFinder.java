@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils;
 
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -91,6 +92,7 @@ public class TeamElementFinder {
     }
 
     public void shutDown() {
-        // visionPortal.setProcessorEnabled(tfod, false);
+        visionPortal.setProcessorEnabled(tfod, false);
+        tfod.shutdown();
     }
 }
