@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+
 import com.qualcomm.hardware.adafruit.AdafruitBNO055IMUNew;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -19,13 +23,13 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.AutoProgramRunner;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
-import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamPropFinderEasyOpenCV;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedEncoder;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedIMU;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
@@ -46,6 +50,7 @@ import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinde
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TensorCamera;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.VisionProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
@@ -55,13 +60,7 @@ import org.json.JSONObject;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -1268,23 +1267,15 @@ public class TestMain extends LinearOpMode {
     private void testTeamPropFinder() {
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
-        OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()));
+        VisionPortal.Builder builder = new VisionPortal.Builder();
+        builder.setCamera(webcamName);
+        builder.enableLiveView(true);
+        builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
 
-        TestPipeLine testPipeLine = new TestPipeLine();
+        final VisionPortal visionPortal = builder.build();
 
-        // webcam.setPipeline(testPipeLine);
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                // webcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-            }
-            @Override
-            public void onError(int errorCode) {
-                telemetry.addData("error code: ", errorCode);
-            }
-        });
         waitForStart();
-        webcam.openCameraDevice();
+
 
         while (opModeIsActive() && !isStopRequested()) {
             final double sensitivity = 5;
@@ -1300,25 +1291,33 @@ public class TestMain extends LinearOpMode {
         }
     }
 
-    class TestPipeLine extends OpenCvPipeline {
+    class TestProcessor implements VisionProcessor {
         public final int[] regionOfInterest = new int[] {0, 0, 0, 0};
         Mat YCbCr = new Mat(), output = new Mat(), crop = new Mat();
+        private final Paint mPaint = new Paint();
         double result = 0;
+
         @Override
-        public Mat processFrame(Mat inp) {
+        public void init(int i, int i1, CameraCalibration cameraCalibration) {
+            mPaint.setColor(Color.RED);
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setStrokeWidth(5);
+        }
+
+        @Override
+        public Object processFrame(Mat inp, long l) {
             Imgproc.cvtColor(inp, YCbCr, Imgproc.COLOR_RGB2YCrCb);
-
             Rect regionOfInterest = new Rect(this.regionOfInterest[0], this.regionOfInterest[1], this.regionOfInterest[2], this.regionOfInterest[3]);
-
-            inp.copyTo(output);
-            Imgproc.rectangle(output, regionOfInterest, new Scalar(255, 0, 0), 2);
-
             crop = YCbCr.submat(regionOfInterest);
-
             Core.extractChannel(crop, crop, 2);
-            result = Core.mean(crop).val[0];
 
-            return output;
+            result = Core.mean(crop).val[0];
+            return null;
+        }
+
+        @Override
+        public void onDrawFrame(Canvas canvas, int i, int i1, float v, float v1, Object o) {
+            canvas.drawRect(this.regionOfInterest[0], this.regionOfInterest[1], this.regionOfInterest[2], this.regionOfInterest[3], mPaint);
         }
     }
 }
