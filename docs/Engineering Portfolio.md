@@ -51,15 +51,15 @@ $$
 绝大多数的机器在自动阶段只会执行预设指令，除了一开始的识别导航之外，其余一切动作都是按照设定的路线执行。
 而我们在自动程序架构上作了创新，我们的自动程序由若干个命令快组成，每个命令快包含**触发条件、 路径生成函数、终止条件与上层结构指令**构成，详细如下图:
 <div align="center">
-<img src="media/automaticStaDecSys.flowchart.png" width="30%">
+<img src="media/automaticStaDecSys.flowchart.png" width="40%">
 </div>
 
 例如，自动阶段导航（放置紫色像素）我们是这样实现的：
-TODO: 编辑图片
-<div align="center">
-<img src="media/auto code structure 1.png" width="80%">
-<img src="media/auto code structure 2.png" width="80%">
-</div>
+TODO: 编辑图片 **COMPLETED**
+<p float="left">
+<img src="media/auto code structure 1.png" width="49%">
+<img src="media/auto code structure 2_edited.png" width="49%">
+</p>
 
 除了基础的导航任务，用这套程序架构我们还可以做出很多功能，例如，当我们夹取一个像素堆失败后，机器不会浪费时间去背景板放置，而是会直接夹取下一个像素堆。
 
