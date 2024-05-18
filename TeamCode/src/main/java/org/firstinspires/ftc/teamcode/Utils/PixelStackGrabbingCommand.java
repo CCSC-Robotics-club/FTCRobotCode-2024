@@ -175,7 +175,7 @@ public class PixelStackGrabbingCommand {
                     robot.chassis.setLowSpeedModeEnabled(false);
                     if (actualStackCenterPositionX[1] != -1 && actualStackCenterPositionX[2] != -1)
                         actualStackCenterPositionX[0] = (actualStackCenterPositionX[1] + actualStackCenterPositionX[2])/2;
-                    else throw new IllegalStateException("spike mark unseen");
+                    // else throw new IllegalStateException("spike mark unseen");
 
                     markDetector.setEnabled(false);
                 },
@@ -257,10 +257,6 @@ public class PixelStackGrabbingCommand {
         commandSegments.add(commandFactory.stayStillFor(300));
 
         commandSegments.add(commandFactory.justDoIt(() -> robot.claw.setRightClawClosed(true, null)));
-
-        commandSegments.add(commandFactory.stayStillFor(300));
-
-        commandSegments.add(commandFactory.justDoIt(() -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null)));
 
         commandSegments.add(commandFactory.stayStillFor(300));
 

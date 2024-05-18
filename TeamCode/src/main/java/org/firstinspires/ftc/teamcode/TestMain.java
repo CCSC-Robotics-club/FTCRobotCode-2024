@@ -73,7 +73,27 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        testTeamPropFinder();
+        sensorsInspection();
+    }
+
+    private void sensorsInspection() {
+        final ColorSensor markSensor = hardwareMap.get(ColorSensor.class, "markSensor");
+        String[] encoderNames = RobotConfig.competitionConfig.encoderNames;
+        final DistanceSensor distanceSensorBack = hardwareMap.get(DistanceSensor.class, "distanceBack");
+        final DcMotor hor = hardwareMap.get(DcMotorEx.class, encoderNames[0]),
+                ver1 = hardwareMap.get(DcMotorEx.class, encoderNames[0]),
+                ver2 = hardwareMap.get(DcMotorEx.class, encoderNames[1]);
+
+        waitForStart();
+
+        while (opModeIsActive() && !isStopRequested()) {
+            telemetry.addData("hor enc", hor.getCurrentPosition());
+            telemetry.addData("ver 1 enc", ver1.getCurrentPosition());
+            telemetry.addData("ver 2 enc", ver2.getCurrentPosition());
+            telemetry.addData("dis back", distanceSensorBack.getDistance(DistanceUnit.CM));
+            telemetry.addData("mark sensor", markSensor.alpha());
+            telemetry.update();
+        }
     }
 
     private void ledTest() {
@@ -1214,7 +1234,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void teamElementFinderTest() {
-        final TeamElementFinder teamElementFinder = new TeamElementFinder(hardwareMap.get(WebcamName.class, "Webcam 1"), Robot.Side.RED);
+        final TeamElementFinder teamElementFinder = new TeamElementFinder(hardwareMap, Robot.Side.RED);
 
         waitForStart();
 
@@ -1264,60 +1284,60 @@ public class TestMain extends LinearOpMode {
         }
     }
 
-    private void testTeamPropFinder() {
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-        VisionPortal.Builder builder = new VisionPortal.Builder();
-        builder.setCamera(webcamName);
-        builder.enableLiveView(true);
-        builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
-
-        final VisionPortal visionPortal = builder.build();
-
-        waitForStart();
-
-
-        while (opModeIsActive() && !isStopRequested()) {
-            final double sensitivity = 5;
-            testPipeLine.regionOfInterest[0] += (int) (gamepad1.left_stick_x * sensitivity);
-            testPipeLine.regionOfInterest[1] -= (int) (gamepad1.left_stick_y * sensitivity);
-
-            testPipeLine.regionOfInterest[2] += (int) (gamepad1.right_stick_x * sensitivity);
-            testPipeLine.regionOfInterest[3] -= (int) (gamepad1.right_stick_y * sensitivity);
-
-            telemetry.addData("result: ", testPipeLine.result);
-            telemetry.update();
-            sleep(20);
-        }
-    }
-
-    class TestProcessor implements VisionProcessor {
-        public final int[] regionOfInterest = new int[] {0, 0, 0, 0};
-        Mat YCbCr = new Mat(), output = new Mat(), crop = new Mat();
-        private final Paint mPaint = new Paint();
-        double result = 0;
-
-        @Override
-        public void init(int i, int i1, CameraCalibration cameraCalibration) {
-            mPaint.setColor(Color.RED);
-            mPaint.setStyle(Paint.Style.STROKE);
-            mPaint.setStrokeWidth(5);
-        }
-
-        @Override
-        public Object processFrame(Mat inp, long l) {
-            Imgproc.cvtColor(inp, YCbCr, Imgproc.COLOR_RGB2YCrCb);
-            Rect regionOfInterest = new Rect(this.regionOfInterest[0], this.regionOfInterest[1], this.regionOfInterest[2], this.regionOfInterest[3]);
-            crop = YCbCr.submat(regionOfInterest);
-            Core.extractChannel(crop, crop, 2);
-
-            result = Core.mean(crop).val[0];
-            return null;
-        }
-
-        @Override
-        public void onDrawFrame(Canvas canvas, int i, int i1, float v, float v1, Object o) {
-            canvas.drawRect(this.regionOfInterest[0], this.regionOfInterest[1], this.regionOfInterest[2], this.regionOfInterest[3], mPaint);
-        }
-    }
+//    private void testTeamPropFinder() {
+//        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+//
+//        VisionPortal.Builder builder = new VisionPortal.Builder();
+//        builder.setCamera(webcamName);
+//        builder.enableLiveView(true);
+//        builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
+//
+//        final VisionPortal visionPortal = builder.build();
+//
+//        waitForStart();
+//
+//
+//        while (opModeIsActive() && !isStopRequested()) {
+//            final double sensitivity = 5;
+//            testPipeLine.regionOfInterest[0] += (int) (gamepad1.left_stick_x * sensitivity);
+//            testPipeLine.regionOfInterest[1] -= (int) (gamepad1.left_stick_y * sensitivity);
+//
+//            testPipeLine.regionOfInterest[2] += (int) (gamepad1.right_stick_x * sensitivity);
+//            testPipeLine.regionOfInterest[3] -= (int) (gamepad1.right_stick_y * sensitivity);
+//
+//            telemetry.addData("result: ", testPipeLine.result);
+//            telemetry.update();
+//            sleep(20);
+//        }
+//    }
+//
+//    class TestProcessor implements VisionProcessor {
+//        public final int[] regionOfInterest = new int[] {0, 0, 0, 0};
+//        Mat YCbCr = new Mat(), output = new Mat(), crop = new Mat();
+//        private final Paint mPaint = new Paint();
+//        double result = 0;
+//
+//        @Override
+//        public void init(int i, int i1, CameraCalibration cameraCalibration) {
+//            mPaint.setColor(Color.RED);
+//            mPaint.setStyle(Paint.Style.STROKE);
+//            mPaint.setStrokeWidth(5);
+//        }
+//
+//        @Override
+//        public Object processFrame(Mat inp, long l) {
+//            Imgproc.cvtColor(inp, YCbCr, Imgproc.COLOR_RGB2YCrCb);
+//            Rect regionOfInterest = new Rect(this.regionOfInterest[0], this.regionOfInterest[1], this.regionOfInterest[2], this.regionOfInterest[3]);
+//            crop = YCbCr.submat(regionOfInterest);
+//            Core.extractChannel(crop, crop, 2);
+//
+//            result = Core.mean(crop).val[0];
+//            return null;
+//        }
+//
+//        @Override
+//        public void onDrawFrame(Canvas canvas, int i, int i1, float v, float v1, Object o) {
+//            canvas.drawRect(this.regionOfInterest[0], this.regionOfInterest[1], this.regionOfInterest[2], this.regionOfInterest[3], mPaint);
+//        }
+//    }
 }

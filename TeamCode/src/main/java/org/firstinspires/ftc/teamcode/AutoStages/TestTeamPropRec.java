@@ -14,7 +14,7 @@ public class TestTeamPropRec extends AutoStageProgram {
 
     @Override
     public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
-        final TeamElementFinder teamElementFinder = new TeamElementFinder(robot.hardwareMap.get(WebcamName.class, "Webcam 1"), super.allianceSide);
+        final TeamElementFinder teamElementFinder = new TeamElementFinder(robot.hardwareMap, super.allianceSide);
 
         super.commandSegments.add(teamElementFinder.findTeamElementAndShutDown(5000));
         super.commandSegments.add(new SequentialCommandSegment(

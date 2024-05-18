@@ -201,7 +201,7 @@ public final class RobotConfig {
                 correspondingServoPositions = new double[] {0.6, 0.62, 0.66, 0.7, 0.76},
                 correspondingDistanceToWall = new double[] {24.5, 25, 20, 14, 4};
 
-        public static final double manualStageMinScoringHeight = 0.3, manualStageMaxScoringHeight = 1, inAdvanceHeight = 0.1;
+        public static final double manualStageMinScoringHeight = 0.25, manualStageMaxScoringHeight = 1, inAdvanceHeight = 0.1;
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall),
@@ -300,7 +300,7 @@ public final class RobotConfig {
                 Double.POSITIVE_INFINITY,
                 1.05,
                 0.03,
-                20,
+                26,
                 1,
                 0.22,
                 0, 0
@@ -309,9 +309,9 @@ public final class RobotConfig {
                 Double.POSITIVE_INFINITY,
                 1.05,
                 0.015,
-                30,
+                32,
                 1,
-                0.24,
+                0.26,
                 0, 0
         );
 
@@ -383,8 +383,8 @@ public final class RobotConfig {
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -30});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -5});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
-        public static final double autoStageScoringPositionsLeft = -14, autoStageScoringPositionsCenter = 4, autoStageScoringPositionsRight = 20;
-        public static final double clawWidth = 8, grabbingDistanceToWall = 7, colorSensorThreshold = 100, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 7;
+        public static final double autoStageScoringPositionsLeft = -17, autoStageScoringPositionsCenter = 4, autoStageScoringPositionsRight = 20;
+        public static final double clawWidth = 8, grabbingDistanceToWall = 7, colorSensorThreshold = 100, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 6.5;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
         public static final double visualApproachSpeed = 100;
@@ -447,7 +447,7 @@ public final class RobotConfig {
 
         public static final double visualNavigationAimingSensitivityCMPS = 30;
         public static final double triggerThreshold = 0.4;
-        public static PilotChassisService.ControlMode defaultControlMode = PilotChassisService.ControlMode.ENCODER_ASSISTED_FIELD_ORIENTATED;
+        public static PilotChassisService.ControlMode defaultControlMode = PilotChassisService.ControlMode.MANUAL_FIELD_ORIENTATED;
         public static final int pilotControllerKeyUpdatingRate = 60; // times per second
 
         public enum ControllerStick {

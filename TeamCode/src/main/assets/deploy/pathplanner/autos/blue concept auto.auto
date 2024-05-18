@@ -38,24 +38,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "move to stack grab fifth"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "grab sixth from stack"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "score fifth and sixth"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "park"
           }
         }
