@@ -86,7 +86,7 @@ public class UpperStructureService extends RobotService {
                 if (Math.abs(copilotGamePad.left_stick_y) > 0.05)
                     desiredScoringHeight += -0.75 * dt * copilotGamePad.left_stick_y;
 
-                desiredScoringHeight = Math.max(Math.min(desiredScoringHeight, RobotConfig.ArmConfigs.manualStageMaxScoringHeight), RobotConfig.ArmConfigs.manualStageMinScoringHeight);
+                desiredScoringHeight = regulateScoringHeight(desiredScoringHeight);
 
                 chassisService.setDesiredScoringHeight(desiredScoringHeight);
 
@@ -104,17 +104,14 @@ public class UpperStructureService extends RobotService {
                 }
                 if (!chassisAutoAlignmentCompleteDuringCurrentScoringProcess) {
                     arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
-                    arm.setScoringHeight(desiredScoringHeight + RobotConfig.ArmConfigs.inAdvanceHeight, this);
+                    arm.setScoringHeight(regulateScoringHeight(desiredScoringHeight + RobotConfig.ArmConfigs.inAdvanceHeight), this);
                     claw.setScoringAngle(1, this);
                     extend.setExtendPosition(0, this);
                     this.chassisAutoAlignmentCompleteDuringCurrentScoringProcess |= chassisService.stickToWallComplete() || copilotGamePad.left_stick_button;
                     return;
                 }
 
-                final double actualScoringHeight =
-                        Math.min(RobotConfig.ArmConfigs.manualStageMaxScoringHeight,
-                                Math.max(RobotConfig.ArmConfigs.manualStageMinScoringHeight,
-                                        chassisService.getActualScoringHeightAccordingToDistanceToWall(desiredScoringHeight)));
+                final double actualScoringHeight = regulateScoringHeight(chassisService.getActualScoringHeightAccordingToDistanceToWall(desiredScoringHeight));
                 arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, this);
                 arm.setScoringHeight(actualScoringHeight, this);
                 extend.setExtendPosition(RobotConfig.ArmConfigs.extendValuesAccordingToScoringHeight.getYPrediction(actualScoringHeight), this);
@@ -128,6 +125,10 @@ public class UpperStructureService extends RobotService {
                 break;
             }
         }
+    }
+
+    private double regulateScoringHeight(double scoringHeight) {
+        return Math.max(Math.min(scoringHeight, RobotConfig.ArmConfigs.manualStageMaxScoringHeight), RobotConfig.ArmConfigs.manualStageMinScoringHeight);
     }
 
     private boolean armInPositionDuringCurrentGrabbingProcess = false, clawAutoOpenWhenTouchGroundInitiated = false, armPreparedDuringCurrentScoringProcess = false, chassisAutoAlignmentCompleteDuringCurrentScoringProcess = false;

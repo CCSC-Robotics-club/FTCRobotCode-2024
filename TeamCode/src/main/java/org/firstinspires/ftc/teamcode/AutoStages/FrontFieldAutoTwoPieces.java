@@ -22,7 +22,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
 
     @Override
     public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
-        final TeamElementFinder teamElementFinder = new TeamElementFinder(robot.hardwareMap.get(WebcamName.class, "Webcam 1"), super.allianceSide);
+        final TeamElementFinder teamElementFinder = new TeamElementFinder(robot.hardwareMap, super.allianceSide);
         final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(0), super.allianceSide, robot.hardwareMap);
         final AprilTagCameraAndDistanceSensorAimBot wallAimBot = new AprilTagCameraAndDistanceSensorAimBot(robot.chassis, robot.distanceSensor, robot.aprilTagCamera, robot.arm, null, robot.telemetrySender, super.allianceSide);
 
@@ -36,8 +36,8 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
 
 
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
-        teamElementFinder.teamElementPosition = TeamElementFinder.TeamElementPosition.LEFT;
-        // super.commandSegments.add(teamElementFinder.findTeamElementAndShutDown(5000));
+        // teamElementFinder.teamElementPosition = TeamElementFinder.TeamElementPosition.LEFT;
+        super.commandSegments.add(teamElementFinder.findTeamElementAndShutDown(2000));
 
         final Vector2D[] splitFirstPosition = new Vector2D[1];
         super.commandSegments.add(
@@ -52,12 +52,12 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                                 }
                                 case CENTER: {
                                     splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {120, 252}) : new Vector2D(new double[] {240, 252});
+                                            new Vector2D(new double[] {121, 252}) : new Vector2D(new double[] {240, 252});
                                     break;
                                 }
                                 case RIGHT: {
                                     splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {92, 217}) : new Vector2D(new double[] {253, 271});
+                                            new Vector2D(new double[] {92, 221}) : new Vector2D(new double[] {253, 271});
                                     break;
                                 }
                                 default:

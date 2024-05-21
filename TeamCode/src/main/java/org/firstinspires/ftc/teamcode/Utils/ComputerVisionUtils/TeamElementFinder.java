@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils;
 
 
+import android.util.Size;
+
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -31,7 +35,9 @@ public class TeamElementFinder {
     }
 
     public TeamElementPosition teamElementPosition;
-    public TeamElementFinder(WebcamName webcamName, Robot.Side side) {
+    public TeamElementFinder(HardwareMap hardwareMap, Robot.Side side) {
+        // final WebcamName webcamName = side == Robot.Side.BLUE ? hardwareMap.get(WebcamName.class, "right") : hardwareMap.get(WebcamName.class, "left");
+        final WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         switch (side) {
             case RED: {
                 LABELS = new String[] {
@@ -56,6 +62,7 @@ public class TeamElementFinder {
         VisionPortal.Builder builder = new VisionPortal.Builder();
         builder.setCamera(webcamName);
         builder.enableLiveView(true);
+        builder.setCameraResolution(new Size(640, 480));
         builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
         builder.addProcessor(tfod);
 
@@ -66,10 +73,15 @@ public class TeamElementFinder {
 
     public void findTeamElementOnce() {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
-        if (!(currentRecognitions.size() == 1 && currentRecognitions.get(0).getLabel().contains("team-prop")))
+        if (currentRecognitions.isEmpty())
             return;
+        Recognition highConf = currentRecognitions.get(0);
+        for (Recognition recognition: currentRecognitions) {
+            if (recognition.getConfidence() > highConf.getConfidence())
+                highConf = recognition;
+        }
 
-        double minDistance = 99999, targetPosition = (currentRecognitions.get(0).getLeft() + currentRecognitions.get(0).getRight())/2;
+        double minDistance = 99999, targetPosition = (highConf.getLeft() + highConf.getRight())/2;
         for (TeamElementPosition position:teamElementPositionsPixel.keySet()) {
             if (Math.abs(targetPosition - teamElementPositionsPixel.get(position)) < minDistance) {
                 teamElementPosition = position;
@@ -93,6 +105,7 @@ public class TeamElementFinder {
 
     public void shutDown() {
         visionPortal.setProcessorEnabled(tfod, false);
-        tfod.shutdown();
+        Thread shutDownThread = new Thread(tfod::shutdown);
+        // shutDownThread.start();
     }
 }

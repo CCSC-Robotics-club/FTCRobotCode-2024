@@ -5,6 +5,8 @@ import static org.firstinspires.ftc.teamcode.RobotConfig.ChassisConfigs.targetDi
 
 import static java.lang.Thread.sleep;
 
+import com.qualcomm.robotcore.hardware.Gamepad;
+
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.RobotConfig;
@@ -22,6 +24,7 @@ import java.util.Map;
 public class PilotChassisService extends RobotService {
     private final Chassis chassis;
     private final DriverGamePad driverController;
+    private final Gamepad copilotGamePad;
     public final ThreadedSensor distanceSensor;
     private final PixelCameraAimBotLegacy pixelAimBot;
     public final IntakeServiceLegacy.PixelDetector pixelDetector;
@@ -42,9 +45,10 @@ public class PilotChassisService extends RobotService {
     private final Rotation2D pilotFacingRotation;
 
     private double desiredScoringHeight;
-    public PilotChassisService(Chassis chassis, DriverGamePad driverController, ThreadedSensor distanceSensor, FixedAnglePixelCamera pixelCamera, double pilotFacing) {
+    public PilotChassisService(Chassis chassis, DriverGamePad driverController, Gamepad copilotGamePad, ThreadedSensor distanceSensor, FixedAnglePixelCamera pixelCamera, double pilotFacing) {
         this.chassis = chassis;
         this.driverController = driverController;
+        this.copilotGamePad = copilotGamePad;
         this.distanceSensor = distanceSensor;
         this.pilotFacingRotation = new Rotation2D(pilotFacing);
         pixelAimBot = pixelCamera != null ?
@@ -354,13 +358,8 @@ public class PilotChassisService extends RobotService {
 
     private void stickToWallAndManualAdjust() {
         updateWallPositionTOF(RobotConfig.VisualNavigationConfigs.distanceSensorMaxDistance_maintainAndAim);
-        double pilotXCommand = driverController.getTranslationStickVector().getX() * RobotConfig.ControlConfigs.pilotController_translationStickXPreciseAimSensitivity;
 
-        if (driverController.keyOnHold(RobotConfig.KeyBindings.moveAimingPositionLeftManuallyButton))
-            pilotXCommand -= RobotConfig.ControlConfigs.pilotController_translationStickXPreciseAimSensitivity;
-        if (driverController.keyOnHold(RobotConfig.KeyBindings.moveAimingPositionRightManuallyButton))
-            pilotXCommand += RobotConfig.ControlConfigs.pilotController_translationStickXPreciseAimSensitivity;
-
+        double pilotXCommand = getPilotXCommandDuringAdjustment();
         /* do not go beyond the x-bias limit */
         final Vector2D relativeEncoderPositionToWall = previousWallPosition.addBy(chassis.getChassisEncoderPosition().multiplyBy(-1));
         if (pilotXCommand < 0 && relativeEncoderPositionToWall.getX() > RobotConfig.VisualNavigationConfigs.maximumXBiasToWallCenterDuringAimingCM)
@@ -379,6 +378,21 @@ public class PilotChassisService extends RobotService {
         /* keep on maintaining rotation */
         chassis.setRotationalTask(new Chassis.ChassisRotationalTask(Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
                 0), this);
+    }
+
+    private double getPilotXCommandDuringAdjustment() {
+        final double copilotXCommand = copilotGamePad.left_stick_x;
+        if (Math.abs(copilotXCommand) > 0.05)
+            return copilotXCommand;
+
+        double pilotXCommand = driverController.getTranslationStickVector().getX() * RobotConfig.ControlConfigs.pilotController_translationStickXPreciseAimSensitivity;
+
+        if (driverController.keyOnHold(RobotConfig.KeyBindings.moveAimingPositionLeftManuallyButton))
+            pilotXCommand -= RobotConfig.ControlConfigs.pilotController_translationStickXPreciseAimSensitivity;
+        if (driverController.keyOnHold(RobotConfig.KeyBindings.moveAimingPositionRightManuallyButton))
+            pilotXCommand += RobotConfig.ControlConfigs.pilotController_translationStickXPreciseAimSensitivity;
+
+        return pilotXCommand;
     }
 
     private Vector2D getDesiredPreciseWallAimPosition() {

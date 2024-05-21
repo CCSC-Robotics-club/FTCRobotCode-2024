@@ -61,7 +61,7 @@ public class FrontFieldAutoFourPieces extends AutoStageProgram {
                 () -> sequentialCommandFactory.getBezierCurvesFromPathFile("score third and fourth").get(0),
                 () -> {},
                 () -> {},
-                () -> {},
+                () -> robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null),
                 robot.chassis::isCurrentTranslationalTaskRoughlyComplete,
                 () -> new Rotation2D(0), () -> new Rotation2D(0)
         ));
