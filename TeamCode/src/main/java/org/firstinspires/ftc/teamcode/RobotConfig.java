@@ -33,7 +33,7 @@ public final class RobotConfig {
                     135.812,
                     -0.1023
             ),
-            new String[] {"frontRight", "backLeft", "frontLeft"},
+            new String[] {"frontRight", "backLeft", "backRight"},
             true,
             false,
             true,
@@ -134,7 +134,7 @@ public final class RobotConfig {
 
     public static final class ArmConfigs {
         /** positive should be scoring */
-        public static final boolean motor1Reversed = false, motor2Reversed = true, encoderReversed = false;
+        public static final boolean motor1Reversed = true, motor2Reversed = true, encoderReversed = true;
 
         public static final ArmGravityController.ArmProfile armProfile = new ArmGravityController.ArmProfile(
                 0.8,
@@ -156,17 +156,17 @@ public final class RobotConfig {
 
         /** simple arm controller */
         public static final double
-                maxPowerWhenMovingUpNormal = 0.85,
-                maxPowerWhenMovingDownNormal = 0.75,
-                errorStartDecelerateNormal = 500,
+                maxPowerWhenMovingUpNormal = 1,
+                maxPowerWhenMovingDownNormal = 0.9,
+                errorStartDecelerateNormal = 300,
                 powerNeededToMoveUpNormal = 0.24,
                 powerNeededToMoveDownNormal = 0.2,
                 errorToleranceNormal = 10,
-                errorAsArmInPositionNormal = 50,
+                errorAsArmInPositionNormal = 80,
 
-                maxPowerWhenMovingUpScoring = 0.25,
-                maxPowerWhenMovingDownScoring = 0.55,
-                errorStartDecelerateScoring = 80,
+                maxPowerWhenMovingUpScoring = 0.5,
+                maxPowerWhenMovingDownScoring = 0.7,
+                errorStartDecelerateScoring = 120,
                 powerNeededToMoveUpScoring = 0.05,
                 powerNeededToMoveDownScoring = 0.15,
                 basePowerWhenMovingScoringHeightUp = -0.25,
@@ -196,7 +196,7 @@ public final class RobotConfig {
 
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {1500, 1400, 1300, 1250, 1150},
+                correspondingArmEncoderValues = new double[] {2000, 1850, 1750, 1600, 1500},
                 correspondingExtendValues = new double[] {100, 400, 800, 1000, 1400},
                 correspondingServoPositions = new double[] {0.6, 0.62, 0.66, 0.7, 0.76},
                 correspondingDistanceToWall = new double[] {24.5, 25, 20, 14, 4};

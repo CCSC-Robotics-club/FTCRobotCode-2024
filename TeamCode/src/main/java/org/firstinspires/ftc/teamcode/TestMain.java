@@ -73,7 +73,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        sensorsInspection();
+        scoringSettingsTuning();
     }
 
     private void sensorsInspection() {
@@ -128,9 +128,11 @@ public class TestMain extends LinearOpMode {
             flipPosition -= 0.5*gamepad1.left_stick_y / 50;
             flipPosition = Math.max(flipPosition, 0);
             flipPosition = Math.min(flipPosition, 1);
-            final double extendPower = Math.abs(gamepad1.right_stick_y) > 0.05 ? -gamepad1.right_stick_y:0;
+            final double armPower = Math.abs(gamepad1.right_stick_y) > 0.05? -gamepad1.right_stick_y : 0;
+            final double extendPower = gamepad1.y ? 0.3 : (gamepad1.a ? -0.3 : 0);
 
             extend.setPower(extendPower);
+            arm.setPower(armPower);
             flip.setPosition(flipPosition);
 
             if (armLimit.isPressed()) armEncoderZeroPosition = arm.getCurrentPosition();

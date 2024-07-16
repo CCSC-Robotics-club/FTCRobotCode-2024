@@ -106,9 +106,9 @@ public abstract class Robot {
         this.distanceSensor = new ThreadedSensor(() -> hardwareMap.get(DistanceSensor.class, "distance").getDistance(DistanceUnit.CM));
         this.sensors.put("distance", distanceSensor);
         this.distanceSensorBack = new ThreadedSensor(() -> hardwareMap.get(DistanceSensor.class, "distanceBack").getDistance(DistanceUnit.CM));
-        this.sensors.put("distance back", distanceSensorBack);
+        // this.sensors.put("distance back", distanceSensorBack);
         this.spikeMarkDetectionSensor = new ThreadedSensor(() -> hardwareMap.get(ColorSensor.class, "markSensor").alpha(), 0);
-        this.sensors.put("spike mark sensor", spikeMarkDetectionSensor);
+        // this.sensors.put("spike mark sensor", spikeMarkDetectionSensor);
 
         imu.initialize(this.hardwareConfigs.imuParameter);
         if (hardwareConfigs.alternativeIMUParameter != null) {
@@ -208,15 +208,13 @@ public abstract class Robot {
         robotModules.add(claw);
 
         /* arm */
-        final ThreadedMotor armMotor1 = new ThreadedMotor(hardwareMap.get(DcMotor.class, "arm")),
-                armMotor2 = new ThreadedMotor(hardwareMap.get(DcMotor.class, "arm2"));
+        final ThreadedMotor armMotor1 = new ThreadedMotor(hardwareMap.get(DcMotor.class, "arm"));
         final ThreadedEncoder armEncoder = new ThreadedEncoder(hardwareMap.get(DcMotorEx.class, "arm"));
         final ThreadedSensor armLimit = new ThreadedSensor(() -> hardwareMap.get(TouchSensor.class, "armLimit").isPressed() ? 1:0);
         motors.add(armMotor1);
-        motors.add(armMotor2);
         sensors.put("arm-enc", armEncoder);
         sensors.put("arm-lim", armLimit);
-        arm = new Arm(armMotor1, armMotor2, armEncoder, armLimit);
+        arm = new Arm(armMotor1, armMotor1, armEncoder, armLimit);
         robotModules.add(arm);
 
         /* extend */
