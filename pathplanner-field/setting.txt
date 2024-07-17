@@ -1,0 +1,8 @@
+pixel per meters: 295.2755905511811
+robot width: 0.35
+robot length: 0.42
+max module speed: 1.5
+max velocity: 1.8
+max acceleration: 1.8
+max angular velocity: 180
+max angular acceleration: 360
