@@ -73,7 +73,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        scoringSettingsTuning();
+        climbTest();
     }
 
     private void sensorsInspection() {
@@ -1342,4 +1342,28 @@ public class TestMain extends LinearOpMode {
 //            canvas.drawRect(this.regionOfInterest[0], this.regionOfInterest[1], this.regionOfInterest[2], this.regionOfInterest[3], mPaint);
 //        }
 //    }
+
+    private void climbTest() {
+        final Servo climb0 = hardwareMap.get(Servo.class, "climb0"),
+                climb1 = hardwareMap.get(Servo.class, "climb1");
+
+        final DcMotor climbMotor0 = hardwareMap.get(DcMotor.class, "climbMotor0"),
+                climbMotor1 = hardwareMap.get(DcMotor.class, "climbMotor1");
+
+
+        waitForStart();
+
+        while (opModeIsActive() && !isStopRequested()) {
+            final double position = gamepad1.a ? 1: 0.5;
+            climb0.setPosition(1-position);
+            climb1.setPosition(position);
+
+            double power = -gamepad1.left_stick_y;
+            if (Math.abs(power) < 0.1)
+                power = 0;
+
+            climbMotor0.setPower(power);
+            climbMotor1.setPower(-power);
+        }
+    }
 }
