@@ -197,7 +197,9 @@ public abstract class Robot {
         climbAndPlane = new ClimbAndPlane(
                 hardwareMap.get(Servo.class, "climb0"),
                 hardwareMap.get(Servo.class, "climb1"),
-                hardwareMap.get(Servo.class, "plane")
+                hardwareMap.get(Servo.class, "plane"),
+                hardwareMap.get(DcMotor.class, "climbMotor0"),
+                hardwareMap.get(DcMotor.class, "climbMotor1")
         );
         robotModules.add(climbAndPlane);
     }

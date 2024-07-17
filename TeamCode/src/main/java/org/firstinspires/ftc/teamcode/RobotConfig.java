@@ -154,8 +154,8 @@ public final class RobotConfig {
 
         /** simple arm controller */
         public static final double
-                maxPowerWhenMovingUpNormal = 1,
-                maxPowerWhenMovingDownNormal = 0.9,
+                maxPowerWhenMovingUpNormal = 0.9,
+                maxPowerWhenMovingDownNormal = 0.6,
                 errorStartDecelerateNormal = 300,
                 powerNeededToMoveUpNormal = 0.24,
                 powerNeededToMoveDownNormal = 0.2,

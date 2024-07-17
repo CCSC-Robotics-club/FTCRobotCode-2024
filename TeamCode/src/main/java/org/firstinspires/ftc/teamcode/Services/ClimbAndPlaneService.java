@@ -21,8 +21,14 @@ public class ClimbAndPlaneService extends RobotService {
 
     @Override
     public void periodic(double dt) {
-        if (copilotGamepad.dpad_up)
+        if (copilotGamepad.dpad_right)
             this.climbAndPlane.startClimb();
+
+        if (copilotGamepad.dpad_down)
+            this.climbAndPlane.setClimbPower(0.8);
+        else if (copilotGamepad.dpad_up)
+            this.climbAndPlane.setClimbPower(-0.8);
+        else this.climbAndPlane.setClimbPower(0);
     }
 
     @Override
