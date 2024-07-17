@@ -194,10 +194,10 @@ public final class RobotConfig {
 
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {2000, 1850, 1750, 1600, 1500},
-                correspondingExtendValues = new double[] {100, 400, 800, 1000, 1400},
-                correspondingServoPositions = new double[] {0.6, 0.62, 0.66, 0.7, 0.76},
-                correspondingDistanceToWall = new double[] {24.5, 25, 20, 14, 4};
+                correspondingArmEncoderValues = new double[] {2100, 1960, 1800, 1700, 1600},
+                correspondingExtendValues = new double[] {10, 400, 700, 1000, 1400},
+                correspondingServoPositions = new double[] {0.62, 0.68, 0.72, 0.8, 0.86},
+                correspondingDistanceToWall = new double[] {24.5, 25, 17, 10, 4};
 
         public static final double manualStageMinScoringHeight = 0.25, manualStageMaxScoringHeight = 1, inAdvanceHeight = 0.1;
         public static final LookUpTable

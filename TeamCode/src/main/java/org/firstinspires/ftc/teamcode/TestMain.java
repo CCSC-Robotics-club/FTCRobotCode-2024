@@ -77,7 +77,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        testColorTeamPropDetection();
+        scoringSettingsTuning();
     }
 
     private void sensorsInspection() {
