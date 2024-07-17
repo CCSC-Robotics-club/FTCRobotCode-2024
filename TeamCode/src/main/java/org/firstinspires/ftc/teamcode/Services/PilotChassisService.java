@@ -26,8 +26,6 @@ public class PilotChassisService extends RobotService {
     private final DriverGamePad driverController;
     private final Gamepad copilotGamePad;
     public final ThreadedSensor distanceSensor;
-    private final PixelCameraAimBotLegacy pixelAimBot;
-    public final IntakeServiceLegacy.PixelDetector pixelDetector;
     private double rotationMaintenanceFacing;
     private Vector2D currentDesiredPosition;
     /** time since last translational command sent by pilot */
@@ -45,18 +43,12 @@ public class PilotChassisService extends RobotService {
     private final Rotation2D pilotFacingRotation;
 
     private double desiredScoringHeight;
-    public PilotChassisService(Chassis chassis, DriverGamePad driverController, Gamepad copilotGamePad, ThreadedSensor distanceSensor, FixedAnglePixelCamera pixelCamera, double pilotFacing) {
+    public PilotChassisService(Chassis chassis, DriverGamePad driverController, Gamepad copilotGamePad, ThreadedSensor distanceSensor, double pilotFacing) {
         this.chassis = chassis;
         this.driverController = driverController;
         this.copilotGamePad = copilotGamePad;
         this.distanceSensor = distanceSensor;
         this.pilotFacingRotation = new Rotation2D(pilotFacing);
-        pixelAimBot = pixelCamera != null ?
-                new PixelCameraAimBotLegacy(chassis, pixelCamera, this, debugMessages)
-                : null;
-        pixelDetector = pixelAimBot != null ?
-                pixelAimBot::shouldIntakeStart
-                : () -> false;
     }
     @Override
     public void init() {
@@ -155,20 +147,6 @@ public class PilotChassisService extends RobotService {
             this.visualTaskStatus = VisualTaskStatus.UNUSED;
         debugMessages.put("visual task status", visualTaskStatus);
 
-        /* visual navigation:pixel */
-        if (pixelAimBot != null) {
-            final boolean startFacePixelAndFeedTask = driverController.keyOnHold(RobotConfig.KeyBindings.processFaceToPixelAndFeedButton) && !pixelAimBot.isAimBotBusy(),
-                    startLineUpWithPixelAndFeedTask = driverController.keyOnHold(RobotConfig.KeyBindings.processLineUpWithPixelAndFeedButton) && !pixelAimBot.isAimBotBusy(),
-                    processPixelNavigation = (driverController.keyOnHold(RobotConfig.KeyBindings.processFaceToPixelAndFeedButton) || driverController.keyOnHold(RobotConfig.KeyBindings.processLineUpWithPixelAndFeedButton));
-//            if (startFacePixelAndFeedTask)
-//                pixelAimBot.initiateAim(PixelCameraAimBot.AimMethod.FACE_TO_AND_FEED);
-//            else
-            if (startLineUpWithPixelAndFeedTask)
-                pixelAimBot.initiateAim(PixelCameraAimBotLegacy.AimMethod.LINE_UP_AND_FEED);
-            if (!processPixelNavigation) pixelAimBot.cancel();
-            pixelAimBot.update();
-        }
-
         /* send pilot command to chassis if both types of visual navigation are unused */
         if (getSlowMotionButtonsMovement().getMagnitude() > 0.05) {
             chassis.setOrientationMode(Chassis.OrientationMode.ROBOT_ORIENTATED, this);
@@ -178,9 +156,7 @@ public class PilotChassisService extends RobotService {
                     this);
             pilotLastTranslationalXActionTime = 0;
         } else
-            if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
-            &&
-                (pixelAimBot == null || !pixelAimBot.isAimBotBusy()))
+            if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED))
                 chassis.setTranslationalTask(translationalTaskByPilotStickControl, this);
 
         /* <--rotation--> */
@@ -212,9 +188,7 @@ public class PilotChassisService extends RobotService {
                     rotationMaintenanceFacing);
 
         /* if there is no visual task going, send the pilot's rotation command to chassis module */
-        if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED)
-                &&
-                (pixelAimBot == null || !pixelAimBot.isAimBotBusy()))
+        if ((visualTaskStatus == VisualTaskStatus.UNUSED || visualTaskStatus == VisualTaskStatus.FINISHED))
             chassis.setRotationalTask(rotationalTaskByPilotStick, this);
 
         if (driverController.keyOnHold(RobotConfig.KeyBindings.resetIMUKey))
@@ -416,75 +390,6 @@ public class PilotChassisService extends RobotService {
             this.currentDesiredPosition = previousWallPosition.addBy(RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach);
         this.rotationMaintenanceFacing = 0;
         this.visualTaskStatus = VisualTaskStatus.FINISHED;
-    }
-
-    /**
-     * called when visual navigation is
-     * the newer one is an easier and better approach
-     * */
-    @Deprecated
-    private void processVisualNavigationTask_old(double dt) {
-        switch (visualTaskStatus) {
-            case UNUSED: {
-                initiateWallApproach_old();
-                return;
-            }
-            case VISUAL_ROUGH_APPROACH: {
-                time += dt;
-                chassis.updateDesiredTranslationInVisualNavigation(currentVisualRoughApproachPath.getPositionWithLERP(time / timeNeededToArrive), this);
-
-                if (chassis.isCurrentTranslationalTaskComplete() && time > timeNeededToArrive)
-                    this.visualTaskStatus = VisualTaskStatus.TOF_PRECISE_APPROACH;
-                this.currentDesiredPosition = chassis.getChassisEncoderPosition(); // update the desired position so the robot do not move back to where it was after aim completed
-                return;
-            }
-            case TOF_PRECISE_APPROACH: {
-                // TODO write this part
-                this.visualTaskStatus = VisualTaskStatus.MAINTAIN_AND_AIM;
-                return;
-            }
-            case MAINTAIN_AND_AIM: {
-                // TODO write this part
-                this.visualTaskStatus = VisualTaskStatus.FINISHED;
-                return;
-            }
-        }
-    }
-
-    /**
-     * called at the the start of visual approach
-     * */
-    @Deprecated
-    private void initiateWallApproach_old() {
-        if (!chassis.isVisualNavigationAvailable()) {
-            this.visualTaskStatus = VisualTaskStatus.UNUSED;
-            return;
-        }
-
-        Vector2D startingFieldPositionRelativeToWall = chassis.getRelativeFieldPositionToWall();
-        Vector2D differenceToTargetVector = Vector2D.displacementToTarget(startingFieldPositionRelativeToWall, RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach);
-        this.currentVisualRoughApproachPath = new BezierCurve(
-                startingFieldPositionRelativeToWall,
-                startingFieldPositionRelativeToWall.addBy(
-                        new Vector2D(0, differenceToTargetVector.getX())
-                                .multiplyBy(RobotConfig.VisualNavigationConfigs.approachPathSmoothOutPercent)),
-                RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach.addBy(
-                        new Vector2D(Math.PI * 3/2, differenceToTargetVector.getY())
-                                .multiplyBy(RobotConfig.VisualNavigationConfigs.approachPathSmoothOutPercent)
-                        ),
-                RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallRoughApproach
-        );
-        this.timeNeededToArrive = differenceToTargetVector.getMagnitude() / RobotConfig.VisualNavigationConfigs.visualApproachSpeed;
-        this.time = 0;
-
-        chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(
-                Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.DRIVE_TO_POSITION_VISUAL,
-                startingFieldPositionRelativeToWall
-        ), this);
-        this.visualTaskStatus = VisualTaskStatus.VISUAL_ROUGH_APPROACH;
-
-        if (RobotConfig.VisualNavigationConfigs.faceToTargetWhenApproaching)
-            chassis.setRotationalTask(new Chassis.ChassisRotationalTask(Chassis.ChassisRotationalTask.ChassisRotationalTaskType.FACE_NAVIGATION_REFERENCES, 0), this);
     }
 
     /** called by upper structure service */

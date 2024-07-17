@@ -52,10 +52,8 @@ public abstract class Robot {
     protected final boolean useMultiThread;
 
     private final EncoderMotorMechanism frontLeftWheel, frontRightWheel, backLeftWheel, backRightWheel;
-    public ThreadedSensor distanceSensor, distanceSensorBack, spikeMarkDetectionSensor, colorLeft, colorRight;
+    public ThreadedSensor distanceSensor, colorLeft, colorRight;
     public Chassis chassis;
-//    public IntakeLegacy intake;
-//    public ArmLegacy arm;
 
     public Arm arm;
     public Extend extend;
@@ -63,7 +61,6 @@ public abstract class Robot {
 
     public ClimbAndPlane climbAndPlane;
 
-    public FixedAnglePixelCamera pixelCamera;
     public PositionEstimator positionEstimator;
     public FixedAngleArilTagCamera aprilTagCamera;
     protected DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
@@ -105,10 +102,6 @@ public abstract class Robot {
         this.imu = hardwareMap.get(IMU.class, "imu");
         this.distanceSensor = new ThreadedSensor(() -> hardwareMap.get(DistanceSensor.class, "distance").getDistance(DistanceUnit.CM));
         this.sensors.put("distance", distanceSensor);
-        this.distanceSensorBack = new ThreadedSensor(() -> hardwareMap.get(DistanceSensor.class, "distanceBack").getDistance(DistanceUnit.CM));
-        // this.sensors.put("distance back", distanceSensorBack);
-        this.spikeMarkDetectionSensor = new ThreadedSensor(() -> hardwareMap.get(ColorSensor.class, "markSensor").alpha(), 0);
-        // this.sensors.put("spike mark sensor", spikeMarkDetectionSensor);
 
         imu.initialize(this.hardwareConfigs.imuParameter);
         if (hardwareConfigs.alternativeIMUParameter != null) {
@@ -156,36 +149,9 @@ public abstract class Robot {
                 RobotConfig.VisualNavigationConfigs.visualCameraProfile
         );
 
-        pixelCamera = null;
-
         chassis = new Chassis(frontLeftWheel, frontRightWheel, backLeftWheel ,backRightWheel, positionEstimator, aprilTagCamera,
                 this.side == Side.RED ? FixedAngleArilTagCamera.WallTarget.Name.RED_ALLIANCE_WALL : FixedAngleArilTagCamera.WallTarget.Name.BLUE_ALLIANCE_WALL);
         robotModules.add(chassis);
-//
-//
-//        /* <-- intake --> */
-//        final DcMotor intakeMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor1Name),
-//                intakeMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.IntakeConfigs.intakeMotor2Name);
-//        intake = new Intake(intakeMotor1, intakeMotor2);
-//        robotModules.add(intake);
-//
-//        /* <-- arm --> */
-//        SingleServoClaw claw1 = new SingleServoClaw(hardwareMap.get(Servo.class, RobotConfig.ArmConfigs.claw1Name), RobotConfig.ArmConfigs.claw1Profile);
-//        Claw claw;
-//        if (RobotConfig.ArmConfigs.claw2Name == null) {
-//            claw = claw1;
-//        } else {
-//            SingleServoClaw claw2 = new SingleServoClaw(hardwareMap.get(Servo.class, RobotConfig.ArmConfigs.claw2Name), RobotConfig.ArmConfigs.claw2Profile);
-//            claw = new DualServoClaw(claw1, claw2);
-//        }
-//        final DcMotor armMotor1 = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armMotor1Name),
-//                armMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armMotor2Name),
-//                armEncoder = hardwareMap.get(DcMotor.class, RobotConfig.ArmConfigs.armEncoderName);
-//        final TouchSensor limitSwitch = RobotConfig.ArmConfigs.limitSwitchName != null ? hardwareMap.get(TouchSensor.class, RobotConfig.ArmConfigs.limitSwitchName) : null;
-//        final ExtendableClaw extendableClaw = new ExtendableClaw(claw, hardwareMap.get(Servo.class, "extend"));
-//        arm = new Arm(armMotor1, armMotor2, armEncoder, extendableClaw, limitSwitch);
-//        robotModules.add(arm);
-//        robotModules.add(extendableClaw);
 
         /* claw */
         final ProfiledServo flip = new ProfiledServo(hardwareMap.get(Servo.class, "flip"), 1),
@@ -198,8 +164,8 @@ public abstract class Robot {
         servos.add(flip);
         servos.add(clawLeft);
         servos.add(clawRight);
-        sensors.put("color-left", colorLeft);
-        sensors.put("color-right", colorRight);
+//        sensors.put("color-left", colorLeft);
+//        sensors.put("color-right", colorRight);
         claw = new FlippableDualClaw(
                 flip, clawLeft, clawRight,
                 colorLeft, colorRight,

@@ -3,9 +3,6 @@ package org.firstinspires.ftc.teamcode.ProgramEntrances;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.AutoMain;
-import org.firstinspires.ftc.teamcode.AutoStages.AutoGrabbingTestWithPixelStackLocator;
-import org.firstinspires.ftc.teamcode.AutoStages.AutoStageGrabbingTest;
-import org.firstinspires.ftc.teamcode.AutoStages.TestAutoRoute;
 import org.firstinspires.ftc.teamcode.AutoStages.TestTeamPropRec;
 import org.firstinspires.ftc.teamcode.Robot;
 

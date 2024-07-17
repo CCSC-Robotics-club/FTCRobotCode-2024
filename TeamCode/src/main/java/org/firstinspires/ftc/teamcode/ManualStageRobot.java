@@ -24,7 +24,7 @@ public class ManualStageRobot extends Robot {
     @Override
     public void initializeRobot() {
         final double pilotFacing = side == Side.RED ? Math.PI / 2 : -Math.PI / 2;
-        PilotChassisService chassisService = new PilotChassisService(chassis, driverGamePad, copilotGamepad, super.distanceSensor, pixelCamera, pilotFacing);
+        PilotChassisService chassisService = new PilotChassisService(chassis, driverGamePad, copilotGamepad, super.distanceSensor, pilotFacing);
         super.robotServices.add(chassisService);
 
 //        final IntakeService intakeService = new IntakeService(intake, chassisService.pixelDetector, copilotGamepad);
@@ -45,8 +45,5 @@ public class ManualStageRobot extends Robot {
         super.robotServices.add(climbAndPlaneService);
 
         super.initializeRobot();
-
-        super.distanceSensorBack.setEnabled(false);
-        super.spikeMarkDetectionSensor.setEnabled(false);
     }
 }

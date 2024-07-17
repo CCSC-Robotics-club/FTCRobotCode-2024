@@ -3,10 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.teamcode.Modules.ArmLegacy;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.PilotChassisService;
-import org.firstinspires.ftc.teamcode.Utils.Claw;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleCameraProfile;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.LookUpTable;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.ArmGravityController;
@@ -233,30 +231,6 @@ public final class RobotConfig {
         public static final double leftClawClosePosition = 0.48, leftClawOpenPosition = 0.81, rightClawClosedPosition = 0.7, rightClawOpenPosition = 0.37;
 
         public static final int colorDetectorThreshold = 800;
-    }
-
-    public static final class ArmConfigsLegacy {
-        public static final String armMotor1Name = "arm1", armMotor2Name = "arm2", armEncoderName = "arm1", limitSwitchName = "limit";
-        public static final boolean armMotor1Reversed = true, armMotor2Reversed = false, armEncoderReversed = false;
-        public static final double armMotorMaximumPower = 1;
-
-        public static final int positionDifferenceStartDecelerate = 500;
-        public static final int positionTolerance = 40;
-        public static final double frictionPower = 0.25;
-        public static final int feedPos = 0, lowPos = 2100, midPos = 2300, highPos = 3500;
-        public static final int positionLimit = 3500;
-        public static final ArmLegacy.ArmCommand armCommandWhenNoInput = new ArmLegacy.ArmCommand(ArmLegacy.ArmCommand.ArmCommandType.SET_MOTOR_POWER, 0); // null for not needed
-
-//        public static final String claw1Name = "claw1", claw2Name = "claw2"; // dual servo claw
-//        public static final Claw.ServoProfile claw1Profile = new Claw.ServoProfile(1-0.4, 1-0.16),
-//                claw2Profile = new Claw.ServoProfile(0.4, 0.16);
-        public static final Claw.ServoProfile claw1Profile = new Claw.ServoProfile(1, 0.8),
-        claw2Profile = null;
-        public static final String claw1Name = "claw1", claw2Name = null; // single servo claw
-
-        public static final double servoValueOrigin = 0.95, servoValueExtend = 0.5;
-        public static final double extendTime = 0.3;
-        public static final int positionErrorAsCommandFinished = 80;
     }
 
     public static final class LauncherConfigs {
