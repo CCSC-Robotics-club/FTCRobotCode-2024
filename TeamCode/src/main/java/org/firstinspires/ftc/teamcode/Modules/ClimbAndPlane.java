@@ -29,7 +29,7 @@ public class ClimbAndPlane extends RobotModule {
         boolean servoOnTrigger = System.currentTimeMillis() - climbTaskStart < 500;
         climb0.setPosition(servoOnTrigger ? 0: 0.5);
         climb1.setPosition(servoOnTrigger ? 1: 0.5);
-        plane.setPosition(servoOnTrigger ? 0 : 0.5);
+        plane.setPosition(servoOnTrigger ? 0.25 : 1);
 
         climbMotor0.setPower(climbPower);
         climbMotor1.setPower(-climbPower);
@@ -44,8 +44,11 @@ public class ClimbAndPlane extends RobotModule {
     public void reset() {
         climb0.setPosition(0.5);
         climb1.setPosition(0.5);
-        plane.setPosition(0.5);
+        plane.setPosition(1);
         climbPower = 0;
+
+        climbMotor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        climbMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void startClimb() {

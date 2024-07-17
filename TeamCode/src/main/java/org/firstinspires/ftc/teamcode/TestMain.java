@@ -89,7 +89,7 @@ public class TestMain extends LinearOpMode {
             telemetry.update();
 
             climb0.setPower(-gamepad1.left_stick_y);
-            climb1.setPower(-gamepad1.right_stick_y);
+            climb1.setPower(gamepad1.right_stick_y);
         }
     }
 

@@ -156,13 +156,13 @@ public final class RobotConfig {
         public static final double
                 maxPowerWhenMovingUpNormal = 1,
                 maxPowerWhenMovingDownNormal = 0.6,
-                errorStartDecelerateNormal = 300,
+                errorStartDecelerateNormal = 400,
                 powerNeededToMoveUpNormal = 0.24,
                 powerNeededToMoveDownNormal = 0.2,
                 errorToleranceNormal = 10,
                 errorAsArmInPositionNormal = 80,
 
-                maxPowerWhenMovingUpScoring = 0.5,
+                maxPowerWhenMovingUpScoring = 0.4,
                 maxPowerWhenMovingDownScoring = 0.7,
                 errorStartDecelerateScoring = 150,
                 powerNeededToMoveUpScoring = 0.05,
@@ -172,8 +172,8 @@ public final class RobotConfig {
                 errorToleranceScoring = 12,
                         errorAsArmInPositionScoring = 40;
         public static final LookUpTable baseGravityPower = new LookUpTable(
-                new double[] {1100, 1300, 1500},
-                new double[] {0, -0.2, -0.3}
+                new double[] {1400, 1600, 2100},
+                new double[] {0, -0.25, -0.35}
         );
 
         public enum Position {
@@ -189,15 +189,15 @@ public final class RobotConfig {
 //            encoderPositions.put(Position.GRAB_STACK_LOW, 50.0);
 //            encoderPositions.put(Position.SCORE, 1200.0);
             encoderPositions.put(Position.INTAKE, 0.0);
-            encoderPositions.put(Position.PREPARE_TO_SCORE, 1150.0);
+            encoderPositions.put(Position.PREPARE_TO_SCORE, 1300.0);
         }
 
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {2100, 1960, 1800, 1700, 1600},
-                correspondingExtendValues = new double[] {10, 400, 700, 1000, 1400},
+                correspondingArmEncoderValues = new double[] {2060, 1920, 1780, 1680, 1600},
+                correspondingExtendValues = new double[] {100, 400, 700, 1000, 1400},
                 correspondingServoPositions = new double[] {0.62, 0.68, 0.72, 0.8, 0.86},
-                correspondingDistanceToWall = new double[] {24.5, 25, 17, 10, 4};
+                correspondingDistanceToWall = new double[] {26, 25, 18, 12, 4};
 
         public static final double manualStageMinScoringHeight = 0.25, manualStageMaxScoringHeight = 1, inAdvanceHeight = 0.1;
         public static final LookUpTable

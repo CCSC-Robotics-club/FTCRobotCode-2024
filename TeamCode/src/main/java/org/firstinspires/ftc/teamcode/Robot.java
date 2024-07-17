@@ -18,7 +18,6 @@ import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Modules.ClimbAndPlane;
 import org.firstinspires.ftc.teamcode.Modules.Extend;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleArilTagCamera;
-import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAnglePixelCamera;
 import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
