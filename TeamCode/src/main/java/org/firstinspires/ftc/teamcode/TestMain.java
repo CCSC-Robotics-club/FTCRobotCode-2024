@@ -30,6 +30,7 @@ import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAnglePixelC
 import org.firstinspires.ftc.teamcode.Modules.TripleIndependentEncoderAndIMUPositionEstimator;
 import org.firstinspires.ftc.teamcode.Services.AutoProgramRunner;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.RectangularRegionColorComparisonPipeLine;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedEncoder;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedIMU;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
@@ -61,6 +62,9 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,7 +77,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        climbTest();
+        testColorTeamPropDetection();
     }
 
     private void sensorsInspection() {
@@ -1364,6 +1368,58 @@ public class TestMain extends LinearOpMode {
 
             climbMotor0.setPower(power);
             climbMotor1.setPower(-power);
+        }
+    }
+
+    private void testColorTeamPropDetection() {
+        final int width = 320, height = 240;
+        final int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()
+        );
+        final OpenCvCamera webcam = OpenCvCameraFactory.getInstance().createWebcam(
+                hardwareMap.get(WebcamName.class, "Webcam 1"),
+                cameraMonitorViewId
+        );
+        final RectangularRegionColorComparisonPipeLine.RegionOfInterest[] ROIs = new RectangularRegionColorComparisonPipeLine.RegionOfInterest[] {
+                new RectangularRegionColorComparisonPipeLine.RegionOfInterest(50, 50, 160, 120),
+                new RectangularRegionColorComparisonPipeLine.RegionOfInterest(50, 50, 80, 120),
+                new RectangularRegionColorComparisonPipeLine.RegionOfInterest(50, 50, 160+80, 120)
+        };
+        webcam.setPipeline(new RectangularRegionColorComparisonPipeLine(
+                RectangularRegionColorComparisonPipeLine.ColorChannel.BLUE,
+                telemetry,
+                ROIs
+        ));
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(width, height, OpenCvCameraRotation.UPRIGHT);
+            }
+            @Override
+            public void onError(int errorCode) {
+                throw new RuntimeException("Error while opening camera, code: " + errorCode);
+            }
+        });
+
+        waitForStart();
+
+        int currentIndex = 0;
+        boolean prevA = false;
+
+        while (opModeIsActive() && !isStopRequested()) {
+            if (gamepad1.a && (!prevA)) {
+                currentIndex++;
+                if (currentIndex >= ROIs.length)
+                    currentIndex = 0;
+            }
+            prevA = gamepad1.a;
+
+            final RectangularRegionColorComparisonPipeLine.RegionOfInterest ROI = ROIs[currentIndex];
+            ROI.centerX += gamepad1.left_stick_x;
+            ROI.centerX = Math.min(Math.max(ROI.centerX, 0), width);
+            ROI.centerY += gamepad1.left_stick_y;
+            ROI.centerY = Math.min(Math.max(ROI.centerY, 0), height);
         }
     }
 }
