@@ -154,7 +154,7 @@ public final class RobotConfig {
 
         /** simple arm controller */
         public static final double
-                maxPowerWhenMovingUpNormal = 0.9,
+                maxPowerWhenMovingUpNormal = 1,
                 maxPowerWhenMovingDownNormal = 0.6,
                 errorStartDecelerateNormal = 300,
                 powerNeededToMoveUpNormal = 0.24,
@@ -164,16 +164,16 @@ public final class RobotConfig {
 
                 maxPowerWhenMovingUpScoring = 0.5,
                 maxPowerWhenMovingDownScoring = 0.7,
-                errorStartDecelerateScoring = 120,
+                errorStartDecelerateScoring = 150,
                 powerNeededToMoveUpScoring = 0.05,
                 powerNeededToMoveDownScoring = 0.15,
-                basePowerWhenMovingScoringHeightUp = -0.25,
+                basePowerWhenMovingScoringHeightUp = -0.3,
                 basePowerWhenMovingScoringHeightDown = 0,
                 errorToleranceScoring = 12,
                         errorAsArmInPositionScoring = 40;
         public static final LookUpTable baseGravityPower = new LookUpTable(
                 new double[] {1100, 1300, 1500},
-                new double[] {0, -0.15, -0.25}
+                new double[] {0, -0.2, -0.3}
         );
 
         public enum Position {

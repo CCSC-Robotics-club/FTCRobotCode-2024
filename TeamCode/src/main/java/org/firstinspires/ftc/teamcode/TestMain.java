@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-
 import com.qualcomm.hardware.adafruit.AdafruitBNO055IMUNew;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -23,7 +19,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleArilTagCamera;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAnglePixelCamera;
@@ -51,17 +46,12 @@ import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinde
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TensorCamera;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.VisionProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Rect;
-import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -77,16 +67,17 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        scoringSettingsTuning();
+        robotRest();
     }
 
-    private void sensorsInspection() {
-        final ColorSensor markSensor = hardwareMap.get(ColorSensor.class, "markSensor");
+    private void robotRest() {
         String[] encoderNames = RobotConfig.competitionConfig.encoderNames;
-        final DistanceSensor distanceSensorBack = hardwareMap.get(DistanceSensor.class, "distanceBack");
+        final DistanceSensor distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
         final DcMotor hor = hardwareMap.get(DcMotorEx.class, encoderNames[0]),
                 ver1 = hardwareMap.get(DcMotorEx.class, encoderNames[0]),
                 ver2 = hardwareMap.get(DcMotorEx.class, encoderNames[1]);
+        final DcMotor climb0 = hardwareMap.get(DcMotor.class, "climbMotor0"),
+                climb1 = hardwareMap.get(DcMotor.class, "climbMotor1");
 
         waitForStart();
 
@@ -94,9 +85,11 @@ public class TestMain extends LinearOpMode {
             telemetry.addData("hor enc", hor.getCurrentPosition());
             telemetry.addData("ver 1 enc", ver1.getCurrentPosition());
             telemetry.addData("ver 2 enc", ver2.getCurrentPosition());
-            telemetry.addData("dis back", distanceSensorBack.getDistance(DistanceUnit.CM));
-            telemetry.addData("mark sensor", markSensor.alpha());
+            telemetry.addData("dis back", distanceSensor.getDistance(DistanceUnit.CM));
             telemetry.update();
+
+            climb0.setPower(-gamepad1.left_stick_y);
+            climb1.setPower(-gamepad1.right_stick_y);
         }
     }
 
