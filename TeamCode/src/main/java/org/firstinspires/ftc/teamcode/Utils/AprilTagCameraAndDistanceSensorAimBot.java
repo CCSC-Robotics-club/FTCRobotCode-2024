@@ -42,7 +42,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
 
     public SequentialCommandSegment stickToWall(SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
         return stickToWall(
-                () -> update(getDesiredAimingPositionToWall(TeamElementFinderTensorflow.TeamElementPosition.CENTER)),
+                () -> update(getDesiredAimingPositionToWall(RobotConfig.TeamElementPosition.CENTER)),
                 additionalCompleteChecker
         );
     }
@@ -79,11 +79,11 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         );
     }
 
-    public Vector2D getDesiredAimingPositionToWall(TeamElementFinderTensorflow.TeamElementPosition teamElementPosition) {
+    public Vector2D getDesiredAimingPositionToWall(RobotConfig.TeamElementPosition teamElementPosition) {
         return getDesiredAimingPositionToWall(teamElementPosition, desiredDistanceToWallSupplier.getAsDouble());
     }
 
-    public Vector2D getDesiredAimingPositionToWall(TeamElementFinderTensorflow.TeamElementPosition teamElementPosition, double requiredDistanceToWall) {
+    public Vector2D getDesiredAimingPositionToWall(RobotConfig.TeamElementPosition teamElementPosition, double requiredDistanceToWall) {
         double deviationFromCenter;
         switch (teamElementPosition) {
             case UNDETERMINED: case LEFT: {

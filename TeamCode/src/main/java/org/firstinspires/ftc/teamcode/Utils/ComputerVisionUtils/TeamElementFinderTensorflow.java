@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
@@ -20,21 +21,15 @@ public class TeamElementFinderTensorflow {
     final String[] LABELS;
     final TfodProcessor tfod;
     final VisionPortal visionPortal;
-    public enum TeamElementPosition {
-        LEFT,
-        CENTER,
-        RIGHT,
-        UNDETERMINED
-    }
 
-    private static final Map<TeamElementPosition, Integer> teamElementPositionsPixel = new HashMap<>();
+    private static final Map<RobotConfig.TeamElementPosition, Integer> teamElementPositionsPixel = new HashMap<>();
     static {
-        teamElementPositionsPixel.put(TeamElementPosition.LEFT, 60);
-        teamElementPositionsPixel.put(TeamElementPosition.CENTER, 340);
-        teamElementPositionsPixel.put(TeamElementPosition.RIGHT, 580);
+        teamElementPositionsPixel.put(RobotConfig.TeamElementPosition.LEFT, 60);
+        teamElementPositionsPixel.put(RobotConfig.TeamElementPosition.CENTER, 340);
+        teamElementPositionsPixel.put(RobotConfig.TeamElementPosition.RIGHT, 580);
     }
 
-    public TeamElementPosition teamElementPosition;
+    public RobotConfig.TeamElementPosition teamElementPosition;
     public TeamElementFinderTensorflow(HardwareMap hardwareMap, Robot.Side side) {
         // final WebcamName webcamName = side == Robot.Side.BLUE ? hardwareMap.get(WebcamName.class, "right") : hardwareMap.get(WebcamName.class, "left");
         final WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
@@ -68,7 +63,7 @@ public class TeamElementFinderTensorflow {
 
         visionPortal = builder.build();
         visionPortal.setProcessorEnabled(tfod, true);
-        this.teamElementPosition = TeamElementPosition.UNDETERMINED;
+        this.teamElementPosition = RobotConfig.TeamElementPosition.UNDETERMINED;
     }
 
     public void findTeamElementOnce() {
@@ -82,7 +77,7 @@ public class TeamElementFinderTensorflow {
         }
 
         double minDistance = 99999, targetPosition = (highConf.getLeft() + highConf.getRight())/2;
-        for (TeamElementPosition position:teamElementPositionsPixel.keySet()) {
+        for (RobotConfig.TeamElementPosition position:teamElementPositionsPixel.keySet()) {
             if (Math.abs(targetPosition - teamElementPositionsPixel.get(position)) < minDistance) {
                 teamElementPosition = position;
                 minDistance = Math.abs(targetPosition - teamElementPositionsPixel.get(position));
@@ -98,7 +93,7 @@ public class TeamElementFinderTensorflow {
                 () -> startTime[0] = System.currentTimeMillis(),
                 this::findTeamElementOnce,
                 this::shutDown,
-                () -> teamElementPosition != TeamElementPosition.UNDETERMINED || System.currentTimeMillis() - startTime[0] > timeOut,
+                () -> teamElementPosition != RobotConfig.TeamElementPosition.UNDETERMINED || System.currentTimeMillis() - startTime[0] > timeOut,
                 () -> null, () -> null
         );
     }

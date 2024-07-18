@@ -17,7 +17,10 @@ public abstract class AutoStageProgram {
 
     public abstract void scheduleCommands(Robot robot, TelemetrySender telemetrySender);
 
-    /** called periodically after schedule commands, but before the start of the competition */
+    /**
+     * called periodically after schedule commands, but before the start of the competition
+     * to reduce CPU stress, this method is only called 20 times a second
+     * */
     public abstract void beforeStartPeriodic();
     public void waitForStart(BooleanSupplier isStopRequested, BooleanSupplier isStarted) {
         while (!isStopRequested.getAsBoolean() && !isStarted.getAsBoolean()) {

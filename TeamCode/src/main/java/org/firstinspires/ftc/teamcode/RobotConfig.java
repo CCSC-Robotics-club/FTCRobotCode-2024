@@ -386,13 +386,20 @@ public final class RobotConfig {
         public static final long feedTimeMillis = 3000;
     }
 
+    public enum TeamElementPosition {
+        LEFT,
+        CENTER,
+        RIGHT,
+        UNDETERMINED
+    }
     public static final class TeamElementFinderConfigs {
-        public static final Map<TeamElementFinderTensorflow.TeamElementPosition, Double[]> teamElementPositionSearchRotationRanges = new HashMap<>();
+
+        public static final Map<TeamElementPosition, Double[]> teamElementPositionSearchRotationRanges = new HashMap<>();
         public static final double distanceThreshold = 20;
         static {
-            teamElementPositionSearchRotationRanges.put(TeamElementFinderTensorflow.TeamElementPosition.LEFT, new Double[]{Math.toRadians(125), Math.toRadians(55)});
-            teamElementPositionSearchRotationRanges.put(TeamElementFinderTensorflow.TeamElementPosition.CENTER, new Double[]{Math.toRadians(35), Math.toRadians(-35)});
-            teamElementPositionSearchRotationRanges.put(TeamElementFinderTensorflow.TeamElementPosition.RIGHT, new Double[]{Math.toRadians(-55), Math.toRadians(-125)});
+            teamElementPositionSearchRotationRanges.put(TeamElementPosition.LEFT, new Double[]{Math.toRadians(125), Math.toRadians(55)});
+            teamElementPositionSearchRotationRanges.put(TeamElementPosition.CENTER, new Double[]{Math.toRadians(35), Math.toRadians(-35)});
+            teamElementPositionSearchRotationRanges.put(TeamElementPosition.RIGHT, new Double[]{Math.toRadians(-55), Math.toRadians(-125)});
         }
         public static final int searchRangePixels = 150;
         public static final int minimumSize = 0;

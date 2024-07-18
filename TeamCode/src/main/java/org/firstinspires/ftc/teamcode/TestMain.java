@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.hardware.adafruit.AdafruitBNO055IMUNew;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -42,7 +43,7 @@ import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.SimpleArmContro
 import org.firstinspires.ftc.teamcode.Utils.RobotModule;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.SingleServoClaw;
-import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinder;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinderTensorflow;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TensorCamera;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -67,7 +68,7 @@ import java.util.Scanner;
 public class TestMain extends LinearOpMode {
     @Override
     public void runOpMode() {
-        robotRest();
+        testColorTeamPropDetection();
     }
 
     private void robotRest() {
@@ -1233,7 +1234,7 @@ public class TestMain extends LinearOpMode {
     }
 
     private void teamElementFinderTest() {
-        final TeamElementFinder teamElementFinder = new TeamElementFinder(hardwareMap, Robot.Side.RED);
+        final TeamElementFinderTensorflow teamElementFinder = new TeamElementFinderTensorflow(hardwareMap, Robot.Side.RED);
 
         waitForStart();
 
@@ -1374,8 +1375,8 @@ public class TestMain extends LinearOpMode {
                 cameraMonitorViewId
         );
         final RectangularRegionColorComparisonPipeLine.RegionOfInterest[] ROIs = new RectangularRegionColorComparisonPipeLine.RegionOfInterest[] {
-                new RectangularRegionColorComparisonPipeLine.RegionOfInterest(50, 50, 160, 120),
-                new RectangularRegionColorComparisonPipeLine.RegionOfInterest(50, 50, 80, 120),
+                new RectangularRegionColorComparisonPipeLine.RegionOfInterest(50, 50, 160-80, 120),
+                new RectangularRegionColorComparisonPipeLine.RegionOfInterest(50, 50, 160, 60),
                 new RectangularRegionColorComparisonPipeLine.RegionOfInterest(50, 50, 160+80, 120)
         };
         webcam.setPipeline(new RectangularRegionColorComparisonPipeLine(
@@ -1388,6 +1389,7 @@ public class TestMain extends LinearOpMode {
             @Override
             public void onOpened() {
                 webcam.startStreaming(width, height, OpenCvCameraRotation.UPRIGHT);
+                FtcDashboard.getInstance().startCameraStream(webcam, 5);
             }
             @Override
             public void onError(int errorCode) {
@@ -1395,24 +1397,23 @@ public class TestMain extends LinearOpMode {
             }
         });
 
-        waitForStart();
-
         int currentIndex = 0;
-        boolean prevA = false;
 
-        while (opModeIsActive() && !isStopRequested()) {
-            if (gamepad1.a && (!prevA)) {
-                currentIndex++;
-                if (currentIndex >= ROIs.length)
-                    currentIndex = 0;
-            }
-            prevA = gamepad1.a;
+        while (!isStopRequested() && !isStarted()) {
+            if (gamepad1.x)
+                currentIndex = 0;
+            else if (gamepad1.y)
+                currentIndex = 1;
+            else if (gamepad1.b)
+                currentIndex = 2;
 
             final RectangularRegionColorComparisonPipeLine.RegionOfInterest ROI = ROIs[currentIndex];
             ROI.centerX += gamepad1.left_stick_x;
             ROI.centerX = Math.min(Math.max(ROI.centerX, 0), width);
             ROI.centerY += gamepad1.left_stick_y;
             ROI.centerY = Math.min(Math.max(ROI.centerY, 0), height);
+
+            sleep(50);
         }
     }
 }
