@@ -17,7 +17,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
  */
 public class TeamElementFinderColor {
     private static final int width = 320, height = 240;
-    private final RectangularRegionColorComparisonPipeLine.RegionOfInterest
+    private static final RectangularRegionColorComparisonPipeLine.RegionOfInterest // they are static so that even when one auto program exits, the tuned positions persist
             LEFT = new RectangularRegionColorComparisonPipeLine.RegionOfInterest(50, 50, 160-80, 120),
             CENTER = new RectangularRegionColorComparisonPipeLine.RegionOfInterest(50, 50, 160, 60),
             RIGHT = new RectangularRegionColorComparisonPipeLine.RegionOfInterest(50, 50, 160+80, 120);
