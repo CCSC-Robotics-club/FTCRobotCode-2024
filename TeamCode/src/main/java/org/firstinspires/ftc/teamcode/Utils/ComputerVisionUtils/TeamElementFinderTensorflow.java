@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TeamElementFinder {
+public class TeamElementFinderTensorflow {
     final String[] LABELS;
     final TfodProcessor tfod;
     final VisionPortal visionPortal;
@@ -35,7 +35,7 @@ public class TeamElementFinder {
     }
 
     public TeamElementPosition teamElementPosition;
-    public TeamElementFinder(HardwareMap hardwareMap, Robot.Side side) {
+    public TeamElementFinderTensorflow(HardwareMap hardwareMap, Robot.Side side) {
         // final WebcamName webcamName = side == Robot.Side.BLUE ? hardwareMap.get(WebcamName.class, "right") : hardwareMap.get(WebcamName.class, "left");
         final WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         switch (side) {

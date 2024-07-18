@@ -66,6 +66,8 @@ public class CameraAutoCalibrationVerticalOnly extends AutoStageProgram {
         ));
     }
 
+    @Override public void beforeStartPeriodic() {}
+
     private SequentialCommandSegment moveToPositionAndMeasure(double distance, PositionEstimator positionEstimator, Chassis chassis, RawArilTagRecognitionCamera cameraToTest, ThreadedSensor distanceSensor, int i) {
         final long timeOut = 2000;
         AtomicLong taskStartedTime = new AtomicLong();

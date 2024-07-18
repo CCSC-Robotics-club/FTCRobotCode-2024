@@ -72,6 +72,8 @@ public class CameraAutoCalibration extends AutoStageProgram {
         ));
     }
 
+    @Override public void beforeStartPeriodic() {}
+
     private SequentialCommandSegment moveToPositionAndMeasure(double distance, double angle, PositionEstimator positionEstimator, Chassis chassis, RawArilTagRecognitionCamera cameraToTest, int i) {
         final long timeOut = 2000;
         AtomicLong taskStartedTime = new AtomicLong();

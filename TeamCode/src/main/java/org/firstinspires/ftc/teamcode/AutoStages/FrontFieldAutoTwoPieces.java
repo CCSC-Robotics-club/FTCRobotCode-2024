@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.AutoStages;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConfig;
@@ -13,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.SpeedCurves;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandFactory;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
-import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinder;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinderTensorflow;
 
 public class FrontFieldAutoTwoPieces extends AutoStageProgram {
     public FrontFieldAutoTwoPieces(Robot.Side side) {
@@ -22,7 +21,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
 
     @Override
     public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
-        final TeamElementFinder teamElementFinder = new TeamElementFinder(robot.hardwareMap, super.allianceSide);
+        final TeamElementFinderTensorflow teamElementFinder = new TeamElementFinderTensorflow(robot.hardwareMap, super.allianceSide);
         final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(0), super.allianceSide, robot.hardwareMap);
         final AprilTagCameraAndDistanceSensorAimBot wallAimBot = new AprilTagCameraAndDistanceSensorAimBot(robot.chassis, robot.distanceSensor, robot.aprilTagCamera, robot.arm, null, robot.telemetrySender, super.allianceSide);
 
@@ -122,5 +121,10 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
         super.commandSegments.add(sequentialCommandFactory.justDoIt(scorePreload));
 
         super.commandSegments.add(sequentialCommandFactory.stayStillFor(300));
+    }
+
+    @Override
+    public void beforeStartPeriodic() {
+
     }
 }

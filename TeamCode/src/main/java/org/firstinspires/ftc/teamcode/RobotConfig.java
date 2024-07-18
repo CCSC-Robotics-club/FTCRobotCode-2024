@@ -9,13 +9,15 @@ import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleCamera
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.LookUpTable;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.ArmGravityController;
 import org.firstinspires.ftc.teamcode.Utils.MechanismControllers.EnhancedPIDController;
-import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinder;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinderTensorflow;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public final class RobotConfig {
+    public static final boolean useFtcDashboardForTelemetry = true;
+
     public static final HardwareConfigs hardwareConfigs_2024OffSeason = new HardwareConfigs( // backup machine
             new IMU.Parameters(
                     new RevHubOrientationOnRobot(
@@ -230,9 +232,8 @@ public final class RobotConfig {
 
         public static final double leftClawClosePosition = 0.48, leftClawOpenPosition = 0.81, rightClawClosedPosition = 0.7, rightClawOpenPosition = 0.37;
 
-        public static final int colorDetectorThreshold = 800;
+        public static final int colorDetectorThreshold = 500;
     }
-
     public static final class LauncherConfigs {
         public static final double launcherZeroPosition = 1,
                 launcherActivatePosition = 0.3,
@@ -386,12 +387,12 @@ public final class RobotConfig {
     }
 
     public static final class TeamElementFinderConfigs {
-        public static final Map<TeamElementFinder.TeamElementPosition, Double[]> teamElementPositionSearchRotationRanges = new HashMap<>();
+        public static final Map<TeamElementFinderTensorflow.TeamElementPosition, Double[]> teamElementPositionSearchRotationRanges = new HashMap<>();
         public static final double distanceThreshold = 20;
         static {
-            teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.LEFT, new Double[]{Math.toRadians(125), Math.toRadians(55)});
-            teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.CENTER, new Double[]{Math.toRadians(35), Math.toRadians(-35)});
-            teamElementPositionSearchRotationRanges.put(TeamElementFinder.TeamElementPosition.RIGHT, new Double[]{Math.toRadians(-55), Math.toRadians(-125)});
+            teamElementPositionSearchRotationRanges.put(TeamElementFinderTensorflow.TeamElementPosition.LEFT, new Double[]{Math.toRadians(125), Math.toRadians(55)});
+            teamElementPositionSearchRotationRanges.put(TeamElementFinderTensorflow.TeamElementPosition.CENTER, new Double[]{Math.toRadians(35), Math.toRadians(-35)});
+            teamElementPositionSearchRotationRanges.put(TeamElementFinderTensorflow.TeamElementPosition.RIGHT, new Double[]{Math.toRadians(-55), Math.toRadians(-125)});
         }
         public static final int searchRangePixels = 150;
         public static final int minimumSize = 0;

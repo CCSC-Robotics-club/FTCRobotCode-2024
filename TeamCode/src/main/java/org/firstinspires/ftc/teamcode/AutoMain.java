@@ -14,16 +14,17 @@ public class AutoMain extends LinearOpMode {
     @Override
     public void runOpMode() {
         AutoStageRobot robot = new AutoStageRobot(
-            hardwareMap,
-            telemetry,
-            () -> opModeIsActive() && !isStopRequested(),
-            RobotConfig.competitionConfig,
-            autoStageProgram
+                gamepad1,gamepad2,
+                hardwareMap,
+                telemetry,
+                () -> opModeIsActive() && !isStopRequested(),
+                RobotConfig.competitionConfig,
+                autoStageProgram
         );
 
         robot.initializeRobot();
 
-        waitForStart();
+        autoStageProgram.waitForStart(this::isStopRequested, this::isStarted);
 
         robot.startRobot();
 

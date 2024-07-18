@@ -17,6 +17,9 @@ public class OdometerMeasurement extends AutoStageProgram {
     }
 
     @Override
+    public void beforeStartPeriodic() {}
+
+    @Override
     public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
         final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(0), super.allianceSide, robot.hardwareMap);
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());

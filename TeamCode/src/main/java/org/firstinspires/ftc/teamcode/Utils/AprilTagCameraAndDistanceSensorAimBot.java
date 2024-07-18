@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.FixedAngleArilTagCamera;
-import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinder;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinderTensorflow;
 import org.firstinspires.ftc.teamcode.Utils.HardwareUtils.ThreadedSensor;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
@@ -42,7 +42,7 @@ public class AprilTagCameraAndDistanceSensorAimBot {
 
     public SequentialCommandSegment stickToWall(SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
         return stickToWall(
-                () -> update(getDesiredAimingPositionToWall(TeamElementFinder.TeamElementPosition.CENTER)),
+                () -> update(getDesiredAimingPositionToWall(TeamElementFinderTensorflow.TeamElementPosition.CENTER)),
                 additionalCompleteChecker
         );
     }
@@ -51,14 +51,14 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         return stickToWall(() -> this.update(desiredPositionToWall), additionalCompleteChecker);
     }
 
-    public SequentialCommandSegment stickToWall(TeamElementFinder teamElementFinder, double requiredDistanceToWall, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
+    public SequentialCommandSegment stickToWall(TeamElementFinderTensorflow teamElementFinder, double requiredDistanceToWall, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
         return stickToWall(
                 () -> this.update(getDesiredAimingPositionToWall(teamElementFinder.teamElementPosition, requiredDistanceToWall)),
                 additionalCompleteChecker
         );
     }
 
-    public SequentialCommandSegment stickToWall(TeamElementFinder teamElementFinder, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
+    public SequentialCommandSegment stickToWall(TeamElementFinderTensorflow teamElementFinder, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
         return stickToWall(
                 () -> this.update(getDesiredAimingPositionToWall(teamElementFinder.teamElementPosition)),
                 additionalCompleteChecker
@@ -79,11 +79,11 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         );
     }
 
-    public Vector2D getDesiredAimingPositionToWall(TeamElementFinder.TeamElementPosition teamElementPosition) {
+    public Vector2D getDesiredAimingPositionToWall(TeamElementFinderTensorflow.TeamElementPosition teamElementPosition) {
         return getDesiredAimingPositionToWall(teamElementPosition, desiredDistanceToWallSupplier.getAsDouble());
     }
 
-    public Vector2D getDesiredAimingPositionToWall(TeamElementFinder.TeamElementPosition teamElementPosition, double requiredDistanceToWall) {
+    public Vector2D getDesiredAimingPositionToWall(TeamElementFinderTensorflow.TeamElementPosition teamElementPosition, double requiredDistanceToWall) {
         double deviationFromCenter;
         switch (teamElementPosition) {
             case UNDETERMINED: case LEFT: {

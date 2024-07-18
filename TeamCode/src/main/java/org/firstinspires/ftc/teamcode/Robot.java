@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.LED;
@@ -42,6 +45,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public abstract class Robot {
+    public final Gamepad gamepad1, gamepad2;
     public final HardwareMap hardwareMap;
     protected final RobotConfig.HardwareConfigs hardwareConfigs;
     public final Telemetry telemetry;
@@ -76,21 +80,26 @@ public abstract class Robot {
         BLUE
     }
     protected final Side side;
-    public Robot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, Side side) {
-        this(hardwareMap, telemetry, checker, hardwareConfigs, side, false);
+    public Robot(Gamepad gamepad1, Gamepad gamepad2, HardwareMap hardwareMap, Telemetry driverStationTelemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, Side side) {
+        this(gamepad2, gamepad1, hardwareMap, driverStationTelemetry, checker, hardwareConfigs, side, false);
     }
-    public Robot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, Side side, boolean debugModeEnabled) {
+    public Robot(Gamepad gamepad1, Gamepad gamepad2, HardwareMap hardwareMap, Telemetry driverStationTelemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, Side side, boolean debugModeEnabled) {
+        this.gamepad1 = gamepad1;
+        this.gamepad2 = gamepad2;
         this.side = side;
 
         this.hardwareConfigs = hardwareConfigs;
         this.hardwareMap = hardwareMap;
-        this.telemetry = telemetry;
+
+        final MultipleTelemetry multipleTelemetry = new MultipleTelemetry(driverStationTelemetry, FtcDashboard.getInstance().getTelemetry());
+        this.telemetry = RobotConfig.useFtcDashboardForTelemetry ? multipleTelemetry : driverStationTelemetry;
+
         this.programRunningStatusChecker = checker;
 
         this.useMultiThread = !debugModeEnabled;
         // this.useMultiThread = false;
 
-        telemetrySender = new TelemetrySender(telemetry);
+        telemetrySender = new TelemetrySender(driverStationTelemetry);
 
         /* <-- chassis --> */
         this.frontLeftMotor = hardwareMap.get(DcMotorEx.class, "frontLeft");
@@ -163,8 +172,8 @@ public abstract class Robot {
         servos.add(flip);
         servos.add(clawLeft);
         servos.add(clawRight);
-//        sensors.put("color-left", colorLeft);
-//        sensors.put("color-right", colorRight);
+        sensors.put("color-left", colorLeft);
+        sensors.put("color-right", colorRight);
         claw = new FlippableDualClaw(
                 flip, clawLeft, clawRight,
                 colorLeft, colorRight,

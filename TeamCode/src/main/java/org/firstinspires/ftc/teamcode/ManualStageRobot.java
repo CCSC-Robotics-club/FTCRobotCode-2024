@@ -12,19 +12,17 @@ import org.firstinspires.ftc.teamcode.Utils.ProgramRunningStatusChecker;
 
 
 public class ManualStageRobot extends Robot {
-    private final Gamepad copilotGamepad;
     private final Side side;
     public ManualStageRobot(HardwareMap hardwareMap, Telemetry telemetry, ProgramRunningStatusChecker checker, RobotConfig.HardwareConfigs hardwareConfigs, Gamepad gamepad1, Gamepad gamepad2, Side side, boolean debugModeEnabled) {
-        super(hardwareMap, telemetry, checker, hardwareConfigs, side, debugModeEnabled);
+        super(gamepad1, gamepad2, hardwareMap, telemetry, checker, hardwareConfigs, side, debugModeEnabled);
         super.driverGamePad = new DriverGamePad(gamepad1);
-        this.copilotGamepad = gamepad2;
         this.side = side;
     }
 
     @Override
     public void initializeRobot() {
         final double pilotFacing = side == Side.RED ? Math.PI / 2 : -Math.PI / 2;
-        PilotChassisService chassisService = new PilotChassisService(chassis, driverGamePad, copilotGamepad, super.distanceSensor, pilotFacing);
+        PilotChassisService chassisService = new PilotChassisService(chassis, driverGamePad, gamepad2, super.distanceSensor, pilotFacing);
         super.robotServices.add(chassisService);
 
 //        final IntakeService intakeService = new IntakeService(intake, chassisService.pixelDetector, copilotGamepad);
@@ -38,10 +36,10 @@ public class ManualStageRobot extends Robot {
 //        final PlaneLaunchService planeLaunchService = new PlaneLaunchService(planeLauncher, copilotGamepad);
 //        super.robotServices.add(planeLaunchService);
 
-        final UpperStructureService upperStructureService = new UpperStructureService(arm, extend, claw, chassisService, copilotGamepad);
+        final UpperStructureService upperStructureService = new UpperStructureService(arm, extend, claw, chassisService, gamepad2);
         super.robotServices.add(upperStructureService);
 
-        final ClimbAndPlaneService climbAndPlaneService = new ClimbAndPlaneService(climbAndPlane, copilotGamepad);
+        final ClimbAndPlaneService climbAndPlaneService = new ClimbAndPlaneService(climbAndPlane, gamepad2);
         super.robotServices.add(climbAndPlaneService);
 
         super.initializeRobot();
