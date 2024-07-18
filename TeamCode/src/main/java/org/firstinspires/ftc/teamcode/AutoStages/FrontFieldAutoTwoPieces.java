@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.AutoStages;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Modules.FlippableDualClaw;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Services.TelemetrySender;
 import org.firstinspires.ftc.teamcode.Utils.AprilTagCameraAndDistanceSensorAimBot;
 import org.firstinspires.ftc.teamcode.Utils.AutoStageProgram;
+import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinderColor;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurve;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.Rotation2D;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.SpeedCurves;
@@ -19,9 +21,16 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
         super(side);
     }
 
+    private TeamElementFinderColor teamElementFinderColor;
     @Override
     public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
-        final TeamElementFinderTensorflow teamElementFinder = new TeamElementFinderTensorflow(robot.hardwareMap, super.allianceSide);
+        this.teamElementFinderColor = new TeamElementFinderColor(
+                robot.hardwareMap,
+                robot.hardwareMap.get(WebcamName.class, "Webcam 1"),
+                robot.gamepad1,
+                robot.telemetry,
+                allianceSide
+        );
         final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(0), super.allianceSide, robot.hardwareMap);
         final AprilTagCameraAndDistanceSensorAimBot wallAimBot = new AprilTagCameraAndDistanceSensorAimBot(robot.chassis, robot.distanceSensor, robot.aprilTagCamera, robot.arm, null, robot.telemetrySender, super.allianceSide);
 
@@ -35,15 +44,13 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
 
 
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
-        // teamElementFinder.teamElementPosition = TeamElementFinder.TeamElementPosition.LEFT;
-        super.commandSegments.add(teamElementFinder.findTeamElementAndShutDown(2000));
 
         final Vector2D[] splitFirstPosition = new Vector2D[1];
         super.commandSegments.add(
                 new SequentialCommandSegment(
                         () -> true,
                         () -> {
-                            switch (teamElementFinder.teamElementPosition) {
+                            switch (teamElementFinderColor.getBestResult()) {
                                 case LEFT: case UNDETERMINED: {
                                     splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
                                             new Vector2D(new double[] {92, 275}) : new Vector2D(new double[] {248, 218});
@@ -60,7 +67,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                                     break;
                                 }
                                 default:
-                                    throw new IllegalStateException("unknown team element position: " + teamElementFinder.teamElementPosition);
+                                    throw new IllegalStateException("unknown team element position: " + teamElementFinderColor.getBestResult());
                             }
 
                             return new BezierCurve(
@@ -111,7 +118,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
         ));
 
         super.commandSegments.add(wallAimBot.stickToWall(
-                teamElementFinder,
+                teamElementFinderColor::getBestResult,
                 14,
                 robot.extend::isExtendInPosition
         ));

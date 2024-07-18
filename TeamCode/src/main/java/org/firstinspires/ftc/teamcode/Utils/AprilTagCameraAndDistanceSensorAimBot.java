@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import static org.firstinspires.ftc.teamcode.RobotConfig.VisualNavigationConfigs.*;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 // TODO: re-write the whole program as status machine
 
@@ -51,16 +52,16 @@ public class AprilTagCameraAndDistanceSensorAimBot {
         return stickToWall(() -> this.update(desiredPositionToWall), additionalCompleteChecker);
     }
 
-    public SequentialCommandSegment stickToWall(TeamElementFinderTensorflow teamElementFinder, double requiredDistanceToWall, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
+    public SequentialCommandSegment stickToWall(Supplier<RobotConfig.TeamElementPosition> teamElementPositionSupplier, double requiredDistanceToWall, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
         return stickToWall(
-                () -> this.update(getDesiredAimingPositionToWall(teamElementFinder.teamElementPosition, requiredDistanceToWall)),
+                () -> this.update(getDesiredAimingPositionToWall(teamElementPositionSupplier.get(), requiredDistanceToWall)),
                 additionalCompleteChecker
         );
     }
 
-    public SequentialCommandSegment stickToWall(TeamElementFinderTensorflow teamElementFinder, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
+    public SequentialCommandSegment stickToWall(Supplier<RobotConfig.TeamElementPosition> teamElementPositionSupplier, SequentialCommandSegment.IsCompleteChecker additionalCompleteChecker) {
         return stickToWall(
-                () -> this.update(getDesiredAimingPositionToWall(teamElementFinder.teamElementPosition)),
+                () -> this.update(getDesiredAimingPositionToWall(teamElementPositionSupplier.get())),
                 additionalCompleteChecker
         );
     }
