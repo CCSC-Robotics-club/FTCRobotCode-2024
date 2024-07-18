@@ -316,6 +316,7 @@ public class PilotChassisService extends RobotService {
         wallFieldPositionForRoughApproach = chassis.getChassisEncoderPosition().addBy(wallRelativePositionToRobot);
         this.visualTaskStatus = VisualTaskStatus.VISUAL_ROUGH_APPROACH;
         this.lastAimSucceeded = true;
+        this.scoringChassisFeedForwardAmountCM = 0;
     }
 
     private boolean goToWallPrecise(double horizontalAimingTargetFromCenter) {
@@ -373,7 +374,10 @@ public class PilotChassisService extends RobotService {
         return new Vector2D(new double[] {
                 RobotConfig.VisualNavigationConfigs.targetedRelativePositionToWallPreciseTOFApproach.getX(),
                 -getDesiredScoringDistanceToWall()
-        });
+        }).addBy(new Vector2D(new double[] {
+                0,
+                scoringChassisFeedForwardAmountCM
+        }));
     }
 
     private double getDesiredScoringDistanceToWall() {
@@ -395,6 +399,16 @@ public class PilotChassisService extends RobotService {
     /** called by upper structure service */
     public void setDesiredScoringHeight(double desiredScoringHeight) {
         this.desiredScoringHeight = desiredScoringHeight;
+    }
+
+    double scoringChassisFeedForwardAmountCM = 0;
+    public void setScoringHeightMovingDirection(double scoringHeightMovingDirection) {
+        if (scoringHeightMovingDirection > 0)
+            scoringHeightMovingDirection = 15 * scoringHeightMovingDirection;
+        else if (scoringHeightMovingDirection < 0)
+            scoringChassisFeedForwardAmountCM = 20 * scoringHeightMovingDirection;
+        else
+            scoringChassisFeedForwardAmountCM = 0;
     }
 
     public double getActualScoringHeightAccordingToDistanceToWall(double defaultScoringHeight) {

@@ -175,7 +175,7 @@ public final class RobotConfig {
                         errorAsArmInPositionScoring = 40;
         public static final LookUpTable baseGravityPower = new LookUpTable(
                 new double[] {1400, 1600, 2100},
-                new double[] {0, -0.25, -0.35}
+                new double[] {0, -0.2, -0.3}
         );
 
         public enum Position {
@@ -196,12 +196,12 @@ public final class RobotConfig {
 
         private static final double[]
                 scoringHeight = new double[] {0, 0.25, 0.5, 0.75, 1},
-                correspondingArmEncoderValues = new double[] {2060, 1920, 1780, 1680, 1600},
-                correspondingExtendValues = new double[] {100, 400, 700, 1000, 1400},
+                correspondingArmEncoderValues = new double[] {2060, 1980, 1780, 1680, 1600},
+                correspondingExtendValues = new double[] {100, 200, 500, 800, 1200},
                 correspondingServoPositions = new double[] {0.62, 0.68, 0.72, 0.8, 0.86},
-                correspondingDistanceToWall = new double[] {26, 25, 18, 12, 4};
+                correspondingDistanceToWall = new double[] {26.5, 26, 18, 10, 4};
 
-        public static final double manualStageMinScoringHeight = 0.15, manualStageMaxScoringHeight = 1, inAdvanceHeight = 0.1;
+        public static final double manualStageMinScoringHeight = 0.25, manualStageMaxScoringHeight = 1, inAdvanceHeight = 0.1;
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall),
