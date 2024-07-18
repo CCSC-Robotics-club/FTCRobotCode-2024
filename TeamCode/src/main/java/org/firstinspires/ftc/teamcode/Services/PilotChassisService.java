@@ -356,7 +356,7 @@ public class PilotChassisService extends RobotService {
     }
 
     private double getPilotXCommandDuringAdjustment() {
-        final double copilotXCommand = copilotGamePad.left_stick_x;
+        final double copilotXCommand = copilotGamePad.right_stick_x;
         if (Math.abs(copilotXCommand) > 0.05)
             return copilotXCommand;
 
@@ -404,7 +404,7 @@ public class PilotChassisService extends RobotService {
     double scoringChassisFeedForwardAmountCM = 0;
     public void setScoringHeightMovingDirection(double scoringHeightMovingDirection) {
         if (scoringHeightMovingDirection > 0)
-            scoringHeightMovingDirection = 15 * scoringHeightMovingDirection;
+            scoringChassisFeedForwardAmountCM = 15 * scoringHeightMovingDirection;
         else if (scoringHeightMovingDirection < 0)
             scoringChassisFeedForwardAmountCM = 20 * scoringHeightMovingDirection;
         else

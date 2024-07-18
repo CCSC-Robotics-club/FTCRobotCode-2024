@@ -81,7 +81,7 @@ public class UpperStructureService extends RobotService {
                 break;
             }
             case SCORING: {
-                final double scoringHeightControlAxis = Math.abs(copilotGamePad.right_stick_y) > 0.1 ? -copilotGamePad.right_stick_y : 0;
+                final double scoringHeightControlAxis = Math.abs(copilotGamePad.left_stick_y) > 0.1 ? -copilotGamePad.left_stick_y : 0;
                 claw.setAutoClosing(false, this);
 
                 if (Math.abs(scoringHeightControlAxis) > 0.05)
@@ -140,7 +140,7 @@ public class UpperStructureService extends RobotService {
     }
 
     private void keyBindingsLocus() {
-        if (copilotGamePad.a)
+        if (copilotGamePad.a || copilotGamePad.dpad_right)
             this.currentStatus = UpperStructureStatus.HOLDING;
         else if (copilotGamePad.y) {
             this.currentStatus = UpperStructureStatus.GRABBING;
@@ -153,7 +153,7 @@ public class UpperStructureService extends RobotService {
     }
 
     private void keyBindingsSam() {
-        if (copilotGamePad.y)
+        if (copilotGamePad.y || copilotGamePad.dpad_right)
             this.currentStatus = UpperStructureStatus.HOLDING;
         else if (copilotGamePad.a) {
             this.currentStatus = UpperStructureStatus.GRABBING;
