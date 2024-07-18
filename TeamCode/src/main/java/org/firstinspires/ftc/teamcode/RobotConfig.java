@@ -199,7 +199,7 @@ public final class RobotConfig {
                 correspondingArmEncoderValues = new double[] {1980, 1780, 1680, 1640},
                 correspondingExtendValues = new double[] {200, 500, 800, 1200},
                 correspondingServoPositions = new double[] {0.68, 0.72, 0.8, 0.86},
-                correspondingDistanceToWall = new double[] {24, 15, 8, 2.5};
+                correspondingDistanceToWall = new double[] {24, 14, 8, 2};
 
         public static final double manualStageMinScoringHeight = 0, manualStageMaxScoringHeight = 1, inAdvanceHeight = 0.1;
         public static final LookUpTable
@@ -209,7 +209,7 @@ public final class RobotConfig {
                 extendValuesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingExtendValues),
                 flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions);
 
-        public static final double autoStageScoringDistanceToWall = 26, autoStageScoringArmPosition = 2060, autoStageScoringExtendPosition = 200, autoStageScoringServoPosition = 0.62;
+        public static final double autoStageScoringDistanceToWall = 26, autoStageArmScoringHeight = 0, autoStageScoringExtendPosition = 200, autoStageScoringServoPosition = 0.62;
     }
 
     public static final class ExtendConfigs {
