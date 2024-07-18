@@ -294,6 +294,9 @@ public class SequentialCommandFactory {
         );
     }
 
+    public SequentialCommandSegment stayStillForSeconds(double seconds) {
+        return stayStillFor((long) (seconds * 1000));
+    }
     public SequentialCommandSegment stayStillFor(long timeMillis) {
         final long[] t0 = new long[1];
         return new SequentialCommandSegment(
@@ -356,14 +359,10 @@ public class SequentialCommandFactory {
         return followPath(pathName, rotationTargets, beginning, periodic, ending);
     }
 
-    public List<SequentialCommandSegment> followPath(String pathName) {
-        return followPath(pathName, doNothing, doNothing, doNothing);
+    public List<SequentialCommandSegment> followPath(String pathName, Rotation2D[] robotRotationTargets) {
+        return followPath(pathName, robotRotationTargets, doNothing, doNothing, doNothing);
     }
 
-
-    public List<SequentialCommandSegment> followPath(String pathName, Runnable beginning, Runnable periodic, Runnable ending) {
-        return followPath(pathName, new Rotation2D[getBezierCurvesFromPathFile(pathName).size()], beginning, periodic, ending);
-    }
 
     public List<SequentialCommandSegment> followPath(String pathName, Rotation2D[] robotRotationTargets, Runnable beginning, Runnable periodic, Runnable ending) {
         final List<BezierCurve> curves = getBezierCurvesFromPathFile(pathName);

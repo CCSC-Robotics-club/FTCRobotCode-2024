@@ -209,7 +209,7 @@ public final class RobotConfig {
                 extendValuesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingExtendValues),
                 flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions);
 
-        public static final double autoStageScoringDistanceToWall = 26, autoStageArmScoringHeight = 0, autoStageScoringExtendPosition = 200, autoStageScoringServoPosition = 0.62;
+        public static final double autoStageScoringDistanceToWall = 25, autoStageArmScoringHeight = 0, autoStageScoringExtendPosition = 250, autoStageScoringServoPosition = 0.62;
     }
 
     public static final class ExtendConfigs {
@@ -360,7 +360,7 @@ public final class RobotConfig {
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -30});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -5});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
-        public static final double autoStageScoringPositionsLeft = -17, autoStageScoringPositionsCenter = 4, autoStageScoringPositionsRight = 20;
+        public static final double autoStageScoringPositionsLeft = -17, autoStageScoringPositionsCenter = 4, autoStageScoringPositionsRight = 18;
         public static final double clawWidth = 8, grabbingDistanceToWall = 7, colorSensorThreshold = 100, colorSensorPositionOnRobot = -8.5, scanningDistanceToWall = 6.5;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
         public static final double approachPathSmoothOutPercent = 0.6;
