@@ -10,6 +10,6 @@ import org.firstinspires.ftc.teamcode.Robot;
 @Autonomous(name = "<Auto> [Blue Field Measurement]")
 public class BlueFieldMeasurement extends AutoMain {
     public BlueFieldMeasurement() {
-        super(new OdometerMeasurement(Robot.Side.BLUE));
+        super(new OdometerMeasurement(Robot.Side.BLUE, true));
     }
 }

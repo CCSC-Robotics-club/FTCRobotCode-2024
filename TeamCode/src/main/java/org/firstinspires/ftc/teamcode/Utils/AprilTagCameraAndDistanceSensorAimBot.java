@@ -20,7 +20,6 @@ import java.util.function.Supplier;
 
 public class AprilTagCameraAndDistanceSensorAimBot {
     private final Chassis chassis;
-    private final DoubleSupplier desiredDistanceToWallSupplier;
     private final ThreadedSensor distanceSensor;
     private final FixedAngleArilTagCamera aprilTagCamera;
     private final ModulesCommanderMarker modulesCommanderMarker;
@@ -29,15 +28,14 @@ public class AprilTagCameraAndDistanceSensorAimBot {
     private Vector2D previousWallPosition = new Vector2D(new double[]{0, 0});
     private double previousWallDistance = Double.POSITIVE_INFINITY;
     public AprilTagCameraAndDistanceSensorAimBot(Chassis chassis, ThreadedSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, ModulesCommanderMarker commanderMarker, Robot.Side side) {
-        this(chassis, distanceSensor, aprilTagCamera, null, commanderMarker, null, side);
+        this(chassis, distanceSensor, aprilTagCamera, commanderMarker, null, side);
     }
-    public AprilTagCameraAndDistanceSensorAimBot(Chassis chassis, ThreadedSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, Arm arm, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender, Robot.Side side) {
+    public AprilTagCameraAndDistanceSensorAimBot(Chassis chassis, ThreadedSensor distanceSensor, FixedAngleArilTagCamera aprilTagCamera, ModulesCommanderMarker commanderMarker, TelemetrySender telemetrySender, Robot.Side side) {
         this.chassis = chassis;
         this.distanceSensor = distanceSensor;
         this.aprilTagCamera = aprilTagCamera;
         this.modulesCommanderMarker = commanderMarker;
         this.telemetrySender = telemetrySender;
-        this.desiredDistanceToWallSupplier = () -> RobotConfig.ArmConfigs.distancesToWallAccordingToScoringHeight.getYPrediction(arm.getArmDesiredScoringHeight());
         this.side = side;
     }
 
@@ -75,13 +73,15 @@ public class AprilTagCameraAndDistanceSensorAimBot {
                 // () -> {},
                 () -> chassis.setTranslationalTask(new Chassis.ChassisTranslationalTask(Chassis.ChassisTranslationalTask.ChassisTranslationalTaskType.SET_VELOCITY, new Vector2D()), modulesCommanderMarker),
                 () -> !initSucceeded ||
-                        (chassis.isCurrentTranslationalTaskRoughlyComplete() && chassis.isCurrentRotationalTaskRoughlyComplete() && additionalCompleteChecker.isComplete()),
+                        (chassis.isCurrentTranslationalTaskRoughlyComplete()
+                                && chassis.isCurrentRotationalTaskRoughlyComplete()
+                                && additionalCompleteChecker.isComplete()),
                 () -> new Rotation2D(0), () -> new Rotation2D(0)
         );
     }
 
     public Vector2D getDesiredAimingPositionToWall(RobotConfig.TeamElementPosition teamElementPosition) {
-        return getDesiredAimingPositionToWall(teamElementPosition, desiredDistanceToWallSupplier.getAsDouble());
+        return getDesiredAimingPositionToWall(teamElementPosition, RobotConfig.ArmConfigs.autoStageScoringDistanceToWall);
     }
 
     public Vector2D getDesiredAimingPositionToWall(RobotConfig.TeamElementPosition teamElementPosition, double requiredDistanceToWall) {

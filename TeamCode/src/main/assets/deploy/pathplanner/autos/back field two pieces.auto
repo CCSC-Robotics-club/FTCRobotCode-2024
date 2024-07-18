@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.18,
-      "y": 2.15
+      "x": 0.1820370978121109,
+      "y": 0.8709774987625624
     },
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
@@ -14,31 +14,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "split first(left)"
+            "pathName": "split left back stage"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "move back and grab third from stack"
+            "pathName": "move to scoring board back stage"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "grab fourth from stack"
+            "pathName": "score second back stage preview"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "score third and fourth"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "park"
+            "pathName": "park back stage"
           }
         }
       ]

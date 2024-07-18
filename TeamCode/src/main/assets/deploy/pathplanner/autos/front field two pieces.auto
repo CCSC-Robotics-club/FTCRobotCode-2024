@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.18483766854768188,
+      "y": 2.1592400371251954
+    },
+    "rotation": 89.70767713077144
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "split left front stage"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "score second front stage"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "score second front stage preview"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "park front stage"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

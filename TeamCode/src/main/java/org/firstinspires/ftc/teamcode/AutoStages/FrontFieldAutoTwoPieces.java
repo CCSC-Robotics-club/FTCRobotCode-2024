@@ -17,6 +17,16 @@ import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import org.firstinspires.ftc.teamcode.Utils.ComputerVisionUtils.TeamElementFinderTensorflow;
 
 public class FrontFieldAutoTwoPieces extends AutoStageProgram {
+    private static final Vector2D
+            BLUE_LEFT_SPIKE = new Vector2D(new double[] {0, 0}),
+            BLUE_CENTER_SPIKE = new Vector2D(new double[] {0, 0}),
+            BLUE_RIGHT_SPIKE = new Vector2D(new double[] {0, 0}),
+
+            RED_LEFT_SPIKE = new Vector2D(new double[] {0, 0}),
+            RED_CENTER_SPIKE = new Vector2D(new double[] {0, 0}),
+            RED_RIGHT_SPIKE = new Vector2D(new double[] {0, 0});
+
+
     public FrontFieldAutoTwoPieces(Robot.Side side) {
         super(side);
     }
@@ -26,13 +36,13 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
     public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
         this.teamElementFinderColor = new TeamElementFinderColor(
                 robot.hardwareMap,
-                robot.hardwareMap.get(WebcamName.class, "Webcam 1"),
+                robot.hardwareMap.get(WebcamName.class, allianceSide == Robot.Side.BLUE ? "Right Cam" : "Left Cam"),
                 robot.gamepad1,
                 robot.telemetry,
                 allianceSide
         );
         final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(0), super.allianceSide, robot.hardwareMap);
-        final AprilTagCameraAndDistanceSensorAimBot wallAimBot = new AprilTagCameraAndDistanceSensorAimBot(robot.chassis, robot.distanceSensor, robot.aprilTagCamera, robot.arm, null, robot.telemetrySender, super.allianceSide);
+        final AprilTagCameraAndDistanceSensorAimBot wallAimBot = new AprilTagCameraAndDistanceSensorAimBot(robot.chassis, robot.distanceSensor, robot.aprilTagCamera, null, robot.telemetrySender, super.allianceSide);
 
         final Runnable
                 splitPreload = () -> robot.claw.setRightClawClosed(false, null),
@@ -53,17 +63,17 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                             switch (teamElementFinderColor.getBestResult()) {
                                 case LEFT: case UNDETERMINED: {
                                     splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {92, 275}) : new Vector2D(new double[] {248, 218});
+                                            BLUE_LEFT_SPIKE : RED_LEFT_SPIKE;
                                     break;
                                 }
                                 case CENTER: {
                                     splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {121, 252}) : new Vector2D(new double[] {240, 252});
+                                            BLUE_CENTER_SPIKE : RED_CENTER_SPIKE;
                                     break;
                                 }
                                 case RIGHT: {
                                     splitFirstPosition[0] = this.allianceSide == Robot.Side.BLUE ?
-                                            new Vector2D(new double[] {92, 221}) : new Vector2D(new double[] {253, 271});
+                                            BLUE_RIGHT_SPIKE : RED_RIGHT_SPIKE;
                                     break;
                                 }
                                 default:
@@ -71,7 +81,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                             }
 
                             return new BezierCurve(
-                                    sequentialCommandFactory.getRobotStartingPosition("split first(left)"),
+                                    sequentialCommandFactory.getRobotStartingPosition("split left front stage"),
                                     splitFirstPosition[0].addBy(new Vector2D(new double[] {0, 15})),
                                     splitFirstPosition[0]
                             );
@@ -92,14 +102,17 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
 
         super.commandSegments.add(new SequentialCommandSegment(
                 () -> true,
-                () -> new BezierCurve(robot.positionEstimator.getCurrentPosition(), sequentialCommandFactory.getBezierCurvesFromPathFile("score second").get(0).getPositionWithLERP(1)),
+                () -> new BezierCurve(
+                        robot.positionEstimator.getCurrentPosition(),
+                        sequentialCommandFactory.getBezierCurvesFromPathFile("score second front stage")
+                                .get(0).getPositionWithLERP(1)
+                ),
                 () -> {
                     robot.claw.setRightClawClosed(true, null);
                     robot.extend.setExtendPosition(0, null);
                     robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
 
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.PREPARE_TO_SCORE, null);
-                    robot.arm.setScoringHeight(0, null);
                     robot.claw.setFlip(FlippableDualClaw.FlipperPosition.SCORE, null);
                     robot.claw.setScoringAngle(1, null);
                     robot.extend.setExtendPosition(0, null);
@@ -109,10 +122,12 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                         robot.arm.setPosition(RobotConfig.ArmConfigs.Position.SCORE, null);
                 },
                 () -> {
-                    robot.extend.setExtendPosition(100, null);
-                    robot.claw.setScoringAngle(RobotConfig.ArmConfigs.flipperPositionsAccordingToScoringHeight.getYPrediction(0), null);
+                    robot.extend.setExtendPosition(RobotConfig.ArmConfigs.autoStageScoringExtendPosition, null);
+                    robot.claw.setScoringAngle(RobotConfig.ArmConfigs.autoStageScoringServoPosition, null);
                     },
-                () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.arm.getArmDesiredPosition() == RobotConfig.ArmConfigs.Position.SCORE && robot.arm.isArmInPosition(),
+                () -> robot.chassis.isCurrentTranslationalTaskComplete()
+                        && robot.arm.getArmDesiredPosition() == RobotConfig.ArmConfigs.Position.SCORE
+                        && robot.arm.isArmInPosition(),
                 () -> new Rotation2D(0), () -> new Rotation2D(0),
                 SpeedCurves.originalSpeed, 0.5
         ));
@@ -127,7 +142,21 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
 
         super.commandSegments.add(sequentialCommandFactory.justDoIt(scorePreload));
 
-        super.commandSegments.add(sequentialCommandFactory.stayStillFor(300));
+        super.commandSegments.add(sequentialCommandFactory.stayStillFor(500));
+
+        super.commandSegments.addAll(sequentialCommandFactory.followPath(
+                "park front stage",
+                () -> {
+                    robot.claw.setLeftClawClosed(true, null);
+                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
+                    robot.extend.setExtendPosition(0, null);
+                    robot.arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, null);
+                },
+                () -> {},
+                () -> {}
+        ));
+
+        super.commandSegments.add(sequentialCommandFactory.stayStillFor(2000));
     }
 
     @Override

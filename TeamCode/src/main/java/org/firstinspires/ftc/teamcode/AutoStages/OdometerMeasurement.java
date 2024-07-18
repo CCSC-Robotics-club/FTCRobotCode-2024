@@ -12,8 +12,10 @@ import org.firstinspires.ftc.teamcode.Utils.SequentialCommandFactory;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 
 public class OdometerMeasurement extends AutoStageProgram {
-    public OdometerMeasurement(Robot.Side side) {
+    private final boolean frontStage;
+    public OdometerMeasurement(Robot.Side side, boolean frontStage) {
         super(side);
+        this.frontStage = frontStage;
     }
 
     @Override
@@ -21,7 +23,12 @@ public class OdometerMeasurement extends AutoStageProgram {
 
     @Override
     public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
-        final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(robot.chassis, robot.positionEstimator, "split first(left)", new Rotation2D(0), super.allianceSide, robot.hardwareMap);
+        final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(
+                robot.chassis, robot.positionEstimator,
+                frontStage ? "split left front stage" : "split left back stage",
+                frontStage ? new Rotation2D(0) : new Rotation2D(Math.toRadians(180)),
+                super.allianceSide,
+                robot.hardwareMap);
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
         super.commandSegments.add(new SequentialCommandSegment(
                 () -> true,
