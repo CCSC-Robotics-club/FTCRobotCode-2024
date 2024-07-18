@@ -201,7 +201,7 @@ public final class RobotConfig {
                 correspondingServoPositions = new double[] {0.62, 0.68, 0.72, 0.8, 0.86},
                 correspondingDistanceToWall = new double[] {26, 25, 18, 12, 4};
 
-        public static final double manualStageMinScoringHeight = 0.25, manualStageMaxScoringHeight = 1, inAdvanceHeight = 0.1;
+        public static final double manualStageMinScoringHeight = 0.15, manualStageMaxScoringHeight = 1, inAdvanceHeight = 0.1;
         public static final LookUpTable
                 armScoringAnglesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingArmEncoderValues),
                 distancesToWallAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingDistanceToWall),
