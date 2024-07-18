@@ -133,9 +133,9 @@ public class UpperStructureService extends RobotService {
 
     private boolean armInPositionDuringCurrentGrabbingProcess = false, clawAutoOpenWhenTouchGroundInitiated = false, armPreparedDuringCurrentScoringProcess = false, chassisAutoAlignmentCompleteDuringCurrentScoringProcess = false;
     private void keyBindings() {
-        if (copilotGamePad.y)
+        if (copilotGamePad.a)
             this.currentStatus = UpperStructureStatus.HOLDING;
-        else if (copilotGamePad.a) {
+        else if (copilotGamePad.y) {
             this.currentStatus = UpperStructureStatus.GRABBING;
             claw.setFlip(FlippableDualClaw.FlipperPosition.INTAKE, this);
             clawAutoOpenWhenTouchGroundInitiated = armInPositionDuringCurrentGrabbingProcess = false;
