@@ -209,7 +209,7 @@ public final class RobotConfig {
                 extendValuesAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingExtendValues),
                 flipperPositionsAccordingToScoringHeight = new LookUpTable(scoringHeight, correspondingServoPositions);
 
-        public static final double autoStageScoringDistanceToWall = 25, autoStageArmScoringHeight = 0, autoStageScoringExtendPosition = 250, autoStageScoringServoPosition = 0.62;
+        public static final double autoStageScoringDistanceToWall = 20, autoStageArmScoringHeight = 0, autoStageScoringExtendPosition = 300, autoStageScoringServoPosition = 0.62;
     }
 
     public static final class ExtendConfigs {

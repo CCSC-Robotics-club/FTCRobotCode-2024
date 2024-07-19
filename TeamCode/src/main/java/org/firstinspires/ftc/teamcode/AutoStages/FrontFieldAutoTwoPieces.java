@@ -54,11 +54,12 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
                 scorePreload = () -> robot.claw.setLeftClawClosed(false, null);
 
         robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
-        robot.claw.setLeftClawClosed(true, null);
-        robot.claw.setRightClawClosed(true, null);
-
 
         super.commandSegments.add(commandFactory.calibratePositionEstimator());
+        super.commandSegments.add(commandFactory.justDoIt(() -> {
+            robot.claw.setLeftClawClosed(true, null);
+            robot.claw.setRightClawClosed(true, null);
+        }));
 
         final AtomicReference<Vector2D> splitFirstPositionReference = new AtomicReference<>(
                 this.allianceSide == Robot.Side.BLUE ? BLUE_LEFT_SPIKE : RED_LEFT_SPIKE

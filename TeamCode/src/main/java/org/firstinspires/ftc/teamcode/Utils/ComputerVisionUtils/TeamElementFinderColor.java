@@ -29,6 +29,7 @@ public class TeamElementFinderColor {
     private final RectangularRegionColorComparisonPipeLine pipeLine;
     private int currentRIOPositionTuningIndex = 0;
 
+    final OpenCvCamera webcam;
 
     public TeamElementFinderColor(HardwareMap hardwareMap, WebcamName webcamName, Gamepad gamepad, Telemetry telemetry, Robot.Side allianceSide) {
         this.gamepad = gamepad;
@@ -36,7 +37,7 @@ public class TeamElementFinderColor {
         final int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()
         );
-        final OpenCvCamera webcam = OpenCvCameraFactory.getInstance().createWebcam(
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(
                 webcamName,
                 cameraMonitorViewId
         );
@@ -91,5 +92,9 @@ public class TeamElementFinderColor {
             return RobotConfig.TeamElementPosition.RIGHT;
         }
         throw new IllegalStateException("pipe line result " + result + " is not one of LEFT, CENTER or RIGHT region");
+    }
+
+    public void shutDown() {
+        webcam.closeCameraDevice();
     }
 }

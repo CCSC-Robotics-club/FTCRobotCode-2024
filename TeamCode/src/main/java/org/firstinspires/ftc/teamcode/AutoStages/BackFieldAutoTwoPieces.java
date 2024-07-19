@@ -22,7 +22,7 @@ public class BackFieldAutoTwoPieces extends AutoStageProgram {
         super(side);
     }
 
-    private static final double sleepSeconds = 10;
+    private static final double sleepSeconds = 0;
     private static final Vector2D
             BLUE_LEFT_SPIKE = new Vector2D(new double[] {116.8, 86.7}),
             BLUE_CENTER_SPIKE = new Vector2D(new double[] {124.5, 49.8}),
@@ -52,11 +52,13 @@ public class BackFieldAutoTwoPieces extends AutoStageProgram {
                 scorePreload = () -> robot.claw.setLeftClawClosed(false, null);
 
         robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
-        robot.claw.setLeftClawClosed(true, null);
-        robot.claw.setRightClawClosed(true, null);
 
 
         super.commandSegments.add(commandFactory.calibratePositionEstimator());
+        super.commandSegments.add(commandFactory.justDoIt(() -> {
+            robot.claw.setLeftClawClosed(true, null);
+            robot.claw.setRightClawClosed(true, null);
+        }));
 
         final AtomicReference<Vector2D> splitFirstPositionReference = new AtomicReference<>(
                 this.allianceSide == Robot.Side.BLUE ? BLUE_LEFT_SPIKE : RED_LEFT_SPIKE
@@ -89,6 +91,8 @@ public class BackFieldAutoTwoPieces extends AutoStageProgram {
                 default:
                     throw new IllegalStateException("unknown team element position: " + teamElementFinderColor.getBestResult());
             }
+
+            teamElementFinderColor.shutDown();
         }));
         super.commandSegments.add(
                 new SequentialCommandSegment(
@@ -114,7 +118,7 @@ public class BackFieldAutoTwoPieces extends AutoStageProgram {
 
         super.commandSegments.add(commandFactory.followSingleCurve(
                 "move to scoring board back stage", 0,
-                new Rotation2D(Math.toRadians(-90))
+                new Rotation2D(Math.toRadians(160))
         ));
 
         super.commandSegments.add(commandFactory.stayStillForSeconds(sleepSeconds));
@@ -141,10 +145,10 @@ public class BackFieldAutoTwoPieces extends AutoStageProgram {
                     robot.extend.setExtendPosition(RobotConfig.ArmConfigs.autoStageScoringExtendPosition, null);
                     robot.claw.setScoringAngle(RobotConfig.ArmConfigs.autoStageScoringServoPosition, null);
                 },
-                () -> robot.chassis.isCurrentTranslationalTaskComplete()
+                () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.chassis.isCurrentRotationalTaskComplete()
                         && robot.arm.getArmDesiredPosition() == RobotConfig.ArmConfigs.Position.SCORE
                         && robot.arm.isArmInPosition(),
-                () -> new Rotation2D(Math.toRadians(-90)), () -> new Rotation2D(0),
+                () -> new Rotation2D(Math.toRadians(160)), () -> new Rotation2D(0),
                 SpeedCurves.originalSpeed, 0.5
         ));
 
