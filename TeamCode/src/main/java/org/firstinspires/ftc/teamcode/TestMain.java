@@ -77,16 +77,42 @@ public class TestMain extends LinearOpMode {
         final DcMotor hor = hardwareMap.get(DcMotorEx.class, encoderNames[0]),
                 ver1 = hardwareMap.get(DcMotorEx.class, encoderNames[0]),
                 ver2 = hardwareMap.get(DcMotorEx.class, encoderNames[1]);
+
+        final DcMotor arm = hardwareMap.get(DcMotor.class, "arm"), extend = hardwareMap.get(DcMotor.class, "extend");
+        final TouchSensor armLimit = hardwareMap.get(TouchSensor.class, "armLimit"), extendLimit = hardwareMap.get(TouchSensor.class, "extendLimit");
         final DcMotor climb0 = hardwareMap.get(DcMotor.class, "climbMotor0"),
                 climb1 = hardwareMap.get(DcMotor.class, "climbMotor1");
 
         waitForStart();
 
+        int armZeroPosition = 0, extendZeroPosition = 0;
         while (opModeIsActive() && !isStopRequested()) {
             telemetry.addData("hor enc", hor.getCurrentPosition());
             telemetry.addData("ver 1 enc", ver1.getCurrentPosition());
             telemetry.addData("ver 2 enc", ver2.getCurrentPosition());
-            telemetry.addData("dis back", distanceSensor.getDistance(DistanceUnit.CM));
+
+            telemetry.addData("distance sensor", distanceSensor.getDistance(DistanceUnit.CM));
+
+            if (armLimit.isPressed())
+                armZeroPosition = arm.getCurrentPosition();
+            if (gamepad1.y)
+                arm.setPower(0.3);
+            else if (gamepad1.a)
+                arm.setPower(-0.3);
+            arm.setPower(0);
+            telemetry.addData("arm encoder", arm.getCurrentPosition() - armZeroPosition);
+            telemetry.addData("arm limit", armLimit.isPressed());
+
+            if (extendLimit.isPressed())
+                extendZeroPosition = extend.getCurrentPosition();
+            if (gamepad1.dpad_up)
+                extend.setPower(0.3);
+            else if (gamepad1.dpad_down)
+                extend.setPower(-0.3);
+            else
+                extend.setPower(0);
+            telemetry.addData("extend encoder", extend.getCurrentPosition() - extendZeroPosition);
+            telemetry.addData("extend limit", extendLimit.isPressed());
             telemetry.update();
 
             climb0.setPower(-gamepad1.left_stick_y);
