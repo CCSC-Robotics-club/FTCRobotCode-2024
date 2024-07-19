@@ -18,26 +18,26 @@ import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class BackFieldAutoTwoPieces extends AutoStageProgram {
-    protected BackFieldAutoTwoPieces(Robot.Side side) {
+    public BackFieldAutoTwoPieces(Robot.Side side) {
         super(side);
     }
 
     private static final double sleepSeconds = 10;
     private static final Vector2D
-            BLUE_LEFT_SPIKE = new Vector2D(new double[] {0, 0}),
-            BLUE_CENTER_SPIKE = new Vector2D(new double[] {0, 0}),
-            BLUE_RIGHT_SPIKE = new Vector2D(new double[] {0, 0}),
+            BLUE_LEFT_SPIKE = new Vector2D(new double[] {116.8, 86.7}),
+            BLUE_CENTER_SPIKE = new Vector2D(new double[] {124.5, 49.8}),
+            BLUE_RIGHT_SPIKE = new Vector2D(new double[] {120.2, 30.3}),
 
-    RED_LEFT_SPIKE = new Vector2D(new double[] {0, 0}),
-            RED_CENTER_SPIKE = new Vector2D(new double[] {0, 0}),
-            RED_RIGHT_SPIKE = new Vector2D(new double[] {0, 0});
+    RED_LEFT_SPIKE = new Vector2D(new double[] {270.7, 28}),
+            RED_CENTER_SPIKE = new Vector2D(new double[] {246.4, 43.7}),
+            RED_RIGHT_SPIKE = new Vector2D(new double[] {250, 78});
 
     private TeamElementFinderColor teamElementFinderColor;
     @Override
     public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
         this.teamElementFinderColor = new TeamElementFinderColor(
                 robot.hardwareMap,
-                robot.hardwareMap.get(WebcamName.class, allianceSide == Robot.Side.BLUE ? "Right Cam" : "Left Cam"),
+                robot.hardwareMap.get(WebcamName.class, "Webcam 1"),
                 robot.gamepad1,
                 robot.telemetry,
                 allianceSide
@@ -95,7 +95,7 @@ public class BackFieldAutoTwoPieces extends AutoStageProgram {
                         () -> true,
                         () -> new BezierCurve(
                                 commandFactory.getRobotStartingPosition("split left back stage"),
-                                splitFirstPositionReference.get().addBy(new Vector2D(new double[] {0, -20})),
+                                splitFirstPositionReference.get().addBy(new Vector2D(new double[] {0, -5})),
                                 splitFirstPositionReference.get()
                         ),
                         () -> {},
@@ -107,7 +107,7 @@ public class BackFieldAutoTwoPieces extends AutoStageProgram {
                         },
                         splitPreload,
                         () -> Vector2D.displacementToTarget(robot.positionEstimator.getCurrentPosition(), splitFirstPositionReference.get()).getMagnitude() < 5,
-                        () -> new Rotation2D(0), () -> new Rotation2D(0)
+                        () -> new Rotation2D(Math.PI), () -> new Rotation2D(Math.PI)
                 )
         );
         super.commandSegments.add(commandFactory.stayStillFor(300));

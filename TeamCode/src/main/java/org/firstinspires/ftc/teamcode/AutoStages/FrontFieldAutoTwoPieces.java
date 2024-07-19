@@ -24,7 +24,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
             BLUE_CENTER_SPIKE = new Vector2D(new double[] {118, 260}),
             BLUE_RIGHT_SPIKE = new Vector2D(new double[] {91, 221}),
 
-            RED_LEFT_SPIKE = new Vector2D(new double[] {263, 219}),
+            RED_LEFT_SPIKE = new Vector2D(new double[] {261, 219}),
             RED_CENTER_SPIKE = new Vector2D(new double[] {241, 258}),
             RED_RIGHT_SPIKE = new Vector2D(new double[] {242, 276});
 
@@ -38,7 +38,7 @@ public class FrontFieldAutoTwoPieces extends AutoStageProgram {
     public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
         this.teamElementFinderColor = new TeamElementFinderColor(
                 robot.hardwareMap,
-                robot.hardwareMap.get(WebcamName.class, allianceSide == Robot.Side.BLUE ? "Right Cam" : "Left Cam"),
+                robot.hardwareMap.get(WebcamName.class, "Webcam 1"),
                 robot.gamepad1,
                 robot.telemetry,
                 allianceSide

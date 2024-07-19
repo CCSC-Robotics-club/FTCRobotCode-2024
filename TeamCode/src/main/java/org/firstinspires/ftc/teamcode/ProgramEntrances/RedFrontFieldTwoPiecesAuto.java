@@ -7,8 +7,8 @@ import org.firstinspires.ftc.teamcode.AutoStages.FrontFieldAutoTwoPieces;
 import org.firstinspires.ftc.teamcode.Robot;
 
 @Autonomous(name = "<Auto> [Red Front Stage Two Pieces]")
-public class RedFrontTwoPiecesAuto extends AutoMain {
-    public RedFrontTwoPiecesAuto() {
+public class RedFrontFieldTwoPiecesAuto extends AutoMain {
+    public RedFrontFieldTwoPiecesAuto() {
         super(new FrontFieldAutoTwoPieces(Robot.Side.RED));
     }
 }

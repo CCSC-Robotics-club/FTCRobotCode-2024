@@ -23,10 +23,11 @@ public class OdometerMeasurement extends AutoStageProgram {
 
     @Override
     public void scheduleCommands(Robot robot, TelemetrySender telemetrySender) {
+        final Rotation2D facingRotation = frontStage ? new Rotation2D(0) : new Rotation2D(Math.toRadians(180));
         final SequentialCommandFactory sequentialCommandFactory = new SequentialCommandFactory(
                 robot.chassis, robot.positionEstimator,
                 frontStage ? "split left front stage" : "split left back stage",
-                frontStage ? new Rotation2D(0) : new Rotation2D(Math.toRadians(180)),
+                facingRotation,
                 super.allianceSide,
                 robot.hardwareMap);
         super.commandSegments.add(sequentialCommandFactory.calibratePositionEstimator());
@@ -44,7 +45,7 @@ public class OdometerMeasurement extends AutoStageProgram {
                 },
                 () -> {},
                 () -> false,
-                () -> new Rotation2D(0), () -> new Rotation2D(0)
+                () -> facingRotation, () -> facingRotation
         ));
     }
 }
