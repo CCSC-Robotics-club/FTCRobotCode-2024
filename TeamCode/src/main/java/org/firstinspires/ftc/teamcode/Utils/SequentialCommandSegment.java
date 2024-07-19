@@ -88,7 +88,7 @@ public class SequentialCommandSegment {
         public double getCurrentRotationWithLERP(double t) {
             if (startingRotation == null || endingRotation == null)
                 throw new IllegalStateException("cannot obtain current rotation when the starting or ending rotation is not specified");
-            t = speedCurve.getScaledT(t) * timeScale;
+            t = speedCurve.getScaledT(t);
             if (t<0) t=0;
             else if (t>1) t=1;
             return AngleUtils.simplifyAngle(startingRotation.getRadian() + AngleUtils.getActualDifference(startingRotation.getRadian(), endingRotation.getRadian())*t); // TODO here, t is Nah

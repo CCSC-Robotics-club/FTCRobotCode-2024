@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Services;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.Chassis;
 import org.firstinspires.ftc.teamcode.RobotConfig;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils.BezierCurveSchedule;
@@ -24,6 +25,7 @@ public class AutoProgramRunner extends RobotService {
     private SequentialCommandSegment.StaticSequentialCommandSegment currentCommandSegment;
     private BezierCurveSchedule currentPathSchedule;
     private double currentSegmentRotationScheduleETA, rotationT, translationalScaledT;
+
 
     public AutoProgramRunner(Chassis chassis) {
         this.robotChassis = chassis;
@@ -59,13 +61,13 @@ public class AutoProgramRunner extends RobotService {
         }
         if (currentSegmentRotationScheduleETA != -1) {
             rotationT += dt / currentSegmentRotationScheduleETA;
-            double rotationTSyncedToTranslationT = rotationT;
-
+            rotationTSynced = rotationT;
             if (currentPathSchedule != null)
-                rotationTSyncedToTranslationT = Math.min(currentPathSchedule.getT(), rotationTSyncedToTranslationT);
+                rotationTSynced = Math.min(currentPathSchedule.getT(), rotationTSynced);
+
             robotChassis.setRotationalTask(new Chassis.ChassisRotationalTask(
                             Chassis.ChassisRotationalTask.ChassisRotationalTaskType.GO_TO_ROTATION,
-                            currentCommandSegment.getCurrentRotationWithLERP(rotationTSyncedToTranslationT)),
+                            currentCommandSegment.getCurrentRotationWithLERP(rotationTSynced)),
                     this);
         }
         currentCommandSegment.periodic.run();
@@ -146,6 +148,7 @@ public class AutoProgramRunner extends RobotService {
                 && currentSegment.isCompleteChecker.isComplete();
     }
 
+    double rotationTSynced = 0;
     @Override
     public Map<String, Object> getDebugMessages() {
         final Map<String, Object> debugMessages = new HashMap<>();
@@ -153,8 +156,10 @@ public class AutoProgramRunner extends RobotService {
         if (currentPathSchedule == null)
             return debugMessages;
         debugMessages.put("auto translational scaled T", translationalScaledT);
-        debugMessages.put("auto position (x)", currentPathSchedule.getPositionWithLERP().getX());
-        debugMessages.put("auto position (y)", currentPathSchedule.getPositionWithLERP().getY());
+        debugMessages.put("auto rotational T", rotationTSynced);
+        debugMessages.put("auto desired position (x)", currentPathSchedule.getPositionWithLERP().getX());
+        debugMessages.put("auto desired position (y)", currentPathSchedule.getPositionWithLERP().getY());
+        debugMessages.put("auto desired rotation (deg)", Math.toDegrees(currentCommandSegment.getCurrentRotationWithLERP(rotationTSynced)));
         return debugMessages;
     }
 }
