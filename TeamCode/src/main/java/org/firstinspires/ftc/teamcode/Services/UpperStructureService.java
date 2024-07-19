@@ -44,10 +44,7 @@ public class UpperStructureService extends RobotService {
     @Override
     public void periodic(double dt) {
         keyBindings();
-        if (copilotGamePad.right_stick_button)
-            arm.forceSetPower(copilotGamePad.right_stick_y * -1, this);
-        else
-            arm.forceSetPower(0, this);
+
         switch (currentStatus) {
             case HOLDING: {
                 claw.setAutoClosing(false, this);

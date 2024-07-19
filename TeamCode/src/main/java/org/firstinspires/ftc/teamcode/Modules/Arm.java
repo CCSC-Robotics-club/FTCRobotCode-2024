@@ -67,12 +67,8 @@ public class Arm extends RobotModule {
         final double encoderFactor = ArmConfigs.encoderReversed ? -1:1;
         if (limitSwitch.getSensorReading() != 0)
             this.armEncoderZeroPosition = (int) armEncoder.getSensorReading();
-        if (Math.abs(desiredPower) != 0) {
-            setArmPower(desiredPower);
-            return;
-        }
         if (armEncoderZeroPosition == -114514) {
-            setArmPower(-0.4);
+            setArmPower(-0.5);
             return;
         }
 
@@ -107,7 +103,7 @@ public class Arm extends RobotModule {
         this.armMotor1.getMotorInstance().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.armMotor2.getMotorInstance().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        this.armDesiredMovingDirection = this.desiredPower = 0;
+        this.armDesiredMovingDirection = 0;
     }
 
     public void setPosition(ArmConfigs.Position position, RobotService operatorService) {
@@ -155,13 +151,7 @@ public class Arm extends RobotModule {
         return this.scoringHeight;
     }
 
-    private double desiredPower;
     private double armDesiredMovingDirection;
-    public void forceSetPower(double power, ModulesCommanderMarker operator) {
-        if (!isOwner(operator))
-            return;
-        desiredPower = power;
-    }
     public void setPIDMovingDirection(double direction, ModulesCommanderMarker operator) {
         if (!isOwner(operator))
             return;

@@ -96,9 +96,9 @@ public class FlippableDualClaw extends RobotModule {
 
         flip.setDesiredPosition(flipperPositions.get(FlipperPosition.HOLD));
         flip.update(10);
-        leftClaw.setDesiredPosition(FlippableDualClawConfigs.leftClawClosePosition);
+        leftClaw.setDesiredPosition((FlippableDualClawConfigs.leftClawClosePosition + FlippableDualClawConfigs.leftClawOpenPosition)/2);
         leftClaw.update(10);
-        rightClaw.setDesiredPosition(FlippableDualClawConfigs.rightClawClosedPosition);
+        rightClaw.setDesiredPosition((FlippableDualClawConfigs.rightClawClosedPosition + FlippableDualClawConfigs.rightClawOpenPosition)/2);
         rightClaw.update(10);
     }
 
