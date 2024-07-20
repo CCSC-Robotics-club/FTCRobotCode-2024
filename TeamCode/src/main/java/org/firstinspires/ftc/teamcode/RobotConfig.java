@@ -360,7 +360,7 @@ public final class RobotConfig {
         public static final Vector2D targetedRelativePositionToWallRoughApproach = new Vector2D(new double[]{0, -30});
         public static final Vector2D targetedRelativePositionToWallPreciseTOFApproach = new Vector2D(new double[] {0, -5});
         public static final double[] aimHorizontalPositions = new double[] {0, 4, 12, 20};
-        public static final double autoStageScoringPositionsLeft = -15, autoStageScoringPositionsCenter = 5.5, autoStageScoringPositionsRight = 15;
+        public static final double autoStageScoringPositionsLeft = -15, autoStageScoringPositionsCenter = 5.5, autoStageScoringPositionsRight = 17.5;
         public static final double maximumXBiasToWallCenterDuringAimingCM = 20;
 
         public static final long maxTimeToWaitForVisualNavigationMS = 800; // after this much milliseconds, if the target still does not occur, the navigation will be considered failed

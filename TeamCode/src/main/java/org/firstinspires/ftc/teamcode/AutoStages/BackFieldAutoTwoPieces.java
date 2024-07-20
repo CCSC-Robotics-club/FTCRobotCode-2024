@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Utils.MathUtils.Vector2D;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandFactory;
 import org.firstinspires.ftc.teamcode.Utils.SequentialCommandSegment;
 
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class BackFieldAutoTwoPieces extends AutoStageProgram {
@@ -22,7 +23,7 @@ public class BackFieldAutoTwoPieces extends AutoStageProgram {
         super(side);
     }
 
-    private static final double sleepSeconds = 0;
+    private static final double sleepSeconds = 14;
     private static final Vector2D
             BLUE_LEFT_SPIKE = new Vector2D(new double[] {113, 82}),
             BLUE_CENTER_SPIKE = new Vector2D(new double[] {121, 46}),
@@ -63,8 +64,11 @@ public class BackFieldAutoTwoPieces extends AutoStageProgram {
         final AtomicReference<Vector2D> splitFirstPositionReference = new AtomicReference<>(
                 this.allianceSide == Robot.Side.BLUE ? BLUE_LEFT_SPIKE : RED_LEFT_SPIKE
         );
+
+        final AtomicLong matchStartTimeMillis = new AtomicLong(0);
         super.commandSegments.add(commandFactory.justDoIt(() ->
         {
+            matchStartTimeMillis.set(System.currentTimeMillis());
             teamElementPositionReference.set(teamElementFinderColor.getBestResult());
             switch (teamElementFinderColor.getBestResult()) {
                 case LEFT: case UNDETERMINED: {
@@ -153,9 +157,14 @@ public class BackFieldAutoTwoPieces extends AutoStageProgram {
                     robot.extend.setExtendPosition(RobotConfig.ArmConfigs.autoStageScoringExtendPosition, null);
                     robot.claw.setScoringAngle(RobotConfig.ArmConfigs.autoStageScoringServoPosition, null);
                 },
-                () -> robot.chassis.isCurrentTranslationalTaskRoughlyComplete() && robot.chassis.isCurrentRotationalTaskRoughlyComplete()
-                        && robot.arm.getArmDesiredPosition() == RobotConfig.ArmConfigs.Position.SCORE
-                        && robot.arm.isArmInPosition(),
+                () -> {
+                    final boolean timeOut = System.currentTimeMillis() - matchStartTimeMillis.get() > 27 * 1000,
+                            completed = robot.chassis.isCurrentTranslationalTaskRoughlyComplete()
+                                    && robot.chassis.isCurrentRotationalTaskRoughlyComplete()
+                                    && robot.arm.getArmDesiredPosition() == RobotConfig.ArmConfigs.Position.SCORE
+                                    && robot.arm.isArmInPosition();
+                    return timeOut || completed;
+                },
                 () -> new Rotation2D(Math.toRadians(160)), () -> new Rotation2D(0),
                 SpeedCurves.originalSpeed, 0.5
         ));
