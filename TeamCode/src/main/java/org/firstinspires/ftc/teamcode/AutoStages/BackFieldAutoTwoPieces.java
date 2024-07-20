@@ -24,13 +24,13 @@ public class BackFieldAutoTwoPieces extends AutoStageProgram {
 
     private static final double sleepSeconds = 0;
     private static final Vector2D
-            BLUE_LEFT_SPIKE = new Vector2D(new double[] {116.8, 86.7}),
-            BLUE_CENTER_SPIKE = new Vector2D(new double[] {124.5, 49.8}),
-            BLUE_RIGHT_SPIKE = new Vector2D(new double[] {120.2, 30.3}),
+            BLUE_LEFT_SPIKE = new Vector2D(new double[] {113, 82}),
+            BLUE_CENTER_SPIKE = new Vector2D(new double[] {121, 46}),
+            BLUE_RIGHT_SPIKE = new Vector2D(new double[] {115, 26}),
 
-    RED_LEFT_SPIKE = new Vector2D(new double[] {270.7, 28}),
-            RED_CENTER_SPIKE = new Vector2D(new double[] {246.4, 43.7}),
-            RED_RIGHT_SPIKE = new Vector2D(new double[] {250, 78});
+    RED_LEFT_SPIKE = new Vector2D(new double[] {278, 21}),
+            RED_CENTER_SPIKE = new Vector2D(new double[] {249, 42}),
+            RED_RIGHT_SPIKE = new Vector2D(new double[] {272, 80});
 
     private TeamElementFinderColor teamElementFinderColor;
     @Override
@@ -103,22 +103,30 @@ public class BackFieldAutoTwoPieces extends AutoStageProgram {
                                 splitFirstPositionReference.get()
                         ),
                         () -> {},
+                        () -> {},
                         () -> {
-                            if (!robot.chassis.isCurrentTranslationalTaskRoughlyComplete())
-                                return;
                             robot.claw.setFlip(FlippableDualClaw.FlipperPosition.PREPARE_TO_GRAB_STACK, null);
                             robot.extend.setExtendPosition(RobotConfig.ExtendConfigs.intakeValue, null);
                         },
-                        splitPreload,
                         () -> Vector2D.displacementToTarget(robot.positionEstimator.getCurrentPosition(), splitFirstPositionReference.get()).getMagnitude() < 5,
                         () -> new Rotation2D(Math.PI), () -> new Rotation2D(Math.PI)
                 )
         );
+        super.commandSegments.add(commandFactory.stayStillFor(700));
+
+        super.commandSegments.add(commandFactory.justDoIt(splitPreload));
+
         super.commandSegments.add(commandFactory.stayStillFor(300));
 
         super.commandSegments.add(commandFactory.followSingleCurve(
                 "move to scoring board back stage", 0,
-                new Rotation2D(Math.toRadians(160))
+                new Rotation2D(Math.toRadians(160)),
+                () -> {
+                    robot.claw.setRightClawClosed(true, null);
+                    robot.claw.setLeftClawClosed(true, null);
+                    robot.claw.setFlip(FlippableDualClaw.FlipperPosition.HOLD, null);
+                    robot.extend.setExtendPosition(0, null);
+                }, () -> {}, () -> {}
         ));
 
         super.commandSegments.add(commandFactory.stayStillForSeconds(sleepSeconds));
@@ -145,7 +153,7 @@ public class BackFieldAutoTwoPieces extends AutoStageProgram {
                     robot.extend.setExtendPosition(RobotConfig.ArmConfigs.autoStageScoringExtendPosition, null);
                     robot.claw.setScoringAngle(RobotConfig.ArmConfigs.autoStageScoringServoPosition, null);
                 },
-                () -> robot.chassis.isCurrentTranslationalTaskComplete() && robot.chassis.isCurrentRotationalTaskComplete()
+                () -> robot.chassis.isCurrentTranslationalTaskRoughlyComplete() && robot.chassis.isCurrentRotationalTaskRoughlyComplete()
                         && robot.arm.getArmDesiredPosition() == RobotConfig.ArmConfigs.Position.SCORE
                         && robot.arm.isArmInPosition(),
                 () -> new Rotation2D(Math.toRadians(160)), () -> new Rotation2D(0),
@@ -173,7 +181,9 @@ public class BackFieldAutoTwoPieces extends AutoStageProgram {
                     robot.arm.setPosition(RobotConfig.ArmConfigs.Position.INTAKE, null);
                 },
                 () -> {},
-                () -> {}
+                () -> {},
+                SpeedCurves.originalSpeed,
+                0.6
         ));
 
         super.commandSegments.add(commandFactory.stayStillFor(2000));

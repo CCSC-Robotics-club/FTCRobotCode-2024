@@ -31,9 +31,6 @@ public class AutoStageRobot extends Robot {
         super.colorLeft.setEnabled(false);
         super.colorRight.setEnabled(false);
 
-        super.claw.setRightClawClosed(true, null);
-        super.claw.setLeftClawClosed(true, null);
-
 //        super.spikeMarkDetectionSensor.setEnabled(false);
 //        super.distanceSensorBack.setEnabled(false);
     }

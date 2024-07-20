@@ -20,13 +20,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class FrontFieldAutoTwoPieces extends AutoStageProgram {
     private static final Vector2D
-            BLUE_LEFT_SPIKE = new Vector2D(new double[] {92, 276}),
-            BLUE_CENTER_SPIKE = new Vector2D(new double[] {118, 260}),
-            BLUE_RIGHT_SPIKE = new Vector2D(new double[] {91, 221}),
+            BLUE_LEFT_SPIKE = new Vector2D(new double[] {88, 280}),
+            BLUE_CENTER_SPIKE = new Vector2D(new double[] {115, 260}),
+            BLUE_RIGHT_SPIKE = new Vector2D(new double[] {92, 223}),
 
-            RED_LEFT_SPIKE = new Vector2D(new double[] {261, 219}),
-            RED_CENTER_SPIKE = new Vector2D(new double[] {241, 258}),
-            RED_RIGHT_SPIKE = new Vector2D(new double[] {242, 276});
+            RED_LEFT_SPIKE = new Vector2D(new double[] {253, 232}),
+            RED_CENTER_SPIKE = new Vector2D(new double[] {245, 264}),
+            RED_RIGHT_SPIKE = new Vector2D(new double[] {248, 285});
 
 
     public FrontFieldAutoTwoPieces(Robot.Side side) {

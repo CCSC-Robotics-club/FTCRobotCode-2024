@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.AutoMain;
 import org.firstinspires.ftc.teamcode.AutoStages.OdometerMeasurement;
 import org.firstinspires.ftc.teamcode.Robot;
 
-@Autonomous(name = "<Auto> [Measurement] Back-Side Field Measurement")
+@Autonomous(name = "<Measurement> [Blue] Back-Side Field Measurement")
 public class BlueBackFieldMeasurement extends AutoMain {
     public BlueBackFieldMeasurement() {
         super(new OdometerMeasurement(Robot.Side.BLUE, false));
